@@ -1,237 +1,402 @@
 # lcclone: plan
 
-An offline, terminal-based LeetCode-style practice tool for Unix. You browse
-problems, write solutions in your own editor, run them against tests locally,
-get LeetCode-style verdicts, and track progress. There is no network and no
+An offline LeetCode-style practice tool for Unix. You browse problems, write
+solutions in **C or C++** in your own editor, run them against local tests, get
+LeetCode-style verdicts, and track progress. There is no network and no
 account.
+
+It ships as a command-line tool first. The core is a library with no UI code in
+it, so a GUI can be built on top later without rewriting anything (§4).
 
 ## 1. Goals and constraints
 
-- **Language:** C11 plus POSIX.1-2008 (`_POSIX_C_SOURCE 200809L`). Only libc.
-  No ncurses, no JSON, sqlite or regex libraries.
-- **Build:** a plain POSIX `Makefile` and any `cc` (gcc, clang, tcc).
+- **Tool language:** C11 plus POSIX.1-2008 (`_POSIX_C_SOURCE 200809L`). Only
+  libc. No ncurses, no JSON, sqlite or regex libraries.
+- **Solution languages:** C and C++. Users need `cc` for C solutions and `c++`
+  for C++ solutions. A language whose compiler isn't installed is simply
+  hidden.
+- **Build:** a plain POSIX `Makefile` producing `liblc.a` (the core) and `lc`
+  (the CLI).
 - **Platforms:** Linux (glibc and musl), macOS, FreeBSD and OpenBSD.
-- **Output:** one binary, `lc`, plus data files (problem packs and
-  per-language harness runtimes).
 
 Not in v1:
 - network sync
-- importing problems from LeetCode
-- a web UI
+- a GUI (but one is planned for)
+- languages other than C and C++
 - contests
 - a sandbox against hostile code
 
 You run your own code, so resource limits only guard against accidents like
 infinite loops and memory blowups. They are not a defense against attackers.
 
-### Content and licensing
+## 2. Problem scope: every free easy problem first
 
-LeetCode's problem statements and test data are copyrighted, and their terms
-forbid scraping. So the project:
-- ships **original** problems: classic algorithm tasks with statements and
-  tests written from scratch;
-- documents the problem format so anyone can write their own;
-- does not include a scraper or importer.
+The first problem set is **every non-premium Easy problem on LeetCode that can
+be solved in C or C++**. Medium and hard come after that.
 
-## 2. User experience
+**Out of scope:**
+- premium-only problems;
+- the Database (SQL), Pandas, JavaScript, Bash and Concurrency categories.
+
+My rough estimate is 500–600 problems in scope. The exact list and count come
+from the manifest (§6).
+
+### 2.1 Content rules
+
+- **Kept, so you can cross-reference:**
+  - each problem's LeetCode number (used as our `id`), slug and title;
+  - its function signature (names and types), so a solution moves between
+    lcclone and LeetCode unchanged.
+- **Written by us:** every problem statement, example and test case.
+  LeetCode's text and test data are copyrighted and their terms forbid
+  scraping, so none of it is copied.
+- **C signatures where LeetCode has none:** some problems don't offer C on
+  LeetCode. For those we write a C signature using the same conventions.
+
+### 2.2 What the easy problems need from the harness
+
+The free easy problems sort into the groups below. Each group needs a harness
+feature, and the milestones (§9) bring those features in roughly this order.
+
+| Group | Examples (LeetCode #) | Needs |
+|-------|-----------------------|-------|
+| Plain functions (the large majority) | 1, 9, 13, 14, 20, 70, 121, 125, 136, 169 | scalars, arrays, strings, 2D arrays |
+| Bits and odd scalars | 190, 191, 2235 | `uint32`, `long`, `char` |
+| Floating-point answers | 643, 1491 | `double` compared with a tolerance |
+| In-place edits | 26, 27, 88, 283, 344, 1089 | checking a parameter after the call, or the first k elements |
+| Linked lists | 21, 83, 203, 206, 234, 876, 1290 | `ListNode` |
+| Linked lists built specially | 141 (cycle at `pos`), 160 (two lists that join) | builders, hidden inputs |
+| Binary trees | 94, 100, 101, 104, 110, 111, 112, 226, 543, 617, 700 | `TreeNode` |
+| Tree node references | 1379 | an argument that refers to a node inside another argument |
+| N-ary trees | 559, 589, 590 | `NaryNode` |
+| Design (class) problems | 225, 232, 303, 703, 705, 706, 933, 1603 | a class plus a sequence of method calls |
+| Provided API | 278 (`isBadVersion`), 374 (`guess`) | harness-supplied functions, hidden inputs |
+| Many valid answers | 108, 905, 942 | a custom checker |
+| "Any order" answers | 1, 349, 448, 2215 | unordered comparison, chosen per nesting level |
+
+## 3. Command-line interface
 
 ```
-$ lc list --difficulty easy
-   #  Title            Diff   Tags              Status
-   1  Pair Sum         easy   array, hash       solved
-   2  Reverse List     easy   linked-list       -
-$ lc show 1                 # statement rendered in the terminal, via $PAGER
-$ lc start 1 [--lang c]     # writes ~/lc/0001-pair-sum.c from a stub, opens $EDITOR
-$ lc test 1                 # runs the example cases only
-$ lc test 1 --case my.txt   # custom input; expected output comes from the reference solution
-$ lc submit 1               # all cases, including hidden ones; records the result
+$ lc list --difficulty easy --tag tree --status todo
+$ lc show 104               # statement rendered in the terminal, via $PAGER
+$ lc start 104 --lang cpp   # writes ~/lc/0104-maximum-depth-of-binary-tree.cpp, opens $EDITOR
+$ lc test 104               # example cases only
+$ lc test 104 --case my.txt # custom input; expected output comes from the reference solution
+$ lc submit 104             # every case, including hidden ones; records the result
 $ lc stats                  # solved counts by difficulty and tag
-$ lc random --difficulty medium
-$ lc check problems/0001-pair-sum   # validates a problem pack (for authors)
+$ lc random --difficulty easy --status todo
+$ lc check problems/0104-*  # validates a problem pack (for authors)
 ```
 
-The verdicts are Accepted, Wrong Answer, Compile Error, Runtime Error (with the
-signal or exit code and the tail of stderr), Time Limit Exceeded, Memory Limit
-Exceeded and Output Limit Exceeded.
+**Machine-readable output.** Every command takes `--json`. The output schema is
+versioned (`"schema": 1`) and kept stable. This lets a GUI, or an editor
+plugin, be written in any language by running `lc` as a subprocess. Writing
+JSON needs only a ~150-line writer; nothing in `lc` ever has to parse JSON.
+
+**Verdicts:** Accepted, Wrong Answer, Compile Error, Runtime Error, Time Limit
+Exceeded, Memory Limit Exceeded and Output Limit Exceeded.
 
 When a case fails, `lc` shows:
-- the case number;
-- its input, the expected result and your result;
-- anything your code printed (LeetCode's "stdout" pane).
+- the case;
+- the input, the expected result and your result;
+- anything your code printed;
+- for a runtime error, the signal or exit code and the tail of stderr.
 
-## 3. Architecture
-
-```
-problem pack (text files)
-        |
-lc CLI -+- problem loader -- value parser -- codegen --> stub + harness source
-        |                                                     |
-        |                              compile ($CC) <--------+
-        |                                    |
-        +- judge -- runner (fork/exec, rlimits, poll, timeouts) -- compare -- verdict -- store
-```
-
-**Key idea: the C tool does all the parsing of LeetCode-syntax values.** Before
-a run, it turns each test input (`[2,7,11,15]`) into a simple, length-prefixed
-**wire format** and writes it to the program's stdin. The per-language harness
-only has to:
-1. read the wire format;
-2. call your function;
-3. write the result back in wire format on **fd 3**.
-
-The tool parses that result and compares it structurally with the expected
-value.
-
-This has two benefits:
-- **Small harnesses.** Each language harness stays small (about 150 lines), so
-  adding C++ or Python later is cheap.
-- **Clean output.** Your own prints stay on stdout and stderr, apart from the
-  result.
-
-### 3.1 Function-signature model (like LeetCode)
-
-Each problem declares a typed signature, for example
-`int[] pairSum(int[] nums, int target)`.
-
-These are the v1 types:
+## 4. Architecture: core library plus front-ends
 
 ```
-int  long  double  bool  char  string
-int[]  long[]  double[]  bool[]  char[]  string[]
-int[][]  char[][]  string[][]
-ListNode  TreeNode  void
+          +------------------+      +--------------------------+
+          |   lc  (CLI)      |      |  future GUI              |
+          |  args, ANSI,     |      |  (links liblc directly,  |
+          |  $EDITOR, pager  |      |   or runs `lc --json`)   |
+          +--------+---------+      +------------+-------------+
+                   |      public API: include/lc.h      |
+          +--------v-----------------------------------v-------------+
+          |                       liblc (core)                       |
+          |  problems | types/values | codegen | build | runner |    |
+          |  judge | store (progress, config) | markdown parser      |
+          +-----------------------------------------------------------+
 ```
 
-Stubs for C follow LeetCode's own C conventions, so they feel familiar:
+### 4.1 Rules for the core, so a GUI fits later
 
-| Spec type  | C parameter                                      | C return                                                  |
-|------------|--------------------------------------------------|-----------------------------------------------------------|
-| `int`      | `int x`                                          | `int`                                                     |
-| `long`     | `long long x`                                    | `long long`                                               |
-| `bool`     | `bool b`                                         | `bool`                                                    |
-| `string`   | `char* s`                                        | `char*`                                                   |
-| `int[]`    | `int* nums, int numsSize`                        | `int* f(..., int* returnSize)`                            |
-| `int[][]`  | `int** grid, int gridSize, int* gridColSize`     | `int** f(..., int* returnSize, int** returnColumnSizes)`  |
-| `string[]` | `char** strs, int strsSize`                      | `char** f(..., int* returnSize)`                          |
-| `char[][]` | `char** board, int boardSize, int* boardColSize` | `char** f(..., int* returnSize, int** returnColumnSizes)` |
-| `ListNode` | `struct ListNode* head`                          | `struct ListNode*`                                        |
-| `TreeNode` | `struct TreeNode* root`                          | `struct TreeNode*`                                        |
+- **It never prints, never calls `exit()` and never reads stdin.** Every result
+  comes back as structs. Errors come back as return codes plus a message held
+  in the context.
+- **No global state.** Everything lives in an `lc_ctx`. A GUI can therefore run
+  a judge job on a worker thread while the UI thread keeps browsing.
+- **No process-wide signal tricks.** That means no `alarm()`, and no handlers
+  for `SIGCHLD` or `SIGALRM`:
+  - timeouts come from `poll()` timeouts;
+  - only the child processes the core started itself are reaped, by PID;
+  - the front-end ignores `SIGPIPE` when it starts, and the core treats
+    `EPIPE` as an ordinary error.
+- **Long operations report progress and can be cancelled:**
+  - the caller passes in an event callback and a cancel flag;
+  - the runner checks the flag on every pass of its poll loop (at least every
+    50 ms) and kills the child process group if it is set.
+- **Data, not presentation:**
+  - Problem statements are markdown. The core parses them into a list of
+    blocks; the CLI turns those into ANSI text and a GUI into its own widgets.
+  - The core gives out the solution path and the stub text, and can save a
+    solution. Choosing how to edit is the front-end's job: the CLI opens
+    `$EDITOR`, while a GUI would embed an editor.
 
-The generated stub for Pair Sum looks like this:
+### 4.2 Public API sketch (`include/lc.h`)
+
+```c
+typedef struct lc_ctx lc_ctx;
+
+lc_ctx     *lc_open(const lc_options *opt);   /* reads config, indexes problem packs */
+void        lc_close(lc_ctx *);
+const char *lc_last_error(const lc_ctx *);
+
+size_t            lc_problem_count(lc_ctx *);
+const lc_problem *lc_problem_at(lc_ctx *, size_t i);
+const lc_problem *lc_problem_find(lc_ctx *, const char *id_or_slug);
+/* lc_problem: id, slug, title, difficulty, tags, statement (markdown + parsed blocks), examples */
+
+int lc_languages(lc_ctx *, const lc_lang **out, size_t *n);   /* only installed ones */
+int lc_stub(lc_ctx *, const lc_problem *, const lc_lang *, lc_str *out);
+int lc_solution_path(lc_ctx *, const lc_problem *, const lc_lang *, lc_str *out);
+
+typedef enum { LC_RUN_EXAMPLES, LC_RUN_ALL, LC_RUN_CUSTOM } lc_run_mode;
+typedef struct {
+    void (*on_event)(void *ud, const lc_event *ev); /* build started/done, case i/n started/done */
+    void *ud;
+    const volatile int *cancel;                       /* set non-zero to stop */
+} lc_hooks;
+int lc_judge(lc_ctx *, const lc_problem *, const lc_lang *, const char *src_path,
+             lc_run_mode, const char *custom_input, const lc_hooks *, lc_report **out);
+void lc_report_free(lc_report *);
+
+int lc_progress(lc_ctx *, const lc_problem *, lc_progress_entry *out);
+int lc_stats(lc_ctx *, lc_stats_summary *out);
+```
+
+**Two ways to build a GUI:**
+- a native C GUI (GTK, or something small like raylib or microui) that links
+  `liblc` directly;
+- a GUI in any language that runs `lc --json`.
+
+Both are possible from day one, and the choice can wait.
+
+**Later option:** a step-by-step judge API. `lc_job_fds()` and `lc_job_step()`
+would plug into a GUI's own event loop, so the GUI wouldn't need threads.
+
+## 5. Judge model
+
+### 5.1 Signatures and types
+
+Each problem declares a signature, for example
+`int[] twoSum(int[] nums, int target)`. The stubs follow LeetCode's own C and
+C++ conventions:
+
+| Spec type  | C parameter                                      | C++ parameter                  |
+|------------|--------------------------------------------------|--------------------------------|
+| `int`      | `int x`                                          | `int x`                        |
+| `long`     | `long long x`                                    | `long long x`                  |
+| `uint32`   | `uint32_t n`                                     | `uint32_t n`                   |
+| `double`   | `double x`                                       | `double x`                     |
+| `bool`     | `bool b`                                         | `bool b`                       |
+| `char`     | `char c`                                         | `char c`                       |
+| `string`   | `char* s`                                        | `string s`                     |
+| `int[]`    | `int* nums, int numsSize`                        | `vector<int>& nums`            |
+| `char[]`   | `char* s, int sSize`                             | `vector<char>& s`              |
+| `string[]` | `char** strs, int strsSize`                      | `vector<string>& strs`         |
+| `int[][]`  | `int** grid, int gridSize, int* gridColSize`     | `vector<vector<int>>& grid`    |
+| `char[][]` | `char** board, int boardSize, int* boardColSize` | `vector<vector<char>>& board`  |
+| `ListNode` | `struct ListNode* head`                          | `ListNode* head`               |
+| `TreeNode` | `struct TreeNode* root`                          | `TreeNode* root`               |
+| `NaryNode` | `struct Node* root`                              | `Node* root`                   |
+
+**Return values in C** follow LeetCode's rules:
+- an array return adds `int* returnSize`;
+- a 2D return also adds `int** returnColumnSizes`;
+- returned memory is `malloc`ed by the solution.
+
+**Return values in C++** are plain values, such as `vector<int>`, or pointers.
+
+**Wrappers.** In C++ the function goes inside `class Solution { public: ... };`,
+just as on LeetCode.
+
+**C stub:**
 
 ```c
 /**
  * Note: The returned array must be malloced, assume caller calls free().
  */
-int* pairSum(int* nums, int numsSize, int target, int* returnSize) {
+int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
 
 }
 ```
 
-**Prelude.** Your C file doesn't need any `#include`s, just like on LeetCode.
-The tool builds one translation unit from three parts:
-1. `#include "lc_prelude.h"`, which brings in stdio, stdlib, string, stdbool,
-   limits, math and the ListNode/TreeNode structs;
-2. `#line 1 "<your file>"`;
-3. your source.
+**C++ stub:**
 
-Compiler errors then point at your file's real line numbers. `#line` is
-portable, unlike gcc's `-include`.
+```cpp
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
 
-**uthash.** We optionally vendor `uthash.h` (a single BSD-licensed header) into
-`runtime/c/`, because LeetCode's C environment provides it and many C solutions
-rely on it.
-
-### 3.2 Wire format
-
-Tokens are separated by whitespace. Strings are length-prefixed, so they can
-contain spaces and newlines.
-
-| Type       | Literal (tests file) | Wire                                |
-|------------|----------------------|-------------------------------------|
-| `int`      | `-5`                 | `-5`                                |
-| `bool`     | `true`               | `1`                                 |
-| `double`   | `2.5`                | `2.5`                               |
-| `string`   | `"a b"`              | `3:a b`                             |
-| `int[]`    | `[2,7,11]`           | `3 2 7 11`                          |
-| `int[][]`  | `[[1,2],[3]]`        | `2 2 1 2 1 3`                       |
-| `string[]` | `["ab","c"]`         | `2 2:ab 1:c`                        |
-| `ListNode` | `[1,2,3]`            | `3 1 2 3`                           |
-| `TreeNode` | `[1,null,2]`         | `3 1 n 2` (level order, `n` = null) |
-
-### 3.3 Checking results
-
-**`check:`** says what to compare:
-- `return` (the default);
-- `param nums`, for `void` functions that modify their input;
-- `prefix nums`, for "return k and the first k elements of nums" problems such
-  as remove-duplicates.
-
-**`compare:`** says how to compare:
-- `exact` (the default);
-- `unordered`: sort the top level before comparing;
-- `unordered-deep`: sort at every level, as in group-anagrams;
-- `float 1e-5`;
-- `checker`: a small C program shipped with the problem, for problems with many
-  valid answers.
-
-### 3.4 Problem pack format
-
-Each problem is a directory of plain text files:
-
-```
-problems/0001-pair-sum/
-  problem.md    header, then the statement (a markdown subset)
-  tests.txt     test cases
-  ref.c         reference solution: validates the pack and computes expected output for custom input
-  checker.c     optional
+    }
+};
 ```
 
-Here is an example `problem.md`:
+### 5.2 Special problem kinds
+
+**In-place edits.** `check: param nums` compares a parameter after the call.
+`check: prefix nums` checks a returned `k` together with the first `k`
+elements of `nums`.
+
+**Builders and hidden inputs.** Some test inputs only shape the data and are
+never passed to your function. In 141, `pos` sets where the cycle starts; in
+160, `skipA` and `skipB` set where the lists join. The problem declares these
+as `hidden:` inputs and names a built-in builder (`cycle`, `intersect`).
+
+**Node references.** For problems like 1379, the declaration
+`ref target in cloned` makes the harness look up the matching node by value.
+
+**Design problems.** The tests use LeetCode's two-line format:
+
+```
+["MyQueue","push","push","peek","pop","empty"]
+[[],[1],[2],[],[],[]]
+=> [null,null,null,1,1,false]
+```
+
+The problem declares a class and its methods. The harness reads the call
+sequence and dispatches each call. The stub follows LeetCode's style for each
+language:
+- **C:** `typedef struct {...} MyQueue;` with
+  - `MyQueue* myQueueCreate();`
+  - `void myQueuePush(MyQueue* obj, int x);`
+  - ...
+  - `void myQueueFree(MyQueue* obj);`
+- **C++:** `class MyQueue { public: MyQueue() {} void push(int x) {} ... };`
+
+**Provided APIs.** The problem declares something like
+`api: bool isBadVersion(int version)` together with `hidden: int bad`. The
+problem pack then supplies `api.c`:
+- it is written once in C;
+- it is linked into both C and C++ builds (declared `extern "C"` in the C++
+  prelude);
+- it can also limit how many calls are allowed.
+
+**Escape hatch.** Anything else gets a per-problem `extend.c`, which hooks into
+input building and output checking.
+
+### 5.3 Wire format between `lc` and the harness
+
+`lc` parses every LeetCode-syntax literal itself. It converts each input into a
+simple wire format of whitespace-separated, length-prefixed tokens and writes
+that to the program's stdin. The harness only has to:
+1. read the wire format;
+2. call your code;
+3. write the result back in wire format on **fd 3**.
+
+Your own `printf`/`cout` output stays on stdout and is shown separately.
+
+| Type          | Literal       | Wire                                                     |
+|---------------|---------------|----------------------------------------------------------|
+| `int`         | `-5`          | `-5`                                                     |
+| `bool`        | `true`        | `1`                                                      |
+| `string`      | `"a b"`       | `3:a b`                                                  |
+| `int[]`       | `[2,7,11]`    | `3 2 7 11`                                               |
+| `int[][]`     | `[[1,2],[3]]` | `2 2 1 2 1 3`                                            |
+| `string[]`    | `["ab","c"]`  | `2 2:ab 1:c`                                             |
+| `TreeNode`    | `[1,null,2]`  | `3 1 n 2` (level order)                                  |
+| design calls  | two lines     | `count`, then for each call: method index and arguments |
+
+The two harness runtimes (`lc_rt.c` and `lc_rt.cpp`) each come to only a few
+hundred lines.
+
+### 5.4 Checking results
+
+- **`compare: exact`** is the default.
+- **`compare: float 1e-5`** compares floating-point values with a tolerance.
+- **`compare: unordered 0`, `unordered 1`, `unordered 0,1`** ignore order at
+  the nesting levels listed. Problem 2215 needs `1`: order inside each list
+  doesn't matter, but the order of the two lists does.
+- **`compare: checker`** is for problems with many valid answers. The pack's
+  `checker.c` gets the input, the reference output and your output as parsed
+  values; it links against the core's value library, so it stays short.
+
+### 5.5 Problem pack format
+
+```
+problems/0001-two-sum/
+  problem.md    key: value header, then '---', then the statement in markdown
+  tests.txt     cases: one line per argument, then '=> expected'; '@example' marks shown cases
+  ref.c         reference solution (in C, or ref.cpp)
+  gen.c         optional seeded generator for large and random cases
+  brute.c       optional slow, obviously-correct solution used to cross-check ref on small cases
+  checker.c     optional (compare: checker)
+  api.c         optional (provided-API problems)
+  extend.c      optional (escape hatch)
+```
+
+Example `problem.md`:
 
 ```
 id: 1
-slug: pair-sum
-title: Pair Sum
+slug: two-sum
+title: Two Sum
 difficulty: easy
 tags: array, hash-table
-signature: int[] pairSum(int[] nums, int target)
-compare: unordered
+signature: int[] twoSum(int[] nums, int target)
+compare: unordered 0
 time_limit_ms: 1000
 memory_limit_mb: 256
 ---
-Given an integer array `nums` and an integer `target`, return the indices of
-the two numbers that add up to `target`. ...
-
-## Constraints
-- `2 <= nums.length <= 10^4`
+(original statement text, written by us)
 ```
 
-And an example `tests.txt`. Each case has one line per parameter, then
-`=> expected`, with a blank line between cases. Cases marked `@example` are
-shown by `lc show` and run by `lc test`.
+Both files are line-based and parsed by hand. A value literal is a small JSON
+subset (integers, floats, true/false, null, strings with escapes, nested
+arrays), so the parser is a recursive-descent parser of about 300 lines.
 
-```
-@example
-[2,7,11,15]
-9
-=> [0,1]
+### 5.6 Building solutions
 
-[3,3]
-6
-=> [0,1]
-```
+**One translation unit.** Each build is a single source file made of five
+parts:
+1. the prelude;
+2. `#line 1 "<your file>"`;
+3. your source;
+4. a `#line` reset;
+5. the generated harness.
 
-Both files are line-based and parsed by hand: the header is `key: value` pairs
-up to `---`. A value literal is a small JSON subset (integers, floats,
-true/false, null, strings with escapes, nested arrays), so the recursive-descent
-parser is about 300 lines.
+Compiler errors then point at your file's real line numbers. And because it's
+one file, the C++ harness can see `class Solution`.
 
-### 3.5 Runner
+**Preludes:**
+- **C:** stdio, stdlib, string, stdbool, stdint, limits, math, ctype, the node
+  structs, and a vendored `uthash.h` (single BSD-licensed header) because
+  LeetCode's C environment has it.
+- **C++:** an explicit list of standard headers, `using namespace std;`, and
+  the node structs with LeetCode's constructors. It does not use
+  `<bits/stdc++.h>`, which only exists in libstdc++ and not in libc++ on macOS
+  or the BSDs.
 
-v1 starts **one process per test case**. That keeps things simple, shows
-exactly which case failed, and global state can't leak between cases. A batch
-mode can come later if start-up cost matters (mostly for Python).
+**Compile commands:**
+- **C:** `$CC -std=c11 -O2`
+- **C++:** `$CXX -std=c++17 -O2`
+
+The C++ standard can be changed in the config. The runtime and `api.c` are
+compiled to object files once and cached.
+
+**Sanitizers (`--sanitize`):**
+- adds `-g -fsanitize=address,undefined`;
+- for C++, also adds `-D_GLIBCXX_ASSERTIONS` (libstdc++) or the libc++
+  hardening flag, so out-of-range `vector` access is caught;
+- turns off the `RLIMIT_AS` limit, which conflicts with ASan.
+
+**Cache:** builds go in `$XDG_CACHE_HOME/lcclone/build/<slug>/<lang>/`, and a
+build is redone only when an input changes.
+
+### 5.7 Runner
+
+v1 starts **one process per test case**. That shows exactly which case failed,
+and global state can't leak between cases.
 
 1. Create pipes for stdin, stdout, stderr and the fd 3 result, then `fork()`.
 2. **In the child:**
@@ -245,94 +410,111 @@ mode can come later if start-up cost matters (mostly for Python).
      - `RLIMIT_CORE` = 0;
    - `chdir` to a scratch directory, `dup2` the pipes, and `execv`.
 3. **In the parent:**
-   - run a `poll()` loop over every pipe *in both directions* (writing all of
-     stdin before reading can deadlock on big inputs);
+   - run one `poll()` loop that writes stdin and reads the other pipes at the
+     same time, so big inputs can't deadlock;
    - enforce a wall-clock deadline with `CLOCK_MONOTONIC`;
+   - check the cancel flag;
    - cap captured output at about 1 MB, which gives Output Limit Exceeded;
-   - when the deadline passes, run `kill(-pgid, SIGKILL)`.
-   - Ignore `SIGPIPE` and handle `EPIPE`, because the child may exit without
-     reading its input.
-4. **Collect the result.** `wait4()` gives the exit status, CPU time
-   (`ru_utime + ru_stime`) and peak RSS. `ru_maxrss` is in KB on Linux and the
-   BSDs but in bytes on macOS, so it has to be normalized. These values map to
-   a verdict.
+   - when the deadline passes or the job is cancelled, run
+     `kill(-pgid, SIGKILL)`.
+4. **Collect the result.** `wait4()` gives the exit status, CPU time and peak
+   RSS. `ru_maxrss` is in KB on Linux and the BSDs but in bytes on macOS, so it
+   is normalized. These values map to a verdict.
 
-### 3.6 Building solutions
+### 5.8 Storage (XDG)
 
-- **Default command:** `$CC -std=c11 -O2 prelude+solution.c harness.c lc_rt.c -lm`.
-- **Cache:** builds go in `$XDG_CACHE_HOME/lcclone/build/<slug>/<lang>/`, and a
-  build is redone only when an input is newer than the binary.
-- **`--sanitize`:** adds `-g -fsanitize=address,undefined`, which is what
-  LeetCode does for C and C++. Under ASan the `RLIMIT_AS` limit is turned off.
-- **Language table (`lang.c`):** each entry has a name, a file extension, a
-  stub generator, a harness generator, a compile command (empty for
-  interpreted languages) and a run command. A language counts as available only
-  if its tool is on `PATH`.
-- **Roadmap:** v1 supports C, then C++ (`c++ -std=c++17`), then Python 3.
-
-### 3.7 Storage (XDG)
-
-| What            | Where                                                                   |
-|-----------------|-------------------------------------------------------------------------|
-| Problem packs   | `$LC_PROBLEMS`, then `~/.local/share/lcclone/problems`, then `$(PREFIX)/share/lcclone/problems` |
-| Your solutions  | `~/lc/` by default (`workspace =` in config), so you can keep it in git |
-| Progress        | `~/.local/share/lcclone/progress.tsv`: `id status lang best_ms last_ts` |
-| History         | `~/.local/share/lcclone/submissions/<id>/<timestamp>-<verdict>.<ext>`   |
-| Config          | `~/.config/lcclone/config`, `key = value` (editor, lang, cc, cflags, color, workspace) |
+| What           | Where                                                                   |
+|----------------|-------------------------------------------------------------------------|
+| Problem packs  | `$LC_PROBLEMS`, then `~/.local/share/lcclone/problems`, then `$(PREFIX)/share/lcclone/problems` |
+| Your solutions | `~/lc/` by default (`workspace =` in config), so you can keep it in git |
+| Progress       | `~/.local/share/lcclone/progress.tsv`: `id status lang best_ms last_ts` |
+| History        | `~/.local/share/lcclone/submissions/<id>/<timestamp>-<verdict>.<ext>`   |
+| Config         | `~/.config/lcclone/config`, `key = value` (editor, lang, cc, cxx, cxxstd, cflags, color, workspace) |
 
 Every write is atomic: the data goes to a temp file, then `rename()` moves it
-into place.
+into place. The core re-reads progress before each update, so a CLI and a GUI
+running at the same time don't overwrite each other's results.
 
-### 3.8 Terminal rendering
+## 6. Content pipeline (the bulk of the work)
 
-Statements use a markdown subset: headings, paragraphs, inline code, code
-blocks, bullet lists and bold.
-- **Colors:** rendered with plain ANSI SGR codes, without terminfo. Colors are
-  used only when stdout is a tty and `NO_COLOR` is unset.
-- **Paging:** long output goes through `$PAGER` (default `less -R`).
+### 6.1 Manifest
 
-## 4. Source layout
+`problems/MANIFEST.tsv` has one row per LeetCode Easy problem:
+- number, slug, title;
+- premium flag;
+- group (from §2.2), or `skip:<reason>`;
+- status (`todo`, `draft`, `verified`).
+
+It is built once from the public problem list. That list is only facts:
+numbers, titles and difficulty. `lc stats --manifest` reports coverage.
+
+### 6.2 Authoring each problem
+
+1. **Write the statement.** Use your own words and your own examples, and state
+   the constraints.
+2. **Write `ref`,** the reference solution. Add `brute` too when the
+   straightforward solution is cheap to write.
+3. **Write the tests:**
+   - hand-written edge cases (empty input, a single element, extreme values,
+     duplicates);
+   - seeded random cases from `gen.c`;
+   - a few cases at the constraint limits, so that slow solutions time out.
+4. **Compute the expected outputs.** `lc check --regen` runs `ref` over the
+   inputs to produce them.
+5. **Cross-check.** `lc check` compares `ref` against `brute` on thousands of
+   small random cases, builds the C and C++ stubs, and confirms that `ref`
+   passes every case.
+
+### 6.3 Batches
+
+- **Batch by group,** following the order in which harness features land.
+  Plain functions start as soon as M3 is done.
+- **Size:** about 25 problems per batch. Each batch is one PR, and CI runs
+  `lc check` over every pack.
+
+This work parallelizes well across contributors or agents, because every
+problem is self-contained.
+
+## 7. Source layout
 
 ```
-Makefile              POSIX make; PREFIX/DESTDIR install; `make test`
-src/
-  main.c              argument parsing (POSIX getopt), subcommand dispatch
-  cmd_*.c             one file per subcommand: list, show, start, test, submit, stats, random, check
-  problem.[ch]        problem.md / tests.txt parsing; index and lookup by id or slug
-  sig.[ch]            signature parsing and the type table
-  value.[ch]          LeetCode literal parse/print; compare modes
-  wire.[ch]           value <-> wire format
-  lang.[ch]           language table
-  codegen.[ch]        stub and harness generation per language
-  build.[ch]          compiling with the cache
-  runner.[ch]         fork/exec, rlimits, poll loop, rusage
-  judge.[ch]          runs cases, compares, builds the verdict report
-  store.[ch]          XDG paths, config, progress, submission history
-  render.[ch]         markdown subset -> ANSI; pager
-  util.[ch]           arena allocator, string builder, file I/O, atomic write, path join
+Makefile               POSIX make: liblc.a, lc, `make test`, PREFIX/DESTDIR install
+include/lc.h           public core API
+src/core/              -> liblc.a
+  ctx.c  arena.c  str.c  fs.c       context, errors, memory, strings, files, atomic write
+  problem.c  manifest.c             pack loading and index, lookup
+  sig.c  types.c                    signature/class/api parsing, type table
+  value.c  compare.c  wire.c        literal parse/print, compare modes, wire conversion
+  md.c                              markdown subset -> block list
+  lang.c  codegen_c.c  codegen_cpp.c  build.c
+  runner.c  judge.c                 processes, limits, verdicts, events
+  store.c  config.c                 progress, history, XDG paths, config
+  json.c                            JSON writer (used by the CLI's --json)
+src/cli/               -> lc
+  main.c  cmd_*.c  ansi.c  pager.c  editor.c
 runtime/
-  c/                  lc_prelude.h, lc_rt.c (wire I/O, ListNode/TreeNode builders), uthash.h
-  cpp/ python/        later
-problems/             the bundled original problem pack
+  c/    lc_prelude.h  lc_rt.c  uthash.h
+  cpp/  lc_prelude.hpp  lc_rt.cpp
+problems/              MANIFEST.tsv and one directory per problem
 tests/
-  unit/               C unit tests (a tiny assert macro, no framework)
-  fixtures/           misbehaving programs and fixture problems
-  e2e.sh              POSIX sh end-to-end verdict checks
+  unit/                core unit tests (a tiny assert macro, no framework)
+  fixtures/            misbehaving programs, fixture problems in every group
+  e2e.sh               POSIX sh end-to-end verdict checks (C and C++)
 ```
 
-**Memory:** each command gets one arena allocator. The process is short-lived,
-so nothing is freed piece by piece. The only global mutable state is the
-loaded config.
+The core should come to roughly 6–8k lines of C, plus the two runtimes.
 
-**Size:** the core should come to roughly 4–6k lines of C, plus the runtimes.
+## 8. Testing
 
-## 5. Testing
-
-- **Unit tests** (`make test`):
+- **Unit tests:**
   - value parse/print round trips;
   - each compare mode;
   - the wire conversion;
-  - the problem and signature parsers.
+  - the signature, class and api parsers;
+  - the markdown parser.
+- **Codegen golden tests:** for fixture signatures in every group, the
+  generated C and C++ stubs and harnesses are compared against checked-in
+  expected files.
 - **Runner tests:** fixture programs that each misbehave in one way, each with
   the verdict it should get:
 
@@ -342,55 +524,61 @@ loaded config.
   | segfaults             | Runtime Error              |
   | allocates 2 GB        | Memory Limit Exceeded      |
   | prints 100 MB         | Output Limit Exceeded      |
-  | exits with code 3     | Runtime Error              |
+  | throws in C++         | Runtime Error              |
   | closes stdin early    | no hang or SIGPIPE in `lc` |
   | forks a child         | process group is killed    |
-- **End to end** (`tests/e2e.sh`): correct, wrong, slow and crashing solutions
-  to fixture problems should each get the expected verdict.
-- **Pack validation:** `lc check` parses each header, checks every case
-  against the declared types, and requires the reference solution to pass every
-  case. CI runs it over all the bundled problems.
-- **CI:** GitHub Actions on Ubuntu (gcc and clang), Alpine (musl) and macOS.
-  Dev builds use `-Wall -Wextra -Wpedantic -Werror`, and the test build uses
-  ASan and UBSan.
 
-## 6. Milestones
+  A further test checks that cancelling a job works.
+- **End to end:** each fixture problem gets correct, wrong, slow and crashing
+  solutions in C and in C++, and each should get the expected verdict.
+- **CI:** GitHub Actions on Ubuntu (gcc and clang), Alpine (musl) and macOS
+  (clang and libc++). Dev builds use `-Wall -Wextra -Wpedantic -Werror`, the
+  test build uses ASan and UBSan, and `lc check` runs over all packs.
 
-| #  | Milestone        | Scope                                                                                     |
-|----|------------------|-------------------------------------------------------------------------------------------|
-| M0 | Skeleton         | Makefile, CLI dispatch, arena/strbuf/file utilities, problem loader, `list`, `show`       |
-| M1 | Values           | literal parser and printer, compare modes, wire format; unit tests                        |
-| M2 | Runner           | fork/exec, limits, poll loop, verdicts; tests with misbehaving programs                    |
-| M3 | C end to end     | stub and harness generation for scalars, arrays and strings; C runtime; `start`, `test`, `submit`; 5 problems. **First usable version.** |
-| M4 | Progress         | store, `stats`, `random`, submission history, config file                                 |
-| M5 | Types and content| ListNode, TreeNode, 2D arrays, in-place checks, `lc check`, about 30 original problems    |
-| M6 | More languages   | C++ and Python 3 harnesses; custom checkers; large generated tests to catch slow solutions |
+## 9. Milestones
+
+| #  | Milestone                | Scope                                                                                     |
+|----|--------------------------|-------------------------------------------------------------------------------------------|
+| M0 | Skeleton                 | `liblc.a` and `lc` build; ctx/errors/arena/str/fs; pack loader; markdown parser; `list` and `show` with `--json` |
+| M1 | Values                   | literal parser/printer, the full type table, compare modes, wire format; unit tests      |
+| M2 | Runner                   | fork/exec, limits, poll loop, cancel, events, verdicts; misbehaving-program tests         |
+| M3 | C and C++ end to end     | codegen for plain functions (scalars, arrays, strings, 2D, `uint32`, `double`, `char`); both runtimes; `start`, `test`, `submit`; 10 problems. **First usable version.** |
+| M4 | Progress and content tooling | store, `stats`, `random`, history, config; `MANIFEST.tsv`; `lc check` with `--regen` and the brute cross-check |
+| M5 | Plain-function easies    | author every problem in the plain-function, bits, float, in-place and any-order groups    |
+| M6 | Lists and trees          | `ListNode`, `TreeNode`, `NaryNode`, builders, hidden inputs, node references; author those groups |
+| M7 | Design, API and checkers | class/call-sequence harness, `api.c`, `checker.c`, `extend.c`; author those groups. **All free easies covered.** |
+| M8 | Medium and hard          | same pipeline, in batches                                                                 |
+
+Feature work and content work overlap. After M4, each new feature milestone
+unblocks a group of problems, and those problems can be authored while the next
+feature is being built.
 
 Possible later work:
-- "Design" problems, such as an LRU cache. These need a different harness:
-  one class plus a list of method calls.
-- A full-screen browser written with raw termios and ANSI codes (no ncurses).
-- A batch mode for the runner.
+- the GUI;
+- a batch mode for the runner;
+- a step-by-step judge API for GUI event loops;
 - Linux-only hardening (namespaces, seccomp) behind `#ifdef`.
 
-## 7. Risks
+## 10. Risks
 
-- **Codegen grows with types × languages.** To contain it, keep the wire
-  format simple and let one type table drive every generator.
-- **Timing noise.** Judge on CPU time rather than wall time, and set time
-  limits generously (about 3× the reference solution's time on the large
-  cases).
-- **Weak memory limits on macOS.** Rely on `ru_maxrss` after the run there.
-- **ASan conflicts with `RLIMIT_AS`.** Turn the address-space limit off when
-  sanitizing.
-- **Content is the bottleneck.** Writing good original problems with strong
-  tests takes longer than writing the tool. `lc check` and test generators
-  (`gen.c` plus the reference solution) make it cheaper.
+- **Content volume.** 500–600 problems, each with original text and strong
+  tests, is far more work than the tool itself. The manifest, `gen` + `ref` +
+  `brute`, `lc check` and per-group batches are all there to make it routine
+  and checkable.
+- **Codegen grows with types × 2 languages × problem kinds.** To contain it,
+  one type table drives both generators, the wire format stays simple, and
+  golden tests catch regressions.
+- **Odd problems.** A few problems won't fit any group. `extend.c` keeps them
+  from bending the core design.
+- **C++ portability.** libstdc++ and libc++ differ: there's no
+  `bits/stdc++.h` on libc++, and their hardening flags differ. CI on macOS
+  catches these.
+- **Timing noise.** Judge on CPU time, and set limits generously (about 3× the
+  reference solution's time on the largest cases).
 
-## 8. Open questions
+## 11. Open questions
 
-1. **Languages:** which ones do you want for solutions? The plan assumes C
-   first, then C++ and Python.
-2. **Interface:** is a CLI plus `$EDITOR` enough, or do you want a full-screen
-   TUI early?
-3. **Problems:** which topics should the first problem set focus on?
+1. **C++ standard:** the plan defaults to C++17 for portability. Do you want
+   C++20 by default? LeetCode itself uses a newer standard.
+2. **Problem IDs:** the plan uses LeetCode's numbers and slugs as our IDs, so
+   you can cross-reference. Is that what you want?
