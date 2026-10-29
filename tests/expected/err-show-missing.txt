@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: missing problem (an ID, slug or directory name)
+Run 'lc help show'.
+--- exit 3

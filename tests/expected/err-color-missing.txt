@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: option '--color' needs a value
+Run 'lc help show'.
+--- exit 3

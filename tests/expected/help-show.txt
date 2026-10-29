@@ -1,0 +1,18 @@
+--- stdout
+usage: lc show <problem> [--json] [--no-pager] [--color=WHEN]
+
+Show a problem's statement and examples. <problem> is an ID (1 or
+0001), a slug (two-sum) or a pack directory name (0001-two-sum).
+
+On a terminal the text goes through $PAGER (default: less, then more).
+Set PAGER=cat or use --no-pager to print it directly.
+
+Options:
+  --json             print JSON: the problem's details, statement,
+                     parsed statement blocks and examples
+  --no-pager         never use a pager
+  --color=WHEN       colour the output: auto (the default), always or
+                     never
+  -h, --help         show this help
+--- stderr
+--- exit 0

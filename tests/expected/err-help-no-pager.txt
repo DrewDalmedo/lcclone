@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: unknown option '--no-pager'
+Run 'lc help'.
+--- exit 3

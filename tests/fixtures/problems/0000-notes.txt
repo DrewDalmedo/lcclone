@@ -1,0 +1,2 @@
+A file whose name starts with a digit. It is not a directory, so the loader
+ignores it.

@@ -1,0 +1,22 @@
+--- stdout
+3. No Signature
+Difficulty: Hard
+
+Without a signature there are no argument names, so example inputs are shown one
+per line.
+
+Example 1:
+  Input:
+    [1,2,3]
+    4
+  Output: true
+  Explanation: Two inputs, no names.
+
+Example 2:
+  Input:
+    "one"
+  Output: 1
+
+Only the first @examples line shows the examples; this second one shows nothing.
+--- stderr
+--- exit 0

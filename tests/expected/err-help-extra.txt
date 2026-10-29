@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: unexpected argument 'show'
+Run 'lc help'.
+--- exit 3

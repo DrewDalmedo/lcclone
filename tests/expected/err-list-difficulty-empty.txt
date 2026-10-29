@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: empty entry in --difficulty list 'easy,,hard'
+Run 'lc help list'.
+--- exit 3

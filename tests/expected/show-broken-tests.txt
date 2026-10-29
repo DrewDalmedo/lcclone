@@ -1,0 +1,12 @@
+--- stdout
+2. Broken Tests
+Difficulty: Easy
+Tags: array
+
+The tests.txt of this pack has an error, so lc show prints the statement without
+examples and warns about the file.
+
+That is all.
+--- stderr
+lc: warning: @ROOT@/tests/fixtures/cli/0002-broken-tests/tests.txt:7: blank line inside a case (missing '=>'?)
+--- exit 0

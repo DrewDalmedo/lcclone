@@ -1,0 +1,131 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Warnings every dev build must be free of (docs/PLAN.md section 8).
+  WFLAGS: -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-prototypes -Wmissing-prototypes
+
+jobs:
+  linux:
+    name: Linux (${{ matrix.cc }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+    env:
+      CC: ${{ matrix.cc }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show compiler
+        run: $CC --version
+      - name: Build and test
+        run: make CC="$CC" CFLAGS="-O2 $WFLAGS" test
+
+  sanitizers:
+    name: Linux (gcc, ASan + UBSan)
+    runs-on: ubuntu-latest
+    env:
+      ASAN_OPTIONS: detect_leaks=1
+      UBSAN_OPTIONS: print_stacktrace=1
+    steps:
+      - uses: actions/checkout@v4
+      # ASan can crash at startup with the high mmap randomization that
+      # recent Ubuntu kernels use; lower it to the value ASan supports.
+      - name: Lower mmap randomization for ASan
+        run: sudo sysctl -w vm.mmap_rnd_bits=28 || true
+      - name: Build and test
+        run: >-
+          make CC=gcc
+          CFLAGS='-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all -Wall -Wextra -Werror'
+          LDFLAGS='-fsanitize=address,undefined'
+          test
+
+  bmake:
+    # Proves the Makefile is portable POSIX make, not GNU make only.
+    name: Linux (bmake)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bmake
+        run: sudo apt-get update && sudo apt-get install -y bmake
+      - name: Build and test
+        run: bmake CFLAGS="-O2 $WFLAGS" test
+
+  alpine:
+    name: Alpine (musl)
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    steps:
+      - name: Install build tools
+        run: apk add --no-cache build-base
+      - uses: actions/checkout@v4
+      - name: Build and test
+        run: make CFLAGS="-O2 $WFLAGS" test
+
+  macos:
+    name: macOS (clang)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show compiler
+        run: clang --version
+      - name: Build and test
+        run: make CC=clang CFLAGS="-O2 $WFLAGS" test
+
+  install:
+    # Installs, then runs lc with no LC_PROBLEMS and an empty HOME, so the
+    # only packs it can find are the ones in the compiled-in data directory.
+    name: Install smoke test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash  # adds -o pipefail, so a failing lc fails the step
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: make PREFIX="$RUNNER_TEMP/inst" install
+      - name: Check the installed files
+        run: |
+          test -x "$RUNNER_TEMP/inst/bin/lc"
+          test -f "$RUNNER_TEMP/inst/share/lcclone/problems/0001-two-sum/problem.md"
+      - name: Run the installed lc
+        run: |
+          unset LC_PROBLEMS XDG_DATA_HOME
+          HOME=$(mktemp -d "$RUNNER_TEMP/home.XXXXXX")
+          export HOME
+          cd "$HOME"
+          lc="$RUNNER_TEMP/inst/bin/lc"
+          "$lc" version
+          "$lc" list
+          "$lc" list | grep 'Two Sum'
+          "$lc" show 1
+          "$lc" show 1 | grep 'Two Sum'
+          "$lc" list --json | grep '"two-sum"'
+          "$lc" show 104 --json | grep '"maximum-depth-of-binary-tree"'
+      - name: Staged install with DESTDIR
+        run: |
+          # PREFIX is compiled into lc, so rebuild for /usr; without this the
+          # staged lc would still search $RUNNER_TEMP/inst.
+          make clean
+          make PREFIX=/usr DESTDIR="$RUNNER_TEMP/stage" install
+          lc="$RUNNER_TEMP/stage/usr/bin/lc"
+          test -x "$lc"
+          test -f "$RUNNER_TEMP/stage/usr/share/lcclone/problems/0104-maximum-depth-of-binary-tree/tests.txt"
+          # The staged lc must search /usr/share/lcclone, not the old PREFIX.
+          grep -q -F /usr/share/lcclone "$lc"
+          if grep -q -F "$RUNNER_TEMP/inst" "$lc"; then
+            echo "staged lc still has the old PREFIX compiled in" >&2
+            exit 1
+          fi

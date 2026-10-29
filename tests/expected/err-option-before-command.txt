@@ -1,0 +1,6 @@
+--- stdout
+{"schema":1,"error":{"message":"option '--json' must come after a command"},"warnings":[]}
+--- stderr
+lc: option '--json' must come after a command
+Run 'lc help'.
+--- exit 3

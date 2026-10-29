@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: unexpected argument 'two-sum'
+Run 'lc help list'.
+--- exit 3

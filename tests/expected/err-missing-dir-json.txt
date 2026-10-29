@@ -1,0 +1,5 @@
+--- stdout
+{"schema":1,"error":{"message":"cannot use LC_PROBLEMS directory '@TMP@/missing': No such file or directory"},"warnings":[]}
+--- stderr
+lc: cannot use LC_PROBLEMS directory '@TMP@/missing': No such file or directory
+--- exit 3

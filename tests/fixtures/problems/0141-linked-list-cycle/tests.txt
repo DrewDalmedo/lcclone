@@ -1,0 +1,17 @@
+@example The last node (value 9) links back to index 1, the node holding 4.
+[2,4,6,9]
+1
+=> true
+
+@example
+[5]
+-1
+=> false
+
+[1,2]
+0
+=> true
+
+[]
+-1
+=> false

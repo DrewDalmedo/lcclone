@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: unexpected argument '--json'
+Run 'lc help list'.
+--- exit 3

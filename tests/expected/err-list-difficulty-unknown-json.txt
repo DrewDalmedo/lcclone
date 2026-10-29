@@ -1,0 +1,6 @@
+--- stdout
+{"schema":1,"error":{"message":"unknown difficulty 'expert' (expected easy, medium or hard)"},"warnings":[]}
+--- stderr
+lc: unknown difficulty 'expert' (expected easy, medium or hard)
+Run 'lc help list'.
+--- exit 3

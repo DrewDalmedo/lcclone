@@ -1,0 +1,10 @@
+--- stdout
+usage: lc help [<command>] [--json]
+
+Show help for lc, or for one command.
+
+Options:
+  --json             print the commands as JSON
+  -h, --help         show this help
+--- stderr
+--- exit 0

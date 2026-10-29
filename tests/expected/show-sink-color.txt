@@ -1,0 +1,79 @@
+--- stdout
+<ESC>[1m1. Kitchen Sink With A Title Long Enough To Wrap When The Terminal Is Narrow<ESC>[0m
+Difficulty: <ESC>[33mMedium<ESC>[0m
+Tags: string, simulation, two-pointers, sliding-window, prefix-sum, hash-table
+
+<ESC>[1mKitchen Sink<ESC>[0m
+
+This statement uses <ESC>[1mevery<ESC>[0m construct of the markdown subset, so that the renderer
+can be checked line by line. It has <ESC>[3memphasis<ESC>[0m, <ESC>[1;3mstrong emphasis inside emphasis<ESC>[0m,
+<ESC>[36mcode spans<ESC>[0m, a <ESC>[4mplain link<ESC>[0m (https://example.com/docs), a <ESC>[4mlink with <ESC>[0m<ESC>[1;4mbold<ESC>[0m<ESC>[4m and <ESC>[0m<ESC>[4;36mcode<ESC>[0m
+(https://example.com/mixed) and a link whose text is its own address:
+<ESC>[4mhttps://example.com<ESC>[0m. Escaped markers stay literal: *not emphasis*, and
+snake_case_name stays plain.
+
+A word longer than any terminal overflows instead of being split:
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz.
+
+Width counts characters, not bytes: café crème brûlée, naïve façade, 数组 and Ω.
+Ünïcödé wörds wrap at the same column as ASCII ones would, ünïcödé wörds wrap at
+the same column as ASCII ones would, ünïcödé wörds wrap here too.
+
+This line ends in two spaces
+so this one starts after a hard break, and this one ends in a backslash
+which makes another break. A tab becomes a space; runs of   spaces stay.
+
+<ESC>[1mExample 1:<ESC>[0m
+  <ESC>[1mInput:<ESC>[0m s = "a b c", nums = [1,2,3], k = 2
+  <ESC>[1mOutput:<ESC>[0m [[1,2],[2,3]]
+  <ESC>[1mExplanation:<ESC>[0m A long explanation that keeps going for a while so that it has to
+               wrap onto a second line, with the continuation lined up under its
+               first word.
+
+<ESC>[1mExample 2:<ESC>[0m
+  <ESC>[1mInput:<ESC>[0m
+    "xyz"
+    []
+  <ESC>[1mOutput:<ESC>[0m []
+  <ESC>[1mExplanation:<ESC>[0m This case has two input lines for three argument names, so they
+               are shown as they are.
+
+<ESC>[1mExample 3:<ESC>[0m
+  <ESC>[1mInput:<ESC>[0m s = "q", nums = [7], k = 1
+  <ESC>[1mOutput:<ESC>[0m [[7]]
+
+<ESC>[1mLists<ESC>[0m
+
+  - A bulleted item that is long enough to wrap onto a second line, which then
+    lines up under the item's own text.
+  - A second item.
+    - A nested item, also long enough to wrap, so that its hanging indent can be
+      seen clearly.
+      - Deeper still.
+  - A third item.
+
+  3. A numbered list that starts at three.
+  4. The next number.
+     1. A nested numbered item that is long enough to wrap onto the next line.
+     2. Another one.
+
+| A block quote that is long enough to wrap onto more than one line when the
+| terminal is eighty columns wide.
+
+| A second quote paragraph.
+
+--------------------------------------------------------------------------------
+
+    <ESC>[36mint main() {<ESC>[0m
+    <ESC>[36m	return 0; // never wrapped, even when this comment makes the line much longer than the terminal<ESC>[0m
+    <ESC>[36m}<ESC>[0m
+
+    <ESC>[36mtilde fence, no language<ESC>[0m
+
+<ESC>[1mLevel Three Heading<ESC>[0m
+
+<ESC>[1mLevel four with <ESC>[0m<ESC>[1;36mcode<ESC>[0m<ESC>[1m and <ESC>[0m<ESC>[1;3memphasis<ESC>[0m
+
+The end.
+--- stderr
+--- exit 0

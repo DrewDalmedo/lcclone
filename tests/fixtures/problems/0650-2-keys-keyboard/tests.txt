@@ -1,0 +1,13 @@
+﻿@example Copy All, then Paste twice: A, AA, AAA.
+3
+=> 3
+
+@example
+1
+=> 0
+
+12
+=> 7
+
+7
+=> 7

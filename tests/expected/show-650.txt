@@ -1,0 +1,28 @@
+--- stdout
+650. 2 Keys Keyboard
+Difficulty: Medium
+Tags: math, dynamic-programming
+
+A text box starts out holding a single letter A. Your keyboard has only two
+keys:
+
+  1. Copy All puts the whole contents of the box on the clipboard.
+  2. Paste appends the clipboard to the end of the box.
+
+Return the smallest number of key presses that leaves exactly n letters in the
+box.
+
+    n = 4:  Copy All, Paste, Paste, Paste  ->  AAAA  (4 presses)
+
+Constraint: 1 <= n <= 2000.
+
+Example 1:
+  Input: n = 3
+  Output: 3
+  Explanation: Copy All, then Paste twice: A, AA, AAA.
+
+Example 2:
+  Input: n = 1
+  Output: 0
+--- stderr
+--- exit 0

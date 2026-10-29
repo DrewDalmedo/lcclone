@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: no problem matches '0'
+--- exit 3

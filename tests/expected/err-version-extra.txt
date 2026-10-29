@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: unexpected argument '1'
+Run 'lc help version'.
+--- exit 3

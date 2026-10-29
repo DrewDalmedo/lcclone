@@ -1,0 +1,6 @@
+--- stdout
+{"schema":1,"error":{"message":"unknown option '--bogus'"},"warnings":[]}
+--- stderr
+lc: unknown option '--bogus'
+Run 'lc help list'.
+--- exit 3

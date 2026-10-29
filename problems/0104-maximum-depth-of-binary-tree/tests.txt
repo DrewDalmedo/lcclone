@@ -1,0 +1,43 @@
+# Maximum Depth of Binary Tree. Trees are in level order; null is a missing
+# child, a missing node's children are not listed, and trailing nulls are
+# left out.
+
+@example The longest path from the root is 5 -> 3 -> 1 -> 2, so the deepest level is 4.
+[5,3,8,1,null,null,9,null,2]
+=> 4
+
+@example Each node has only a right child, so every node is on a level of its own.
+[1,null,2,null,3]
+=> 3
+
+@example An empty tree has no levels.
+[]
+=> 0
+
+# A single node.
+[7]
+=> 1
+
+# A root with only a left child; extreme values.
+[-100,100]
+=> 2
+
+# A perfect tree with three levels.
+[1,2,3,4,5,6,7]
+=> 3
+
+# A chain of left children.
+[1,2,null,3,null,4,null,5]
+=> 5
+
+# A path that zigzags left and right.
+[1,2,null,null,3,4]
+=> 4
+
+# The deepest node hangs off the right subtree.
+[10,20,30,null,40,50,null,null,null,60]
+=> 4
+
+# Every value is the same.
+[0,0,0,0,null,null,0,null,null,0]
+=> 4
