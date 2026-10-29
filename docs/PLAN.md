@@ -15,6 +15,8 @@ it, so a GUI can be built on top later without rewriting anything (§4).
 - **Solution languages:** C and C++. Users need `cc` for C solutions and `c++`
   for C++ solutions. A language whose compiler isn't installed is simply
   hidden.
+- **Language standards:** solutions compile as **C++11** by default, and you
+  can raise that to C++14/17/20/23 (§5.6). C solutions compile as C11.
 - **Build:** a plain POSIX `Makefile` producing `liblc.a` (the core) and `lc`
   (the CLI).
 - **Platforms:** Linux (glibc and musl), macOS, FreeBSD and OpenBSD.
@@ -44,7 +46,10 @@ from the manifest (§6).
 ### 2.1 Content rules
 
 - **Kept, so you can cross-reference:**
-  - each problem's LeetCode number (used as our `id`), slug and title;
+  - each problem's LeetCode number, slug and title. **The problem ID is always
+    the LeetCode number:** `lc show 1` is Two Sum, and the pack directory is
+    `problems/0001-two-sum/`. `lc check` checks that the ID and slug match the
+    manifest;
   - its function signature (names and types), so a solution moves between
     lcclone and LeetCode unchanged.
 - **Written by us:** every problem statement, example and test case.
@@ -376,13 +381,42 @@ one file, the C++ harness can see `class Solution`.
   the node structs with LeetCode's constructors. It does not use
   `<bits/stdc++.h>`, which only exists in libstdc++ and not in libc++ on macOS
   or the BSDs.
+  - **Headers by standard:** newer headers are included only when the active
+    standard has them, so raising the standard makes them available just as
+    on LeetCode:
+    - `__cplusplus >= 201703L`: `<optional>`, `<string_view>`, `<variant>`,
+      `<any>`, `<charconv>`;
+    - `__cplusplus >= 202002L`: `<bit>`, `<span>`, `<numbers>`, `<ranges>`,
+      `<compare>`.
 
 **Compile commands:**
 - **C:** `$CC -std=c11 -O2`
-- **C++:** `$CXX -std=c++17 -O2`
+- **C++:** `$CXX -std=c++11 -O2`
 
-The C++ standard can be changed in the config. The runtime and `api.c` are
-compiled to object files once and cached.
+**Choosing the C++ standard.** The default is C++11. Ways to raise it, with the
+later ones winning:
+- `cxxstd = c++17` in the config file;
+- `LC_CXXSTD=c++20` in the environment;
+- `--std=c++20` on a single `lc test` or `lc submit` run.
+
+Accepted values are `c++11`, `c++14`, `c++17`, `c++20`, `c++23` and `max`.
+`max` means the newest standard the installed compiler accepts.
+
+`lc` checks once which standards the compiler accepts. It compiles an empty
+file with each `-std=` flag and caches the results. If you ask for a standard
+the compiler doesn't support, you get a clear error rather than a confusing
+compile failure.
+
+**Everything shipped is C++11-only,** so it builds under any chosen standard.
+That covers the generated harness, `lc_prelude.hpp`, `lc_rt.cpp` and every
+`ref.cpp` in the problem packs. For example, they can't use
+`std::make_unique`, `auto` lambda parameters or structured bindings.
+
+The C standard can also be changed (`cstd =`, default `c11`).
+
+**Cache.** The runtime and `api.c` are compiled to object files once and
+cached. Build directories are keyed by language *and* standard, so switching
+standards never reuses a stale build.
 
 **Sanitizers (`--sanitize`):**
 - adds `-g -fsanitize=address,undefined`;
@@ -390,8 +424,8 @@ compiled to object files once and cached.
   hardening flag, so out-of-range `vector` access is caught;
 - turns off the `RLIMIT_AS` limit, which conflicts with ASan.
 
-**Cache:** builds go in `$XDG_CACHE_HOME/lcclone/build/<slug>/<lang>/`, and a
-build is redone only when an input changes.
+**Cache:** builds go in `$XDG_CACHE_HOME/lcclone/build/<slug>/<lang>-<std>/`,
+and a build is redone only when an input changes.
 
 ### 5.7 Runner
 
@@ -429,7 +463,7 @@ and global state can't leak between cases.
 | Your solutions | `~/lc/` by default (`workspace =` in config), so you can keep it in git |
 | Progress       | `~/.local/share/lcclone/progress.tsv`: `id status lang best_ms last_ts` |
 | History        | `~/.local/share/lcclone/submissions/<id>/<timestamp>-<verdict>.<ext>`   |
-| Config         | `~/.config/lcclone/config`, `key = value` (editor, lang, cc, cxx, cxxstd, cflags, color, workspace) |
+| Config         | `~/.config/lcclone/config`, `key = value` (editor, lang, cc, cxx, cstd, cxxstd, cflags, cxxflags, color, workspace) |
 
 Every write is atomic: the data goes to a temp file, then `rename()` moves it
 into place. The core re-reads progress before each update, so a CLI and a GUI
@@ -530,7 +564,10 @@ The core should come to roughly 6–8k lines of C, plus the two runtimes.
 
   A further test checks that cancelling a job works.
 - **End to end:** each fixture problem gets correct, wrong, slow and crashing
-  solutions in C and in C++, and each should get the expected verdict.
+  solutions in C and in C++, and each should get the expected verdict. The C++
+  runs happen twice, once with `c++11` and once with `max`.
+- **Standard selection:** tests cover config, environment and flag precedence,
+  `max`, and the error you get for a standard the compiler doesn't support.
 - **CI:** GitHub Actions on Ubuntu (gcc and clang), Alpine (musl) and macOS
   (clang and libc++). Dev builds use `-Wall -Wextra -Wpedantic -Werror`, the
   test build uses ASan and UBSan, and `lc check` runs over all packs.
@@ -573,12 +610,19 @@ Possible later work:
 - **C++ portability.** libstdc++ and libc++ differ: there's no
   `bits/stdc++.h` on libc++, and their hardening flags differ. CI on macOS
   catches these.
+- **Newer C++ in solutions written for LeetCode.** Code that uses C++14/17
+  features fails under the C++11 default. When a C++ build fails, the error
+  message says which standard was used and how to raise it.
 - **Timing noise.** Judge on CPU time, and set limits generously (about 3× the
   reference solution's time on the largest cases).
 
-## 11. Open questions
+## 11. Decisions so far
 
-1. **C++ standard:** the plan defaults to C++17 for portability. Do you want
-   C++20 by default? LeetCode itself uses a newer standard.
-2. **Problem IDs:** the plan uses LeetCode's numbers and slugs as our IDs, so
-   you can cross-reference. Is that what you want?
+- **Solution languages:** C and C++.
+- **Interface:** command line first. The core library is kept free of UI code,
+  so a GUI can be added later.
+- **First problem set:** every free LeetCode Easy problem that can be solved in
+  C or C++. Statements and tests are original.
+- **C++ standard:** C++11 by default, adjustable through config, environment or
+  flag, including `max`. C defaults to C11.
+- **Problem IDs:** LeetCode's numbers and slugs.
