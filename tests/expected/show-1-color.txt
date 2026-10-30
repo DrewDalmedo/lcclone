@@ -1,0 +1,32 @@
+--- stdout
+<ESC>[1m1. Two Sum<ESC>[0m
+Difficulty: <ESC>[32mEasy<ESC>[0m
+Tags: array, hash-table
+
+You are given an array of integers <ESC>[36mnums<ESC>[0m and a value <ESC>[36mtarget<ESC>[0m. Find <ESC>[1mtwo different<ESC>[0m
+<ESC>[1mpositions<ESC>[0m in <ESC>[36mnums<ESC>[0m whose values add up to <ESC>[36mtarget<ESC>[0m, and return those positions.
+
+Every input has exactly one such pair, and a position cannot be paired with
+itself. Return the two positions <ESC>[3min either order<ESC>[0m.
+
+<ESC>[1mExample 1:<ESC>[0m
+  <ESC>[1mInput:<ESC>[0m nums = [6,3,1,8], target = 11
+  <ESC>[1mOutput:<ESC>[0m [1,3]
+  <ESC>[1mExplanation:<ESC>[0m 3 + 8 = 11, and those values sit at positions 1 and 3.
+
+<ESC>[1mExample 2:<ESC>[0m
+  <ESC>[1mInput:<ESC>[0m nums = [-4,-4], target = -8
+  <ESC>[1mOutput:<ESC>[0m [0,1]
+
+<ESC>[1mConstraints<ESC>[0m
+
+  - <ESC>[36m2 <= nums.length <= 5000<ESC>[0m
+  - <ESC>[36m-10^6 <= nums[i], target <= 10^6<ESC>[0m
+  - Exactly one pair adds up to <ESC>[36mtarget<ESC>[0m.
+
+<ESC>[1mFollow-up<ESC>[0m
+
+Checking every pair with two nested loops takes <ESC>[36mO(n^2)<ESC>[0m time. Can you find the
+answer in a single pass over <ESC>[36mnums<ESC>[0m?
+--- stderr
+--- exit 0

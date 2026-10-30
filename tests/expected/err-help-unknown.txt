@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: unknown command 'bogus'
+Run 'lc help'.
+--- exit 3

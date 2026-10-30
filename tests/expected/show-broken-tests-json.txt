@@ -1,0 +1,5 @@
+--- stdout
+{"schema":1,"problem":{"id":2,"slug":"broken-tests","title":"Broken Tests","difficulty":"easy","tags":["array"],"signature":"int sum(int[] nums)","time_limit_ms":1000,"memory_limit_mb":256,"dir":"@ROOT@/tests/fixtures/cli/0002-broken-tests","statement":"The `tests.txt` of this pack has an error, so `lc show` prints the statement\nwithout examples and warns about the file.\n\n@examples\n\nThat is all.\n","statement_line":8,"blocks":[{"type":"paragraph","line":1,"spans":[{"text":"The "},{"text":"tests.txt","code":true},{"text":" of this pack has an error, so "},{"text":"lc show","code":true},{"text":" prints the statement without examples and warns about the file."}]},{"type":"examples","line":4},{"type":"paragraph","line":6,"spans":[{"text":"That is all."}]}],"examples":[]},"warnings":["@ROOT@/tests/fixtures/cli/0002-broken-tests/tests.txt:7: blank line inside a case (missing '=>'?)"]}
+--- stderr
+lc: warning: @ROOT@/tests/fixtures/cli/0002-broken-tests/tests.txt:7: blank line inside a case (missing '=>'?)
+--- exit 0

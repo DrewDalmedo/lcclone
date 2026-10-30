@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: no problem matches '1-three-sum'
+--- exit 3

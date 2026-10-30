@@ -1,0 +1,10 @@
+--- stdout
+usage: lc version [--json]
+
+Print the version of lc.
+
+Options:
+  --json             print JSON
+  -h, --help         show this help
+--- stderr
+--- exit 0

@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: unknown option '-h=1'
+Run 'lc help'.
+--- exit 3

@@ -1,0 +1,8 @@
+@example A fine example.
+[1,2]
+=> 3
+
+@example A blank line inside a case is an error.
+[1,2]
+
+=> 3

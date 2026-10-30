@@ -1,0 +1,6 @@
+--- stdout
+{"schema":1,"error":{"message":"invalid --color value 'sometimes' (expected auto, always or never)"},"warnings":[]}
+--- stderr
+lc: invalid --color value 'sometimes' (expected auto, always or never)
+Run 'lc help show'.
+--- exit 3

@@ -1,0 +1,4 @@
+--- stdout
+{"schema":1,"commands":[{"name":"list","summary":"List problems, filtered by difficulty and tags","usage":"lc list [--difficulty LIST] [--tag TAG]... [--json] [--color=WHEN]"}]}
+--- stderr
+--- exit 0

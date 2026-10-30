@@ -1,0 +1,5 @@
+--- stdout
+{"schema":1,"error":{"message":"no problem matches 'nope'"},"warnings":[]}
+--- stderr
+lc: no problem matches 'nope'
+--- exit 3

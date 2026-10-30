@@ -1,0 +1,8 @@
+*.o
+*.a
+/lc
+/tests/unit/test_*
+!/tests/unit/test_*.c
+/tests/tmp/
+/.datadir
+/.datadir.tmp

@@ -1,0 +1,188 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Warnings every dev build must be free of (docs/PLAN.md section 8).
+  WFLAGS: -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-prototypes -Wmissing-prototypes
+
+jobs:
+  linux:
+    name: Linux (${{ matrix.cc }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+    env:
+      CC: ${{ matrix.cc }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Show compiler
+        run: $CC --version
+      - name: Build and test
+        run: make CC="$CC" CFLAGS="-O2 $WFLAGS" test
+      - name: Incremental rebuilds
+        run: |
+          # test_fs.c and test_md.c #include core sources, so their objects
+          # must be rebuilt when one of those changes.
+          check_dep() {  # check_dep OBJECT SOURCE...
+            obj=$1; shift
+            for src in "$@"; do
+              make CC="$CC" CFLAGS="-O2 $WFLAGS" "$obj"
+              touch "$src"
+              st=0; make -q "$obj" || st=$?
+              if [ "$st" -ne 1 ]; then
+                echo "$obj is not rebuilt when $src changes" >&2
+                exit 1
+              fi
+            done
+          }
+          check_dep tests/unit/test_fs.o src/core/arena.c src/core/str.c src/core/ctx.c src/core/fs.c
+          check_dep tests/unit/test_md.o src/core/arena.c src/core/str.c src/core/md.c
+          # PREFIX is compiled into problem.o and test_problem.o: changing it
+          # must rebuild both, or test_problem fails.
+          make CC="$CC" CFLAGS="-O2 $WFLAGS" PREFIX=/opt/pkg test
+
+  sanitizers:
+    name: Linux (gcc, ASan + UBSan)
+    runs-on: ubuntu-latest
+    env:
+      ASAN_OPTIONS: detect_leaks=1
+      UBSAN_OPTIONS: print_stacktrace=1
+    steps:
+      - uses: actions/checkout@v5
+      # ASan can crash at startup with the high mmap randomization that
+      # recent Ubuntu kernels use; lower it to the value ASan supports.
+      - name: Lower mmap randomization for ASan
+        run: sudo sysctl -w vm.mmap_rnd_bits=28 || true
+      - name: Build and test
+        run: >-
+          make CC=gcc
+          CFLAGS='-O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all -Wall -Wextra -Werror'
+          LDFLAGS='-fsanitize=address,undefined'
+          test
+
+  bmake:
+    # Proves the Makefile is portable POSIX make, not GNU make only.
+    name: Linux (bmake)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install bmake
+        run: sudo apt-get update && sudo apt-get install -y bmake
+      - name: Build and test
+        run: bmake CFLAGS="-O2 $WFLAGS" test
+      - name: Change PREFIX right after a build
+        # bmake compares mtimes to the second, so .datadir is usually
+        # rewritten in the same second as the last build. lc must still get
+        # the new DATADIR compiled in.
+        run: |
+          bmake PREFIX="$RUNNER_TEMP/inst" install
+          (unset LC_PROBLEMS XDG_DATA_HOME; HOME=/nonexistent "$RUNNER_TEMP/inst/bin/lc" list) |
+            grep 'Two Sum'
+          check_lc() {  # check_lc NEW OLD: lc has PREFIX=NEW compiled in, not OLD
+            grep -q -F "$1/share/lcclone/problems" lc || {
+              echo "lc does not have PREFIX=$1 compiled in" >&2; exit 1; }
+            if grep -q -F "$2/share/lcclone" lc; then
+              echo "lc still has the old PREFIX=$2 compiled in" >&2; exit 1
+            fi
+          }
+          bmake PREFIX=/opt/a && bmake PREFIX=/opt/b
+          check_lc /opt/b /opt/a
+          # The same, deterministically: make every output newer than the
+          # .datadir that is about to be written.
+          touch -t 203001010000 src/core/*.o src/cli/*.o liblc.a lc
+          bmake PREFIX=/opt/c
+          check_lc /opt/c /opt/b
+          bmake PREFIX=/opt/pkg test
+
+  alpine:
+    name: Alpine (musl)
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    steps:
+      - name: Install build tools
+        run: apk add --no-cache build-base
+      - uses: actions/checkout@v5
+      - name: Build and test
+        run: make CFLAGS="-O2 $WFLAGS" test
+
+  macos:
+    name: macOS (clang)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Show compiler
+        run: clang --version
+      - name: Build and test
+        run: make CC=clang CFLAGS="-O2 $WFLAGS" test
+
+  install:
+    # Installs, then runs lc with no LC_PROBLEMS and an empty HOME, so the
+    # only packs it can find are the ones in the compiled-in data directory.
+    name: Install smoke test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash  # adds -o pipefail, so a failing lc fails the step
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install
+        run: make PREFIX="$RUNNER_TEMP/inst" install
+      - name: Check the installed files
+        run: |
+          test -x "$RUNNER_TEMP/inst/bin/lc"
+          test -f "$RUNNER_TEMP/inst/share/lcclone/problems/0001-two-sum/problem.md"
+      - name: Run the installed lc
+        run: |
+          unset LC_PROBLEMS XDG_DATA_HOME
+          HOME=$(mktemp -d "$RUNNER_TEMP/home.XXXXXX")
+          export HOME
+          cd "$HOME"
+          lc="$RUNNER_TEMP/inst/bin/lc"
+          "$lc" version
+          "$lc" list
+          "$lc" list | grep 'Two Sum'
+          "$lc" show 1
+          "$lc" show 1 | grep 'Two Sum'
+          "$lc" list --json | grep '"two-sum"'
+          "$lc" show 104 --json | grep '"maximum-depth-of-binary-tree"'
+      - name: Staged install with DESTDIR
+        run: |
+          # PREFIX is compiled into lc. No "make clean" here: changing PREFIX
+          # must rebuild what depends on it by itself.
+          make PREFIX=/usr DESTDIR="$RUNNER_TEMP/stage" install
+          lc="$RUNNER_TEMP/stage/usr/bin/lc"
+          test -x "$lc"
+          test -f "$RUNNER_TEMP/stage/usr/share/lcclone/problems/0104-maximum-depth-of-binary-tree/tests.txt"
+          # The staged lc must search /usr/share/lcclone, not the old PREFIX.
+          grep -q -F /usr/share/lcclone "$lc"
+          if grep -q -F "$RUNNER_TEMP/inst" "$lc"; then
+            echo "staged lc still has the old PREFIX compiled in" >&2
+            exit 1
+          fi
+      - name: Install from a checkout made with umask 077
+        run: |
+          # What install creates must be usable by everyone, whatever the
+          # umask of the checkout and of the installer (sudo keeps the
+          # user's umask).
+          umask 077
+          git clone -q "$GITHUB_WORKSPACE" "$RUNNER_TEMP/u077"
+          cd "$RUNNER_TEMP/u077"
+          make PREFIX="$RUNNER_TEMP/inst077" install
+          bad=`find "$RUNNER_TEMP/inst077" \( -type d ! -perm -0555 \) -o \( -type f ! -perm -0444 \)`
+          if [ -n "$bad" ]; then
+            printf 'not readable by everyone:\n%s\n' "$bad" >&2
+            exit 1
+          fi

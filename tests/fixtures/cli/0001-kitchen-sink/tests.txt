@@ -1,0 +1,22 @@
+# Fixture for tests/e2e.sh.
+@example A long explanation that keeps going for a while so that it has to wrap onto a second line, with the continuation lined up under its first word.
+"a b c"
+[1,2,3]
+2
+=> [[1,2],[2,3]]
+
+@example This case has two input lines for three argument names, so they are shown as they are.
+"xyz"
+[]
+=> []
+
+@example
+"q"
+[7]
+1
+=> [[7]]
+
+"not an example"
+[1]
+1
+=> []

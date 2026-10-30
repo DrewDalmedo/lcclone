@@ -1,0 +1,27 @@
+--- stdout
+--- stderr
+usage: lc <command> [options] [arguments]
+
+lc is an offline LeetCode-style practice tool. It lists problems and
+shows their statements and examples in the terminal.
+
+Commands:
+  list      List problems, filtered by difficulty and tags
+  show      Show a problem's statement and examples
+  help      Show help for lc or for one command
+  version   Print the version
+
+Run 'lc help <command>' for the options of a command. Every command
+takes --json for machine-readable output (see docs/json.md).
+
+Environment:
+  LC_PROBLEMS  directory of problem packs (default:
+               $XDG_DATA_HOME/lcclone/problems, else
+               ~/.local/share/lcclone/problems, then the installed ones)
+  PAGER        pager for 'lc show' (default: less, then more)
+  NO_COLOR     if set and not empty, --color=auto never uses colour
+  COLUMNS      width to wrap text at (default: the terminal's, or 80)
+
+Exit status: 0 on success, 3 on a usage error, an unknown problem or
+any other failure.
+--- exit 3

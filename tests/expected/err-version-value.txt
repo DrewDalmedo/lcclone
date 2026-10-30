@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: option '--version' does not take a value
+Run 'lc help'.
+--- exit 3

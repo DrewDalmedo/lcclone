@@ -1,0 +1,6 @@
+--- stdout
+ ID  Title              Difficulty  Tags
+  1  Two Sum            Easy        array, hash-table
+141  Linked List Cycle  Easy        linked-list, two-pointers, hash-table
+--- stderr
+--- exit 0

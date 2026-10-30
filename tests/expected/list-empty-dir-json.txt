@@ -1,0 +1,4 @@
+--- stdout
+{"schema":1,"problems":[],"warnings":[]}
+--- stderr
+--- exit 0

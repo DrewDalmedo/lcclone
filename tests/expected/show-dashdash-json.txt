@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: no problem matches '--json'
+--- exit 3

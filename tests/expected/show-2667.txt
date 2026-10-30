@@ -1,0 +1,11 @@
+--- stdout
+2667. Create Hello World Function
+Difficulty: Easy
+
+Write a function that takes no arguments and returns the text Hello World.
+
+The answer must match exactly: a capital H, a capital W and a single space
+between the words. See the format notes (https://example.com/notes) for how
+strings are compared.
+--- stderr
+--- exit 0

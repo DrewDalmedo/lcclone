@@ -1,0 +1,4 @@
+--- stdout
+{"schema":1,"commands":[{"name":"list","summary":"List problems, filtered by difficulty and tags","usage":"lc list [--difficulty LIST] [--tag TAG]... [--json] [--color=WHEN]"},{"name":"show","summary":"Show a problem's statement and examples","usage":"lc show <problem> [--json] [--no-pager] [--color=WHEN]"},{"name":"help","summary":"Show help for lc or for one command","usage":"lc help [<command>] [--json]"},{"name":"version","summary":"Print the version","usage":"lc version [--json]"}]}
+--- stderr
+--- exit 0

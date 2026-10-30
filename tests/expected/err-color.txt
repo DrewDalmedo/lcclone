@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: invalid --color value 'rainbow' (expected auto, always or never)
+Run 'lc help list'.
+--- exit 3

@@ -1,0 +1,7 @@
+--- stdout
+ID  Title                                                                      Difficulty  Tags
+ 1  Kitchen Sink With A Title Long Enough To Wrap When The Terminal Is Narrow  Medium      string, simulation, two-pointers, sliding-window, prefix-sum, hash-table
+ 2  Broken Tests                                                               Easy        array
+ 3  No Signature                                                               Hard
+--- stderr
+--- exit 0

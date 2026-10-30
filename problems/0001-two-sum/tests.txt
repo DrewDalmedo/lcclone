@@ -1,0 +1,66 @@
+# Two Sum. Indices are 0-based; compare: unordered 0 accepts either order,
+# and the expected answers below list the smaller index first.
+
+@example 2 + 9 = 11, and those values sit at indices 1 and 3.
+[5,2,7,9]
+11
+=> [1,3]
+
+@example Equal values may be used when they are at different indices: 6 + 6 = 12.
+[6,1,6]
+12
+=> [0,2]
+
+@example
+[-3,8]
+5
+=> [0,1]
+
+# The pair is the last two elements.
+[1,2,3,4,5,6]
+11
+=> [4,5]
+
+# The pair is the first and the last element.
+[8,1,2,3,4,10]
+18
+=> [0,5]
+
+# 5 + 5 would be 10, but index 0 cannot be used twice.
+[5,2,8]
+10
+=> [1,2]
+
+# Duplicates at the front.
+[7,7,2]
+14
+=> [0,1]
+
+# Zeros, and a target of zero.
+[0,4,3,0]
+0
+=> [0,3]
+
+# All negative.
+[-1,-2,-3,-4,-5]
+-8
+=> [2,4]
+
+# A negative and a positive value.
+[4,-7,12,3]
+5
+=> [1,2]
+
+# Extreme values that cancel out.
+[1000000000,-1000000000,7]
+0
+=> [0,1]
+
+# Values at the limits.
+[1000000000,5,-1]
+999999999
+=> [0,2]
+
+[2,-1000000000,1]
+-999999999
+=> [1,2]

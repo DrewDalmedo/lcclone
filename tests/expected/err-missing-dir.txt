@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: cannot use LC_PROBLEMS directory '@TMP@/missing': No such file or directory
+--- exit 3

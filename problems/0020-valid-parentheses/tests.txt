@@ -1,0 +1,49 @@
+# Valid Parentheses.
+
+@example The square brackets close first, then the parentheses around them, then the braces.
+"{([])}"
+=> true
+
+@example The ] arrives while ( is the most recently opened bracket that is still open.
+"[(])"
+=> false
+
+@example The final [ is never closed.
+"{}["
+=> false
+
+# Shortest inputs.
+"("
+=> false
+
+")"
+=> false
+
+"[]"
+=> true
+
+# Mismatched kinds.
+"{)"
+=> false
+
+# Closing before opening, even though the counts match.
+"}{"
+=> false
+
+"))(("
+=> false
+
+# Balanced groups side by side and nested.
+"{[]}()[{}]"
+=> true
+
+"(((([[[{{{}}}]]]))))"
+=> true
+
+# One bracket left open after a balanced prefix.
+"[[[]]"
+=> false
+
+# An extra closing bracket at the end.
+"()]"
+=> false
