@@ -121,9 +121,10 @@ int main(int argc, char **argv)
     if (strcmp(mode, "exit") == 0)
         return atoi(arg);
     if (strcmp(mode, "segv") == 0) {
-        /* A volatile pointer, so the compiler can't see it is null and
-         * turn the store into a trap instruction. */
-        int *volatile p = NULL;
+        /* The pointer is volatile, so the compiler can't see it is null
+         * and turn the store into a trap instruction; so is the store, so
+         * it can't be dropped as dead (gcc 13 drops it otherwise). */
+        volatile int *volatile p = NULL;
         *p = 1;
         return 0;
     }

@@ -52,7 +52,9 @@ int main(void)
     if (strcmp(mode, "crash-negative") == 0) {
         for (i = 0; i < n; i++) {
             if (nums[i] < 0) {
-                int *volatile p = NULL;
+                /* Volatile store through a volatile null pointer: a real
+                 * SIGSEGV that no compiler can remove (see misbehave.c). */
+                volatile int *volatile p = NULL;
                 *p = 1;
             }
         }
