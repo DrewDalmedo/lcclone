@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -150,6 +151,7 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
     const char *p, *end;
     const char *explanation = NULL;
     int lineno = 0, case_line = 0, example_line = 0, example = 0;
+    int noinput = 0; /* the open case is "()": it has no inputs */
     int rc = LC_OK;
 
     if (!out)
@@ -180,7 +182,7 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
             goto fail;
         }
         if (ln.n == 0) {
-            if (nargs) {
+            if (nargs || noinput) {
                 rc = parse_error(ctx, filename, lineno, "blank line inside a "
                                  "case (missing '=>'?)");
                 goto fail;
@@ -200,7 +202,7 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
                                  w > QUOTE_MAX ? "..." : "");
                 goto fail;
             }
-            if (nargs) {
+            if (nargs || noinput) {
                 rc = parse_error(ctx, filename, lineno, "@example inside a "
                                  "case (missing '=>'?)");
                 goto fail;
@@ -226,7 +228,7 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
 
         if (ln.n >= 2 && ln.p[0] == '=' && ln.p[1] == '>') {
             span expected = trim((span){ln.p + 2, ln.n - 2});
-            if (!nargs) {
+            if (!nargs && !noinput) {
                 rc = parse_error(ctx, filename, lineno, "'=>' with no input "
                                  "lines before it");
                 goto fail;
@@ -244,9 +246,29 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
             items[nitems - 1].example = example;
             items[nitems - 1].line = case_line;
             nargs = 0;
+            noinput = 0;
             example = 0;
             explanation = NULL;
             continue;
+        }
+
+        /* "()": a case with no inputs, for a signature without
+         * parameters. It must be the case's only input line. */
+        if (ln.n == 2 && ln.p[0] == '(' && ln.p[1] == ')') {
+            if (nargs || noinput) {
+                rc = parse_error(ctx, filename, lineno, "'()' must be the "
+                                 "only input line of its case");
+                goto fail;
+            }
+            noinput = 1;
+            case_line = lineno;
+            continue;
+        }
+        if (noinput) {
+            rc = parse_error(ctx, filename, lineno, "input line after '()' "
+                             "(a case with no inputs has no other input "
+                             "lines)");
+            goto fail;
         }
 
         /* An input line: one literal, kept as text. */
@@ -262,7 +284,7 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
             args[nargs++] = ln;
         }
     }
-    if (nargs) {
+    if (nargs || noinput) {
         rc = parse_error(ctx, filename, case_line, "case has no '=>' line");
         goto fail;
     }
@@ -341,4 +363,87 @@ void lc_cases_free(lc_cases *cases)
         return;
     lc_arena_free(&box->arena);
     free(box);
+}
+
+/* ------------------------------------------------------------------ */
+/* Typed values of a case                                              */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Rewrites the last error, a literal's "column N: ..." message, as
+ * "<dir>/tests.txt:<line>: <what>: column N: ...".
+ */
+static int case_error(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
+                      const char *what, int rc)
+{
+    if (rc != LC_ERR_PARSE)
+        return rc;
+    return error_status(ctx, lc_set_error(ctx, rc, "%s/tests.txt:%d: %s: %s",
+                                          p->dir, c->line, what,
+                                          lc_last_error(ctx)));
+}
+
+int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
+                   lc_pool *pool, const lc_value **args,
+                   const lc_value **expected)
+{
+    const lc_sig *sig;
+    lc_value *vals;
+    size_t i, want;
+    int rc;
+
+    if (!p || !p->dir || !c || !pool || !args || !expected)
+        return error_status(ctx, lc_set_error(ctx, LC_ERR_INVALID,
+                                              "lc_case_values: bad "
+                                              "arguments"));
+    *args = NULL;
+    *expected = NULL;
+    sig = p->sig;
+    want = sig ? sig->nparams + p->nhidden : c->nargs;
+    if (c->nargs != want) {
+        lc_str names = LC_STR_INIT;
+        for (i = 0; i < want; i++) {
+            const lc_param *pr = i < sig->nparams ? &sig->params[i]
+                                                  : &p->hidden[i - sig->nparams];
+            lc_str_printf(&names, "%s%s", i ? ", " : "", pr->name);
+        }
+        if (names.failed) {
+            lc_str_free(&names);
+            return lc_oom(ctx);
+        }
+        rc = lc_set_error(ctx, LC_ERR_PARSE, "%s/tests.txt:%d: case has %lu "
+                          "input%s, expected %lu%s%s%s", p->dir, c->line,
+                          (unsigned long)c->nargs, c->nargs == 1 ? "" : "s",
+                          (unsigned long)want, want ? " (" : "",
+                          lc_str_cstr(&names), want ? ")" : "");
+        lc_str_free(&names);
+        return error_status(ctx, rc);
+    }
+
+    vals = lc_arena_array(&pool->arena, c->nargs, sizeof *vals);
+    if (!vals)
+        return lc_oom(ctx);
+    for (i = 0; i < c->nargs; i++) {
+        const lc_param *pr = NULL;
+        const lc_value *v;
+        char label[32];
+
+        if (sig)
+            pr = i < sig->nparams ? &sig->params[i]
+                                  : &p->hidden[i - sig->nparams];
+        rc = lc_value_parse(ctx, pool, pr ? &pr->type : NULL, c->args[i],
+                            strlen(c->args[i]), &v);
+        if (rc != LC_OK) {
+            snprintf(label, sizeof label, "input %lu", (unsigned long)i + 1);
+            return case_error(ctx, p, c, pr ? pr->name : label, rc);
+        }
+        vals[i] = *v;
+    }
+    rc = lc_value_parse(ctx, pool,
+                        sig && sig->ret.kind != LC_T_VOID ? &sig->ret : NULL,
+                        c->expected, strlen(c->expected), expected);
+    if (rc != LC_OK)
+        return case_error(ctx, p, c, "expected output", rc);
+    *args = vals;
+    return LC_OK;
 }

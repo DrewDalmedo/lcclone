@@ -887,24 +887,27 @@ static void test_tags(void)
 static void test_signature_and_hidden(void)
 {
     static const char *const nums_target[] = {"nums", "target"};
-    static const char *const nested[] = {"m", "v", "grid", "s"};
     static const char *const with_hidden[] = {"headA", "headB", "skipA", "skipB"};
     static const char *const one[] = {"x"};
-    static const char *const odd[] = {"nums", "x9", "_y", "z"};
+    static const char *const odd[] = {"nums", "x9", "z"};
 
     expect_args(HDR("1", "a") "signature: int[] twoSum(int[] nums, int target)\n"
                 "---\n", nums_target, 2);
-    expect_args(HDR("1", "a") "signature: int f(map<int, string> m, "
-                "vector<pair<int,int>> v, int[][] grid, string s)\n---\n",
-                nested, 4);
+    /* Types come from the type table; a comma inside <> stays in the
+     * type named in the message. */
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(map<int, string> m, "
+               "int[][] grid)\n---\n",
+               ":5: signature: unknown type 'map<int, string>'");
     expect_args(HDR("1", "a") "signature: string hello()\n---\n", NULL, 0);
     expect_args(HDR("1", "a") "signature: void f( \t )\n---\n", NULL, 0);
-    /* Text after the last ')' is ignored. */
-    expect_args(HDR("1", "a") "signature: int f(int x) const\n---\n", one, 1);
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int x) const\n---\n",
+               ":5: signature: unexpected 'const' after ')'");
     /* The name is the identifier at the end: digits and '_' are fine, and
-     * no space is needed after '&', '*' or ']'. */
-    expect_args(HDR("1", "a") "signature: int f(vector<int>&nums, int x9, "
-                "int* _y, int[]z)\n---\n", odd, 4);
+     * no space is needed after ']'. */
+    expect_args(HDR("1", "a") "signature: int f(int[]nums, int x9, "
+                "string[][]z)\n---\n", odd, 3);
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(vector<int>&nums)\n"
+               "---\n", ":5: signature: unknown type 'vector<int>&'");
     /* hidden: names come after the signature's. */
     expect_args(HDR("1", "a") "signature: ListNode getIntersectionNode(ListNode "
                 "headA, ListNode headB)\nhidden: int skipA, int skipB\n---\n",
@@ -941,6 +944,134 @@ static void test_signature_and_hidden(void)
                ":5: signature: parameter 1 is empty");
     expect_bad("0001-a", HDR("1", "a") "signature: int f(int a, int b) \n"
                "hidden: int c,,int d\n---\n", ":6: hidden: parameter 2 is empty");
+}
+
+/* Checks a type against its kind and dims. */
+static void check_type(lc_type t, lc_kind kind, int dims)
+{
+    CHECK_INT(t.kind, kind);
+    CHECK_INT(t.dims, dims);
+}
+
+static void test_typed_fields(void)
+{
+    lc_ctx *ctx;
+    const lc_problem *p;
+
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "signature: int[] twoSum("
+                  "int[] nums, int target)\ncompare: unordered 0\n---\n");
+    if (p) {
+        CHECK(p->sig != NULL);
+        if (p->sig) {
+            check_type(p->sig->ret, LC_T_INT, 1);
+            CHECK_STR(p->sig->name, "twoSum");
+            CHECK_INT(p->sig->nparams, 2);
+            if (p->sig->nparams == 2) {
+                check_type(p->sig->params[0].type, LC_T_INT, 1);
+                CHECK_STR(p->sig->params[0].name, "nums");
+                check_type(p->sig->params[1].type, LC_T_INT, 0);
+                CHECK_STR(p->sig->params[1].name, "target");
+            }
+        }
+        CHECK_INT(p->nhidden, 0);
+        CHECK(p->hidden != NULL);
+        CHECK_INT(p->compare.mode, LC_CMP_UNORDERED);
+        CHECK_INT(p->compare.levels, 1);
+    }
+    lc_close(ctx);
+
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "signature: bool hasCycle("
+                  "ListNode head)\nhidden: int pos\n---\n");
+    if (p) {
+        CHECK(p->sig && p->sig->nparams == 1);
+        if (p->sig)
+            check_type(p->sig->ret, LC_T_BOOL, 0);
+        CHECK_INT(p->nhidden, 1);
+        if (p->nhidden == 1) {
+            check_type(p->hidden[0].type, LC_T_INT, 0);
+            CHECK_STR(p->hidden[0].name, "pos");
+        }
+        CHECK_INT(p->compare.mode, LC_CMP_EXACT);
+    }
+    lc_close(ctx);
+
+    /* A result made of doubles defaults to a tolerance of 1e-5. */
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "signature: double[] f("
+                  "int n)\n---\n");
+    if (p) {
+        CHECK_INT(p->compare.mode, LC_CMP_FLOAT);
+        CHECK(p->compare.tolerance == 1e-5);
+    }
+    lc_close(ctx);
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "signature: double f(int n)\n"
+                  "compare: exact\n---\n");
+    if (p)
+        CHECK_INT(p->compare.mode, LC_CMP_EXACT);
+    lc_close(ctx);
+
+    /* Without a signature there is no sig, but hidden and compare are
+     * still parsed. */
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "hidden: TreeNode[] t\n"
+                  "compare: float 0.5\n---\n");
+    if (p) {
+        CHECK(p->sig == NULL);
+        CHECK_INT(p->nhidden, 1);
+        if (p->nhidden == 1)
+            check_type(p->hidden[0].type, LC_T_TREE, 1);
+        CHECK_INT(p->compare.mode, LC_CMP_FLOAT);
+        CHECK(p->compare.tolerance == 0.5);
+    }
+    lc_close(ctx);
+
+    expect_bad("0001-a", HDR("1", "a") "signature: vector<int> f(int x)\n"
+               "---\n", ":5: signature: unknown type 'vector<int>'");
+    expect_bad("0001-a", HDR("1", "a") "signature: int (int x)\n---\n",
+               ":5: signature: expected a return type and a function name "
+               "before '('");
+    expect_bad("0001-a", HDR("1", "a") "signature: f(int x)\n---\n",
+               ":5: signature: expected a return type and a function name "
+               "before '('");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(void x)\n---\n",
+               ":5: signature: only a return type can be void");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(ListNode[][] x)\n"
+               "---\n", ":5: signature: type 'ListNode[][]' is not supported "
+               "(too many '[]')");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int[][][] x)\n"
+               "---\n", ":5: signature: type 'int[][][]' is not supported "
+               "(too many '[]')");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int x, long x)\n"
+               "---\n", ":5: signature: duplicate parameter name 'x'");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int class)\n"
+               "---\n", ":5: signature: 'class' can't be used as a name");
+    expect_bad("0001-a", HDR("1", "a") "signature: int main(int x)\n---\n",
+               ":5: signature: 'main' can't be used as a name");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int lc_x)\n---\n",
+               ":5: signature: 'lc_x' can't be used as a name");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int _x)\n---\n",
+               ":5: signature: '_x' can't be used as a name");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int x)\n"
+               "hidden: int x\n---\n",
+               ":6: hidden: 'x' is already a parameter of the signature");
+    expect_bad("0001-a", HDR("1", "a") "hidden: void v\n---\n",
+               ":5: hidden: only a return type can be void");
+
+    expect_bad("0001-a", HDR("1", "a") "compare: fuzzy\n---\n",
+               ":5: compare: unknown mode 'fuzzy' (expected exact, float, "
+               "unordered or checker)");
+    expect_bad("0001-a", HDR("1", "a") "compare:\n---\n",
+               ":5: compare: empty value (expected exact, float, unordered or "
+               "checker)");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int x)\n"
+               "compare: float\n---\n",
+               ":6: compare: float needs a result made of doubles, not int");
+    expect_bad("0001-a", HDR("1", "a") "signature: int[] f(int x)\n"
+               "compare: unordered 1\n---\n",
+               ":6: compare: int[] has no level 1 (levels count its array "
+               "nestings from 0)");
+    expect_bad("0001-a", HDR("1", "a") "signature: void f(int[] x)\n"
+               "compare: unordered 0\n---\n",
+               ":6: compare: void has no level 0 (levels count its array "
+               "nestings from 0)");
 }
 
 static void test_limits(void)
@@ -1367,6 +1498,7 @@ int main(void)
     RUN(test_slug_title_difficulty);
     RUN(test_tags);
     RUN(test_signature_and_hidden);
+    RUN(test_typed_fields);
     RUN(test_limits);
     RUN(test_directory_name);
     RUN(test_statement);
