@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: can't tell the language of 'tests/fixtures/judge/0010-add/problem.md' (use a .c or .cpp file, or --lang)
+--- exit 3

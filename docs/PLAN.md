@@ -100,7 +100,7 @@ you're in.
 
 **Expected output for your own cases.** For your cases in `cases.txt`, or a
 file given with `--case FILE`, the expected output comes from running the
-reference solution.
+reference solution, unless the case gives it with `=>`.
 
 **Machine-readable output.** Every command takes `--json`. The output schema is
 versioned (`"schema": 1`) and kept stable. This lets a GUI, or an editor
@@ -124,7 +124,8 @@ When a case fails, `lc` shows:
 - 0: Accepted;
 - 1: any other verdict;
 - 2: compile error;
-- 3: a usage or internal error.
+- 3: a usage or internal error;
+- 130: ^C stopped the run.
 
 ### 3.1 Working from Neovim
 
@@ -157,20 +158,22 @@ Each one works without the next.
   every `vector` and `ListNode` as an error.
 - **The fix:** `lc` writes `~/lc/.clangd`, which adds the right prelude and
   `-std=` for `.c` and `.cpp` files separately. It rewrites the file whenever
-  `cstd` or `cxxstd` changes.
+  `cstd` or `cxxstd` changes. (As built in M3: the preludes it points at are
+  copies `lc start` keeps in `~/lc/.lcclone/`, so clangd works from a
+  source tree too, and a `.clangd` that `lc` didn't write is left alone.)
 - **The result:** completion, diagnostics and go-to-definition work in
   solution files with Neovim's built-in LSP client alone, no plugin needed.
 
 ```yaml
 If:
-  PathMatch: .*\.cpp
-CompileFlags:
-  Add: [-xc++, -std=c++11, -include, /usr/local/share/lcclone/runtime/cpp/lc_prelude.hpp]
----
-If:
   PathMatch: .*\.c
 CompileFlags:
-  Add: [-xc, -std=c11, -include, /usr/local/share/lcclone/runtime/c/lc_prelude.h]
+  Add: [-xc, -std=c11, -include, "/home/me/lc/.lcclone/lc_prelude.h"]
+---
+If:
+  PathMatch: .*\.(cpp|cc|cxx)
+CompileFlags:
+  Add: [-xc++, -std=c++11, -include, "/home/me/lc/.lcclone/lc_prelude.hpp"]
 ```
 
 **Layer 2: plain `:make`.** This works in Neovim (and Vim) without the plugin:
@@ -270,14 +273,14 @@ int lc_languages(lc_ctx *, const lc_lang **out, size_t *n);   /* only installed 
 int lc_stub(lc_ctx *, const lc_problem *, const lc_lang *, lc_str *out);
 int lc_solution_path(lc_ctx *, const lc_problem *, const lc_lang *, lc_str *out);
 
-typedef enum { LC_RUN_EXAMPLES, LC_RUN_ALL, LC_RUN_CUSTOM } lc_run_mode;
 typedef struct {
     void (*on_event)(void *ud, const lc_event *ev); /* build started/done, case i/n started/done */
     void *ud;
-    const volatile int *cancel;                       /* set non-zero to stop */
+    const volatile sig_atomic_t *cancel;              /* set non-zero to stop */
 } lc_hooks;
+/* lc_judge_options: std, sanitize, examples / all, your cases, stop_on_failure */
 int lc_judge(lc_ctx *, const lc_problem *, const lc_lang *, const char *src_path,
-             lc_run_mode, const char *custom_input, const lc_hooks *, lc_report **out);
+             const lc_judge_options *, const lc_hooks *, lc_report **out);
 void lc_report_free(lc_report *);
 
 int lc_progress(lc_ctx *, const lc_problem *, lc_progress_entry *out);
@@ -481,7 +484,14 @@ one file, the C++ harness can see `class Solution`.
 **Preludes:**
 - **C:** stdio, stdlib, string, stdbool, stdint, limits, math, ctype, the node
   structs, and a vendored `uthash.h` (single BSD-licensed header) because
-  LeetCode's C environment has it.
+  LeetCode's C environment has it. (M3: `_DEFAULT_SOURCE` is defined first,
+  so `strdup` and `M_PI` are there under `-std=c11` on glibc and musl;
+  `uthash.h` is not vendored yet.)
+- **Node structs, in both preludes, only when the problem uses them:**
+  `lc` defines `LC_LISTNODE`, `LC_TREENODE` or `LC_NARYNODE` before the
+  prelude. Solutions often define a `struct Node` of their own, which an
+  unconditional N-ary `Node` would break, and LeetCode, too, declares them
+  only for the problems that need them.
 - **C++:** an explicit list of standard headers, `using namespace std;`, and
   the node structs with LeetCode's constructors. It does not use
   `<bits/stdc++.h>`, which only exists in libstdc++ and not in libc++ on macOS
@@ -495,12 +505,15 @@ one file, the C++ harness can see `class Solution`.
       `<compare>`.
 
 **Compile commands:**
-- **C:** `$CC -std=c11 -O2`
+- **C:** `$CC -std=c11 -O2` (and `-lm`)
 - **C++:** `$CXX -std=c++11 -O2`
+
+Each runs through `/bin/sh`, as make runs commands, so `CXX='ccache g++'`
+works.
 
 **Choosing the C++ standard.** The default is C++11. Ways to raise it, with the
 later ones winning:
-- `cxxstd = c++17` in the config file;
+- `cxxstd = c++17` in the config file (M4; M3 has the other two);
 - `LC_CXXSTD=c++20` in the environment;
 - `--std=c++20` on a single `lc test` or `lc submit` run.
 
@@ -519,15 +532,22 @@ That covers the generated harness, `lc_prelude.hpp`, `lc_rt.cpp` and every
 
 The C standard can also be changed (`cstd =`, default `c11`).
 
-**Cache.** The runtime and `api.c` are compiled to object files once and
-cached. Build directories are keyed by language *and* standard, so switching
-standards never reuses a stale build.
+**Cache.** Build directories are keyed by language *and* standard, so
+switching standards never reuses a stale build. (As built in M3: the
+runtime is part of the one translation unit rather than an object file of
+its own. It is a few hundred lines, so compiling it each time costs little
+next to the C++ headers, and `lc` carries it compiled in, so nothing has to
+be found on disk. Within a directory, each program is named after a hash of
+everything that went into it, compiler included.)
 
 **Sanitizers (`--sanitize`):**
-- adds `-g -fsanitize=address,undefined`;
+- adds `-g -fsanitize=address,undefined` (and `-fno-sanitize-recover=all`,
+  so undefined behaviour stops the program: a Runtime Error);
 - for C++, also adds `-D_GLIBCXX_ASSERTIONS` (libstdc++) or the libc++
   hardening flag, so out-of-range `vector` access is caught;
-- turns off the `RLIMIT_AS` limit, which conflicts with ASan.
+- turns off the `RLIMIT_AS` limit, which conflicts with ASan, and with it the
+  memory verdict; triples the time limit; and turns off leak detection,
+  since LeetCode-style solutions don't free.
 
 **Cache:** builds go in `$XDG_CACHE_HOME/lcclone/build/<slug>/<lang>-<std>/`,
 and a build is redone only when an input changes.
@@ -697,7 +717,7 @@ The core should come to roughly 6–8k lines of C, plus the two runtimes.
 | M0 | Skeleton                 | `liblc.a` and `lc` build; ctx/errors/arena/str/fs; pack loader; markdown parser; `list` and `show` with `--json` |
 | M1 | Values                   | literal parser/printer, the full type table, compare modes, wire format; unit tests      |
 | M2 | Runner                   | fork/exec, limits, poll loop, cancel, events, verdicts; misbehaving-program tests         |
-| M3 | C and C++ end to end     | codegen for plain functions (scalars, arrays, strings, 2D, `uint32`, `double`, `char`); both runtimes; `start`, `test`, `submit`; editor basics (workspace layout, problem from path or directory, exit codes, `file:line` output, `.clangd`, JSON event stream); 10 problems. **First usable version, already works from Neovim through clangd and `:make`.** |
+| M3 | C and C++ end to end     | codegen for plain functions (scalars, arrays, strings, 2D, `uint32`, `double`, `char`); both runtimes; `start`, `test`, `submit`; editor basics (workspace layout, problem from path or directory, exit codes, `file:line` output, `.clangd`, JSON event stream); 10 problems (1, 9, 14, 20, 70, 121, 190, 643, 744, 867, with reference solutions). **First usable version, already works from Neovim through clangd and `:make`.** |
 | M4 | Progress and content tooling | store, `stats`, `random`, history, config; `MANIFEST.tsv`; `lc check` with `--regen` and the brute cross-check |
 | M5 | Neovim plugin            | `:Lc` commands, background runs with progress, diagnostics and quickfix, pickers, adding a failed case to `cases.txt`, help file, headless tests |
 | M6 | Plain-function easies    | author every problem in the plain-function, bits, float, in-place and any-order groups    |

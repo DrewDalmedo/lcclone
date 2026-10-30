@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: no solution for problem 10 yet: @TMP@/ws9/0010-add doesn't exist (run 'lc start 10')
+--- exit 3

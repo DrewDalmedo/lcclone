@@ -1,0 +1,19 @@
+== C stub
+void sortIt(int* nums, int numsSize) {
+
+}
+== C prototype
+void sortIt(int* nums, int numsSize)
+== C harness
+error: problem 8 (void): judging a function that returns void is not supported yet
+== C++ stub
+class Solution {
+public:
+    void sortIt(vector<int>& nums) {
+
+    }
+};
+== C++ prototype
+void Solution::sortIt(vector<int>& nums)
+== C++ harness
+error: problem 8 (void): judging a function that returns void is not supported yet

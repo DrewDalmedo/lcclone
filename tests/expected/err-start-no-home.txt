@@ -1,0 +1,5 @@
+--- stdout
+{"schema":1,"error":{"message":"no workspace directory: set LC_WORKSPACE or HOME"},"warnings":[]}
+--- stderr
+lc: no workspace directory: set LC_WORKSPACE or HOME
+--- exit 3

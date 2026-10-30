@@ -6,10 +6,12 @@
 #define _FILE_OFFSET_BITS 64
 #endif
 
+#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "internal.h"
 
@@ -30,14 +32,61 @@ lc_ctx *lc_open(const lc_options *opt)
     if (!ctx)
         return NULL;
     lc_str_init(&ctx->err);
-    if (opt && opt->problems_dir) {
-        ctx->opt_problems_dir = lc_arena_strdup(&ctx->arena, opt->problems_dir);
-        if (!ctx->opt_problems_dir) {
-            lc_close(ctx);
-            return NULL;
-        }
+    if (opt && ((opt->problems_dir &&
+                 !(ctx->opt_problems_dir =
+                       lc_arena_strdup(&ctx->arena, opt->problems_dir))) ||
+                (opt->workspace_dir &&
+                 !(ctx->opt_workspace_dir =
+                       lc_arena_strdup(&ctx->arena, opt->workspace_dir))) ||
+                (opt->cache_dir &&
+                 !(ctx->opt_cache_dir =
+                       lc_arena_strdup(&ctx->arena, opt->cache_dir))))) {
+        lc_close(ctx);
+        return NULL;
     }
     return ctx;
+}
+
+const char *lc_cache_dir(lc_ctx *ctx)
+{
+    char *base;
+
+    if (ctx->cache_dir)
+        return ctx->cache_dir;
+    if (ctx->opt_cache_dir) {
+        /* Programs run with their build directory as the current one, so
+         * every path into the cache must be absolute. */
+        if (ctx->opt_cache_dir[0] == '/') {
+            ctx->cache_dir = ctx->opt_cache_dir;
+        } else {
+            char *cwd = getcwd(NULL, 0);
+
+            if (!cwd) {
+                lc_set_errno(ctx, LC_ERR_IO, errno, "cannot use the cache "
+                             "directory '%s'", ctx->opt_cache_dir);
+                return NULL;
+            }
+            ctx->cache_dir = lc_path_join(&ctx->arena, cwd,
+                                          ctx->opt_cache_dir);
+            free(cwd);
+            if (!ctx->cache_dir)
+                lc_oom(ctx);
+        }
+        return ctx->cache_dir;
+    }
+    base = lc_xdg_dir(&ctx->arena, "XDG_CACHE_HOME", ".cache");
+    if (!base) {
+        if (lc_getenv("HOME"))
+            lc_oom(ctx);
+        else
+            lc_set_error(ctx, LC_ERR_NOTFOUND, "no cache directory: set "
+                         "XDG_CACHE_HOME or HOME");
+        return NULL;
+    }
+    ctx->cache_dir = lc_path_join(&ctx->arena, base, "lcclone");
+    if (!ctx->cache_dir)
+        lc_oom(ctx);
+    return ctx->cache_dir;
 }
 
 void lc_close(lc_ctx *ctx)

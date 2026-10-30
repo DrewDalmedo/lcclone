@@ -1,0 +1,52 @@
+--- stdout
+Building tests/fixtures/judge/0010-add/flood.c (C, c11)
+
+tests/fixtures/judge/0010-add/flood.c:1: Output Limit Exceeded on case 3 of 5 (printed more than 1 MiB on stdout)
+  Input:    a = 100, b = 23
+  Expected: 123
+  Stdout: (cut short)
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    ... (4056 lines left out)
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+    0123456789abcde
+
+Output Limit Exceeded: 2/5 cases passed
+--- stderr
+--- exit 1

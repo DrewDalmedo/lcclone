@@ -1,0 +1,4 @@
+--- stdout
+{"schema":1,"problem":{"id":104,"slug":"maximum-depth-of-binary-tree","title":"Maximum Depth of Binary Tree"},"lang":"cpp","dir":"@TMP@/ws/0104-maximum-depth-of-binary-tree","solution":"@TMP@/ws/0104-maximum-depth-of-binary-tree/solution.cpp","readme":"@TMP@/ws/0104-maximum-depth-of-binary-tree/README.md","cases":"@TMP@/ws/0104-maximum-depth-of-binary-tree/cases.txt","created_solution":true,"created_cases":true,"warnings":[]}
+--- stderr
+--- exit 0

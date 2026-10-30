@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: cannot find 'nosuch.c'
+--- exit 3

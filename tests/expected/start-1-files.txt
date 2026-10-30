@@ -1,0 +1,92 @@
+--- 0001-two-sum/README.md
+# 1. Two Sum
+
+**Difficulty:** Easy · **Tags:** array, hash-table
+
+You have a list of integers `nums` and a goal value `target`. Pick out two
+entries of `nums` at **different indices** whose sum is exactly `target`, and
+return those two indices as an array.
+
+Every test is built so that exactly one such pair exists. An index may not be
+paired with itself, but two different indices may hold equal values. The two
+indices can be returned *in either order*.
+
+**Example 1:**
+
+```
+Input: nums = [5,2,7,9], target = 11
+Output: [1,3]
+```
+
+**Explanation:** 2 + 9 = 11, and those values sit at indices 1 and 3.
+
+**Example 2:**
+
+```
+Input: nums = [6,1,6], target = 12
+Output: [0,2]
+```
+
+**Explanation:** Equal values may be used when they are at different indices: 6 + 6 = 12.
+
+**Example 3:**
+
+```
+Input: nums = [-3,8], target = 5
+Output: [0,1]
+```
+
+## Constraints
+
+- `2 <= nums.length <= 10^4`
+- `-10^9 <= nums[i] <= 10^9`
+- `-10^9 <= target <= 10^9`
+- Exactly one pair of indices has values that add up to `target`.
+
+## Follow-up
+
+Trying every pair takes `O(n^2)` time. Can you find the pair while looking at
+each element of `nums` only once?
+
+---
+
+In this directory, `lc test` runs your solution on the examples and on your
+own cases in `cases.txt`, and `lc submit` runs it on every case.
+--- 0001-two-sum/solution.cpp
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+
+    }
+};
+--- 0001-two-sum/cases.txt
+# Your own cases for 1. Two Sum. 'lc test' runs them after the examples.
+#
+# A case is one line per input, in this order:
+#
+#   nums    int[]
+#   target  int
+#
+# then, if you like, a line '=> expected result'. Without it, the expected
+# result comes from lc's reference solution. Leave a blank line between
+# cases. Values are written as in the examples: 7, [1,2,3], "text",
+# true, 2.5. Lines starting with '#' are comments.
+#
+# For example:
+#
+# [5,2,7,9]
+# 11
+# => [1,3]
+--- .clangd
+# Written by lc. It tells clangd about lc's preludes and the standards lc
+# builds with, for the solution files here. lc rewrites it as needed; to keep
+# changes of your own, delete this first line and lc will leave it alone.
+If:
+  PathMatch: .*\.c
+CompileFlags:
+  Add: [-xc, -std=c11, -include, "@TMP@/ws/.lcclone/lc_prelude.h"]
+---
+If:
+  PathMatch: .*\.(cpp|cc|cxx)
+CompileFlags:
+  Add: [-xc++, -std=c++11, -include, "@TMP@/ws/.lcclone/lc_prelude.hpp"]

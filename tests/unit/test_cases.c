@@ -579,7 +579,11 @@ static int case_values(const lc_problem *p, const char *text, const char *msg,
     int rc = LC_ERR_INVALID;
 
     if (cs && cs->count == 1) {
-        rc = lc_case_values(ctx, p, &cs->items[0], pool, args, expected);
+        /* Without a file of its own, a case's errors name the pack's
+         * tests.txt (test_case_file checks the other way). */
+        lc_case c = cs->items[0];
+        c.file = NULL;
+        rc = lc_case_values(ctx, p, &c, pool, args, expected);
         if (msg) {
             CHECK_INT(rc, LC_ERR_PARSE);
             CHECK_STR(lc_last_error(ctx), msg);
@@ -662,6 +666,111 @@ static void test_case_values(void)
 }
 
 /* Every case of every pack in `dir` must fit its problem's signature. */
+/* Cases parsed from a file remember it, and their errors name it. */
+static void test_case_file(void)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    lc_arena a = {0};
+    lc_problem p = make_problem(&a, "int f(int x)", NULL);
+    lc_pool *pool = lc_pool_new();
+    lc_cases *cs = parse_ok(ctx, "1\n=> 2\n\n\"x\"\n=> 3\n");
+    const lc_value *args, *exp;
+
+    if (cs && cs->count == 2) {
+        CHECK_STR(cs->items[0].file, "t.txt");
+        CHECK_STR(cs->items[1].file, "t.txt");
+        CHECK_INT(lc_case_values(ctx, &p, &cs->items[1], pool, &args, &exp),
+                  LC_ERR_PARSE);
+        CHECK_STR(lc_last_error(ctx),
+                  "t.txt:4: x: column 1: expected int, got a string");
+    }
+    lc_cases_free(cs);
+    lc_pool_free(pool);
+    lc_arena_free(&a);
+    lc_close(ctx);
+}
+
+static void expect_user_error(const char *text, const char *msg)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    lc_cases *cs = NULL;
+
+    write_file(TMP "/mine.txt", text);
+    CHECK_INT(lc_load_user_cases(ctx, TMP "/mine.txt", &cs), LC_ERR_PARSE);
+    CHECK(cs == NULL);
+    CHECK_STR(lc_last_error(ctx), msg);
+    lc_close(ctx);
+}
+
+/* A file of your own cases: '=> expected' may be left out, and then a
+ * blank line or the end of the file ends the case. */
+static void test_user_cases(void)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    lc_arena a = {0};
+    lc_problem p = make_problem(&a, "int[] f(int[] nums, int k)", NULL);
+    lc_pool *pool = lc_pool_new();
+    const lc_value *args, *exp;
+    lc_cases *cs = NULL;
+    int rc;
+
+    write_file(TMP "/mine.txt",
+               "# Mine.\n[1,2]\n3\n=> [0,1]\n\n[4,5]\n9\n\n\n  [6]\n"
+               "# a comment inside a case\n7");
+    rc = lc_load_user_cases(ctx, TMP "/mine.txt", &cs);
+    CHECK_INT(rc, LC_OK);
+    if (rc == LC_OK) {
+        CHECK_INT(cs->count, 3);
+        check_case(cs, 0, ARGS("[1,2]", "3"), "[0,1]", NULL, 0, 2);
+        check_case(cs, 1, ARGS("[4,5]", "9"), NULL, NULL, 0, 6);
+        check_case(cs, 2, ARGS("[6]", "7"), NULL, NULL, 0, 10);
+        CHECK_STR(cs->items[2].file, TMP "/mine.txt");
+        /* No expected result: only the inputs are parsed. */
+        args = exp = NULL;
+        CHECK_INT(lc_case_values(ctx, &p, &cs->items[1], pool, &args, &exp),
+                  LC_OK);
+        CHECK(args != NULL && exp == NULL);
+    }
+    lc_cases_free(cs);
+
+    /* A blank line right after '=>' is just a blank line. */
+    write_file(TMP "/mine.txt", "[1]\n2\n=> [0]\n\n\n");
+    CHECK_INT(lc_load_user_cases(ctx, TMP "/mine.txt", &cs), LC_OK);
+    if (cs)
+        CHECK_INT(cs->count, 1);
+    lc_cases_free(cs);
+    cs = NULL;
+
+    /* An empty file has no cases. */
+    write_file(TMP "/mine.txt", "# nothing yet\n");
+    CHECK_INT(lc_load_user_cases(ctx, TMP "/mine.txt", &cs), LC_OK);
+    if (cs)
+        CHECK_INT(cs->count, 0);
+    lc_cases_free(cs);
+    cs = NULL;
+
+    CHECK_INT(lc_load_user_cases(ctx, TMP "/missing.txt", &cs),
+              LC_ERR_NOTFOUND);
+    CHECK(cs == NULL);
+    CHECK_INT(lc_load_user_cases(ctx, TMP, &cs), LC_ERR_IO);
+    CHECK_STR(lc_last_error(ctx), "cannot read '" TMP "': not a regular "
+              "file");
+    CHECK_INT(lc_load_user_cases(ctx, NULL, &cs), LC_ERR_INVALID);
+    CHECK_INT(lc_load_user_cases(ctx, TMP "/mine.txt", NULL),
+              LC_ERR_INVALID);
+
+    expect_user_error("@example\n1\n=> 2\n",
+                      TMP "/mine.txt:1: @example is only for a problem's "
+                      "tests.txt");
+    expect_user_error("1\n\n=> 2\n",
+                      TMP "/mine.txt:3: '=>' with no input lines before it");
+    expect_user_error("1\n=>\n", TMP "/mine.txt:2: nothing after '=>'");
+
+    lc_pool_free(pool);
+    lc_arena_free(&a);
+    lc_close(ctx);
+}
+
 static void check_packs(const char *dir, size_t min_cases)
 {
     lc_options opt;
@@ -724,6 +833,8 @@ int main(void)
     RUN(test_load_cases);
     RUN(test_no_inputs);
     RUN(test_case_values);
+    RUN(test_case_file);
+    RUN(test_user_cases);
     RUN(test_shipped_packs);
     return test_report();
 }

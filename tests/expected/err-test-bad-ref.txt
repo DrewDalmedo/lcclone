@@ -1,0 +1,6 @@
+--- stdout
+Building tests/fixtures/judge/0012-bad-ref/solution.c (C, c11)
+Building the reference solution (C, c11)
+--- stderr
+lc: tests/fixtures/judge/0012-bad-ref/cases.txt:3: the reference solution failed on this case (Runtime Error: killed by SIGSEGV); check that the case fits the problem's constraints
+--- exit 3

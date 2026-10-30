@@ -1,11 +1,13 @@
 # Problem pack format
 
 A problem pack is a directory holding one problem. This document describes
-the parts that milestones M0 and M1 read: `problem.md` with its typed
-signature, `tests.txt` and the literals its cases are written in, and the
-markdown subset used for statements. Later milestones add `ref.c`, `gen.c`,
-`checker.c` and the other files listed in `docs/PLAN.md` §5.5. How values
-travel between `lc` and a solution's harness is in [wire.md](wire.md).
+the parts `lc` reads so far: `problem.md` with its typed signature,
+`tests.txt` and the literals its cases are written in, the reference
+solution, and the markdown subset used for statements. Later milestones add
+`gen.c`, `brute.c`, `checker.c` and the other files listed in
+`docs/PLAN.md` §5.5. How values travel between `lc` and a solution's
+harness is in [wire.md](wire.md); how solutions are built and judged is in
+[judging.md](judging.md).
 
 ## Where packs live
 
@@ -24,8 +26,16 @@ travel between `lc` and a solution's harness is in [wire.md](wire.md).
 ```
 problems/0001-two-sum/
   problem.md     required: header and statement
-  tests.txt      test cases; M0 shows the ones marked @example
+  tests.txt      test cases; lc show shows the ones marked @example
+  ref.c          the reference solution (or ref.cpp)
 ```
+
+**The reference solution** is written like any solution: just the
+function (or, in C++, the `Solution` class), with no `#include`s, as in
+the stub `lc start` writes. It must pass every case of the pack. `lc test`
+runs it to work out the expected result of a case of your own that doesn't
+give one (see [workspace.md](workspace.md)). Everything shipped must build
+as C11 or C++11, so that it builds whatever standard a user picks.
 
 **Name.** The directory is named `NNNN-slug`: the problem ID padded with zeros
 to at least four digits (`printf("%04d-%s", id, slug)`), a dash and the slug.

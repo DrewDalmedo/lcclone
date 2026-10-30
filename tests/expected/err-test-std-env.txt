@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: unknown C++ standard 'gnu++17' in $LC_CXXSTD (expected c++11, c++14, c++17, c++20, c++23 or max)
+--- exit 3

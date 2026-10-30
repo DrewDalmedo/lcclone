@@ -1,0 +1,19 @@
+--- stdout
+usage: lc start <problem> [--lang LANG] [--no-edit] [--json]
+
+Set up the problem's directory in your workspace (~/lc, or
+$LC_WORKSPACE) and open the solution file in your editor ($VISUAL,
+$EDITOR or vi). The directory gets README.md with the statement,
+solution.c or solution.cpp with the function to write, and cases.txt
+for cases of your own. The solution and cases.txt are never
+overwritten. The workspace also gets a .clangd file, so that clangd
+understands solution files.
+
+Options:
+  --lang LANG        c or cpp (default: the language of an existing
+                     solution, else cpp)
+  --no-edit          don't open the editor; print the solution's path
+  --json             print what was set up as JSON (implies --no-edit)
+  -h, --help         show this help
+--- stderr
+--- exit 0

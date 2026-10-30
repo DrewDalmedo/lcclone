@@ -1,0 +1,8 @@
+# Echo uint32[][]: the result must be the input, exactly.
+
+@example
+[[0,4294967295],[2147483648]]
+=> [[0,4294967295],[2147483648]]
+
+[]
+=> []

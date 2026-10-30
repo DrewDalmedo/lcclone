@@ -12,9 +12,12 @@
 
 #include "lc.h"
 
-/* Exit statuses (docs/PLAN.md section 3); 1 and 2 are kept for verdicts. */
-#define CLI_EXIT_OK 0
-#define CLI_EXIT_ERROR 3
+/* Exit statuses (docs/PLAN.md section 3). */
+#define CLI_EXIT_OK 0           /* success; Accepted */
+#define CLI_EXIT_VERDICT 1      /* any verdict other than Accepted */
+#define CLI_EXIT_COMPILE 2      /* Compile Error */
+#define CLI_EXIT_ERROR 3        /* usage and other errors */
+#define CLI_EXIT_CANCELLED 130  /* stopped by ^C */
 
 /* --color=WHEN */
 enum { CLI_COLOR_AUTO, CLI_COLOR_ALWAYS, CLI_COLOR_NEVER };
@@ -24,7 +27,12 @@ enum {
     CLI_OPT_COLOR = 1 << 0,
     CLI_OPT_NO_PAGER = 1 << 1,
     CLI_OPT_DIFFICULTY = 1 << 2,
-    CLI_OPT_TAG = 1 << 3
+    CLI_OPT_TAG = 1 << 3,
+    CLI_OPT_LANG = 1 << 4,
+    CLI_OPT_STD = 1 << 5,
+    CLI_OPT_SANITIZE = 1 << 6,
+    CLI_OPT_CASE = 1 << 7,
+    CLI_OPT_NO_EDIT = 1 << 8
 };
 
 typedef struct cli cli;
@@ -53,6 +61,11 @@ struct cli {
     size_t nargs;
     const char **tags;      /* --tag values; a problem must have all of them */
     size_t ntags;
+    const char *lang;       /* --lang */
+    const char *std;        /* --std */
+    int sanitize;           /* --sanitize */
+    const char *case_file;  /* --case */
+    int no_edit;            /* --no-edit */
 };
 
 /* ------------------------------------------------------------------ */
@@ -94,6 +107,24 @@ int cli_emit_json(cli *c, lc_ctx *ctx, lc_json *j, lc_str *out);
 
 int cmd_list(cli *c);
 int cmd_show(cli *c);
+
+/* ------------------------------------------------------------------ */
+/* cmd_start.c, cmd_test.c                                             */
+/* ------------------------------------------------------------------ */
+
+int cmd_start(cli *c);
+int cmd_test(cli *c);
+int cmd_submit(cli *c);
+
+/* The language --lang names, or NULL after reporting a usage error
+ * (*rc is set). NULL with *rc = CLI_EXIT_OK when there is no --lang. */
+const lc_lang *cli_lang_option(cli *c, int *rc);
+
+/*
+ * A path as the user should see it: relative to the current directory
+ * when it is inside it, else as it is. Appended to `out`.
+ */
+void cli_show_path(lc_str *out, const char *path);
 
 /* ------------------------------------------------------------------ */
 /* ansi.c: colour, terminal width and word wrapping                    */

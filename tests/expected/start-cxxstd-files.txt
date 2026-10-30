@@ -1,0 +1,13 @@
+--- .clangd
+# Written by lc. It tells clangd about lc's preludes and the standards lc
+# builds with, for the solution files here. lc rewrites it as needed; to keep
+# changes of your own, delete this first line and lc will leave it alone.
+If:
+  PathMatch: .*\.c
+CompileFlags:
+  Add: [-xc, -std=c11, -include, "@TMP@/ws3/.lcclone/lc_prelude.h"]
+---
+If:
+  PathMatch: .*\.(cpp|cc|cxx)
+CompileFlags:
+  Add: [-xc++, -std=c++17, -include, "@TMP@/ws3/.lcclone/lc_prelude.hpp"]

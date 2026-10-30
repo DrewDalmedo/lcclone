@@ -11,9 +11,12 @@
 #define _FILE_OFFSET_BITS 64
 #endif
 
+#include <errno.h>
+#include <limits.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "internal.h"
 
@@ -214,6 +217,7 @@ lc_verdict lc_classify(const lc_limits *l, const lc_run_result *r,
 
 typedef struct report_priv {
     lc_arena arena;
+    lc_arena side;            /* lc_judge's: the build, the cases it ran */
 } report_priv;
 
 void lc_report_free(lc_report *report)
@@ -223,9 +227,25 @@ void lc_report_free(lc_report *report)
     if (report->priv_) {
         report_priv *rp = report->priv_;
         lc_arena_free(&rp->arena);
+        lc_arena_free(&rp->side);
         free(rp);
     }
     free(report);
+}
+
+/* An empty report, or NULL when out of memory. */
+static lc_report *new_report(void)
+{
+    lc_report *report = calloc(1, sizeof *report);
+    report_priv *rp = calloc(1, sizeof *rp);
+
+    if (!report || !rp) {
+        free(report);
+        free(rp);
+        return NULL;
+    }
+    report->priv_ = rp;
+    return report;
 }
 
 /* A NUL-terminated copy of n bytes that may include NULs. */
@@ -316,6 +336,7 @@ typedef struct judge_run {
     lc_str why;
     lc_str text;
     lc_arena *arena;          /* the report's */
+    size_t first_custom;      /* index of the first case of your own */
 } judge_run;
 
 /*
@@ -414,6 +435,12 @@ static int judge_case(judge_run *jr, const lc_case *c, size_t index,
     cr->index = index;
     cr->line = c->line;
     cr->example = c->example;
+    cr->custom = index >= jr->first_custom;
+    if (c->file) {
+        cr->file = lc_arena_strdup(jr->arena, c->file);
+        if (!cr->file)
+            goto nomem;
+    }
     cr->time_ms = jr->run.cpu_ms;
     cr->wall_ms = jr->run.wall_ms;
     cr->memory_kb = jr->run.max_rss_kb;
@@ -500,14 +527,11 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
         return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s) has no "
                             "test cases to run", p->id, p->slug);
 
-    report = calloc(1, sizeof *report);
-    rp = calloc(1, sizeof *rp);
-    if (!report || !rp) {
-        free(report);
-        free(rp);
+    report = new_report();
+    if (!report)
         return lc_oom(ctx);
-    }
-    report->priv_ = rp;
+    rp = report->priv_;
+    report->build = opts ? opts->build : NULL;
     results = lc_arena_array(&rp->arena, ncases, sizeof *results);
     if (!results) {
         lc_report_free(report);
@@ -524,7 +548,15 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
     memory_mb = opts && opts->memory_mb > 0 ? opts->memory_mb
                                             : p->memory_limit_mb;
     lc_limits_init(&jr.lim, time_ms, memory_mb);
+    if (opts && opts->sanitize) {
+        jr.lim.memory_mb = 0;
+        if (jr.lim.time_ms <= INT_MAX / 3)
+            jr.lim.time_ms *= 3;
+    }
+    jr.first_custom = opts && opts->ncustom <= ncases ? ncases - opts->ncustom
+                                                      : ncases;
     jr.spec.path = exe;
+    jr.spec.envp = opts ? opts->envp : NULL;
     jr.spec.cwd = opts ? opts->cwd : NULL;
     jr.spec.result_fd = 1;
     jr.spec.cancel = hooks ? hooks->cancel : NULL;
@@ -589,4 +621,402 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
     emit(hooks, &ev);
     *out = report;
     return LC_OK;
+}
+
+/* ------------------------------------------------------------------ */
+/* Judging a solution: building it, then running it                   */
+/* ------------------------------------------------------------------ */
+
+/* POSIX leaves declaring it to the program. */
+extern char **environ;
+
+/*
+ * The environment for a program built with the sanitizers: lc's, with
+ * LeakSanitizer turned off. Solutions written for LeetCode don't free
+ * what they allocate, and neither does the harness.
+ */
+static char **sanitize_env(lc_arena *a)
+{
+    const char *asan = NULL;
+    size_t n = 0, i, k = 0;
+    char **env;
+
+    while (environ[n])
+        n++;
+    env = lc_arena_array(a, n + 2, sizeof *env);
+    if (!env)
+        return NULL;
+    for (i = 0; i < n; i++) {
+        if (strncmp(environ[i], "ASAN_OPTIONS=", 13) == 0)
+            asan = environ[i] + 13;
+        else
+            env[k++] = environ[i];
+    }
+    /* Options later in the list win. */
+    env[k] = asan && *asan ? lc_arena_printf(a, "ASAN_OPTIONS=%s:"
+                                             "detect_leaks=0", asan)
+                           : "ASAN_OPTIONS=detect_leaks=0";
+    if (!env[k])
+        return NULL;
+    env[k + 1] = NULL;
+    return env;
+}
+
+/*
+ * Builds `src`, with build events. On LC_OK, *bout is the build (in `a`)
+ * unless *cancelled is set, and *exe the program when it compiled.
+ */
+static int build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+                      const char *src, const char *std, int sanitize,
+                      int reference, const lc_hooks *hooks, lc_arena *a,
+                      lc_build **bout, const char **exe, int *cancelled)
+{
+    lc_compiler cc;
+    lc_build_req req;
+    lc_build *b;
+    lc_event ev;
+    int rc;
+
+    *bout = NULL;
+    *exe = NULL;
+    *cancelled = 0;
+    rc = lc_compiler_get(ctx, lang, a, &cc);
+    if (rc != LC_OK)
+        return rc;
+    memset(&req, 0, sizeof req);
+    req.p = p;
+    req.lang = lang;
+    req.cc = &cc;
+    req.src = src;
+    req.sanitize = sanitize;
+    req.reference = reference;
+    req.cancel = hooks ? hooks->cancel : NULL;
+    rc = lc_std_pick(ctx, lang, &cc, std, &req.std, &req.std_flag);
+    if (rc != LC_OK)
+        return rc;
+    b = lc_arena_zalloc(a, sizeof *b);
+    if (!b)
+        return lc_oom(ctx);
+    rc = lc_build_init(ctx, &req, a, b);
+    if (rc != LC_OK)
+        return rc;
+    if (cancel_set(hooks)) {
+        *cancelled = 1;
+        return LC_OK;
+    }
+    memset(&ev, 0, sizeof ev);
+    ev.kind = LC_EV_BUILD_START;
+    ev.build = b;
+    emit(hooks, &ev);
+    rc = lc_build_source(ctx, &req, a, b, exe, cancelled);
+    if (rc != LC_OK || *cancelled)
+        return rc;
+    ev.kind = LC_EV_BUILD_DONE;
+    emit(hooks, &ev);
+    *bout = b;
+    return LC_OK;
+}
+
+/* The directory part of a path, in `a`. */
+static char *dir_of(lc_arena *a, const char *path)
+{
+    const char *slash = strrchr(path, '/');
+
+    if (!slash)
+        return lc_arena_strdup(a, ".");
+    return lc_arena_strndup(a, path, slash == path ? 1 : (size_t)(slash - path));
+}
+
+/*
+ * Runs the reference solution `exe` on case `c` and sets *out to its
+ * result as a literal, in `a`. A reference that fails on the case is an
+ * error, since its answer can't be trusted.
+ */
+static int ref_expected(lc_ctx *ctx, const lc_problem *p, const char *exe,
+                        const char *cwd, const lc_case *c,
+                        const lc_hooks *hooks, lc_arena *a, const char **out,
+                        int *cancelled)
+{
+    lc_pool *pool = lc_pool_new();
+    lc_str in = LC_STR_INIT, why = LC_STR_INIT, text = LC_STR_INIT;
+    const lc_value *args, *exp, *got = NULL;
+    const char *res;
+    lc_limits lim;
+    lc_run_spec spec;
+    lc_run_result r;
+    lc_verdict v;
+    size_t i, pos = 0;
+    int rc;
+
+    *out = NULL;
+    lc_run_result_init(&r);
+    if (!pool)
+        return lc_oom(ctx);
+    rc = lc_case_values(ctx, p, c, pool, &args, &exp);
+    for (i = 0; rc == LC_OK && i < c->nargs; i++) {
+        rc = lc_wire_encode(ctx, input_type(p, i), &args[i], &in);
+        lc_str_putc(&in, '\n');
+    }
+    if (rc == LC_OK && in.failed)
+        rc = lc_oom(ctx);
+    if (rc != LC_OK)
+        goto done;
+
+    memset(&spec, 0, sizeof spec);
+    /* Room for a big case of your own on a busy machine. */
+    lc_limits_init(&lim, p->time_limit_ms <= INT_MAX / 2
+                             ? 2 * p->time_limit_ms : p->time_limit_ms,
+                   p->memory_limit_mb);
+    lc_limits_apply(&lim, &spec);
+    spec.path = exe;
+    spec.cwd = cwd;
+    spec.input = in.data;
+    spec.input_len = in.len;
+    spec.result_fd = 1;
+    spec.cancel = hooks ? hooks->cancel : NULL;
+    rc = lc_run(ctx, &spec, &r);
+    if (rc != LC_OK)
+        goto done;
+    if (r.cancelled) {
+        *cancelled = 1;
+        goto done;
+    }
+    v = lc_classify(&lim, &r, &why);
+    res = lc_str_cstr(&r.result);
+    if (v == LC_VERDICT_NONE) {
+        rc = lc_wire_decode(ctx, pool, &p->sig->ret, res, r.result.len, &pos,
+                            &got);
+        if (rc == LC_ERR_NOMEM)
+            goto done;
+        if (rc != LC_OK) {
+            v = LC_RUNTIME_ERROR;
+            lc_str_printf(&why, "its result could not be read: %s",
+                          lc_last_error(ctx));
+        }
+    }
+    if (v != LC_VERDICT_NONE) {
+        rc = lc_set_error(ctx, LC_ERR_INVALID, "%s:%d: the reference "
+                          "solution failed on this case (%s: %s); check that "
+                          "the case fits the problem's constraints",
+                          c->file ? c->file : "?", c->line, lc_verdict_name(v),
+                          lc_str_cstr(&why));
+        goto done;
+    }
+    rc = lc_value_print(got, &text);
+    if (rc == LC_OK) {
+        *out = lc_arena_strndup(a, lc_str_cstr(&text), text.len);
+        if (!*out)
+            rc = LC_ERR_NOMEM;
+    }
+    if (rc != LC_OK)
+        rc = lc_oom(ctx);
+done:
+    lc_run_result_free(&r);
+    lc_str_free(&in);
+    lc_str_free(&why);
+    lc_str_free(&text);
+    lc_pool_free(pool);
+    return rc;
+}
+
+/* The pack's reference solution and its language, or NULL. */
+static char *find_ref(lc_arena *a, const lc_problem *p, const lc_lang **lang)
+{
+    static const char *const names[] = {"ref.c", "ref.cpp"};
+    size_t i;
+
+    for (i = 0; i < sizeof names / sizeof names[0]; i++) {
+        char *path = lc_path_join(a, p->dir, names[i]);
+
+        if (path && lc_is_file(path)) {
+            *lang = lc_lang_for_path(path);
+            return path;
+        }
+    }
+    return NULL;
+}
+
+/* A report for a run that stopped at a build: a compile error, or
+ * cancelled. It takes over `side`. */
+static int build_report(lc_ctx *ctx, lc_arena *side, const lc_build *b,
+                        size_t total, const lc_hooks *hooks, lc_report **out)
+{
+    lc_report *report = new_report();
+    lc_event ev;
+
+    if (!report)
+        return lc_oom(ctx);
+    ((report_priv *)report->priv_)->side = *side;
+    side->head = NULL;
+    report->build = b;
+    report->total = total;
+    if (b && !b->ok)
+        report->verdict = LC_COMPILE_ERROR;
+    else
+        report->cancelled = 1;
+    memset(&ev, 0, sizeof ev);
+    ev.kind = LC_EV_DONE;
+    ev.report = report;
+    emit(hooks, &ev);
+    *out = report;
+    return LC_OK;
+}
+
+int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+             const char *src, const lc_judge_options *opts,
+             const lc_hooks *hooks, lc_report **out)
+{
+    lc_judge_options defaults;
+    const char *given = src;
+    lc_arena side = {NULL};
+    lc_cases *pack = NULL;
+    lc_case *cases = NULL;
+    const lc_cases *user;
+    lc_build *build, *rbuild;
+    const char *exe, *rexe;
+    const lc_lang *rlang = NULL;
+    char *ref, *rdir;
+    lc_judge_opts jo;
+    lc_pool *pool = NULL;
+    struct stat st;
+    size_t n = 0, npack = 0, nuser, i, need_ref = 0, first_need = 0;
+    int rc, cancelled;
+
+    if (!out)
+        return lc_set_error(ctx, LC_ERR_INVALID, "lc_judge: bad arguments");
+    *out = NULL;
+    if (!p || !lang || !src)
+        return lc_set_error(ctx, LC_ERR_INVALID, "lc_judge: bad arguments");
+    if (!opts) {
+        memset(&defaults, 0, sizeof defaults);
+        defaults.examples = 1;
+        opts = &defaults;
+    }
+    rc = lc_codegen_check(ctx, p);
+    if (rc != LC_OK)
+        return rc;
+    if (stat(given, &st) != 0 || !(src = lc_realpath(&side, given))) {
+        rc = errno == ENOMEM ? lc_oom(ctx)
+                             : lc_set_errno(ctx, errno == ENOENT ||
+                                                     errno == ENOTDIR
+                                                 ? LC_ERR_NOTFOUND
+                                                 : LC_ERR_IO,
+                                            errno, "cannot open '%s'", given);
+        lc_arena_free(&side);
+        return rc;
+    }
+
+    /* The cases: the pack's, then yours. */
+    if (opts->all || opts->examples) {
+        rc = lc_load_cases(ctx, p, &pack);
+        if (rc != LC_OK)
+            return rc;
+        for (i = 0; i < pack->count; i++)
+            if (opts->all || pack->items[i].example)
+                npack++;
+    }
+    user = opts->cases;
+    nuser = user ? user->count : 0;
+    if (npack + nuser == 0) {
+        rc = lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): no cases "
+                          "to run", p->id, p->slug);
+        goto done;
+    }
+    cases = lc_arena_array(&side, npack + nuser, sizeof *cases);
+    pool = lc_pool_new();
+    if (!cases || !pool) {
+        rc = lc_oom(ctx);
+        goto done;
+    }
+    for (i = 0; pack && i < pack->count; i++)
+        if (opts->all || pack->items[i].example)
+            cases[n++] = pack->items[i];
+    for (i = 0; i < nuser; i++) {
+        if (!user->items[i].expected && need_ref++ == 0)
+            first_need = n;
+        cases[n++] = user->items[i];
+    }
+    /* Every case must fit the signature, before anything is built. */
+    for (i = 0; i < n; i++) {
+        const lc_value *args, *exp;
+
+        rc = lc_case_values(ctx, p, &cases[i], pool, &args, &exp);
+        if (rc != LC_OK)
+            goto done;
+    }
+    ref = need_ref ? find_ref(&side, p, &rlang) : NULL;
+    if (need_ref && !ref) {
+        rc = lc_set_error(ctx, LC_ERR_INVALID, "%s:%d: this case has no "
+                          "expected result ('=> ...'), and problem %d (%s) "
+                          "has no reference solution to work one out",
+                          cases[first_need].file ? cases[first_need].file
+                                                 : "?",
+                          cases[first_need].line, p->id, p->slug);
+        goto done;
+    }
+
+    rc = build_step(ctx, p, lang, src, opts->std, opts->sanitize, 0, hooks,
+                    &side, &build, &exe, &cancelled);
+    if (rc != LC_OK)
+        goto done;
+    if (cancelled || !build->ok) {
+        rc = build_report(ctx, &side, build, n, hooks, out);
+        goto done;
+    }
+
+    if (need_ref) {
+        rc = build_step(ctx, p, rlang, ref, rlang->default_std, 0, 1, hooks,
+                        &side, &rbuild, &rexe, &cancelled);
+        if (rc != LC_OK)
+            goto done;
+        if (cancelled) {
+            rc = build_report(ctx, &side, NULL, n, hooks, out);
+            goto done;
+        }
+        if (!rbuild->ok) {
+            rc = lc_set_error(ctx, LC_ERR_INVALID, "the reference solution "
+                              "%s does not compile:\n%s", ref,
+                              rbuild->output);
+            goto done;
+        }
+        rdir = dir_of(&side, rexe);
+        if (!rdir) {
+            rc = lc_oom(ctx);
+            goto done;
+        }
+        for (i = first_need; i < n; i++) {
+            if (cases[i].expected)
+                continue;
+            rc = ref_expected(ctx, p, rexe, rdir, &cases[i], hooks, &side,
+                              &cases[i].expected, &cancelled);
+            if (rc != LC_OK)
+                goto done;
+            if (cancelled) {
+                rc = build_report(ctx, &side, NULL, n, hooks, out);
+                goto done;
+            }
+        }
+    }
+
+    memset(&jo, 0, sizeof jo);
+    jo.cwd = dir_of(&side, exe);
+    jo.stop_on_failure = opts->stop_on_failure;
+    jo.ncustom = nuser;
+    jo.sanitize = opts->sanitize;
+    jo.envp = opts->sanitize ? sanitize_env(&side) : NULL;
+    jo.build = build;
+    if (!jo.cwd || (opts->sanitize && !jo.envp)) {
+        rc = lc_oom(ctx);
+        goto done;
+    }
+    rc = lc_judge_exe(ctx, p, exe, cases, n, &jo, hooks, out);
+    if (rc == LC_OK) {
+        ((report_priv *)(*out)->priv_)->side = side;
+        side.head = NULL;
+    }
+done:
+    lc_pool_free(pool);
+    lc_cases_free(pack);
+    lc_arena_free(&side);
+    return rc;
 }

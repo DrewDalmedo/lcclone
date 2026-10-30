@@ -1,0 +1,61 @@
+# Palindrome Number.
+
+@example The digits 1, 3, 3, 1 are the same in both directions.
+1331
+=> true
+
+@example Written out it is "-44", which reversed is "44-".
+-44
+=> false
+
+@example Reversed, it would be "07".
+70
+=> false
+
+# Zero and single digits.
+0
+=> true
+
+7
+=> true
+
+# Two digits.
+11
+=> true
+
+10
+=> false
+
+# Trailing zeros never match a leading digit.
+100
+=> false
+
+# Even and odd lengths.
+1001
+=> true
+
+1234321
+=> true
+
+123454321
+=> true
+
+1000021
+=> false
+
+# The largest palindrome below 2^31; reversing the digits of some numbers
+# near the limit would overflow a 32-bit int.
+2147447412
+=> true
+
+2147483647
+=> false
+
+1999999999
+=> false
+
+-2147483648
+=> false
+
+-1
+=> false

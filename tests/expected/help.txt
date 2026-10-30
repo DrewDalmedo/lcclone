@@ -1,12 +1,16 @@
 --- stdout
 usage: lc <command> [options] [arguments]
 
-lc is an offline LeetCode-style practice tool. It lists problems and
-shows their statements and examples in the terminal.
+lc is an offline LeetCode-style practice tool. It lists problems,
+shows their statements, sets up a directory for your solution, and
+judges your solution against the problem's test cases.
 
 Commands:
   list      List problems, filtered by difficulty and tags
   show      Show a problem's statement and examples
+  start     Set up a problem's directory and open your editor
+  test      Run your solution on the examples and your own cases
+  submit    Run your solution on every case of the problem
   help      Show help for lc or for one command
   version   Print the version
 
@@ -17,11 +21,21 @@ Environment:
   LC_PROBLEMS  directory of problem packs (default:
                $XDG_DATA_HOME/lcclone/problems, else
                ~/.local/share/lcclone/problems, then the installed ones)
+  LC_WORKSPACE directory for your solutions (default: ~/lc)
+  CC, CXX      the C and C++ compilers (default: cc, c++)
+  LC_CSTD, LC_CXXSTD
+               the C and C++ standards (default: c11, c++11)
+  VISUAL, EDITOR
+               editor for 'lc start' (default: vi)
   PAGER        pager for 'lc show' (default: less, then more)
   NO_COLOR     if set and not empty, --color=auto never uses colour
   COLUMNS      width to wrap text at (default: the terminal's, or 80)
+  XDG_CACHE_HOME
+               builds go in $XDG_CACHE_HOME/lcclone (default:
+               ~/.cache/lcclone)
 
-Exit status: 0 on success, 3 on a usage error, an unknown problem or
-any other failure.
+Exit status: 0 on success or Accepted, 1 for any other verdict, 2 for
+Compile Error, 3 on a usage error, an unknown problem or any other
+failure, and 130 when ^C stopped a run.
 --- stderr
 --- exit 0

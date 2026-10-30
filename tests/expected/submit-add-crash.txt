@@ -1,0 +1,10 @@
+--- stdout
+Building tests/fixtures/judge/0010-add/crash.c (C, c11)
+
+tests/fixtures/judge/0010-add/crash.c:1: Runtime Error on case 3 of 5 (killed by SIGSEGV)
+  Input:    a = 100, b = 23
+  Expected: 123
+
+Runtime Error: 2/5 cases passed
+--- stderr
+--- exit 1

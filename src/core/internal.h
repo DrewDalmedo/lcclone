@@ -65,6 +65,10 @@ void *lc_grow(void *p, size_t *cap, size_t need, size_t elem);
 struct lc_ctx {
     lc_arena arena;         /* lives until lc_close: options, problem index */
     char *opt_problems_dir; /* copy of lc_options.problems_dir, or NULL */
+    char *opt_workspace_dir; /* copy of lc_options.workspace_dir, or NULL */
+    char *opt_cache_dir;    /* copy of lc_options.cache_dir, or NULL */
+    char *workspace_dir;    /* set by lc_workspace_dir, in `arena` */
+    char *cache_dir;        /* set by lc_cache_dir, in `arena` */
 
     lc_str err;             /* last error message */
     int err_nomem;          /* formatting the last error ran out of memory */
@@ -125,6 +129,16 @@ int lc_list_dir(lc_ctx *ctx, const char *path, lc_arena *a,
 
 int lc_is_dir(const char *path);  /* 1 if path is a directory (follows links) */
 int lc_is_file(const char *path); /* 1 if path is a regular file (follows links) */
+
+/*
+ * Looks a program up like a shell: a name with a '/' is used as it is,
+ * anything else is searched for in $PATH. Returns the path of an
+ * executable regular file, in `a`, or NULL.
+ */
+char *lc_which(lc_arena *a, const char *name);
+
+/* The last part of a path, ignoring trailing slashes, in `a`. */
+char *lc_basename(lc_arena *a, const char *path);
 
 /* Joins with one '/'. Returns a copy of `b` when `b` is absolute. */
 char *lc_path_join(lc_arena *a, const char *dir, const char *name);
@@ -235,6 +249,8 @@ void lc_fmt_double(double v, char *buf);
 typedef struct lc_run_spec {
     const char *path;         /* the program, used as given: no $PATH search */
     char *const *argv;        /* NULL-terminated; NULL means { path, NULL } */
+    char *const *envp;        /* NULL-terminated environment; NULL keeps
+                                 the caller's */
     const char *cwd;          /* directory to run in; NULL keeps the caller's */
     const char *input;        /* written to stdin, which is then closed */
     size_t input_len;
@@ -337,6 +353,13 @@ typedef struct lc_judge_opts {
     int stop_on_failure;      /* stop after the first case not accepted */
     int time_ms;              /* 0: the problem's time_limit_ms */
     int memory_mb;            /* 0: the problem's memory_limit_mb */
+    size_t ncustom;           /* the last ncustom cases are your own */
+    /* the program is built with sanitizers: no address-space limit and
+     * no memory verdict (ASan's shadow memory would trip both), and three
+     * times the time limit */
+    int sanitize;
+    char *const *envp;        /* the programs' environment; NULL: lc's */
+    const lc_build *build;    /* becomes the report's `build` */
 } lc_judge_opts;
 
 /*
@@ -365,5 +388,113 @@ const char *lc_getenv(const char *name);
  * Example: lc_xdg_dir(a, "XDG_DATA_HOME", ".local/share").
  */
 char *lc_xdg_dir(lc_arena *a, const char *env, const char *fallback);
+
+/*
+ * The cache directory (lc_options.cache_dir, $XDG_CACHE_HOME/lcclone or
+ * ~/.cache/lcclone), or NULL with an error when there is none. It may not
+ * exist yet. Valid until lc_close.
+ */
+const char *lc_cache_dir(lc_ctx *ctx);
+
+/* ------------------------------------------------------------------ */
+/* The harness runtime (runtime/, embedded by tools/embed.awk)         */
+/* ------------------------------------------------------------------ */
+
+typedef struct lc_rt_file {
+    const char *name;         /* its path under runtime/, e.g. "c/lc_rt.c" */
+    const char *text;         /* NUL-terminated */
+    size_t len;
+} lc_rt_file;
+
+extern const lc_rt_file lc_rt_files[];
+extern const size_t lc_rt_nfiles;
+
+/* The embedded file with this name; NULL if there is none. */
+const lc_rt_file *lc_rt_file_get(const char *name);
+
+/* ------------------------------------------------------------------ */
+/* Compilers and standards (lang.c)                                    */
+/* ------------------------------------------------------------------ */
+
+typedef struct lc_compiler {
+    const char *cmd;          /* the command, e.g. "c++" or "ccache g++" */
+    const char *path;         /* its first word, found on $PATH */
+    const char *id;           /* cmd, path, size and mtime, on one line */
+} lc_compiler;
+
+/* Finds the language's compiler ($CC or $CXX, else cc or c++). Strings
+ * live in `a`. LC_ERR_NOTFOUND with a message when it isn't installed. */
+int lc_compiler_get(lc_ctx *ctx, const lc_lang *lang, lc_arena *a,
+                    lc_compiler *out);
+
+/* A NULL-terminated argv that runs the compiler with these arguments
+ * through /bin/sh, in `a`. The arguments are not copied. */
+char **lc_compiler_argv(lc_arena *a, const lc_compiler *cc,
+                        const char *const *args, size_t nargs);
+
+/*
+ * lc_std_resolve for a known compiler: *name is the standard and *flag
+ * the spelling this compiler wants after -std= (an older one such as
+ * c++2b for c++23 on some compilers). Both are static strings.
+ */
+int lc_std_pick(lc_ctx *ctx, const lc_lang *lang, const lc_compiler *cc,
+                const char *want, const char **name, const char **flag);
+
+/* ------------------------------------------------------------------ */
+/* Code generation (codegen.c)                                         */
+/* ------------------------------------------------------------------ */
+
+/* LC_OK if lc can build a harness for the problem, else LC_ERR_INVALID
+ * with a message saying what isn't supported yet. */
+int lc_codegen_check(lc_ctx *ctx, const lc_problem *p);
+
+/* Appends the harness: a main() that reads a case, calls the solution
+ * and writes the result, using the runtime (lc_rt_core.h, lc_rt.c(pp)). */
+int lc_codegen_harness(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+                       lc_str *out);
+
+/* Appends the #defines that make the prelude declare the node types the
+ * problem uses (LC_LISTNODE and the like). */
+void lc_codegen_defines(const lc_problem *p, lc_str *out);
+
+/* ------------------------------------------------------------------ */
+/* Building (build.c)                                                  */
+/* ------------------------------------------------------------------ */
+
+/* Name of the pseudo-file the harness's lines are reported under. */
+#define LC_HARNESS_FILE "lc_harness"
+
+typedef struct lc_build_req {
+    const lc_problem *p;
+    const lc_lang *lang;
+    const lc_compiler *cc;
+    const char *src;          /* the source file, an absolute path */
+    const char *std;          /* the standard's name and -std= flag, from */
+    const char *std_flag;     /* lc_std_pick */
+    int sanitize;
+    int reference;            /* the pack's reference solution */
+    const volatile sig_atomic_t *cancel;
+} lc_build_req;
+
+/*
+ * Fills in the parts of *b known before building (lang, std, source,
+ * compiler, sanitize, reference), with strings in `a`.
+ */
+int lc_build_init(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
+                  lc_build *b);
+
+/*
+ * Builds the source with its harness into the build cache, unless a
+ * build of exactly the same input is there already. Fills in the rest of
+ * *b, with strings in `a`, and on success sets *exe to the program's path
+ * (in `a`). A compile error is not a failure: b->ok is 0. *cancelled is
+ * set when the cancel flag stopped the compiler.
+ */
+int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
+                    lc_build *b, const char **exe, int *cancelled);
+
+/* Finds the compiler's messages in its output (gcc and clang style). */
+int lc_parse_diags(lc_arena *a, const char *text, size_t len,
+                   const char *source, lc_diag **out, size_t *count);
 
 #endif /* LC_INTERNAL_H */

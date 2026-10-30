@@ -1,0 +1,4 @@
+--- stdout
+@TMP@/ws2/0009-palindrome-number/solution.c
+--- stderr
+--- exit 0

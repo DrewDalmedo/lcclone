@@ -1,10 +1,54 @@
 # Judging
 
-How `lc` runs a solution and turns what happened into a LeetCode-style
-verdict. The runner and the judge landed in milestone M2. They work on a
-program that is already built (solution plus harness), so nothing in M2
-compiles anything; building and the `lc test` and `lc submit` commands
-arrive in M3.
+How `lc` builds a solution, runs it and turns what happened into a
+LeetCode-style verdict. The runner and the judge landed in milestone M2,
+building and the `lc test` and `lc submit` commands in M3. How to use
+those commands is in [workspace.md](workspace.md).
+
+## Building
+
+A solution is built together with a **harness**: a `main()` that `lc`
+generates from the problem's signature. It reads a case's inputs, calls
+the solution, and writes the result. The build is one source file made of:
+
+1. the **prelude** (`runtime/c/lc_prelude.h` or
+   `runtime/cpp/lc_prelude.hpp`): the headers a LeetCode solution expects
+   without `#include`, and `using namespace std;` in C++;
+2. `#line 1 "<your file>"`, then **your source**, so the compiler's
+   messages give your file's own line numbers;
+3. the **runtime** (`runtime/common/lc_rt_core.h`, then `runtime/c/lc_rt.c`
+   or `runtime/cpp/lc_rt.cpp`): reading and writing the
+   [wire format](wire.md) for every type;
+4. the **harness**, reported in messages as the file `lc_harness`. An error
+   there means the solution's function doesn't match the problem's
+   signature; `lc test` then prints the declaration it expected.
+
+The runtime files are compiled into `lc` itself, so `lc` needs nothing
+else on disk to build. Because it is one file, the C++ harness sees
+`class Solution`.
+
+**Compiling.** C is built with `$CC -std=c11 -O2 ... -lm` and C++ with
+`$CXX -std=c++11 -O2` (`cc` and `c++` when the variables aren't set), each
+through `/bin/sh`, so a compiler command may have arguments. The standard
+can be raised (see [workspace.md](workspace.md#languages-and-standards));
+a standard other than the default is first tried on an empty file, once
+per compiler, and the answer is kept in the cache.
+
+**The build cache.** Builds go in
+`$XDG_CACHE_HOME/lcclone/build/<NNNN-slug>/<lang>-<std>/` (by default
+`~/.cache/lcclone/...`), as `prog-<key>`. The key hashes everything that
+goes into the build: the whole source file above, the compiler flags, and
+the compiler's path, size and time stamp. A build whose program is
+already there is reused, so running the same solution again costs nothing.
+The last source file built stays there as `main.c` or `main.cpp`, for
+looking at. Each build writes files of its own and renames the program
+into place, so two `lc` processes never get in each other's way; programs
+of older builds are removed after ten minutes without use.
+
+**Compile Error.** When the compiler fails, nothing runs: the verdict is
+Compile Error, with the compiler's output and the messages found in it
+(file, line, column, severity, message). Warnings are shown when a build
+succeeds too, the first time.
 
 ## Running a program
 
@@ -94,7 +138,7 @@ A case that ran gets the first verdict below whose rule applies.
 | Wrong Answer | the result doesn't match the expected one under the problem's `compare:` mode |
 | Accepted | it matches |
 
-Compile Error comes with building, in M3.
+Compile Error comes from building (see above): no case runs.
 
 Memory is checked before time because a program that runs out of memory
 is often slow too (it may even be swapping), and the memory is the better
@@ -140,8 +184,10 @@ three events:
 - `case_done` after each case, with its result;
 - `done` at the end, with the whole report.
 
-`build_start` and `build_done` join them in M3. M3 also streams them as
-JSON Lines from `lc test --json` and `lc submit --json`.
+When the core builds the solution itself (`lc_judge`), two more come
+first: `build_start` and `build_done`, for the solution and, when your
+cases need it, for the reference solution. `lc test --json` and
+`lc submit --json` stream all of them as JSON Lines ([json.md](json.md)).
 
 The front-end can also pass a cancel flag. Setting it, from a signal
 handler or another thread, kills the program that is running within about
@@ -164,3 +210,31 @@ A process that judges (the `lc` CLI, or a GUI that links `liblc`) must:
 
 These limits are there to catch accidents such as infinite loops and
 runaway memory. They are not a sandbox: you are running your own code.
+
+## Your cases and the reference solution
+
+A case of your own (`cases.txt`, or `--case FILE`) may leave out its
+expected result. `lc` then builds the problem's **reference solution**
+(`ref.c` or `ref.cpp` in the pack) with the default standard, runs it on
+the case under twice the time limit, and uses its result. When the
+reference fails on a case, its answer can't be trusted, so `lc` stops with
+an error that names the case: the input most likely breaks the problem's
+constraints. A pack without a reference solution can only run your cases
+that give their expected result.
+
+## Sanitizers
+
+`--sanitize` builds with `-g -fsanitize=address,undefined
+-fno-sanitize-recover=all -fno-omit-frame-pointer`, and for C++ also turns
+on the standard library's bounds checks (`-D_GLIBCXX_ASSERTIONS` for
+libstdc++, `_LIBCPP_HARDENING_MODE_EXTENSIVE` for libc++). An
+out-of-bounds access, a use after free or undefined behaviour then stops
+the program, and the case is a Runtime Error with the sanitizer's report in
+its stderr.
+
+AddressSanitizer reserves a huge address space and uses far more memory
+than the program itself, so a sanitized run has no address-space limit and
+no memory verdict, and three times the time limit. Leak detection is off:
+a solution written for LeetCode doesn't free what it allocates, and
+neither does the harness. musl's gcc has no sanitizers; there the build
+fails with the compiler's message.

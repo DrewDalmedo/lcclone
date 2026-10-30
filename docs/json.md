@@ -3,8 +3,9 @@
 Every `lc` command takes `--json`. With it, `lc` prints one JSON document on
 stdout: a single line of compact JSON followed by a newline. Editor plugins
 and GUIs run `lc` as a subprocess and read that line, so nothing ever has to
-scrape the text output. This document describes milestone M0: `list`,
-`show`, `help` and `version`.
+scrape the text output. `lc test` and `lc submit` are the exception: they
+print one such line per event, as it happens ([JSON Lines](#lc-test---json-and-lc-submit---json)),
+so a front-end can show progress.
 
 ## General rules
 
@@ -52,8 +53,9 @@ A document is in JSON mode when `--json` appears among the options, even if
 the error is about another argument (`lc list --bogus --json`). A `--json`
 after `--` is an ordinary argument.
 
-Exit statuses: 0 on success; 3 for every error. Statuses 1 and 2 are kept for
-judging verdicts (milestone M3).
+Exit statuses: 0 on success; 3 for every error. `lc test` and `lc submit`
+also exit with 1 for a verdict other than Accepted, 2 for Compile Error and
+130 when ^C stopped the run.
 
 ## `lc list --json`
 
@@ -151,6 +153,110 @@ For example `**indices** of [the notes](https://example.com)` gives
 | `inputs[].value` | string      | the literal exactly as written (spaces at the ends trimmed). M0 does not parse literals, so a string literal keeps its quotes: `"\"abc\""` |
 | `output`      | string         | the expected output literal, as written after `=>` |
 | `explanation` | string or null | the text after `@example`, or null |
+
+## `lc start <problem> --json`
+
+Sets up the problem's directory (never opening an editor) and describes
+it:
+
+```json
+{"schema":1,"problem":{"id":1,"slug":"two-sum","title":"Two Sum"},"lang":"cpp","dir":"/home/me/lc/0001-two-sum","solution":"/home/me/lc/0001-two-sum/solution.cpp","readme":"/home/me/lc/0001-two-sum/README.md","cases":"/home/me/lc/0001-two-sum/cases.txt","created_solution":true,"created_cases":true,"warnings":[]}
+```
+
+| Member             | Type    | Meaning |
+|--------------------|---------|---------|
+| `problem`          | object  | `id`, `slug` and `title`, as in `lc list` |
+| `lang`             | string  | `"c"` or `"cpp"` |
+| `dir`              | string  | the problem's directory in the workspace |
+| `solution`         | string  | the solution file |
+| `readme`, `cases`  | string  | `README.md` and `cases.txt` |
+| `created_solution` | boolean | the solution file was just created from the stub (false: it was there already and was left alone) |
+| `created_cases`    | boolean | the same for `cases.txt` |
+
+## `lc test --json` and `lc submit --json`
+
+These print **JSON Lines**: one object per line, each written as soon as
+the event happens. Every line has `"schema":1` and an `"event"`, and the
+last line is either a `done` event or an error document (as above, for
+errors before or during the run). For example:
+
+```
+{"schema":1,"event":"build_start","reference":false,"lang":"cpp","std":"c++11","source":"/home/me/lc/0001-two-sum/solution.cpp","compiler":"c++","sanitize":false}
+{"schema":1,"event":"build_done","reference":false,"lang":"cpp","std":"c++11","source":"...","compiler":"c++","sanitize":false,"ok":true,"cached":false,"time_ms":412,"output":"","diagnostics":[]}
+{"schema":1,"event":"case_start","index":0,"total":3,"file":"/home/me/lcclone/problems/0001-two-sum/tests.txt","line":5}
+{"schema":1,"event":"case_done","total":3,"index":0,"file":"...","line":5,"example":true,"custom":false,"verdict":"accepted","message":null,"inputs":[{"name":"nums","value":"[5,2,7,9]"},{"name":"target","value":"11"}],"expected":"[1,3]","output":"[1,3]","stdout":"","stdout_truncated":false,"stderr":"","stderr_truncated":false,"time_ms":2,"wall_ms":3,"memory_kb":1360,"exit_code":0,"signal":null}
+{"schema":1,"event":"done","verdict":"accepted","passed":3,"total":3,"cancelled":false,"max_time_ms":2,"max_memory_kb":1360,"warnings":[]}
+```
+
+### `build_start`, `build_done`
+
+A source file is about to be built, or was. There is one pair for your
+solution and, when your cases need expected results worked out, one for
+the problem's reference solution, after it.
+
+| Member        | Type    | Meaning |
+|---------------|---------|---------|
+| `reference`   | boolean | this is the reference solution, not yours |
+| `lang`        | string  | `"c"` or `"cpp"` |
+| `std`         | string  | the standard, e.g. `"c++17"` |
+| `source`      | string  | the source file |
+| `compiler`    | string  | the compiler command, e.g. `"c++"` |
+| `sanitize`    | boolean | built with the sanitizers |
+
+`build_done` adds:
+
+| Member        | Type    | Meaning |
+|---------------|---------|---------|
+| `ok`          | boolean | it compiled |
+| `cached`      | boolean | an earlier build of exactly the same input was reused |
+| `time_ms`     | integer | how long compiling took; 0 when cached |
+| `output`      | string  | what the compiler printed (empty when cached) |
+| `diagnostics` | array   | the compiler's messages, below |
+
+Each diagnostic has `file` (as the compiler printed it: your solution's
+absolute path, `"lc_harness"` for lc's harness, or a tool such as `"ld"`),
+`line` and `column` (0 when not given), `severity` (`"error"`, `"warning"`
+or `"note"`), `message`, and `in_solution` (the file is your solution).
+
+### `case_start`, `case_done`
+
+| Member         | Type            | Meaning |
+|----------------|-----------------|---------|
+| `index`        | integer         | the case's position in the run, from 0 |
+| `total`        | integer         | how many cases the run has |
+| `file`, `line` | string, integer | where the case is: the pack's `tests.txt`, or your cases file |
+
+`case_done` adds:
+
+| Member      | Type            | Meaning |
+|-------------|-----------------|---------|
+| `example`   | boolean         | an `@example` case of the pack |
+| `custom`    | boolean         | one of your cases |
+| `verdict`   | string          | `"accepted"`, `"wrong_answer"`, `"runtime_error"`, `"time_limit_exceeded"`, `"memory_limit_exceeded"` or `"output_limit_exceeded"` |
+| `message`   | string or null  | why, for verdicts other than Accepted and Wrong Answer, e.g. `"killed by SIGSEGV"` |
+| `inputs`    | array           | `name` (or null) and `value`, as for examples in `lc show` |
+| `expected`  | string          | the expected result, as a literal |
+| `output`    | string or null  | the solution's result, as a literal; null when there was none that could be read |
+| `stdout`    | string          | the first 64 KiB of what it printed on stdout |
+| `stderr`    | string          | the last 64 KiB of its stderr |
+| `stdout_truncated`, `stderr_truncated` | boolean | they were cut |
+| `time_ms`   | integer         | CPU time |
+| `wall_ms`   | integer         | elapsed time |
+| `memory_kb` | integer         | peak resident memory |
+| `exit_code` | integer or null | its exit status; null when a signal ended it |
+| `signal`    | string or null  | the signal that ended it, e.g. `"SIGSEGV"` (a number if it has no name) |
+
+### `done`
+
+| Member          | Type    | Meaning |
+|-----------------|---------|---------|
+| `verdict`       | string  | the run's verdict: that of the first case that failed, `"accepted"`, `"compile_error"`, or `"none"` when it was cancelled first |
+| `passed`        | integer | cases accepted |
+| `total`         | integer | cases in the run |
+| `cancelled`     | boolean | ^C stopped it |
+| `max_time_ms`   | integer | the slowest case's CPU time |
+| `max_memory_kb` | integer | the largest peak memory of any case |
+| `warnings`      | array   | as in other documents |
 
 ## `lc help --json`
 

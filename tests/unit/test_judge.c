@@ -232,6 +232,10 @@ static void on_event(void *ud, const lc_event *ev)
         if (!ev->report)
             e->bad = 1;
         break;
+    case LC_EV_BUILD_START:
+    case LC_EV_BUILD_DONE:
+        e->bad = 1; /* lc_judge_exe builds nothing */
+        break;
     }
 }
 
