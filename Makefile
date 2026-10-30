@@ -31,12 +31,16 @@ LC_CFLAGS = -std=c11 -D_FILE_OFFSET_BITS=64 -Iinclude -Isrc/core \
 CORE_OBJ = \
 	src/core/arena.o \
 	src/core/cases.o \
+	src/core/compare.o \
 	src/core/ctx.o \
 	src/core/fs.o \
 	src/core/json.o \
 	src/core/md.o \
 	src/core/problem.o \
-	src/core/str.o
+	src/core/str.o \
+	src/core/types.o \
+	src/core/value.o \
+	src/core/wire.o
 
 CLI_OBJ = \
 	src/cli/ansi.o \
@@ -48,12 +52,16 @@ CLI_OBJ = \
 UNIT_TESTS = \
 	tests/unit/test_arena \
 	tests/unit/test_cases \
+	tests/unit/test_compare \
 	tests/unit/test_ctx \
 	tests/unit/test_fs \
 	tests/unit/test_json \
 	tests/unit/test_md \
 	tests/unit/test_problem \
-	tests/unit/test_str
+	tests/unit/test_str \
+	tests/unit/test_types \
+	tests/unit/test_value \
+	tests/unit/test_wire
 
 all: liblc.a lc
 
@@ -97,9 +105,10 @@ lc: $(CLI_OBJ) liblc.a
 	$(CC) $(LDFLAGS) -o $@ $(CLI_OBJ) liblc.a $(LDLIBS)
 
 # Unit tests: one program per suite, each linked against liblc.a.
-tests/unit/test_arena.o tests/unit/test_cases.o tests/unit/test_ctx.o \
-tests/unit/test_fs.o tests/unit/test_json.o tests/unit/test_md.o \
-tests/unit/test_problem.o tests/unit/test_str.o: \
+tests/unit/test_arena.o tests/unit/test_cases.o tests/unit/test_compare.o \
+tests/unit/test_ctx.o tests/unit/test_fs.o tests/unit/test_json.o \
+tests/unit/test_md.o tests/unit/test_problem.o tests/unit/test_str.o \
+tests/unit/test_types.o tests/unit/test_value.o tests/unit/test_wire.o: \
 	include/lc.h src/core/internal.h tests/unit/test.h
 # These two #include core sources (to wrap malloc), so they carry their own
 # copies of those modules and never use the ones in liblc.a.
@@ -111,6 +120,8 @@ tests/unit/test_arena: tests/unit/test_arena.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_arena.o liblc.a $(LDLIBS)
 tests/unit/test_cases: tests/unit/test_cases.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_cases.o liblc.a $(LDLIBS)
+tests/unit/test_compare: tests/unit/test_compare.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_compare.o liblc.a $(LDLIBS)
 tests/unit/test_ctx: tests/unit/test_ctx.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_ctx.o liblc.a $(LDLIBS)
 tests/unit/test_fs: tests/unit/test_fs.o liblc.a
@@ -123,6 +134,12 @@ tests/unit/test_problem: tests/unit/test_problem.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_problem.o liblc.a $(LDLIBS)
 tests/unit/test_str: tests/unit/test_str.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_str.o liblc.a $(LDLIBS)
+tests/unit/test_types: tests/unit/test_types.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_types.o liblc.a $(LDLIBS)
+tests/unit/test_value: tests/unit/test_value.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_value.o liblc.a $(LDLIBS)
+tests/unit/test_wire: tests/unit/test_wire.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_wire.o liblc.a $(LDLIBS)
 
 check: test
 test: all $(UNIT_TESTS)

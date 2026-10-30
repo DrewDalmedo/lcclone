@@ -1,10 +1,11 @@
 # Problem pack format
 
 A problem pack is a directory holding one problem. This document describes
-the parts that milestone M0 reads: `problem.md`, the `@example` cases in
-`tests.txt`, and the markdown subset used for statements. Later milestones add
-`ref.c`, `gen.c`, `checker.c` and the other files listed in `docs/PLAN.md`
-§5.5.
+the parts that milestones M0 and M1 read: `problem.md` with its typed
+signature, `tests.txt` and the literals its cases are written in, and the
+markdown subset used for statements. Later milestones add `ref.c`, `gen.c`,
+`checker.c` and the other files listed in `docs/PLAN.md` §5.5. How values
+travel between `lc` and a solution's harness is in [wire.md](wire.md).
 
 ## Where packs live
 
@@ -75,7 +76,7 @@ You have a list of integers `nums` and a goal value `target`. ...
 - A file containing a NUL byte is an error, and so is a `problem.md` larger
   than 16 MiB.
 
-### Fields read in M0
+### Fields
 
 | Key               | Required | Meaning |
 |-------------------|----------|---------|
@@ -86,30 +87,76 @@ You have a list of integers `nums` and a goal value `target`. ...
 | `tags`            | no       | comma-separated; each tag uses lowercase letters, digits and dashes. Empty entries (`a,,b` or a trailing comma) are errors |
 | `signature`       | no       | e.g. `int[] twoSum(int[] nums, int target)`; see below |
 | `hidden`          | no       | extra inputs that only shape test data, e.g. `int pos`; see below |
+| `compare`         | no       | how a result is checked: `exact`, `float [TOL]`, `unordered LEVELS` or `checker`; see below |
 | `time_limit_ms`   | no       | positive integer, default 1000 |
 | `memory_limit_mb` | no       | positive integer, default 256 |
 
-Any other key (`compare`, `class`, `api`, `check`, ...) is kept as-is for later
-milestones; M0 does not interpret it. Every field, known or not, is available
+Any other key (`class`, `api`, `check`, ...) is kept as-is for later
+milestones and not interpreted yet. Every field, known or not, is available
 through `lc_problem.fields` and `lc_problem_field()`.
 
-### Argument names
+### Signature and hidden inputs
 
-To show an example as `nums = [1,2], target = 3`, the loader takes parameter
-names from `signature` and `hidden`. M0 does not check types; that is M1.
+```
+signature: int[] twoSum(int[] nums, int target)
+hidden: int pos
+```
 
-- **From `signature`:** the text between the first `(` and the last `)` is
-  split on commas that are not inside `<>`, `[]` or `()`. Each parameter is a
-  type followed by a name, and the name is the identifier at its end
-  (`[A-Za-z_][A-Za-z0-9_]*`). `()` gives no names.
-- **From `hidden`:** a comma-separated list in the same form as parameters,
-  e.g. `int pos` or `int skipA, int skipB`. Its names come after the
-  signature's. Without a `signature` there are no names at all, but `hidden`
-  is still checked.
-- The pack fails to load if `signature` has no parentheses, or if a parameter
-  is empty or has no type before its name (`int f(int)`, `int f(int x,)`).
-- A signature with no parameters is allowed, but tests.txt has no way yet to
-  write a case with no inputs; milestone M1 adds one.
+- **`signature`** is a return type, the function's name, then the
+  parameters in parentheses, each a type and a name, separated by commas.
+  Types are the names in [Types](#types); a return type may also be `void`.
+  Spaces around the parts don't matter, and none is needed after `]`
+  (`int[]nums`). Nothing may follow the `)`. `f()` has no parameters.
+- **`hidden`** lists extra inputs that only shape test data and are never
+  passed to the solution, such as where a list's cycle starts, in the same
+  form as parameters: `int pos`, or `int skipA, int skipB`. An empty value
+  means none.
+- **Names** are C identifiers. A name is the identifier at the end of its
+  parameter (`[A-Za-z_][A-Za-z0-9_]*`, not starting with a digit), and the
+  type is everything before it. Names must differ from each other, hidden
+  ones included, and some can't be used because the generated C and C++ code
+  needs them: keywords of either language (`class`, `new`, `bool`, ...),
+  `main`, `Solution`, `ListNode`, `TreeNode`, `Node`, `NULL`, `EOF`, `errno`,
+  `stdin`, `stdout`, `stderr`, and names starting with `_`, `lc_` or `LC_`.
+- **Argument names.** To show an example as `nums = [1,2], target = 3`, a
+  case's inputs are named after the signature's parameters followed by the
+  hidden inputs (`lc_problem.arg_names`). Without a `signature` there are no
+  names, but `hidden` is still checked.
+- **Errors** skip the pack, as for any other field:
+  `signature has no parentheses`, `signature: parameter 2 is empty`,
+  `signature: parameter 'int' has no name`,
+  `signature: unknown type 'vector<int>'`,
+  `signature: type 'ListNode[][]' is not supported (too many '[]')`,
+  `signature: only a return type can be void`,
+  `signature: duplicate parameter name 'x'`,
+  `signature: 'class' can't be used as a name`,
+  `signature: unexpected 'const' after ')'`,
+  `hidden: 'x' is already a parameter of the signature`, and the like.
+
+### compare
+
+How a solution's result is checked against the expected one.
+
+| Value              | Meaning |
+|--------------------|---------|
+| `exact`            | equal values (the default) |
+| `float [TOL]`      | doubles may differ by up to TOL, a positive number (default `1e-5`); everything else must be equal. The difference is absolute, not relative |
+| `unordered LEVELS` | the order of the arrays at the listed nesting levels doesn't matter: `unordered 0`, `unordered 1`, `unordered 0,1` |
+| `checker`          | the pack's `checker.c` decides (milestone M8) |
+
+- **Default:** `exact`, except that a result made of doubles (`double`,
+  `double[]`, `double[][]`) defaults to `float 1e-5`, as on LeetCode.
+- **Levels** count array nestings from the outside: in `int[][]`, level 0 is
+  the list of rows and level 1 the items of each row. So `unordered 1`
+  ignores the order inside each row but keeps the order of the rows
+  (LeetCode 2215), and `unordered 0,1` ignores both. Duplicates count: `[1,1,2]`
+  does not match `[1,2,2]`. A TreeNode, ListNode or NaryNode is compared
+  whole; only arrays of them can be unordered.
+- **Checked against the signature:** `float` needs a result made of doubles,
+  and each level must exist in the return type (`int[]` has only level 0).
+  A `void` return has no result, so it allows only `exact` and `checker` for
+  now; in-place problems (`check:`, milestone M6) will compare a parameter
+  instead.
 
 ### Statement
 
@@ -117,10 +164,79 @@ Everything after the `---` line, as markdown (below). It is stored as
 written, except that a `\r` before a newline is dropped; `statement_line`
 records which line of `problem.md` it starts on.
 
+## Types
+
+The types a signature may use. Each has a literal form for tests.txt (see
+[Literals](#literals)).
+
+| Type       | Literal                         | Notes |
+|------------|---------------------------------|-------|
+| `int`      | `-5`                            | 32-bit signed: -2147483648 to 2147483647 |
+| `long`     | `-5`                            | 64-bit signed |
+| `uint32`   | `5`                             | 0 to 4294967295 |
+| `double`   | `2.5`, `-1e-3`, `2`             | an integer literal is fine; `2` is shown as `2.0` |
+| `bool`     | `true`, `false`                 | |
+| `char`     | `"a"`                           | a string of exactly one ASCII character |
+| `string`   | `"a b"`                         | UTF-8; no NUL bytes |
+| `T[]`      | `[1,2,3]`                       | an array of any type above; `[]` is empty |
+| `T[][]`    | `[[1,2],[3]]`                   | arrays nest at most two deep |
+| `ListNode` | `[1,2,3]`                       | a linked list of ints; `[]` is an empty list |
+| `TreeNode` | `[1,null,2]`                    | a binary tree of ints in level order; `[]` is an empty tree |
+| `NaryNode` | `[1,null,3,2,4,null,5,6]`       | a tree whose nodes have any number of children |
+| `void`     |                                 | only as a return type |
+
+`ListNode[]`, `TreeNode[]` and `NaryNode[]` are allowed; `ListNode[][]` and
+the like are not.
+
+**TreeNode** lists the nodes level by level, left to right, the way
+LeetCode does. `null` marks a missing child, and a missing node's own
+children are not listed. Each item after the first is the next child slot
+(left, then right) of the earliest node that still has a free slot, so an
+item with no such node left is an error (`[1,null,null,2]`). The first item
+can't be `null`. Trailing `null`s say nothing and are dropped: `[1,null,2,null]`
+is the same tree as `[1,null,2]`.
+
+**NaryNode** also uses LeetCode's format: the root, then `null`, then the
+children of each node in level order, each node's group of children ended
+by `null`. In `[1,null,3,2,4,null,5,6]` node 1 has children 3, 2 and 4,
+and node 3 has children 5 and 6. A `null` that would start the children of
+a node that doesn't exist is an error, and trailing `null`s are dropped.
+
+## Literals
+
+Test values are written in a small subset of JSON:
+
+- **Integers:** an optional `-`, then digits with no leading zeros (`0`,
+  `-12`, not `007` or `+1`).
+- **Floats:** an integer followed by a fraction (a point and digits), an
+  exponent (`e` or `E`, an optional sign, digits) or both:
+  `2.5`, `1e-7`, `-0.0`. `.5`, `1.` and `1e` are errors, as are `NaN` and
+  `Infinity`. The decimal point is always `.`, whatever the locale.
+- **`true`, `false` and `null`.**
+- **Strings** in double quotes, with the escapes `\"`, `\\`, `\/`, `\b`,
+  `\f`, `\n`, `\r`, `\t` and `\uXXXX` (a surrogate pair for characters
+  beyond U+FFFF). Raw control characters must be escaped, the text must be
+  valid UTF-8, and `\u0000` is not allowed.
+- **Arrays:** `[`, values separated by commas, `]`. No trailing comma.
+  Untyped values may nest at most 32 deep.
+- Spaces and tabs may surround any value or punctuation.
+
+A literal is checked against its type as it is parsed, and an error names
+the column (counting bytes from 1 at the start of the literal):
+`column 4: expected int, got a string`, `column 1: 2147483648 is out of
+range for int`, `column 5: expected ',' or ']'`.
+
+**Printing.** Values print back as literals with no spaces: `[1,2]`,
+`"a\"b"`, `[1,null,2]`. A double prints as the shortest text that reads
+back as the same number, with `.0` added to whole numbers (`2.0`, `0.1`,
+`1e+20`). Control characters in strings print as escapes, and, in a
+program's result only, bytes that aren't valid UTF-8 print as `\xHH`, and
+non-finite doubles as `NaN`, `Infinity` and `-Infinity`.
+
 ## tests.txt
 
-Test cases. M0 parses the whole file but only shows the cases marked
-`@example`; later milestones run all of them.
+Test cases. `lc show` shows the cases marked `@example`; later milestones
+run all of them.
 
 ```
 # Comments start with '#'.
@@ -143,9 +259,22 @@ Test cases. M0 parses the whole file but only shows the cases marked
   Each input line holds one literal, in the order of `lc_problem.arg_names`.
   The text after `=>` (spaces trimmed) is the expected output, and must not be
   empty.
-- **Literals** are kept as raw text in M0: leading and trailing spaces and tabs
-  are trimmed, nothing else is checked. (M1 parses them: integers, floats,
-  `true`, `false`, `null`, strings with escapes, nested arrays.)
+- **A case with no inputs**, for a signature with no parameters, has the
+  single input line `()`:
+
+  ```
+  ()
+  => "Hello World"
+  ```
+
+- **Literals** are kept as text when the file is read (leading and trailing
+  spaces and tabs trimmed). `lc_case_values` parses a case's literals
+  against the signature: each input against its parameter (then the hidden
+  inputs), and the expected output against the return type. The number of
+  inputs must match. Without a signature, or for a `void` return, values
+  are parsed without a type. Its errors look like
+  `.../tests.txt:12: target: column 1: expected int, got a string`, where
+  the line is the case's first line.
 - **`@example`** on its own line marks the next case as an example. Any text
   after `@example` and a space or tab is that example's explanation, shown as
   plain text.
@@ -157,7 +286,9 @@ Test cases. M0 parses the whole file but only shows the cases marked
   a missing `=>`.
 - **Errors**, each reported as `<path>:<line>: <message>`:
   - a blank line inside a case;
-  - a `=>` with no input lines before it;
+  - a `=>` with no input lines before it (write `()` for a case with no
+    inputs);
+  - `()` together with other input lines in one case;
   - a `=>` with nothing after it;
   - an `@example` that is not followed by a case, or two in a row;
   - a line starting with `@` other than `@example`;

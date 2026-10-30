@@ -11,10 +11,12 @@ C11 plus POSIX.1-2008 and needs nothing beyond libc.
 
 ## Status
 
-This is milestone **M0**: the core library (`liblc.a`), the problem pack
-loader, the statement markdown parser, and the `lc list` and `lc show`
-commands, both with `--json` output. Three problems are included: 1, 20 and
-104.
+Milestones **M0** and **M1** are in: the core library (`liblc.a`), the
+problem pack loader, the statement markdown parser, and the `lc list` and
+`lc show` commands, both with `--json` output; and the value layer that
+judging builds on: typed signatures, test literals parsed and checked against
+them, the comparison modes and the wire format used to talk to a solution's
+harness. Three problems are included: 1, 20 and 104.
 
 Writing, testing and submitting solutions (`lc start`, `lc test`,
 `lc submit`) arrive in M3. The design and the milestone table are in
@@ -118,13 +120,15 @@ nothing is copied from it.
 ```
 include/lc.h            public API of the core library
 src/core/               liblc.a: context and errors, arena, strings, files,
-                        pack loader, tests.txt parser, markdown parser, JSON writer
+                        pack loader, tests.txt parser, markdown parser, JSON writer,
+                        types and signatures, values, comparison, wire format
 src/cli/                lc: argument handling, list and show, ANSI output, pager
 problems/               problem packs, one NNNN-slug directory each
 tests/unit/             unit tests, one program per suite
 tests/fixtures/         fixture packs used by the tests
 tests/e2e.sh            end-to-end tests of the lc binary
 docs/PLAN.md            design, architecture and milestones
-docs/problem-format.md  the problem pack format
+docs/problem-format.md  the problem pack format, types and test literals
+docs/wire.md            the wire format between lc and a solution's harness
 docs/json.md            the --json output format
 ```

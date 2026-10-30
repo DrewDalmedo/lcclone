@@ -123,6 +123,73 @@ size_t lc_warning_count(const lc_ctx *ctx);
 const char *lc_warning_at(const lc_ctx *ctx, size_t i);
 
 /* ------------------------------------------------------------------ */
+/* Types (docs/problem-format.md, "Types")                             */
+/* ------------------------------------------------------------------ */
+
+/* What a type is made of, before any array levels. */
+typedef enum {
+    LC_T_VOID = 0, /* only as a return type */
+    LC_T_INT,      /* 32-bit signed */
+    LC_T_LONG,     /* 64-bit signed */
+    LC_T_UINT32,   /* 32-bit unsigned */
+    LC_T_DOUBLE,
+    LC_T_BOOL,
+    LC_T_CHAR,     /* one ASCII character, written "a" */
+    LC_T_STRING,
+    LC_T_LIST,     /* ListNode: a singly linked list of ints */
+    LC_T_TREE,     /* TreeNode: a binary tree of ints */
+    LC_T_NARY      /* NaryNode: a tree of ints with any number of children */
+} lc_kind;
+
+#define LC_MAX_DIMS 2       /* int[][] is as deep as arrays go */
+#define LC_TYPE_NAME_MAX 16 /* room for any type's name and its NUL */
+
+typedef struct lc_type {
+    lc_kind kind;
+    int dims; /* array levels: 0 for int, 1 for int[], 2 for int[][] */
+} lc_type;
+
+/*
+ * Parses a type name such as "int", "string[][]" or "TreeNode" (no spaces).
+ * Returns LC_ERR_PARSE for an unknown name or a combination that isn't
+ * supported (ListNode[][], void[]). "void" is accepted; whether it is
+ * allowed depends on where the type is used.
+ */
+int lc_type_parse(const char *s, size_t n, lc_type *out);
+
+/* Writes the type's name into buf (LC_TYPE_NAME_MAX bytes); returns buf. */
+const char *lc_type_name(lc_type t, char *buf);
+
+/* One parameter of a signature, or one `hidden:` input. */
+typedef struct lc_param {
+    lc_type type;
+    const char *name;
+} lc_param;
+
+/* A parsed `signature:` such as int[] twoSum(int[] nums, int target). */
+typedef struct lc_sig {
+    lc_type ret;
+    const char *name;
+    const lc_param *params;
+    size_t nparams;
+} lc_sig;
+
+/* How a result is checked against the expected one (`compare:`). */
+typedef enum {
+    LC_CMP_EXACT = 0,
+    LC_CMP_FLOAT,     /* doubles may differ by up to `tolerance` */
+    LC_CMP_UNORDERED, /* order is ignored at the levels in `levels` */
+    LC_CMP_CHECKER    /* the pack's checker.c decides (milestone M8) */
+} lc_cmp_mode;
+
+typedef struct lc_compare {
+    lc_cmp_mode mode;
+    double tolerance; /* LC_CMP_FLOAT */
+    unsigned levels;  /* LC_CMP_UNORDERED: bit k set ignores the order of
+                         the arrays at nesting level k (0 = outermost) */
+} lc_compare;
+
+/* ------------------------------------------------------------------ */
 /* Problems                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -157,6 +224,14 @@ typedef struct lc_problem {
     const char *const *tags;
     size_t ntags;
     const char *signature;    /* raw `signature:` value, or NULL */
+    const lc_sig *sig;        /* the parsed signature, or NULL */
+    const lc_param *hidden;   /* the parsed `hidden:` inputs */
+    size_t nhidden;
+    /*
+     * How results are compared: the `compare:` field, or by default exact,
+     * except that a result made of doubles defaults to a tolerance of 1e-5.
+     */
+    lc_compare compare;
     /*
      * Names for the input lines of a test case, used to show examples as
      * "nums = [1,2], target = 3": the signature's parameter names followed
@@ -195,9 +270,12 @@ int lc_problem_has_tag(const lc_problem *p, const char *tag);
 /* Test cases (tests.txt)                                              */
 /* ------------------------------------------------------------------ */
 
-/* Values are kept as raw literal text; parsing them is milestone M1. */
+/*
+ * Values are kept as raw literal text; lc_case_values parses them against
+ * the problem's signature.
+ */
 typedef struct lc_case {
-    const char *const *args;  /* one literal per input line */
+    const char *const *args;  /* one literal per input line; none for "()" */
     size_t nargs;
     const char *expected;     /* literal after "=>" */
     const char *explanation;  /* text after "@example", or NULL */
@@ -222,6 +300,109 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
                    const char *filename, lc_cases **out);
 
 void lc_cases_free(lc_cases *cases);
+
+/* ------------------------------------------------------------------ */
+/* Values (docs/problem-format.md, "Literals")                         */
+/* ------------------------------------------------------------------ */
+
+typedef enum {
+    LC_V_NULL = 0,
+    LC_V_BOOL,
+    LC_V_INT,
+    LC_V_FLOAT,
+    LC_V_STRING,
+    LC_V_ARRAY
+} lc_vkind;
+
+/*
+ * A parsed value. What each type becomes:
+ *   int, long, uint32      LC_V_INT
+ *   double                 LC_V_FLOAT (an integer literal is converted)
+ *   bool                   LC_V_BOOL
+ *   char, string           LC_V_STRING (a char is one byte long)
+ *   T[]                    LC_V_ARRAY of T
+ *   ListNode               LC_V_ARRAY of LC_V_INT
+ *   TreeNode, NaryNode     LC_V_ARRAY of LC_V_INT and LC_V_NULL, in
+ *                          LeetCode's level order without trailing nulls
+ */
+typedef struct lc_value lc_value;
+struct lc_value {
+    lc_vkind kind;
+    size_t len;                /* LC_V_STRING: bytes; LC_V_ARRAY: items */
+    union {
+        int b;                 /* LC_V_BOOL: 0 or 1 */
+        long long i;           /* LC_V_INT */
+        double f;              /* LC_V_FLOAT */
+        const char *s;         /* LC_V_STRING: len bytes, then a NUL */
+        const lc_value *items; /* LC_V_ARRAY */
+    } u;
+};
+
+/* Owns parsed values; lc_pool_free releases them all at once. */
+typedef struct lc_pool lc_pool;
+
+lc_pool *lc_pool_new(void); /* NULL when out of memory */
+void lc_pool_free(lc_pool *pool);
+
+/*
+ * Parses a literal and checks it against `type` (NULL accepts any
+ * literal). The value lives in `pool`. A malformed literal or one that
+ * doesn't fit the type gives LC_ERR_PARSE and a message such as
+ * "column 5: expected ',' or ']'", where columns count bytes from 1.
+ */
+int lc_value_parse(lc_ctx *ctx, lc_pool *pool, const lc_type *type,
+                   const char *text, size_t len, const lc_value **out);
+
+/*
+ * Appends the value as a literal, with no spaces: [1,2], "a\"b", 2.5,
+ * [1,null,2]. Doubles print as the shortest text that reads back the same,
+ * with ".0" added to whole numbers. A string that isn't valid UTF-8 (only
+ * a program's result can be) shows its stray bytes as \xHH, which is not
+ * literal syntax; NaN and infinities print as NaN, Infinity and -Infinity.
+ */
+int lc_value_print(const lc_value *v, lc_str *out);
+
+/*
+ * Sets *match to 1 if `got` matches `expected` under `cmp`, else 0. Both
+ * values must fit the same type. LC_CMP_CHECKER is not handled here and
+ * gives LC_ERR_INVALID.
+ */
+int lc_value_match(lc_ctx *ctx, const lc_compare *cmp,
+                   const lc_value *expected, const lc_value *got, int *match);
+
+/*
+ * Parses a case's literals: the inputs against the signature's parameters
+ * and then the `hidden:` inputs, and the expected output against the
+ * return type. Without a signature, or when it returns void, values are
+ * parsed without a type. *args points to an array of c->nargs values, and
+ * everything lives in `pool`. Errors name the file, the case's line and
+ * the input, e.g.
+ * ".../tests.txt:12: target: column 1: expected int, got a string".
+ */
+int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
+                   lc_pool *pool, const lc_value **args,
+                   const lc_value **expected);
+
+/* ------------------------------------------------------------------ */
+/* Wire format between lc and the harness (docs/wire.md)               */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Appends `v` in the wire format for `type`, with tokens separated by
+ * single spaces and no trailing separator. `v` must fit the type.
+ */
+int lc_wire_encode(lc_ctx *ctx, const lc_type *type, const lc_value *v,
+                   lc_str *out);
+
+/*
+ * Reads one value of `type` from text[*pos..len) and advances *pos past
+ * it. Leading whitespace is skipped. Malformed text gives LC_ERR_PARSE
+ * with a message naming the byte offset. Whatever the text says, this
+ * allocates at most a fixed multiple of the text's size.
+ */
+int lc_wire_decode(lc_ctx *ctx, lc_pool *pool, const lc_type *type,
+                   const char *text, size_t len, size_t *pos,
+                   const lc_value **out);
 
 /* ------------------------------------------------------------------ */
 /* Markdown (the subset described in docs/problem-format.md)           */

@@ -143,6 +143,84 @@ int lc_mkdir_p(lc_ctx *ctx, const char *path, mode_t mode);
 int lc_write_file_atomic(lc_ctx *ctx, const char *path,
                          const char *data, size_t len);
 
+/* ------------------------------------------------------------------ */
+/* Types and signatures (types.c)                                      */
+/* ------------------------------------------------------------------ */
+
+/*
+ * These parse header values from problem.md. On a bad value they return
+ * LC_ERR_PARSE with the message in `err` (cleared first), worded to follow
+ * the field name, e.g. "signature: unknown type 'vector<int>'". `what` is
+ * that field name. They return LC_ERR_NOMEM when memory runs out.
+ */
+
+/* `signature:`, such as "int[] twoSum(int[] nums, int target)". */
+int lc_parse_sig(lc_arena *a, const char *p, size_t n, const char *what,
+                 lc_sig *out, lc_str *err);
+
+/* A comma-separated parameter list, such as `hidden: int skipA, int skipB`. */
+int lc_parse_params(lc_arena *a, const char *p, size_t n, const char *what,
+                    lc_param **out, size_t *count, lc_str *err);
+
+/*
+ * `compare:`. `result` is the type being compared, or NULL when it isn't
+ * known; then only the syntax is checked.
+ */
+int lc_parse_compare(const char *p, size_t n, const lc_type *result,
+                     lc_compare *out, lc_str *err);
+
+/* The default comparison for a result of type `result` (NULL: unknown). */
+lc_compare lc_default_compare(const lc_type *result);
+
+/* Deep copies into `a`. They return NULL only when out of memory. */
+lc_sig *lc_copy_sig(lc_arena *a, const lc_sig *sig);
+lc_param *lc_copy_params(lc_arena *a, const lc_param *params, size_t n);
+
+/* ------------------------------------------------------------------ */
+/* Values (value.c, wire.c)                                            */
+/* ------------------------------------------------------------------ */
+
+struct lc_pool {
+    lc_arena arena;
+};
+
+/* Largest output of lc_fmt_double, NUL included. */
+#define LC_DOUBLE_BUF 40
+
+/* Deepest nesting of arrays an untyped literal may have. */
+#define LC_VALUE_MAX_DEPTH 32
+
+/*
+ * Length of the JSON number at the start of p[0..n): -?(0|[1-9][0-9]*)
+ * then an optional fraction and exponent. 0 when there is none, or when
+ * it is malformed ("01", "1.", "1e", "-"). *is_int is set to 1 when it has
+ * no fraction or exponent.
+ */
+size_t lc_scan_number(const char *p, size_t n, int *is_int);
+
+/*
+ * Checks item `idx` of a TreeNode or NaryNode level-order list, given
+ * whether it is null and how many items before it weren't. `group` is
+ * state for N-ary trees, set when idx is 1. Returns NULL when the item is
+ * fine, else what is wrong with it.
+ */
+const char *lc_tree_item_check(lc_kind node, size_t idx, int is_null,
+                               size_t nonnull, size_t *group);
+
+/*
+ * Converts p[0..n), which must already be checked to be a decimal number
+ * such as "-1.5e+3", whatever the current locale's decimal point is.
+ * Returns 0, or -1 when the text is too long or the result overflows.
+ */
+int lc_strtod(const char *p, size_t n, double *out);
+
+/*
+ * The shortest of %.15g, %.16g and %.17g that reads back as `v`, with '.'
+ * as the decimal point whatever the locale; "inf", "-inf" or "nan" when
+ * `v` isn't finite.
+ */
+void lc_fmt_double(double v, char *buf);
+
 /* getenv, but NULL when the variable is unset or empty. */
 const char *lc_getenv(const char *name);
 

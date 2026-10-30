@@ -47,6 +47,7 @@ enum {
     F_TAGS,
     F_SIGNATURE,
     F_HIDDEN,
+    F_COMPARE,
     F_TIME,
     F_MEMORY,
     NFIELDS
@@ -54,7 +55,7 @@ enum {
 
 static const char *const field_names[NFIELDS] = {
     "id", "slug", "title", "difficulty", "tags", "signature", "hidden",
-    "time_limit_ms", "memory_limit_mb"
+    "compare", "time_limit_ms", "memory_limit_mb"
 };
 
 /* Scratch state for one lc_load call, reused from pack to pack. */
@@ -73,6 +74,13 @@ typedef struct loader {
     size_t ntags, captags;
     span *args;
     size_t nargs, capargs;
+    lc_arena typed;      /* the current pack's signature and hidden inputs */
+    lc_str err;          /* messages from types.c */
+    lc_sig sig;          /* in `typed`, when has_sig */
+    int has_sig;
+    lc_param *hidden;    /* in `typed` */
+    size_t nhidden;
+    lc_compare cmp;
     lc_problem *probs;   /* accepted problems, in directory-name order */
     size_t nprobs, capprobs;
     size_t *ids;         /* hash sets over probs: index + 1, 0 when empty */
@@ -224,11 +232,6 @@ static int valid_tag(span s)
             return 0;
     }
     return s.n > 0;
-}
-
-static int is_ident_char(int c)
-{
-    return is_lower(c) || (c >= 'A' && c <= 'Z') || is_digit(c) || c == '_';
 }
 
 /*
@@ -464,70 +467,75 @@ static int parse_tags(loader *L, const hline *h)
     }
 }
 
-/*
- * Appends the parameter names in `list` to L->args. Parameters are split
- * on commas outside <>, [] and (); each one's name is the identifier at
- * its end, and something (its type) must come before it.
- */
-static int parse_params(loader *L, span list, const char *what, int line)
+/* Turns a types.c status into a pack warning on `line`. */
+static int typed_status(loader *L, int line, int rc)
 {
-    size_t i, start = 0, count = 0;
-    int depth = 0;
-
-    if (trim(list).n == 0)
-        return LC_OK;
-    for (i = 0; i <= list.n; i++) {
-        span param, name;
-        size_t j;
-        int rc;
-
-        if (i < list.n) {
-            char c = list.p[i];
-            if (c == '<' || c == '[' || c == '(')
-                depth++;
-            else if ((c == '>' || c == ']' || c == ')') && depth > 0)
-                depth--;
-            if (c != ',' || depth > 0)
-                continue;
-        }
-        count++;
-        param = trim(mkspan(list.p + start, i - start));
-        start = i + 1;
-        if (param.n == 0)
-            return pack_warn(L, line, "%s: parameter %lu is empty", what,
-                             (unsigned long)count);
-        j = param.n;
-        while (j > 0 && is_ident_char((unsigned char)param.p[j - 1]))
-            j--;
-        while (j < param.n && is_digit((unsigned char)param.p[j]))
-            j++;
-        name = mkspan(param.p + j, param.n - j);
-        if (name.n == 0 || trim(mkspan(param.p, j)).n == 0)
-            return pack_warn(L, line, "%s: parameter '%.*s%s' has no name",
-                             what, QUOTE(param));
-        rc = push_span(L, &L->args, &L->nargs, &L->capargs, name);
-        if (rc != LC_OK)
-            return rc;
-    }
+    if (rc == LC_ERR_PARSE)
+        return pack_warn(L, line, "%s", L->err.data);
+    if (rc != LC_OK)
+        return lc_oom(L->ctx);
     return LC_OK;
 }
 
-static int parse_signature(loader *L, const hline *h)
+/*
+ * Parses `signature`, `hidden` and `compare` (types.c) into L, and puts
+ * the argument names in L->args.
+ */
+static int parse_typed_fields(loader *L, const pack *pk)
 {
-    const char *open = memchr(h->val.p, '(', h->val.n);
-    const char *close = NULL;
-    size_t i;
+    const lc_type *result = NULL;
+    const hline *h;
+    size_t i, j;
+    int rc;
 
-    for (i = h->val.n; i > 0; i--) {
-        if (h->val.p[i - 1] == ')') {
-            close = h->val.p + i - 1;
-            break;
-        }
+    L->nargs = 0;
+    L->has_sig = 0;
+    L->hidden = NULL;
+    L->nhidden = 0;
+    lc_arena_free(&L->typed);
+
+    if (pk->f[F_SIGNATURE] != NONE) {
+        h = &L->lines[pk->f[F_SIGNATURE]];
+        rc = lc_parse_sig(&L->typed, h->val.p, h->val.n, "signature",
+                          &L->sig, &L->err);
+        if (rc != LC_OK)
+            return typed_status(L, h->line, rc);
+        L->has_sig = 1;
+        result = &L->sig.ret;
     }
-    if (!open || !close || close < open)
-        return pack_warn(L, h->line, "signature has no parentheses");
-    return parse_params(L, mkspan(open + 1, (size_t)(close - open - 1)),
-                        "signature", h->line);
+    if (pk->f[F_HIDDEN] != NONE) {
+        h = &L->lines[pk->f[F_HIDDEN]];
+        rc = lc_parse_params(&L->typed, h->val.p, h->val.n, "hidden",
+                             &L->hidden, &L->nhidden, &L->err);
+        if (rc != LC_OK)
+            return typed_status(L, h->line, rc);
+        for (i = 0; L->has_sig && i < L->nhidden; i++)
+            for (j = 0; j < L->sig.nparams; j++)
+                if (strcmp(L->hidden[i].name, L->sig.params[j].name) == 0)
+                    return pack_warn(L, h->line, "hidden: '%s' is already a "
+                                     "parameter of the signature",
+                                     L->hidden[i].name);
+    }
+
+    /* lc.h: no names without a signature. */
+    for (i = 0; L->has_sig && i < L->sig.nparams + L->nhidden; i++) {
+        const char *name = i < L->sig.nparams
+                               ? L->sig.params[i].name
+                               : L->hidden[i - L->sig.nparams].name;
+        rc = push_span(L, &L->args, &L->nargs, &L->capargs,
+                       mkspan(name, strlen(name)));
+        if (rc != LC_OK)
+            return rc;
+    }
+
+    L->cmp = lc_default_compare(result);
+    if (pk->f[F_COMPARE] != NONE) {
+        h = &L->lines[pk->f[F_COMPARE]];
+        rc = lc_parse_compare(h->val.p, h->val.n, result, &L->cmp, &L->err);
+        if (rc != LC_OK)
+            return typed_status(L, h->line, rc);
+    }
+    return LC_OK;
 }
 
 static int parse_limit(loader *L, const pack *pk, int field, int def, int *out)
@@ -597,20 +605,9 @@ static int check_fields(loader *L, const char *name, pack *pk)
             return rc;
     }
 
-    L->nargs = 0;
-    if (pk->f[F_SIGNATURE] != NONE) {
-        rc = parse_signature(L, &L->lines[pk->f[F_SIGNATURE]]);
-        if (rc != LC_OK)
-            return rc;
-    }
-    if (pk->f[F_HIDDEN] != NONE) {
-        h = &L->lines[pk->f[F_HIDDEN]];
-        rc = parse_params(L, h->val, "hidden", h->line);
-        if (rc != LC_OK)
-            return rc;
-    }
-    if (pk->f[F_SIGNATURE] == NONE)
-        L->nargs = 0; /* lc.h: no names without a signature */
+    rc = parse_typed_fields(L, pk);
+    if (rc != LC_OK)
+        return rc;
 
     rc = parse_limit(L, pk, F_TIME, 1000, &pk->time_ms);
     if (rc != LC_OK)
@@ -739,6 +736,14 @@ static int add_problem(loader *L, const pack *pk)
     p->difficulty = pk->difficulty;
     if (pk->f[F_SIGNATURE] != NONE)
         p->signature = fields[pk->f[F_SIGNATURE]].value;
+    if (L->has_sig) {
+        p->sig = lc_copy_sig(a, &L->sig);
+        if (!p->sig)
+            return lc_oom(L->ctx);
+    }
+    p->hidden = lc_copy_params(a, L->hidden, L->nhidden);
+    p->nhidden = L->nhidden;
+    p->compare = L->cmp;
     p->time_limit_ms = pk->time_ms;
     p->memory_limit_mb = pk->mem_mb;
     p->tags = copy_spans(a, L->tags, L->ntags);
@@ -749,7 +754,7 @@ static int add_problem(loader *L, const pack *pk)
     stmt = copy_text(a, pk->stmt, pk->stmt_len, &p->statement_len);
     p->statement = stmt;
     p->statement_line = pk->stmt_line;
-    if (!p->tags || !p->arg_names || !p->dir || !stmt)
+    if (!p->tags || !p->arg_names || !p->hidden || !p->dir || !stmt)
         return lc_oom(L->ctx);
     L->nprobs++;
     return LC_OK;
@@ -1017,6 +1022,8 @@ done:
     free(L.order);
     free(L.tags);
     free(L.args);
+    lc_arena_free(&L.typed);
+    lc_str_free(&L.err);
     free(L.probs);
     free(L.ids);
     free(L.slugs);

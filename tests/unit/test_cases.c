@@ -505,6 +505,206 @@ static void test_load_cases(void)
     lc_close(ctx);
 }
 
+static void test_no_inputs(void)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    static const char *const none[] = {NULL};
+    lc_cases *cs;
+
+    cs = parse_ok(ctx, "()\n=> \"Hello World\"\n\n@example Text.\n  ()  \n"
+                  "# c\n=> \"x\"\n");
+    CHECK(cs && cs->count == 2);
+    check_case(cs, 0, none, "\"Hello World\"", NULL, 0, 1);
+    check_case(cs, 1, none, "\"x\"", "Text.", 1, 5);
+    if (cs && cs->count == 2)
+        CHECK(cs->items[0].args != NULL);
+    lc_cases_free(cs);
+    /* Only "()" exactly: anything else is an ordinary input line. */
+    cs = parse_ok(ctx, "( )\n=> 1\n");
+    check_case(cs, 0, ARGS("( )"), "1", NULL, 0, 1);
+    lc_cases_free(cs);
+    lc_close(ctx);
+
+    expect_error("()\n()\n=> 1\n",
+                 "t.txt:2: '()' must be the only input line of its case");
+    expect_error("1\n()\n=> 1\n",
+                 "t.txt:2: '()' must be the only input line of its case");
+    expect_error("()\n1\n=> 2\n", "t.txt:2: input line after '()' (a case "
+                 "with no inputs has no other input lines)");
+    expect_error("()\n\n=> 1\n",
+                 "t.txt:2: blank line inside a case (missing '=>'?)");
+    expect_error("()\n@example\n=> 1\n",
+                 "t.txt:2: @example inside a case (missing '=>'?)");
+    expect_error("x\n()\n", "t.txt:2: '()' must be the only input line of "
+                 "its case");
+    expect_error("# c\n()\n", "t.txt:2: case has no '=>' line");
+    expect_error("()\n=>\n", "t.txt:2: nothing after '=>'");
+}
+
+/* A problem with signature `sig` (or none) and `hidden` inputs, for
+ * lc_case_values. Its strings live in `a`. */
+static lc_problem make_problem(lc_arena *a, const char *sig,
+                               const char *hidden)
+{
+    lc_problem p;
+    lc_str err = LC_STR_INIT;
+    lc_param *hp = NULL;
+    size_t nh = 0;
+
+    memset(&p, 0, sizeof p);
+    p.dir = "d";
+    if (sig) {
+        lc_sig *s = lc_arena_zalloc(a, sizeof *s);
+        CHECK_INT(lc_parse_sig(a, sig, strlen(sig), "signature", s, &err),
+                  LC_OK);
+        p.sig = s;
+    }
+    if (hidden)
+        CHECK_INT(lc_parse_params(a, hidden, strlen(hidden), "hidden", &hp,
+                                  &nh, &err), LC_OK);
+    p.hidden = hp;
+    p.nhidden = nh;
+    lc_str_free(&err);
+    return p;
+}
+
+/* Parses tests.txt `text` (one case) and its values for `p`; msg is the
+ * expected error, or NULL. Returns the values in *args and *expected. */
+static int case_values(const lc_problem *p, const char *text, const char *msg,
+                       lc_pool *pool, const lc_value **args,
+                       const lc_value **expected)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    lc_cases *cs = parse_ok(ctx, text);
+    int rc = LC_ERR_INVALID;
+
+    if (cs && cs->count == 1) {
+        rc = lc_case_values(ctx, p, &cs->items[0], pool, args, expected);
+        if (msg) {
+            CHECK_INT(rc, LC_ERR_PARSE);
+            CHECK_STR(lc_last_error(ctx), msg);
+            CHECK(*args == NULL && *expected == NULL);
+        } else {
+            CHECK_INT(rc, LC_OK);
+            if (rc != LC_OK)
+                fprintf(stderr, "    error: %s\n", lc_last_error(ctx));
+        }
+    }
+    lc_cases_free(cs);
+    lc_close(ctx);
+    return rc;
+}
+
+static void test_case_values(void)
+{
+    lc_arena a = {0};
+    lc_pool *pool = lc_pool_new();
+    const lc_value *args = NULL, *exp = NULL;
+    lc_problem p;
+
+    p = make_problem(&a, "int[] twoSum(int[] nums, int target)", NULL);
+    if (case_values(&p, "[4,1,9]\n13\n=> [0,2]\n", NULL, pool, &args,
+                    &exp) == LC_OK) {
+        CHECK_INT(args[0].kind, LC_V_ARRAY);
+        CHECK_INT(args[0].len, 3);
+        CHECK_INT(args[1].kind, LC_V_INT);
+        CHECK_INT(args[1].u.i, 13);
+        CHECK_INT(exp->kind, LC_V_ARRAY);
+        CHECK_INT(exp->len, 2);
+    }
+    case_values(&p, "[1]\n=> [0]\n", "d/tests.txt:1: case has 1 input, "
+                "expected 2 (nums, target)", pool, &args, &exp);
+    case_values(&p, "# x\n[1]\n2\n3\n=> [0]\n", "d/tests.txt:2: case has 3 "
+                "inputs, expected 2 (nums, target)", pool, &args, &exp);
+    case_values(&p, "[1]\n\"x\"\n=> [0]\n", "d/tests.txt:1: target: column "
+                "1: expected int, got a string", pool, &args, &exp);
+    case_values(&p, "[1,]\n2\n=> [0]\n", "d/tests.txt:1: nums: column 4: "
+                "expected a value after ','", pool, &args, &exp);
+    case_values(&p, "[1]\n2\n=> 0\n", "d/tests.txt:1: expected output: "
+                "column 1: expected int[], got 0", pool, &args, &exp);
+
+    p = make_problem(&a, "bool hasCycle(ListNode head)", "int pos");
+    case_values(&p, "[3,2,0,-4]\n1\n=> true\n", NULL, pool, &args, &exp);
+    case_values(&p, "[1]\n=> true\n", "d/tests.txt:1: case has 1 input, "
+                "expected 2 (head, pos)", pool, &args, &exp);
+    case_values(&p, "[1]\n1.5\n=> true\n", "d/tests.txt:1: pos: column 1: "
+                "expected int, got 1.5", pool, &args, &exp);
+
+    p = make_problem(&a, "string helloWorld()", NULL);
+    case_values(&p, "()\n=> \"Hello World\"\n", NULL, pool, &args, &exp);
+    case_values(&p, "1\n=> \"x\"\n", "d/tests.txt:1: case has 1 input, "
+                "expected 0", pool, &args, &exp);
+
+    /* A void result is parsed without a type, for now. */
+    p = make_problem(&a, "void moveZeroes(int[] nums)", NULL);
+    case_values(&p, "[0,1]\n=> [1,0]\n", NULL, pool, &args, &exp);
+
+    /* Without a signature everything is untyped, with no names. */
+    p = make_problem(&a, NULL, NULL);
+    case_values(&p, "[1,\"a\"]\ntrue\n=> null\n", NULL, pool, &args, &exp);
+    case_values(&p, "1\nx\n=> 1\n", "d/tests.txt:1: input 2: column 1: "
+                "unexpected character 'x'", pool, &args, &exp);
+    case_values(&p, "1\n=> [1\n", "d/tests.txt:1: expected output: column "
+                "1: '[' is never closed", pool, &args, &exp);
+
+    {
+        lc_ctx *ctx = lc_open(NULL);
+        lc_case c;
+        memset(&c, 0, sizeof c);
+        CHECK_INT(lc_case_values(ctx, NULL, &c, pool, &args, &exp),
+                  LC_ERR_INVALID);
+        CHECK_INT(lc_case_values(ctx, &p, &c, NULL, &args, &exp),
+                  LC_ERR_INVALID);
+        lc_close(ctx);
+    }
+    lc_pool_free(pool);
+    lc_arena_free(&a);
+}
+
+/* Every case of every pack in `dir` must fit its problem's signature. */
+static void check_packs(const char *dir, size_t min_cases)
+{
+    lc_options opt;
+    lc_ctx *ctx;
+    lc_pool *pool = lc_pool_new();
+    size_t i, j, total = 0;
+
+    lc_options_init(&opt);
+    opt.problems_dir = dir;
+    ctx = lc_open(&opt);
+    CHECK_INT(lc_load(ctx), LC_OK);
+    CHECK_INT(lc_warning_count(ctx), 0);
+    for (i = 0; i < lc_problem_count(ctx); i++) {
+        const lc_problem *p = lc_problem_at(ctx, i);
+        lc_cases *cs = NULL;
+        int rc = lc_load_cases(ctx, p, &cs);
+
+        CHECK_INT(rc, LC_OK);
+        if (rc != LC_OK) {
+            fprintf(stderr, "    %s\n", lc_last_error(ctx));
+            continue;
+        }
+        for (j = 0; j < cs->count; j++) {
+            const lc_value *args, *exp;
+            rc = lc_case_values(ctx, p, &cs->items[j], pool, &args, &exp);
+            CHECK_INT(rc, LC_OK);
+            if (rc != LC_OK)
+                fprintf(stderr, "    %s\n", lc_last_error(ctx));
+            total++;
+        }
+        lc_cases_free(cs);
+    }
+    CHECK(total >= min_cases);
+    lc_pool_free(pool);
+    lc_close(ctx);
+}
+
+static void test_shipped_packs(void)
+{
+    check_packs("problems", 30);
+    check_packs(FIXTURES, 5);
+}
+
 int main(void)
 {
     /* Start from a clean scratch directory. */
@@ -522,5 +722,8 @@ int main(void)
     RUN(test_filename_and_misuse);
     RUN(test_many_cases);
     RUN(test_load_cases);
+    RUN(test_no_inputs);
+    RUN(test_case_values);
+    RUN(test_shipped_packs);
     return test_report();
 }
