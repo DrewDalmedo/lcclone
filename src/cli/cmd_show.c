@@ -192,9 +192,13 @@ static int list_item(render *r, lc_str *blk, const lc_md_block *b)
 
 static void code_block(render *r, lc_str *blk, const lc_md_block *b)
 {
-    const char *p = b->text, *end = b->text + b->len, *nl;
+    const char *p, *end, *nl;
     unsigned cur = 0;
 
+    if (!b->text)
+        return;
+    p = b->text;
+    end = b->text + b->len;
     while (p < end) {
         nl = memchr(p, '\n', (size_t)(end - p));
         if (!nl)
@@ -341,8 +345,10 @@ static void render_text(render *r, const lc_problem *p, const lc_md_doc *doc,
 
         lc_str_clear(&blk);
         new_list = 0;
-        if (b->kind != LC_MD_LIST_ITEM)
+        if (b->kind != LC_MD_LIST_ITEM) {
             memset(r->item_kind, 0, sizeof r->item_kind);
+            memset(r->item_col, 0, sizeof r->item_col);
+        }
         switch (b->kind) {
         case LC_MD_PARAGRAPH:
             inline_block(r, &blk, b, 0, "", "");

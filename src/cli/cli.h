@@ -51,7 +51,7 @@ struct cli {
     unsigned difficulties;  /* bit (1 << lc_difficulty) per wanted one; 0 = all */
     char **args;            /* positional arguments */
     size_t nargs;
-    char **tags;            /* --tag values; a problem must have all of them */
+    const char **tags;      /* --tag values; a problem must have all of them */
     size_t ntags;
 };
 

@@ -669,6 +669,33 @@ static void test_bom_crlf(void)
                ":2: invalid key '\xEF\xBB\xBFslug'");
 }
 
+/* A NUL byte would cut the strings, so the pack is skipped. */
+static void test_nul_byte(void)
+{
+    static const char md[] = "id: 1\nslug: a\ntitle: T\ndifficulty: easy\n"
+                             "---\nText\0more\n";
+    const char *root = new_root();
+    char path[512], want[1024];
+    lc_ctx *ctx;
+    FILE *f;
+
+    add_pack(root, "0001-a", NULL);
+    snprintf(path, sizeof path, "%s/0001-a/problem.md", root);
+    f = fopen(path, "wb");
+    CHECK(f != NULL);
+    if (!f)
+        return;
+    CHECK(fwrite(md, 1, sizeof md - 1, f) == sizeof md - 1);
+    CHECK(fclose(f) == 0);
+    ctx = load_dir(root);
+    snprintf(want, sizeof want, "%s/0001-a/problem.md:6: contains a NUL byte",
+             pdir(ctx));
+    CHECK_INT(lc_problem_count(ctx), 0);
+    CHECK_INT(lc_warning_count(ctx), 1);
+    CHECK_STR(lc_warning_at(ctx, 0), want);
+    lc_close(ctx);
+}
+
 static void test_required_fields(void)
 {
     expect_bad("0001-a", "---\n", ": missing required field 'id'");
@@ -1265,6 +1292,7 @@ int main(void)
     RUN(test_bad_tree);
     RUN(test_header_syntax);
     RUN(test_bom_crlf);
+    RUN(test_nul_byte);
     RUN(test_required_fields);
     RUN(test_id);
     RUN(test_slug_title_difficulty);

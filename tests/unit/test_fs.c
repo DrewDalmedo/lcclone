@@ -1,14 +1,91 @@
-#ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 200809L
+/* fs.c is compiled into this file (below), and it needs realpath(). */
+#ifndef _XOPEN_SOURCE
+#define _XOPEN_SOURCE 700
 #endif
 
+#include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "internal.h"
 #include "test.h"
+
+/*
+ * Allocation failures. arena.c, str.c, ctx.c and fs.c are compiled into
+ * this file with malloc, calloc, realloc and free routed through the
+ * wrappers below, which can make one chosen allocation fail. (Linking
+ * liblc.a as well is harmless: it then contributes nothing.) Every header
+ * those files include is included above, before the macros are defined.
+ */
+static struct {
+    int armed;    /* count, and maybe fail, the allocations made now */
+    long count;   /* allocations attempted while armed */
+    long fail_at; /* the one that fails (counting from 0), or -1 */
+    long live;    /* blocks allocated and not yet freed while armed */
+} oom = {0, 0, -1, 0};
+
+static int oom_fail(void)
+{
+    if (!oom.armed)
+        return 0;
+    return oom.count++ == oom.fail_at;
+}
+
+static void *oom_malloc(size_t n)
+{
+    void *p = oom_fail() ? NULL : malloc(n);
+
+    if (p && oom.armed)
+        oom.live++;
+    return p;
+}
+
+static void *oom_calloc(size_t count, size_t size)
+{
+    void *p = oom_fail() ? NULL : calloc(count, size);
+
+    if (p && oom.armed)
+        oom.live++;
+    return p;
+}
+
+static void *oom_realloc(void *p, size_t n)
+{
+    void *q = oom_fail() ? NULL : realloc(p, n);
+
+    if (q && !p && oom.armed)
+        oom.live++;
+    return q;
+}
+
+static void oom_free(void *p)
+{
+    if (p && oom.armed)
+        oom.live--;
+    free(p);
+}
+
+#define malloc(n) oom_malloc(n)
+#define calloc(count, size) oom_calloc(count, size)
+#define realloc(p, n) oom_realloc(p, n)
+#define free(p) oom_free(p)
+#include "arena.c"
+#include "str.c"
+#include "ctx.c"
+#include "fs.c"
+#undef malloc
+#undef calloc
+#undef realloc
+#undef free
 
 #define TMP "tests/tmp/fs"
 
@@ -116,6 +193,60 @@ static void test_env(void)
     lc_arena_free(&a);
 }
 
+/*
+ * lc_list_dir with each allocation failing in turn: every failure must give
+ * LC_ERR_NOMEM with no output, no leak and no double free (ASan and
+ * valgrind catch those). The directory has enough entries to make the name
+ * array grow, and the arena needs a new block partway through.
+ */
+static void test_list_dir_oom(void)
+{
+    char path[256];
+    long k;
+    int i, saw_ok = 0;
+
+    CHECK_INT(system("mkdir -p " TMP "/many"), 0);
+    for (i = 0; i < 40; i++) {
+        FILE *f;
+
+        snprintf(path, sizeof path, TMP "/many/entry-with-a-longish-name-%03d-"
+                 "padding-padding-padding-padding-padding-padding-padding-"
+                 "padding-padding-padding-padding-padding-padding-padding",
+                 i);
+        f = fopen(path, "w");
+        CHECK(f != NULL);
+        if (f)
+            fclose(f);
+    }
+    for (k = 0; k < 200 && !saw_ok; k++) {
+        lc_ctx *ctx = lc_open(NULL);
+        lc_arena a = {0};
+        char **names = (char **)1;
+        size_t n = 99;
+        int rc;
+
+        oom.count = 0;
+        oom.fail_at = k;
+        oom.live = 0;
+        oom.armed = 1;
+        rc = lc_list_dir(ctx, TMP "/many", &a, &names, &n);
+        lc_arena_free(&a);
+        oom.armed = 0;
+        if (rc == LC_OK) {
+            saw_ok = 1;
+            CHECK_INT(n, 40);
+        } else {
+            CHECK_INT(rc, LC_ERR_NOMEM);
+            CHECK(names == NULL && n == 0);
+            CHECK_STR(lc_last_error(ctx), "out of memory");
+        }
+        CHECK_INT(oom.live, 0);
+        lc_close(ctx);
+    }
+    CHECK(saw_ok);
+    CHECK(k > 3); /* several allocations were really failed */
+}
+
 int main(void)
 {
     lc_ctx *ctx = lc_open(NULL);
@@ -129,5 +260,6 @@ int main(void)
     RUN(test_read_errors);
     RUN(test_paths);
     RUN(test_env);
+    RUN(test_list_dir_oom);
     return test_report();
 }

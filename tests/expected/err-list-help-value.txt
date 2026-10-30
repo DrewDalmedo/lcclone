@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: option '--help' does not take a value
+Run 'lc help list'.
+--- exit 3

@@ -56,7 +56,7 @@ export LC_PROBLEMS=$PWD/problems
 ## Commands
 
 ```
-lc list [--difficulty LIST] [--tag TAG] [--json]
+lc list [--difficulty LIST] [--tag TAG] [--json] [--color=auto|always|never]
 lc show <id|slug> [--json] [--no-pager] [--color=auto|always|never]
 lc help
 lc version
@@ -71,8 +71,8 @@ lc version
   through `$PAGER`; `--no-pager` prints it directly. `--color` chooses whether
   ANSI colors are used.
 - `--json` prints machine-readable output instead. The format is versioned
-  (see [docs/PLAN.md](docs/PLAN.md) section 3), so editor plugins and GUIs can
-  build on it.
+  and described in [docs/json.md](docs/json.md), so editor plugins and GUIs
+  can build on it.
 - `lc help` describes the commands and `lc version` prints the version.
 
 ## Installing
@@ -86,16 +86,16 @@ make PREFIX=$HOME/opt/lcclone uninstall     # uninstall with the same PREFIX (an
 
 `make install` copies `lc` to `$(PREFIX)/bin` and this repository's
 `problems/` to `$(PREFIX)/share/lcclone/problems`. `PREFIX` is compiled into
-`lc` so that it can find the installed packs, so build and install with the
-same `PREFIX` (run `make clean` first if you already built with another one).
-`DESTDIR` is only prepended when copying and is not compiled in.
+`lc` so that it can find the installed packs; changing it rebuilds what
+depends on it. `DESTDIR` is only prepended when copying and is not compiled
+in. `make uninstall` removes `lc` and the packs this repository ships, and
+nothing else.
 
-Don't install with `PREFIX=$HOME/.local`. It would put the bundled packs in
+Avoid `PREFIX=$HOME/.local`. It would put the bundled packs in
 `~/.local/share/lcclone`, which is your own data directory: `lc` looks for
 your own packs there (see below), and later milestones keep your progress and
 submission history there. `make install` would copy the bundled packs over
-your packs of the same name, and `make uninstall` currently deletes all of
-`$(PREFIX)/share/lcclone`, not only what `make install` put there.
+your packs of the same name.
 
 ## Where problems are found
 
@@ -125,4 +125,5 @@ tests/fixtures/         fixture packs used by the tests
 tests/e2e.sh            end-to-end tests of the lc binary
 docs/PLAN.md            design, architecture and milestones
 docs/problem-format.md  the problem pack format
+docs/json.md            the --json output format
 ```

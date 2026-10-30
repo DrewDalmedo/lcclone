@@ -170,6 +170,11 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
 
         if (lineno < INT_MAX)
             lineno++;
+        if (memchr(ln.p, '\0', ln.n)) {
+            /* It would silently cut the strings made from this line. */
+            rc = parse_error(ctx, filename, lineno, "line contains a NUL byte");
+            goto fail;
+        }
         if (ln.n == 0) {
             if (nargs) {
                 rc = parse_error(ctx, filename, lineno, "blank line inside a "

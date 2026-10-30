@@ -348,6 +348,17 @@ static int parse_file(loader *L, pack *pk)
     int lineno = 0, rc;
     size_t i, k;
 
+    /* A NUL byte would silently cut the strings made from this file. */
+    {
+        const char *nul = memchr(data, '\0', L->buf.len);
+        if (nul) {
+            const char *q;
+            for (q = data; q < nul; q++)
+                if (*q == '\n')
+                    lineno = next_lineno(lineno);
+            return pack_warn(L, next_lineno(lineno), "contains a NUL byte");
+        }
+    }
     if (L->buf.len >= 3 && memcmp(p, "\xEF\xBB\xBF", 3) == 0)
         p += 3;
     hdr = p;

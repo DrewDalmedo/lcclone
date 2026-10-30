@@ -128,6 +128,16 @@ void cli_json_warnings(lc_json *j, const lc_ctx *ctx, const char *extra)
     lc_json_end_array(j);
 }
 
+#define CLI_STR_(x) #x
+#define CLI_STR(x) CLI_STR_(x)
+
+static const char nomem[] = "out of memory";
+
+/* The error document when there is no memory to build one. */
+static const char nomem_doc[] =
+    "{\"schema\":" CLI_STR(LC_JSON_SCHEMA) ",\"error\":{\"message\":"
+    "\"out of memory\"},\"warnings\":[]}\n";
+
 static int report(cli *c, lc_ctx *ctx, int hint, const char *fmt, va_list ap)
 {
     lc_str msg = LC_STR_INIT, out = LC_STR_INIT;
@@ -135,7 +145,7 @@ static int report(cli *c, lc_ctx *ctx, int hint, const char *fmt, va_list ap)
     lc_json j;
 
     lc_str_vprintf(&msg, fmt, ap);
-    text = msg.failed ? "out of memory" : lc_str_cstr(&msg);
+    text = msg.failed ? nomem : lc_str_cstr(&msg);
     fprintf(stderr, "lc: %s\n", text);
     if (hint) {
         /* Errors in 'lc help' point at the general help. */
@@ -156,8 +166,15 @@ static int report(cli *c, lc_ctx *ctx, int hint, const char *fmt, va_list ap)
         lc_json_end_object(&j);
         cli_json_warnings(&j, ctx, NULL);
         lc_json_end_object(&j);
-        if (lc_json_finish(&j) == LC_OK && lc_str_putc(&out, '\n') == LC_OK)
+        if (lc_json_finish(&j) == LC_OK && lc_str_putc(&out, '\n') == LC_OK) {
             cli_write(out.data, out.len);
+        } else {
+            /* Report running out of memory on stderr too, so that the
+             * document's message is still what stderr says. */
+            if (strcmp(text, nomem) != 0)
+                fprintf(stderr, "lc: %s\n", nomem);
+            cli_write(nomem_doc, sizeof nomem_doc - 1);
+        }
     }
     lc_str_free(&out);
     lc_str_free(&msg);
@@ -431,7 +448,7 @@ static void apply_option(cli *c, const struct opt_def *o, const char *value,
         parse_difficulties(c, value, err);
         break;
     case O_TAG:
-        c->tags[c->ntags++] = (char *)value;
+        c->tags[c->ntags++] = value;
         break;
     }
 }
@@ -534,11 +551,19 @@ int main(int argc, char **argv)
         name = "version";
     c.cmd = find_command(name);
     if (!c.cmd) {
-        size_t i, len = strcspn(name, "=");
+        size_t i, len = strlen(name);
+        const char *eq;
 
         c.json = wants_json(argc - 1, argv + 1);
         if (name[0] != '-' || name[1] == '\0')
             return cli_usage(&c, "unknown command '%s'", name);
+        /* As after a command, only a long option takes "=value". */
+        if (name[1] == '-' && (eq = strchr(name, '=')) != NULL)
+            len = (size_t)(eq - name);
+        if ((len == 6 && memcmp(name, "--help", 6) == 0) ||
+            (len == 9 && memcmp(name, "--version", 9) == 0))
+            return cli_usage(&c, "option '%.*s' does not take a value",
+                             (int)len, name);
         for (i = 0; i < sizeof opt_defs / sizeof opt_defs[0]; i++)
             if (strlen(opt_defs[i].name) == len &&
                 memcmp(opt_defs[i].name, name, len) == 0)

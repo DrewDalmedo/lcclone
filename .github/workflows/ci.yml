@@ -116,9 +116,8 @@ jobs:
           "$lc" show 104 --json | grep '"maximum-depth-of-binary-tree"'
       - name: Staged install with DESTDIR
         run: |
-          # PREFIX is compiled into lc, so rebuild for /usr; without this the
-          # staged lc would still search $RUNNER_TEMP/inst.
-          make clean
+          # PREFIX is compiled into lc. No "make clean" here: changing PREFIX
+          # must rebuild what depends on it by itself.
           make PREFIX=/usr DESTDIR="$RUNNER_TEMP/stage" install
           lc="$RUNNER_TEMP/stage/usr/bin/lc"
           test -x "$lc"

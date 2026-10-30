@@ -107,13 +107,17 @@ int lc_list_dir(lc_ctx *ctx, const char *path, lc_arena *a,
         }
         if (strcmp(e->d_name, ".") == 0 || strcmp(e->d_name, "..") == 0)
             continue;
-        name = lc_arena_strdup(a, e->d_name);
         tmp = lc_grow(list, &cap, n + 1, sizeof *list);
-        if (!name || !tmp) {
+        if (!tmp) {
             rc = lc_oom(ctx);
             goto done;
         }
         list = tmp;
+        name = lc_arena_strdup(a, e->d_name);
+        if (!name) {
+            rc = lc_oom(ctx);
+            goto done;
+        }
         list[n++] = name;
     }
     if (n)

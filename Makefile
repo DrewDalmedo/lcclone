@@ -62,6 +62,15 @@ all: liblc.a lc
 $(CORE_OBJ): include/lc.h src/core/internal.h
 $(CLI_OBJ): include/lc.h src/cli/cli.h
 
+# problem.c has DATADIR compiled in. .datadir changes only when DATADIR
+# does, so "make PREFIX=..." rebuilds what it must and nothing more.
+src/core/problem.o: .datadir
+.datadir: FORCE
+	@echo '$(DATADIR)' > .datadir.tmp; \
+	if cmp -s .datadir.tmp .datadir; then rm -f .datadir.tmp; \
+	else mv .datadir.tmp .datadir; fi
+FORCE:
+
 liblc.a: $(CORE_OBJ)
 	rm -f $@
 	$(AR) -rc $@ $(CORE_OBJ)
@@ -107,12 +116,19 @@ install: all
 	chmod 755 $(DESTDIR)$(BINDIR)/lc
 	cp -R problems/. $(DESTDIR)$(DATADIR)/problems/
 
+# Removes only what install added: the binary and the packs shipped in
+# problems/. With PREFIX=~/.local the data directory is also where your own
+# packs and progress live, so it is never removed wholesale.
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/lc
-	rm -rf $(DESTDIR)$(DATADIR)
+	for d in problems/*/; do \
+		rm -rf "$(DESTDIR)$(DATADIR)/problems/`basename "$$d"`"; \
+	done
+	-rmdir "$(DESTDIR)$(DATADIR)/problems" "$(DESTDIR)$(DATADIR)" 2>/dev/null
 
 clean:
 	rm -f liblc.a lc $(CORE_OBJ) $(CLI_OBJ) $(UNIT_TESTS) tests/unit/*.o
+	rm -f .datadir .datadir.tmp
 	rm -rf tests/tmp
 
-.PHONY: all check test install uninstall clean
+.PHONY: all check test install uninstall clean FORCE

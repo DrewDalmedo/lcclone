@@ -40,6 +40,14 @@ and `lc` exits with status 3:
 | `error.message` | string | the same text that stderr shows after `lc: ` |
 | `warnings`      | array  | warnings gathered before the failure, such as skipped packs (they can explain why a problem is missing) |
 
+If there isn't even the memory to build the error document, `lc` prints
+this fixed one, without the warnings, and stderr has the line
+`lc: out of memory`:
+
+```json
+{"schema":1,"error":{"message":"out of memory"},"warnings":[]}
+```
+
 A document is in JSON mode when `--json` appears among the options, even if
 the error is about another argument (`lc list --bogus --json`). A `--json`
 after `--` is an ordinary argument.

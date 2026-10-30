@@ -55,21 +55,24 @@ tags: array, hash-table
 signature: int[] twoSum(int[] nums, int target)
 compare: unordered 0
 ---
-Given an array of integers `nums` and an integer `target`, ...
+You have a list of integers `nums` and a goal value `target`. ...
 ```
 
 ### Header syntax
 
-- One field per line: a key, a colon, then the value. Spaces around the value
-  are trimmed. The value may be empty.
+- One field per line: a key starting in the first column, a colon right
+  after it, then the value. Spaces and tabs around the value are trimmed. The
+  value may be empty.
 - A key is a lowercase ASCII letter or `_`, followed by lowercase letters,
   digits or `_`.
-- Blank lines and lines starting with `#` are ignored.
+- Blank lines (including lines of only spaces and tabs) and lines starting
+  with `#` in the first column are ignored.
 - A key may appear only once.
 - The header ends at the first line that is exactly `---` (trailing spaces
   and tabs allowed). A file with no such line is an error.
 - A UTF-8 byte order mark at the start of the file is skipped, and a `\r`
-  before each newline is ignored.
+  before each newline is ignored, in the header and the statement alike.
+- A file containing a NUL byte is an error.
 
 ### Fields read in M0
 
@@ -95,19 +98,23 @@ To show an example as `nums = [1,2], target = 3`, the loader takes parameter
 names from `signature` and `hidden`. M0 does not check types; that is M1.
 
 - **From `signature`:** the text between the first `(` and the last `)` is
-  split on commas that are not inside `<>`, `[]` or `()`. The name of each
-  parameter is the identifier at its end (`[A-Za-z_][A-Za-z0-9_]*`). `()` gives
-  no names.
+  split on commas that are not inside `<>`, `[]` or `()`. Each parameter is a
+  type followed by a name, and the name is the identifier at its end
+  (`[A-Za-z_][A-Za-z0-9_]*`). `()` gives no names.
 - **From `hidden`:** a comma-separated list in the same form as parameters,
   e.g. `int pos` or `int skipA, int skipB`. Its names come after the
-  signature's.
-- If `signature` has no parentheses, or a parameter has no name at its end,
-  the pack fails to load.
+  signature's. Without a `signature` there are no names at all, but `hidden`
+  is still checked.
+- The pack fails to load if `signature` has no parentheses, or if a parameter
+  is empty or has no type before its name (`int f(int)`, `int f(int x,)`).
+- A signature with no parameters is allowed, but tests.txt has no way yet to
+  write a case with no inputs; milestone M1 adds one.
 
 ### Statement
 
-Everything after the `---` line, as markdown (below). It is stored exactly as
-written; `statement_line` records which line of `problem.md` it starts on.
+Everything after the `---` line, as markdown (below). It is stored as
+written, except that a `\r` before a newline is dropped; `statement_line`
+records which line of `problem.md` it starts on.
 
 ## tests.txt
 
@@ -139,7 +146,10 @@ Test cases. M0 parses the whole file but only shows the cases marked
   are trimmed, nothing else is checked. (M1 parses them: integers, floats,
   `true`, `false`, `null`, strings with escapes, nested arrays.)
 - **`@example`** on its own line marks the next case as an example. Any text
-  after `@example` and a space is that example's explanation.
+  after `@example` and a space or tab is that example's explanation, shown as
+  plain text.
+- **Every line is trimmed** of spaces and tabs first, so `#`, `@example` and
+  `=>` may be indented.
 - **Blank lines and `#` comment lines** are ignored between cases. A comment
   line inside a case is ignored too, but a blank line inside a case (after an
   input line and before its `=>`) is an error, because it nearly always means
@@ -150,7 +160,8 @@ Test cases. M0 parses the whole file but only shows the cases marked
   - a `=>` with nothing after it;
   - an `@example` that is not followed by a case, or two in a row;
   - a line starting with `@` other than `@example`;
-  - a case still open at the end of the file.
+  - a case still open at the end of the file;
+  - a NUL byte.
 - A `\r` before each newline is ignored, and so is a UTF-8 byte order mark.
 
 ## Statement markdown
@@ -164,8 +175,8 @@ parser accepts any input: what isn't recognized below is plain text.
 - **Paragraph:** consecutive non-blank lines. Line breaks inside a paragraph
   become spaces. A line ending in two or more spaces, or in a backslash, makes
   a hard line break.
-- **Heading:** `#` to `######`, then a space, then the text. Trailing `#`
-  characters preceded by a space are removed.
+- **Heading:** `#` to `######`, then a space or tab, then the text. Trailing
+  `#` characters preceded by a space are removed. A heading is a single line.
 - **Fenced code block:** a line starting with three or more backticks (or
   tildes), optionally followed by an info string such as `text` or `cpp`. It
   runs until a line with a fence of the same character at least as long, or
@@ -180,13 +191,20 @@ parser accepts any input: what isn't recognized below is plain text.
   deeper (`depth`). Numbered items count up from the number of the first item
   in their list, where a list is a run of numbered items at the same depth
   with only deeper items or blank lines between them.
-- **Block quote:** lines starting with `>`. The text is one paragraph.
+- **Block quote:** lines starting with `>`. The text is inline only (block
+  syntax inside a quote stays plain text). A blank `>` line splits it into
+  separate quote paragraphs, and a line without `>` ends it.
 - **Thematic break:** a line of three or more `-`, `*` or `_` characters, with
   optional spaces between them.
 - **Examples placeholder:** a line containing only `@examples` (spaces around
   it allowed), outside a code block. It marks where a front-end shows the
   pack's `@example` cases. A statement without it gets the examples after
   the statement.
+
+Headings, block quotes and thematic breaks may be indented up to three
+spaces, like fences. List markers may be indented any amount (that sets
+`depth`). A list item's text is inline only, so `- - x` is one item whose
+text is `- x`.
 
 Headings, fences, thematic breaks, block quotes, bulleted items, numbered
 items starting at 1 and the examples placeholder can start right after a
@@ -199,34 +217,37 @@ paragraph), setext headings, tables, HTML, images and reference links.
 ### Inline
 
 - `` `code` ``: a code span. A run of N backticks closes only at a run of
-  exactly N backticks. Its content is verbatim. One space at each end is
-  removed when both ends have one.
+  exactly N backticks. Its content is verbatim, except that line breaks
+  become spaces and one space at each end is removed when both ends have one
+  (and the content isn't all spaces).
 - `**strong**` or `__strong__`, and `*em*` or `_em_`. They nest. An opening
   `*` or `_` must be followed by a non-space character and a closing one must
   follow a non-space character. `_` does not open or close inside a word, so
   `snake_case_name` stays plain. Unmatched markers are plain text.
-- `[text](url)`: a link. The text may contain emphasis and code.
+- `[text](url)`: a link. The text may contain emphasis and code. The url may
+  not contain spaces, and link titles are not supported.
 - A backslash before an ASCII punctuation character makes it literal.
 - Anything else, including `<`, `>`, `&` and non-ASCII UTF-8, is plain text.
 
 ### Example statement
 
-````
-Given an array of integers `nums` and an integer `target`, return the
-**indices** of the two numbers that add up to `target`.
+This one is made up, to show the pieces together:
 
-Each input has *exactly one* solution, and you may not use the same element
-twice. You can return the answer in any order.
+````
+You are given `heights`, the heights of a row of steps from left to right.
+A step is a **rise** when it is taller than the step just before it.
+
+Return how many rises the row has. The first step is never a rise, because
+nothing comes *before* it.
 
 @examples
 
 ## Constraints
 
-- `2 <= nums.length <= 10^4`
-- `-10^9 <= nums[i] <= 10^9`
-- Exactly one valid answer exists.
+- `1 <= heights.length <= 10^5`
+- `0 <= heights[i] <= 10^9`
 
 ## Follow-up
 
-Can you find an algorithm that runs in less than `O(n^2)` time?
+Can you count them in one pass, using `O(1)` extra memory?
 ````

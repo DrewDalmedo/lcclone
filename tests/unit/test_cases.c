@@ -249,6 +249,19 @@ static void test_empty(void)
     lc_close(ctx);
 }
 
+static void test_nul_byte(void)
+{
+    static const char text[] = "1\n=> 2\n\n[1,\0002]\n=> 3\n";
+    lc_ctx *ctx = lc_open(NULL);
+    lc_cases *cs = NULL;
+
+    CHECK_INT(lc_parse_cases(ctx, text, sizeof text - 1, "t.txt", &cs),
+              LC_ERR_PARSE);
+    CHECK(cs == NULL);
+    CHECK_STR(lc_last_error(ctx), "t.txt:4: line contains a NUL byte");
+    lc_close(ctx);
+}
+
 static void test_errors(void)
 {
     static char long_directive[128];
@@ -479,6 +492,7 @@ int main(void)
     RUN(test_comments_and_blanks);
     RUN(test_explanations);
     RUN(test_empty);
+    RUN(test_nul_byte);
     RUN(test_errors);
     RUN(test_filename_and_misuse);
     RUN(test_many_cases);
