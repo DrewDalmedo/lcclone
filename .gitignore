@@ -4,5 +4,8 @@
 /tests/unit/test_*
 !/tests/unit/test_*.c
 /tests/tmp/
+/tests/fixtures/run/misbehave
+/tests/fixtures/run/throw
+/tests/fixtures/run/twosum
 /.datadir
 /.datadir.tmp

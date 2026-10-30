@@ -221,6 +221,141 @@ int lc_strtod(const char *p, size_t n, double *out);
  */
 void lc_fmt_double(double v, char *buf);
 
+/* ------------------------------------------------------------------ */
+/* Running a program (runner.c)                                        */
+/* ------------------------------------------------------------------ */
+
+/* Default cap on each captured stream. */
+#define LC_RUN_OUTPUT_MAX LC_MIB
+
+/*
+ * What to run and under which limits. Zero-initialize it, then fill in
+ * what you need: a zero field means "no limit" or "the default".
+ */
+typedef struct lc_run_spec {
+    const char *path;         /* the program, used as given: no $PATH search */
+    char *const *argv;        /* NULL-terminated; NULL means { path, NULL } */
+    const char *cwd;          /* directory to run in; NULL keeps the caller's */
+    const char *input;        /* written to stdin, which is then closed */
+    size_t input_len;
+    int result_fd;            /* 1: open fd 3 for the harness's result and
+                                 capture it; 0: fd 3 is closed */
+
+    /*
+     * Resource limits, set in the child. RLIMIT_CORE is always 0. A limit
+     * above the current hard limit is lowered to it, and one that can't be
+     * set is skipped: the others still apply.
+     */
+    int cpu_sec;              /* RLIMIT_CPU: SIGXCPU then, SIGKILL a second later */
+    unsigned long long as_bytes;    /* RLIMIT_AS; on macOS, which doesn't
+                                       enforce it, the runner itself kills the
+                                       program once its memory passes this */
+    unsigned long long stack_bytes; /* RLIMIT_STACK */
+    unsigned long long fsize_bytes; /* RLIMIT_FSIZE */
+    long long wall_ms;        /* killed this long after it started */
+
+    /* Bytes kept of each stream (0: LC_RUN_OUTPUT_MAX). A program that
+     * writes more is killed, and lc_run_result.overflow says where. */
+    size_t stdout_max;
+    size_t stderr_max;
+    size_t result_max;
+
+    const volatile sig_atomic_t *cancel; /* non-zero kills it; may be NULL */
+} lc_run_spec;
+
+/* lc_run_result.overflow bits. */
+enum { LC_RUN_STDOUT = 1, LC_RUN_STDERR = 2, LC_RUN_RESULT = 4 };
+
+/* What happened to a program. Initialize with lc_run_result_init; reuse it
+ * for several runs, then release it with lc_run_result_free. */
+typedef struct lc_run_result {
+    int exited;               /* 1 if it exited, with exit_code */
+    int exit_code;
+    int signal;               /* the signal that ended it, else 0 */
+    int timed_out;            /* killed at the wall-clock deadline */
+    int cancelled;            /* killed because *cancel was set */
+    int mem_killed;           /* killed for passing as_bytes (macOS only) */
+    unsigned overflow;        /* LC_RUN_* streams that passed their cap */
+    long cpu_ms;              /* user plus system CPU time */
+    long wall_ms;
+    long max_rss_kb;          /* peak resident memory */
+    lc_str out;               /* stdout */
+    lc_str err;               /* stderr */
+    lc_str result;            /* fd 3 */
+} lc_run_result;
+
+void lc_run_result_init(lc_run_result *r);
+void lc_run_result_free(lc_run_result *r);
+
+/*
+ * Runs a program to completion: forks, sets up the child (own process
+ * group, signals reset to their defaults, only fds 0-3 open, limits, cwd),
+ * execs it, writes its input and reads its output in one poll() loop, and
+ * waits for it by PID. Whatever the program does, that is reported in *r
+ * and lc_run returns LC_OK. It fails only when the program can't be
+ * started (LC_ERR_NOTFOUND for a missing program or directory, else
+ * LC_ERR_IO) or the system lets it down (LC_ERR_IO, LC_ERR_NOMEM).
+ *
+ * The caller's process must ignore SIGPIPE and not ignore SIGCHLD (see
+ * "Judging" in lc.h).
+ */
+int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r);
+
+/* ------------------------------------------------------------------ */
+/* Judging a built program (judge.c)                                   */
+/* ------------------------------------------------------------------ */
+
+/* Largest result a harness may write on fd 3. */
+#define LC_RESULT_MAX (16 * LC_MIB)
+
+/* The limits a case is judged by (docs/judging.md, "Limits"). */
+typedef struct lc_limits {
+    int time_ms;              /* CPU time; Time Limit Exceeded beyond it */
+    int memory_mb;            /* peak resident memory; Memory Limit
+                                 Exceeded beyond it */
+    size_t output_max;        /* stdout and stderr, each */
+    size_t result_max;        /* the result on fd 3 */
+} lc_limits;
+
+/* Limits with the given time and memory, and the default output caps. */
+void lc_limits_init(lc_limits *l, int time_ms, int memory_mb);
+
+/* Sets the rlimits, deadline and caps of `spec` for one case. */
+void lc_limits_apply(const lc_limits *l, lc_run_spec *spec);
+
+/*
+ * The verdict a run earns before its result is looked at: Output, Memory
+ * or Time Limit Exceeded, or Runtime Error, in that order of precedence,
+ * with the reason in `why`. LC_VERDICT_NONE when the program exited 0
+ * within every limit, so its result decides. Not for cancelled runs.
+ */
+lc_verdict lc_classify(const lc_limits *l, const lc_run_result *r,
+                       lc_str *why);
+
+typedef struct lc_judge_opts {
+    const char *cwd;          /* directory to run in; NULL keeps the caller's */
+    int stop_on_failure;      /* stop after the first case not accepted */
+    int time_ms;              /* 0: the problem's time_limit_ms */
+    int memory_mb;            /* 0: the problem's memory_limit_mb */
+} lc_judge_opts;
+
+/*
+ * Judges the program `exe`, a solution already built with its harness,
+ * against `cases` of problem `p`: for each case it encodes the inputs
+ * (docs/wire.md), runs the program, classifies the run, decodes and
+ * compares the result, and reports events through `hooks` (may be NULL).
+ * `opts` may be NULL. On LC_OK *out holds the report.
+ *
+ * Fails with LC_ERR_INVALID for a problem that can't be judged yet (no
+ * signature, a void result, compare: checker) or no cases, with
+ * LC_ERR_PARSE for a case that doesn't fit the signature, and as lc_run
+ * does when the program can't be run.
+ */
+int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
+                 const lc_case *cases, size_t ncases,
+                 const lc_judge_opts *opts, const lc_hooks *hooks,
+                 lc_report **out);
+
 /* getenv, but NULL when the variable is unset or empty. */
 const char *lc_getenv(const char *name);
 

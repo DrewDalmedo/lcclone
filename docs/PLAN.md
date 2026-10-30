@@ -542,8 +542,9 @@ and global state can't leak between cases.
    - `setpgid(0,0)`;
    - set `setrlimit` limits:
      - `RLIMIT_CPU` = limit + 1s;
-     - `RLIMIT_AS` = memory limit (skipped under ASan, and on macOS where it
-       isn't enforced);
+     - `RLIMIT_AS` = 2 × memory limit + 64 MB, a guard against runaway
+       programs (skipped under ASan; macOS doesn't enforce it, so there the
+       runner watches the program's memory itself);
      - `RLIMIT_STACK` = 256 MB, for deep recursion;
      - `RLIMIT_FSIZE` small;
      - `RLIMIT_CORE` = 0;
@@ -557,7 +558,10 @@ and global state can't leak between cases.
    - when the deadline passes or the job is cancelled, run
      `kill(-pgid, SIGKILL)`.
 4. **Collect the result.** `wait4()` gives the exit status, CPU time and peak
-   RSS. `ru_maxrss` is in KB on Linux and the BSDs but in bytes on macOS, so it
+   RSS. Memory Limit Exceeded is decided from the peak RSS, not from a
+   failed allocation under `RLIMIT_AS`: a crash after a failed `malloc` says
+   much less, and the RSS rule works the same on macOS. `ru_maxrss` is in KB
+   on Linux and the BSDs but in bytes on macOS, so it
    is normalized. These values map to a verdict.
 
 ### 5.8 Storage (XDG)

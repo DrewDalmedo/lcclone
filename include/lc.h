@@ -13,6 +13,7 @@
 #ifndef LC_H
 #define LC_H
 
+#include <signal.h>
 #include <stdarg.h>
 #include <stddef.h>
 
@@ -403,6 +404,140 @@ int lc_wire_encode(lc_ctx *ctx, const lc_type *type, const lc_value *v,
 int lc_wire_decode(lc_ctx *ctx, lc_pool *pool, const lc_type *type,
                    const char *text, size_t len, size_t *pos,
                    const lc_value **out);
+
+/* ------------------------------------------------------------------ */
+/* Judging (docs/judging.md)                                           */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Judging runs a solution once per test case, as a child process in its
+ * own process group. That asks two things of the front-end's process:
+ *
+ *   - SIGPIPE must be ignored (signal(SIGPIPE, SIG_IGN)). A program that
+ *     stops reading its input then makes the core's writes fail with
+ *     EPIPE, which it handles, instead of killing the front-end.
+ *   - SIGCHLD must not be set to SIG_IGN, or the system reaps the programs
+ *     before the core can collect their exit status and resource usage.
+ *
+ * Because the programs are not in the terminal's foreground process group,
+ * ^C reaches only the front-end. A CLI should catch SIGINT and set the
+ * cancel flag in lc_hooks.
+ */
+
+typedef enum {
+    LC_VERDICT_NONE = 0,      /* no verdict: the run was cancelled first */
+    LC_ACCEPTED,
+    LC_WRONG_ANSWER,
+    LC_COMPILE_ERROR,
+    LC_RUNTIME_ERROR,
+    LC_TIME_LIMIT_EXCEEDED,
+    LC_MEMORY_LIMIT_EXCEEDED,
+    LC_OUTPUT_LIMIT_EXCEEDED
+} lc_verdict;
+
+/* "Accepted", "Wrong Answer", ...; "No Verdict" for LC_VERDICT_NONE. */
+const char *lc_verdict_name(lc_verdict v);
+/* "accepted", "wrong_answer", ...; "none" for LC_VERDICT_NONE. These ids
+ * are stable, for JSON output. */
+const char *lc_verdict_id(lc_verdict v);
+/* "SIGSEGV" and the like, or NULL for a number it doesn't know. */
+const char *lc_signal_name(int sig);
+
+/* How much of a program's stdout and stderr a case result keeps. */
+#define LC_REPORT_TEXT_MAX 65536
+
+/*
+ * How one test case went. Strings are NUL-terminated and owned by the
+ * report they belong to.
+ */
+typedef struct lc_case_result {
+    size_t index;             /* position in the list of cases that was run */
+    int line;                 /* line of the case in tests.txt */
+    int example;              /* 1 for an @example case */
+    lc_verdict verdict;
+    /*
+     * Why the verdict, for anything but Accepted and Wrong Answer, e.g.
+     * "killed by SIGSEGV" or "used 1630 ms of CPU time; the limit is
+     * 1000 ms". NULL for Accepted and Wrong Answer.
+     */
+    const char *message;
+    const char *const *inputs; /* the case's input literals, as written */
+    size_t ninputs;
+    const char *expected;     /* the expected result, as a literal */
+    const char *output;       /* the program's result, as a literal; NULL
+                                 when it gave none that could be read */
+    /*
+     * What the program printed. stdout keeps its first LC_REPORT_TEXT_MAX
+     * bytes and stderr its last ones (starting at a line), so a crash
+     * report at the end of stderr survives. Either may hold any bytes.
+     */
+    const char *stdout_text;
+    size_t stdout_len;
+    int stdout_truncated;
+    const char *stderr_text;
+    size_t stderr_len;
+    int stderr_truncated;
+    long time_ms;             /* CPU time, user plus system */
+    long wall_ms;             /* elapsed time */
+    long memory_kb;           /* peak resident memory */
+    int exit_code;            /* its exit status, or -1 if a signal ended it */
+    int signal;               /* the signal that ended it, or 0 */
+} lc_case_result;
+
+/* The outcome of a judging run. Release it with lc_report_free. */
+typedef struct lc_report {
+    /*
+     * The verdict of the first case that failed; Accepted when every case
+     * ran and passed; LC_VERDICT_NONE when the run was cancelled before
+     * any case failed.
+     */
+    lc_verdict verdict;
+    int cancelled;            /* the cancel flag stopped the run */
+    size_t total;             /* cases in the run */
+    size_t passed;            /* cases accepted */
+    const lc_case_result *results; /* the cases that finished, in order */
+    size_t nresults;
+    long max_time_ms;         /* the largest time_ms of any case */
+    long max_memory_kb;       /* the largest memory_kb of any case */
+    void *priv_;              /* owned memory; do not touch */
+} lc_report;
+
+void lc_report_free(lc_report *report);
+
+/* Progress events, delivered while a run is under way. */
+typedef enum {
+    LC_EV_CASE_START,         /* a case is about to run */
+    LC_EV_CASE_DONE,          /* a case finished */
+    LC_EV_DONE                /* the run is over */
+} lc_event_kind;
+
+/*
+ * What the pointers in an event point to is only valid during the
+ * callback; copy what you want to keep.
+ */
+typedef struct lc_event {
+    lc_event_kind kind;
+    size_t index;             /* case events: the case's position in the run */
+    size_t total;             /* case events: how many cases the run has */
+    const lc_case *test_case; /* LC_EV_CASE_START: the case */
+    const lc_case_result *result; /* LC_EV_CASE_DONE: how it went */
+    const lc_report *report;  /* LC_EV_DONE: the whole run */
+} lc_event;
+
+typedef struct lc_hooks {
+    /*
+     * Called on the judging thread for each event; may be NULL. It must
+     * not call back into the same context.
+     */
+    void (*on_event)(void *ud, const lc_event *ev);
+    void *ud;
+    /*
+     * May be NULL. Setting *cancel to non-zero, from a signal handler or
+     * another thread, stops the run within about 50 ms: the program
+     * running is killed and the case it was on is dropped from the report.
+     */
+    const volatile sig_atomic_t *cancel;
+} lc_hooks;
 
 /* ------------------------------------------------------------------ */
 /* Markdown (the subset described in docs/problem-format.md)           */
