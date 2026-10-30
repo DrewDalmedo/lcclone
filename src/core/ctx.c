@@ -1,8 +1,13 @@
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
 #endif
+/* 64-bit off_t and ino_t on 32-bit glibc too (see internal.h). */
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 64
+#endif
 
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -66,8 +71,16 @@ static int set_message(lc_ctx *ctx, int status, int errnum,
 
     lc_str_vprintf(&msg, fmt, ap);
     if (errnum) {
+        /* Not strerror(): on macOS and the BSDs it formats into one buffer
+         * shared by the whole process, so two contexts on two threads
+         * would race on it. This file never defines _GNU_SOURCE, so glibc
+         * declares the POSIX strerror_r that returns an int. */
+        char ebuf[256];
+
+        if (strerror_r(errnum, ebuf, sizeof ebuf) != 0)
+            snprintf(ebuf, sizeof ebuf, "error %d", errnum);
         lc_str_puts(&msg, ": ");
-        lc_str_puts(&msg, strerror(errnum));
+        lc_str_puts(&msg, ebuf);
     }
     if (msg.failed) {
         lc_str_free(&msg);

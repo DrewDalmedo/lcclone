@@ -2,6 +2,10 @@
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 700
 #endif
+/* 64-bit off_t and ino_t on 32-bit glibc too (see internal.h). */
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 64
+#endif
 
 #include <dirent.h>
 #include <errno.h>
@@ -22,9 +26,19 @@ static int not_found_errno(int e)
     return e == ENOENT || e == ENOTDIR;
 }
 
-int lc_read_file(lc_ctx *ctx, const char *path, lc_str *out)
+static int too_large(lc_ctx *ctx, const char *path, size_t max)
+{
+    if (max >= LC_MIB && max % LC_MIB == 0)
+        return lc_set_error(ctx, LC_ERR_IO, "cannot read '%s': file too large "
+                            "(over %zu MiB)", path, max / LC_MIB);
+    return lc_set_error(ctx, LC_ERR_IO, "cannot read '%s': file too large "
+                        "(over %zu bytes)", path, max);
+}
+
+int lc_read_file(lc_ctx *ctx, const char *path, size_t max, lc_str *out)
 {
     struct stat st;
+    size_t start = out->len;
     int fd;
 
     do
@@ -39,22 +53,38 @@ int lc_read_file(lc_ctx *ctx, const char *path, lc_str *out)
             close(fd);
             return lc_set_errno(ctx, LC_ERR_IO, EISDIR, "cannot read '%s'", path);
         }
-        if (S_ISREG(st.st_mode) && st.st_size > 0 &&
-            (unsigned long long)st.st_size < (unsigned long long)SIZE_MAX) {
-            if (lc_str_reserve(out, (size_t)st.st_size) != LC_OK) {
+        if (S_ISREG(st.st_mode) && st.st_size > 0) {
+            if ((unsigned long long)st.st_size > max) {
+                close(fd);
+                return too_large(ctx, path, max);
+            }
+            /* One byte more, so that seeing the end of the file doesn't
+             * have to grow the buffer. */
+            if (lc_str_reserve(out, (size_t)st.st_size + 1) != LC_OK) {
                 close(fd);
                 return lc_oom(ctx);
             }
         }
     }
     for (;;) {
+        size_t got = out->len - start, room;
         ssize_t n;
 
-        if (lc_str_reserve(out, 4096) != LC_OK) {
+        /* The file may have grown since fstat, or may not be regular. */
+        if (got > max) {
+            close(fd);
+            return too_large(ctx, path, max);
+        }
+        if (out->cap - out->len <= 1 && lc_str_reserve(out, 4096) != LC_OK) {
             close(fd);
             return lc_oom(ctx);
         }
-        n = read(fd, out->data + out->len, out->cap - out->len - 1);
+        /* Read at most one byte past the limit: enough to tell it was
+         * passed. */
+        room = out->cap - out->len - 1;
+        if (room > max - got)
+            room = max - got + 1;
+        n = read(fd, out->data + out->len, room);
         if (n < 0) {
             int e = errno;
             if (e == EINTR)

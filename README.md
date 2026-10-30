@@ -88,7 +88,8 @@ make PREFIX=$HOME/opt/lcclone uninstall     # uninstall with the same PREFIX (an
 `problems/` to `$(PREFIX)/share/lcclone/problems`. `PREFIX` is compiled into
 `lc` so that it can find the installed packs; changing it rebuilds what
 depends on it. `DESTDIR` is only prepended when copying and is not compiled
-in. `make uninstall` removes `lc` and the packs this repository ships, and
+in. The installed files are readable by everyone whatever your umask.
+`make uninstall` removes `lc` and the packs this repository ships, and
 nothing else.
 
 Avoid `PREFIX=$HOME/.local`. It would put the bundled packs in

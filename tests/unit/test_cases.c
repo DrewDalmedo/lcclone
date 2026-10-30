@@ -2,6 +2,7 @@
 #define _POSIX_C_SOURCE 200809L
 #endif
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,6 +20,18 @@ static void make_dir(const char *path)
     lc_ctx *ctx = lc_open(NULL);
     CHECK_INT(lc_mkdir_p(ctx, path, 0777), LC_OK);
     lc_close(ctx);
+}
+
+/* A sparse file of `size` bytes. */
+static void make_sparse(const char *path, off_t size)
+{
+    int fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+
+    CHECK(fd >= 0);
+    if (fd < 0)
+        return;
+    CHECK(ftruncate(fd, size) == 0);
+    close(fd);
 }
 
 static void write_file(const char *path, const char *data)
@@ -471,6 +484,18 @@ static void test_load_cases(void)
     CHECK(cs == NULL);
     CHECK(strncmp(lc_last_error(ctx), "cannot open '" TMP "/loop/tests.txt': ",
                   strlen("cannot open '" TMP "/loop/tests.txt': ")) == 0);
+
+    /* So does a file over the size limit, which is not read at all (it
+     * used to be, and a big enough one failed with "out of memory"). */
+    make_dir(TMP "/huge");
+    make_sparse(TMP "/huge/tests.txt", (off_t)LC_MAX_TESTS_TXT + 1);
+    fake.dir = TMP "/huge";
+    cs = (lc_cases *)&cs;
+    CHECK_INT(lc_load_cases(ctx, &fake, &cs), LC_ERR_IO);
+    CHECK(cs == NULL);
+    CHECK_STR(lc_last_error(ctx), "cannot read '" TMP "/huge/tests.txt': file "
+              "too large (over 256 MiB)");
+    unlink(TMP "/huge/tests.txt");
 
     /* Misuse. */
     CHECK_INT(lc_load_cases(ctx, NULL, &cs), LC_ERR_INVALID);

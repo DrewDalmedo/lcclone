@@ -1,6 +1,10 @@
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
 #endif
+/* 64-bit off_t and ino_t on 32-bit glibc too (see internal.h). */
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 64
+#endif
 
 /*
  * problem.c: finds the problem directory, loads every pack's problem.md
@@ -767,10 +771,15 @@ static int load_pack(loader *L, const char *name)
     if (lc_str_puts(&L->path, "/problem.md") != LC_OK)
         return lc_oom(L->ctx);
     /* Opening a FIFO could block forever, and a device could be endless. */
-    if (stat(L->path.data, &st) == 0 && !S_ISREG(st.st_mode))
-        return pack_warn(L, 0, "not a regular file");
+    if (stat(L->path.data, &st) == 0) {
+        if (!S_ISREG(st.st_mode))
+            return pack_warn(L, 0, "not a regular file");
+        if ((unsigned long long)st.st_size > LC_MAX_PROBLEM_MD)
+            return pack_warn(L, 0, "file too large (over %zu MiB)",
+                             LC_MAX_PROBLEM_MD / LC_MIB);
+    }
     lc_str_clear(&L->buf);
-    rc = lc_read_file(L->ctx, L->path.data, &L->buf);
+    rc = lc_read_file(L->ctx, L->path.data, LC_MAX_PROBLEM_MD, &L->buf);
     if (rc != LC_OK)
         rc = error_status(L->ctx, rc);
     if (rc == LC_ERR_NOMEM)
@@ -924,7 +933,8 @@ int lc_load(lc_ctx *ctx)
     char **names = NULL;
     size_t nnames = 0, ncand = 0, cap = 16, i;
     char *root = NULL;
-    int rc;
+    struct stat st;
+    int rc, e;
 
     if (ctx->loaded)
         return error_status(ctx, lc_set_error(ctx, LC_ERR_INVALID, "problems "
@@ -963,9 +973,23 @@ int lc_load(lc_ctx *ctx)
             goto done;
         }
         L.dirlen = L.path.len;
-        if (!lc_is_dir(L.path.data))
+        if (stat(L.path.data, &st) != 0) {
+            /* A dangling link is just not a directory; any other failure
+             * (a link loop, EOVERFLOW, EACCES) would hide a pack, so say so. */
+            e = errno;
+            if (e == ENOENT || e == ENOTDIR)
+                continue;
+            if (error_status(ctx, lc_set_errno(ctx, LC_ERR_IO, e, "cannot "
+                                               "access")) == LC_ERR_NOMEM) {
+                rc = LC_ERR_NOMEM;
+                goto done;
+            }
+            rc = pack_warn(&L, 0, "%s", lc_last_error(ctx));
+        } else if (!S_ISDIR(st.st_mode)) {
             continue;
-        rc = load_pack(&L, names[i]);
+        } else {
+            rc = load_pack(&L, names[i]);
+        }
         if (rc == SKIPPED)
             rc = LC_OK;
         else if (rc != LC_OK)

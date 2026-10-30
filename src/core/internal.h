@@ -4,7 +4,11 @@
  *
  * Every core .c file starts with
  *     #define _POSIX_C_SOURCE 200809L
+ *     #define _FILE_OFFSET_BITS 64
  * before any #include, so the core sees exactly POSIX.1-2008 plus C11.
+ * The second line matters only on 32-bit glibc, where off_t and ino_t are
+ * otherwise 32 bits and stat() and readdir() fail with EOVERFLOW on files
+ * with large inode numbers (XFS, NFS, overlayfs); it does nothing elsewhere.
  */
 #ifndef LC_INTERNAL_H
 #define LC_INTERNAL_H
@@ -82,7 +86,10 @@ struct lc_ctx {
  * the current message (e.g. "%s", lc_last_error(ctx)).
  */
 int lc_set_error(lc_ctx *ctx, int status, const char *fmt, ...) LC_PRINTF(3, 4);
-/* Like lc_set_error, then appends ": " and strerror(errnum). */
+/*
+ * Like lc_set_error, then appends ": " and the system's message for errnum
+ * (from strerror_r, so it is safe with one context per thread).
+ */
 int lc_set_errno(lc_ctx *ctx, int status, int errnum, const char *fmt, ...)
     LC_PRINTF(4, 5);
 /* Sets "out of memory" and returns LC_ERR_NOMEM. */
@@ -94,12 +101,20 @@ int lc_add_warning(lc_ctx *ctx, const char *fmt, ...) LC_PRINTF(2, 3);
 /* Files (fs.c)                                                        */
 /* ------------------------------------------------------------------ */
 
+#define LC_MIB ((size_t)1 << 20)
+
+/* Largest files the loader reads whole; anything bigger skips the pack (or
+ * its tests) with a warning instead of exhausting memory. */
+#define LC_MAX_PROBLEM_MD (16 * LC_MIB)
+#define LC_MAX_TESTS_TXT (256 * LC_MIB)
+
 /*
  * Appends the whole file to `out`. Returns LC_ERR_NOTFOUND if it does not
- * exist, LC_ERR_IO for other failures (including a directory), with a
+ * exist, LC_ERR_IO for other failures (including a directory, and a file
+ * longer than `max` bytes, which is never read past max + 1 bytes), with a
  * message naming the path.
  */
-int lc_read_file(lc_ctx *ctx, const char *path, lc_str *out);
+int lc_read_file(lc_ctx *ctx, const char *path, size_t max, lc_str *out);
 
 /*
  * Lists a directory's entries, except "." and "..", sorted by strcmp.

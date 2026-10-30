@@ -35,6 +35,7 @@ static const char main_help_tail[] =
     "\n"
     "Environment:\n"
     "  LC_PROBLEMS  directory of problem packs (default:\n"
+    "               $XDG_DATA_HOME/lcclone/problems, else\n"
     "               ~/.local/share/lcclone/problems, then the installed ones)\n"
     "  PAGER        pager for 'lc show' (default: less, then more)\n"
     "  NO_COLOR     if set and not empty, --color=auto never uses colour\n"

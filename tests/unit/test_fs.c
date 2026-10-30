@@ -2,6 +2,9 @@
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE 700
 #endif
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 64
+#endif
 
 #include <dirent.h>
 #include <errno.h>
@@ -88,6 +91,7 @@ static void oom_free(void *p)
 #undef free
 
 #define TMP "tests/tmp/fs"
+#define BIG LC_MIB
 
 static void test_mkdir_and_write(void)
 {
@@ -104,18 +108,18 @@ static void test_mkdir_and_write(void)
     CHECK_INT(lc_write_file_atomic(ctx, TMP "/a/f.txt", "hello\n", 6), LC_OK);
     CHECK(lc_is_file(TMP "/a/f.txt"));
     CHECK(!lc_is_dir(TMP "/a/f.txt"));
-    CHECK_INT(lc_read_file(ctx, TMP "/a/f.txt", &s), LC_OK);
+    CHECK_INT(lc_read_file(ctx, TMP "/a/f.txt", BIG, &s), LC_OK);
     CHECK_STR(s.data, "hello\n");
 
     /* Overwrite atomically, then append on read. */
     CHECK_INT(lc_write_file_atomic(ctx, TMP "/a/f.txt", "bye", 3), LC_OK);
-    CHECK_INT(lc_read_file(ctx, TMP "/a/f.txt", &s), LC_OK);
+    CHECK_INT(lc_read_file(ctx, TMP "/a/f.txt", BIG, &s), LC_OK);
     CHECK_STR(s.data, "hello\nbye");
 
     /* An empty file reads as empty. */
     CHECK_INT(lc_write_file_atomic(ctx, TMP "/a/empty", "", 0), LC_OK);
     lc_str_clear(&s);
-    CHECK_INT(lc_read_file(ctx, TMP "/a/empty", &s), LC_OK);
+    CHECK_INT(lc_read_file(ctx, TMP "/a/empty", BIG, &s), LC_OK);
     CHECK_INT(s.len, 0);
 
     /* mkdir -p through a file fails with a message. */
@@ -143,12 +147,72 @@ static void test_read_errors(void)
     char **names;
     size_t n;
 
-    CHECK_INT(lc_read_file(ctx, TMP "/missing", &s), LC_ERR_NOTFOUND);
+    CHECK_INT(lc_read_file(ctx, TMP "/missing", BIG, &s), LC_ERR_NOTFOUND);
     CHECK(strstr(lc_last_error(ctx), "missing") != NULL);
-    CHECK_INT(lc_read_file(ctx, TMP, &s), LC_ERR_IO);
+    CHECK_INT(lc_read_file(ctx, TMP, BIG, &s), LC_ERR_IO);
     CHECK_INT(lc_list_dir(ctx, TMP "/missing", &a, &names, &n), LC_ERR_NOTFOUND);
     CHECK(names == NULL && n == 0);
     lc_arena_free(&a);
+    lc_str_free(&s);
+    lc_close(ctx);
+}
+
+/* A sparse file of `size` bytes. */
+static void make_sparse(const char *path, off_t size)
+{
+    int fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+
+    CHECK(fd >= 0);
+    if (fd < 0)
+        return;
+    CHECK(ftruncate(fd, size) == 0);
+    close(fd);
+}
+
+/* Files over the limit fail with LC_ERR_IO instead of being read whole. */
+static void test_read_limit(void)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    lc_str s = LC_STR_INIT;
+    size_t len;
+
+    CHECK_INT(lc_mkdir_p(ctx, TMP "/lim", 0777), LC_OK);
+    CHECK_INT(lc_write_file_atomic(ctx, TMP "/lim/ten", "0123456789", 10),
+              LC_OK);
+    /* Exactly at the limit is fine; the limit counts this file only. */
+    CHECK_INT(lc_str_puts(&s, "abc"), LC_OK);
+    CHECK_INT(lc_read_file(ctx, TMP "/lim/ten", 10, &s), LC_OK);
+    CHECK_STR(s.data, "abc0123456789");
+    lc_str_clear(&s);
+    CHECK_INT(lc_read_file(ctx, TMP "/lim/ten", 9, &s), LC_ERR_IO);
+    CHECK_STR(lc_last_error(ctx), "cannot read '" TMP "/lim/ten': file too "
+              "large (over 9 bytes)");
+    CHECK_INT(s.len, 0);
+    CHECK_INT(lc_write_file_atomic(ctx, TMP "/lim/empty", "", 0), LC_OK);
+    CHECK_INT(lc_read_file(ctx, TMP "/lim/empty", 0, &s), LC_OK);
+    CHECK_INT(lc_read_file(ctx, TMP "/lim/ten", 0, &s), LC_ERR_IO);
+
+    /* A huge file is refused without reserving memory for it. */
+    make_sparse(TMP "/lim/huge", (off_t)3 * (off_t)LC_MIB);
+    lc_str_free(&s);
+    CHECK_INT(lc_read_file(ctx, TMP "/lim/huge", 2 * LC_MIB, &s), LC_ERR_IO);
+    CHECK_STR(lc_last_error(ctx), "cannot read '" TMP "/lim/huge': file too "
+              "large (over 2 MiB)");
+    CHECK(s.cap < LC_MIB);
+    unlink(TMP "/lim/huge");
+
+    /* A file whose size fstat can't tell (an endless device here) stops
+     * one byte past the limit. */
+    if (access("/dev/zero", R_OK) == 0) {
+        lc_str_free(&s);
+        CHECK_INT(lc_str_puts(&s, "x"), LC_OK);
+        len = s.len;
+        CHECK_INT(lc_read_file(ctx, "/dev/zero", 10000, &s), LC_ERR_IO);
+        CHECK_STR(lc_last_error(ctx), "cannot read '/dev/zero': file too "
+                  "large (over 10000 bytes)");
+        CHECK_INT(s.len - len, 10001);
+        CHECK(s.cap < 64 * 1024);
+    }
     lc_str_free(&s);
     lc_close(ctx);
 }
@@ -258,6 +322,7 @@ int main(void)
     lc_close(ctx);
     RUN(test_mkdir_and_write);
     RUN(test_read_errors);
+    RUN(test_read_limit);
     RUN(test_paths);
     RUN(test_env);
     RUN(test_list_dir_oom);

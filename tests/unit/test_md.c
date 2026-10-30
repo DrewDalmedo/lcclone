@@ -188,20 +188,15 @@ static char *render_doc(const lc_md_doc *doc)
     return s;
 }
 
-/* Number of lines, counted the way the parser does ("\n", "\r\n", "\r"). */
+/* Number of lines, numbered the way the parser does: only "\n" starts a
+ * new one (a lone "\r" ends a markdown line but not a numbered line). */
 static size_t count_lines(const char *s, size_t n)
 {
-    size_t i = 0, lines = 0;
+    size_t i, lines = n > 0;
 
-    while (i < n) {
-        lines++;
-        while (i < n && s[i] != '\n' && s[i] != '\r')
-            i++;
-        if (i < n && s[i] == '\r' && i + 1 < n && s[i + 1] == '\n')
-            i++;
-        if (i < n)
-            i++;
-    }
+    for (i = 0; i + 1 < n; i++)
+        if (s[i] == '\n')
+            lines++;
     return lines;
 }
 
@@ -868,7 +863,12 @@ static void test_links(void)
 static void test_crlf(void)
 {
     MD("a\r\nb\r\n\r\n# h\r\n", "P@1: a b\nH1@4: h\n");
-    MD("a\rb\r\rc", "P@1: a b\nP@4: c\n");
+    /* A lone "\r" ends a markdown line, but line numbers count "\n" only,
+     * as problem.c and editors do, so they stay true to the file. */
+    MD("a\rb\r\rc", "P@1: a b\nP@1: c\n");
+    MD("a\rb\n\n# h\n", "P@1: a b\nH1@3: h\n");
+    MD("a\r# h\nb\n\nc", "P@1: a\nH1@1: h\nP@2: b\nP@4: c\n");
+    MD("x\n```\ry\r```\rz\n- i", "P@1: x\nC@2[]: y\\n\nP@2: z\nL0-@3: i\n");
     MD("```\r\nx\r\n\r\ny\r\n```\r\nz", "C@1[]: x\\n\\ny\\n\nP@6: z\n");
     MD("```\rx\r```", "C@1[]: x\\n\n");
     MD("a  \r\nb", "P@1: a<br>b\n");
@@ -876,7 +876,7 @@ static void test_crlf(void)
     MD("- a\r\n  - b\r\n", "L0-@1: a\nL1-@2: b\n");
     MD("\r\n\r\n@examples\r\n", "X@3\n");
     MD("a\n\r\nb", "P@1: a\nP@3: b\n");
-    MD("a\r\r\nb", "P@1: a\nP@3: b\n");
+    MD("a\r\r\nb", "P@1: a\nP@2: b\n");
 }
 
 static void test_nul_bytes(void)

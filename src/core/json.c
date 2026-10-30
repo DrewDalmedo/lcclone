@@ -1,6 +1,10 @@
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
 #endif
+/* 64-bit off_t and ino_t on 32-bit glibc too (see internal.h). */
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 64
+#endif
 
 #include <math.h>
 #include <stdio.h>

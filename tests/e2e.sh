@@ -429,6 +429,12 @@ else
     fi
 fi
 
+# Without LC_PROBLEMS, $XDG_DATA_HOME/lcclone/problems comes before
+# ~/.local/share/lcclone/problems, as 'lc help' says.
+mkdir -p "$TMP/xdg/lcclone"
+ln -s "$ROOT/$FIX" "$TMP/xdg/lcclone/problems"
+same list LC_PROBLEMS= XDG_DATA_HOME="$TMP/xdg" -- list
+
 # ------------------------------------------------------------------
 # A closed pipe: "lc list | head -1" prints one line, exits 0, no error
 # ------------------------------------------------------------------

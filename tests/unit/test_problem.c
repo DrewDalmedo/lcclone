@@ -2,6 +2,7 @@
 #define _POSIX_C_SOURCE 200809L
 #endif
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,6 +38,18 @@ static void write_file(const char *path, const char *data)
         return;
     CHECK(fwrite(data, 1, strlen(data), f) == strlen(data));
     CHECK(fclose(f) == 0);
+}
+
+/* A sparse file of `size` bytes. */
+static void make_sparse(const char *path, off_t size)
+{
+    int fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+
+    CHECK(fd >= 0);
+    if (fd < 0)
+        return;
+    CHECK(ftruncate(fd, size) == 0);
+    close(fd);
 }
 
 /* A fresh, empty problem directory. Returns a static buffer. */
@@ -664,6 +677,27 @@ static void test_bom_crlf(void)
     }
     lc_close(ctx);
 
+    /* The loader and the markdown parser agree on line numbers, even with
+     * a lone '\r': statement_line + block line - 1 is the line in
+     * problem.md (docs/json.md). '## Heading' is on line 8. */
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "---\n"
+                  "first para\rsecond line\n\n## Heading\n");
+    if (p) {
+        lc_md_doc *doc = NULL;
+
+        CHECK_INT(p->statement_line, 6);
+        CHECK_INT(lc_md_parse(p->statement, p->statement_len, &doc), LC_OK);
+        CHECK(doc && doc->nblocks == 2);
+        if (doc && doc->nblocks == 2) {
+            CHECK_INT(doc->blocks[0].kind, LC_MD_PARAGRAPH);
+            CHECK_INT(p->statement_line + doc->blocks[0].line - 1, 6);
+            CHECK_INT(doc->blocks[1].kind, LC_MD_HEADING);
+            CHECK_INT(p->statement_line + doc->blocks[1].line - 1, 8);
+        }
+        lc_md_free(doc);
+    }
+    lc_close(ctx);
+
     /* A BOM is skipped only at the very start. */
     expect_bad("0001-a", "id: 1\n\xEF\xBB\xBFslug: a\n---\n",
                ":2: invalid key '\xEF\xBB\xBFslug'");
@@ -1053,6 +1087,41 @@ static void test_missing_and_unreadable(void)
              "problem.md': ", pdir(ctx), pdir(ctx));
     CHECK(lc_warning_count(ctx) == 1 &&
           strncmp(lc_warning_at(ctx, 0), want, strlen(want)) == 0);
+    lc_close(ctx);
+
+    /* A problem.md over the size limit skips the pack without being read
+     * (it used to be read whole, and a big enough one made lc_load fail
+     * with "out of memory"). */
+    root = new_root();
+    add_pack(root, "0001-a", NULL);
+    add_pack(root, "0002-b", HDR("2", "b") "---\n");
+    snprintf(path, sizeof path, "%s/0001-a/problem.md", root);
+    make_sparse(path, (off_t)LC_MAX_PROBLEM_MD + 1);
+    ctx = load_dir(root);
+    CHECK_INT(lc_problem_count(ctx), 1);
+    CHECK_INT(lc_warning_count(ctx), 1);
+    snprintf(want, sizeof want, "%s/0001-a/problem.md: file too large (over "
+             "16 MiB)", pdir(ctx));
+    CHECK_STR(lc_warning_at(ctx, 0), want);
+    lc_close(ctx);
+    unlink(path);
+
+    /* An entry that might be a pack but can't be examined (a link loop
+     * here; EOVERFLOW or EACCES elsewhere) is reported, not silently left
+     * out. A dangling link is simply not a directory. */
+    root = new_root();
+    add_pack(root, "0002-b", HDR("2", "b") "---\n");
+    snprintf(path, sizeof path, "%s/0001-loop", root);
+    CHECK(symlink("0001-loop", path) == 0);
+    snprintf(path, sizeof path, "%s/0003-dangling", root);
+    CHECK(symlink("nowhere", path) == 0);
+    ctx = load_dir(root);
+    CHECK_INT(lc_problem_count(ctx), 1);
+    CHECK_INT(lc_warning_count(ctx), 1);
+    snprintf(want, sizeof want, "%s/0001-loop: cannot access: ", pdir(ctx));
+    CHECK(lc_warning_count(ctx) == 1 &&
+          strncmp(lc_warning_at(ctx, 0), want, strlen(want)) == 0 &&
+          strlen(lc_warning_at(ctx, 0)) > strlen(want));
     lc_close(ctx);
 }
 

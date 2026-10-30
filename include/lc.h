@@ -259,12 +259,15 @@ typedef struct lc_md_block {
     int ordered;               /* list item: 1 if numbered */
     int number;                /* list item: its number when ordered */
     int depth;                 /* list item: nesting depth, 0 = top level */
-    const char *lang;          /* code block info string, "" if none */
+    const char *lang;          /* code block language: the first word of the
+                                  fence's info string, "" if none */
     const char *text;          /* code block contents, ending in '\n' unless empty */
     size_t len;
     const lc_md_span *spans;   /* inline content: paragraph, heading, list item, quote */
     size_t nspans;
-    int line;                  /* 1-based line in the markdown text */
+    int line;                  /* 1-based line in the markdown text; only
+                                  "\n" starts a new number (a lone "\r" ends
+                                  a markdown line but keeps the number) */
 } lc_md_block;
 
 typedef struct lc_md_doc {

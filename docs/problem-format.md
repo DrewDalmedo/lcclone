@@ -72,7 +72,8 @@ You have a list of integers `nums` and a goal value `target`. ...
   and tabs allowed). A file with no such line is an error.
 - A UTF-8 byte order mark at the start of the file is skipped, and a `\r`
   before each newline is ignored, in the header and the statement alike.
-- A file containing a NUL byte is an error.
+- A file containing a NUL byte is an error, and so is a `problem.md` larger
+  than 16 MiB.
 
 ### Fields read in M0
 
@@ -161,7 +162,8 @@ Test cases. M0 parses the whole file but only shows the cases marked
   - an `@example` that is not followed by a case, or two in a row;
   - a line starting with `@` other than `@example`;
   - a case still open at the end of the file;
-  - a NUL byte.
+  - a NUL byte;
+  - a file larger than 256 MiB.
 - A `\r` before each newline is ignored, and so is a UTF-8 byte order mark.
 
 ## Statement markdown
@@ -169,6 +171,10 @@ Test cases. M0 parses the whole file but only shows the cases marked
 Statements use a small markdown subset. The core parses it into a flat list of
 blocks (`lc_md_parse` in `include/lc.h`); front-ends render the blocks. The
 parser accepts any input: what isn't recognized below is plain text.
+
+A line ends at `\n`, `\r\n` or a lone `\r`, but line numbers count only
+`\n`, as editors do. So a block's `line` plus the problem's `statement_line`,
+minus 1, is always its line in `problem.md`.
 
 ### Blocks
 
@@ -178,7 +184,8 @@ parser accepts any input: what isn't recognized below is plain text.
 - **Heading:** `#` to `######`, then a space or tab, then the text. Trailing
   `#` characters preceded by a space are removed. A heading is a single line.
 - **Fenced code block:** a line starting with three or more backticks (or
-  tildes), optionally followed by an info string such as `text` or `cpp`. It
+  tildes), optionally followed by an info string such as `text` or `cpp`
+  (only its first word is kept, as the block's language). It
   runs until a line with a fence of the same character at least as long, or
   to the end of the document. Content is verbatim. The fence may be indented
   up to three spaces; that much indentation is removed from content lines.

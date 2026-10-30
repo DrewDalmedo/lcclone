@@ -1,6 +1,10 @@
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
 #endif
+/* 64-bit off_t and ino_t on 32-bit glibc too (see internal.h). */
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 64
+#endif
 
 /* cases.c: reads tests.txt (docs/problem-format.md, "tests.txt"). */
 
@@ -317,7 +321,7 @@ int lc_load_cases(lc_ctx *ctx, const lc_problem *p, lc_cases **out)
         rc = lc_set_error(ctx, LC_ERR_IO, "cannot read '%s': not a regular "
                           "file", path.data);
     else
-        rc = lc_read_file(ctx, path.data, &text);
+        rc = lc_read_file(ctx, path.data, LC_MAX_TESTS_TXT, &text);
     if (rc == LC_ERR_NOTFOUND)
         rc = lc_parse_cases(ctx, "", 0, path.data, out);
     else if (rc == LC_OK)

@@ -1,6 +1,10 @@
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
 #endif
+/* 64-bit off_t and ino_t on 32-bit glibc too (see internal.h). */
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 64
+#endif
 
 /*
  * md.c: the statement markdown subset of docs/problem-format.md, parsed into
@@ -1216,7 +1220,7 @@ int lc_md_parse(const char *text, size_t len, lc_md_doc **out)
     char *norm = NULL;
     const char *p, *end;
     lc_md_block *blocks = NULL;
-    int line = 0;
+    int line = 0, lone_cr = 0;
 
     if (!out)
         return LC_ERR_INVALID;
@@ -1243,17 +1247,25 @@ int lc_md_parse(const char *text, size_t len, lc_md_doc **out)
     }
     p = text;
     end = text + len;
-    /* Lines end at "\n", "\r\n" or a lone "\r". */
+    /* Lines end at "\n", "\r\n" or a lone "\r", as in CommonMark. Line
+     * numbers count "\n" only, like the loader and every editor: a line
+     * after a lone "\r" keeps the number of the line it is part of, so
+     * statement_line + line - 1 is always the line in problem.md. */
     while (p < end && !mp.nomem) {
         const char *e = p;
 
         while (e < end && *e != '\n' && *e != '\r')
             e++;
-        if (line < INT_MAX)
+        if (!lone_cr && line < INT_MAX)
             line++;
         md_line(&mp, p, (size_t)(e - p), line);
-        if (e < end && *e == '\r' && e + 1 < end && e[1] == '\n')
-            e++;
+        lone_cr = 0;
+        if (e < end && *e == '\r') {
+            if (e + 1 < end && e[1] == '\n')
+                e++;
+            else
+                lone_cr = 1;
+        }
         p = e < end ? e + 1 : e;
     }
     if (!mp.nomem) {

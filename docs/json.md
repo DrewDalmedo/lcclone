@@ -85,7 +85,7 @@ filters, in ID order. It is an empty array when nothing matches.
 | `time_limit_ms`   | integer         | default 1000 |
 | `memory_limit_mb` | integer         | default 256 |
 | `dir`             | string          | absolute path of the pack directory |
-| `statement`       | string          | the statement's markdown, exactly as written in `problem.md` |
+| `statement`       | string          | the statement's markdown as written in `problem.md`, except that a `\r` before each newline is dropped (see `docs/problem-format.md`) |
 | `statement_line`  | integer         | the line of `problem.md` where the statement starts |
 | `blocks`          | array           | the statement parsed into blocks (below) |
 | `examples`        | array           | the cases of `tests.txt` marked `@example` (below) |
@@ -110,7 +110,7 @@ and, depending on the type:
 |-------------|---------|
 | `paragraph` | `spans` |
 | `heading`   | `level` (1 to 6), `spans` |
-| `code`      | `lang` (the fence's info string, `""` if none), `text` (the contents verbatim, ending in `"\n"` unless empty) |
+| `code`      | `lang` (the first word of the fence's info string, `""` if none), `text` (the contents verbatim, ending in `"\n"` unless empty) |
 | `list_item` | `ordered` (boolean), `number` (integer for a numbered item, null for a bulleted one), `depth` (0 for top level, 1 for an item nested once, ...), `spans` |
 | `quote`     | `spans`: one paragraph of a `>` block quote (an empty `>` line starts a new quote block) |
 | `rule`      | nothing more: a thematic break |

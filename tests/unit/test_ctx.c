@@ -45,6 +45,27 @@ static void test_errors(void)
     lc_close(ctx);
 }
 
+/* lc_set_errno appends the system's message (through strerror_r, which
+ * every context can call at once; strerror shares one buffer on the BSDs). */
+static void test_errno_message(void)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    char want[512];
+    const char *msg;
+
+    snprintf(want, sizeof want, "cannot open 'f': %s", strerror(ENOENT));
+    lc_set_errno(ctx, LC_ERR_IO, ENOENT, "cannot open '%s'", "f");
+    CHECK_STR(lc_last_error(ctx), want);
+    snprintf(want, sizeof want, "x: %s", strerror(EACCES));
+    lc_set_errno(ctx, LC_ERR_IO, EACCES, "x");
+    CHECK_STR(lc_last_error(ctx), want);
+    /* An errno the system doesn't know still gets some text. */
+    lc_set_errno(ctx, LC_ERR_IO, 123456, "y");
+    msg = lc_last_error(ctx);
+    CHECK(strncmp(msg, "y: ", 3) == 0 && strlen(msg) > 3);
+    lc_close(ctx);
+}
+
 static void test_warnings(void)
 {
     lc_ctx *ctx = lc_open(NULL);
@@ -82,6 +103,7 @@ int main(void)
 {
     RUN(test_open_close);
     RUN(test_errors);
+    RUN(test_errno_message);
     RUN(test_warnings);
     RUN(test_difficulty);
     RUN(test_version);

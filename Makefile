@@ -25,7 +25,8 @@ DATADIR = $(PREFIX)/share/lcclone
 
 # Flags the build always needs, kept apart from CFLAGS so that overriding
 # CFLAGS doesn't drop them.
-LC_CFLAGS = -std=c11 -Iinclude -Isrc/core -DLC_DATADIR=\"$(DATADIR)\"
+LC_CFLAGS = -std=c11 -D_FILE_OFFSET_BITS=64 -Iinclude -Isrc/core \
+	-DLC_DATADIR=\"$(DATADIR)\"
 
 CORE_OBJ = \
 	src/core/arena.o \
@@ -62,13 +63,29 @@ all: liblc.a lc
 $(CORE_OBJ): include/lc.h src/core/internal.h
 $(CLI_OBJ): include/lc.h src/cli/cli.h
 
-# problem.c has DATADIR compiled in. .datadir changes only when DATADIR
-# does, so "make PREFIX=..." rebuilds what it must and nothing more.
-src/core/problem.o: .datadir
+# problem.c and test_problem.c have DATADIR compiled in. .datadir holds the
+# value they were built with and is rewritten only when DATADIR changes, so
+# "make PREFIX=..." rebuilds what it must and nothing more.
+#
+# A make that compares mtimes to the second (bmake, the system make of
+# FreeBSD and NetBSD, or any make on a filesystem with 1-second timestamps)
+# would see a .datadir rewritten in the same second as the last build as no
+# newer than the objects, keep the old DATADIR and never notice again. So
+# when the value changes, everything built from it is deleted (bmake checks
+# a target again when it gets to it, and rebuilds it if it is missing), and
+# the new .datadir is dated at least a second after the last build (for a
+# make, like GNU make, that reads a target's mtime before making its
+# prerequisites). A first build doesn't wait.
+DATADIR_OUT = src/core/problem.o tests/unit/test_problem.o liblc.a lc \
+	$(UNIT_TESTS)
+src/core/problem.o tests/unit/test_problem.o: .datadir
 .datadir: FORCE
 	@echo '$(DATADIR)' > .datadir.tmp; \
-	if cmp -s .datadir.tmp .datadir; then rm -f .datadir.tmp; \
-	else mv .datadir.tmp .datadir; fi
+	if cmp -s .datadir.tmp .datadir; then rm -f .datadir.tmp; else \
+		rm -f $(DATADIR_OUT); \
+		if [ -f .datadir ]; then sleep 1; touch .datadir.tmp; fi; \
+		mv .datadir.tmp .datadir; \
+	fi
 FORCE:
 
 liblc.a: $(CORE_OBJ)
@@ -84,6 +101,11 @@ tests/unit/test_arena.o tests/unit/test_cases.o tests/unit/test_ctx.o \
 tests/unit/test_fs.o tests/unit/test_json.o tests/unit/test_md.o \
 tests/unit/test_problem.o tests/unit/test_str.o: \
 	include/lc.h src/core/internal.h tests/unit/test.h
+# These two #include core sources (to wrap malloc), so they carry their own
+# copies of those modules and never use the ones in liblc.a.
+tests/unit/test_fs.o: src/core/arena.c src/core/str.c src/core/ctx.c \
+	src/core/fs.c
+tests/unit/test_md.o: src/core/arena.c src/core/str.c src/core/md.c
 
 tests/unit/test_arena: tests/unit/test_arena.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_arena.o liblc.a $(LDLIBS)
@@ -110,11 +132,18 @@ test: all $(UNIT_TESTS)
 	if [ $$fail -ne 0 ]; then echo 'make test: FAILED'; exit 1; fi; \
 	echo 'make test: all passed'
 
+# The installed files must be usable by everyone whatever the umask of the
+# checkout or of the installer: directories install creates get mode 755,
+# and the shipped packs are made world-readable (only those: the data
+# directory can also hold your own packs).
 install: all
-	mkdir -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(DATADIR)/problems
+	umask 022; mkdir -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(DATADIR)/problems
 	cp lc $(DESTDIR)$(BINDIR)/lc
 	chmod 755 $(DESTDIR)$(BINDIR)/lc
 	cp -R problems/. $(DESTDIR)$(DATADIR)/problems/
+	for d in problems/*/; do \
+		chmod -R a+rX "$(DESTDIR)$(DATADIR)/problems/`basename "$$d"`"; \
+	done
 
 # Removes only what install added: the binary and the packs shipped in
 # problems/. With PREFIX=~/.local the data directory is also where your own
