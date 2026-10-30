@@ -11,22 +11,33 @@ C11 plus POSIX.1-2008 and needs nothing beyond libc.
 
 ## Status
 
-Milestones **M0** and **M1** are in: the core library (`liblc.a`), the
-problem pack loader, the statement markdown parser, and the `lc list` and
-`lc show` commands, both with `--json` output; and the value layer that
-judging builds on: typed signatures, test literals parsed and checked against
-them, the comparison modes and the wire format used to talk to a solution's
-harness. Three problems are included: 1, 20 and 104.
+Milestones **M0**, **M1** and **M2** are in:
+
+- **M0:** the core library (`liblc.a`), the problem pack loader, the
+  statement markdown parser, and the `lc list` and `lc show` commands, both
+  with `--json` output.
+- **M1:** the value layer that judging builds on: typed signatures, test
+  literals parsed and checked against them, the comparison modes, and the
+  wire format used to talk to a solution's harness.
+- **M2:** the runner and the judge. They run a built program once per test
+  case under CPU, memory, stack and output limits, and turn what happened
+  into a verdict (Accepted, Wrong Answer, Runtime Error, Time, Memory or
+  Output Limit Exceeded). They report progress events and can be cancelled.
+  See [docs/judging.md](docs/judging.md).
+
+Three problems are included: 1, 20 and 104.
 
 Writing, testing and submitting solutions (`lc start`, `lc test`,
-`lc submit`) arrive in M3. The design and the milestone table are in
+`lc submit`) arrive in M3, which adds building solutions on top of the M2
+judge. The design and the milestone table are in
 [docs/PLAN.md](docs/PLAN.md) (section 9 lists the milestones).
 
 ## Building
 
-You need a C11 compiler and a POSIX `make`. The targets are Linux (glibc and
-musl), macOS, FreeBSD and OpenBSD; CI builds and tests on Linux with gcc,
-clang, musl and bmake, and on macOS.
+You need a C11 compiler and a POSIX `make`, and for `make test` also a C++
+compiler (`CXX`, default `c++`) for one test program. The targets are Linux
+(glibc and musl), macOS, FreeBSD and OpenBSD; CI builds and tests on Linux
+with gcc, clang, musl and bmake, and on macOS.
 
 ```sh
 make            # builds liblc.a and lc
@@ -121,14 +132,17 @@ nothing is copied from it.
 include/lc.h            public API of the core library
 src/core/               liblc.a: context and errors, arena, strings, files,
                         pack loader, tests.txt parser, markdown parser, JSON writer,
-                        types and signatures, values, comparison, wire format
+                        types and signatures, values, comparison, wire format,
+                        runner (processes and limits), judge (verdicts and events)
 src/cli/                lc: argument handling, list and show, ANSI output, pager
 problems/               problem packs, one NNNN-slug directory each
 tests/unit/             unit tests, one program per suite
-tests/fixtures/         fixture packs used by the tests
+tests/fixtures/         fixture packs used by the tests, and programs that
+                        misbehave for the runner and judge tests (run/)
 tests/e2e.sh            end-to-end tests of the lc binary
 docs/PLAN.md            design, architecture and milestones
 docs/problem-format.md  the problem pack format, types and test literals
 docs/wire.md            the wire format between lc and a solution's harness
+docs/judging.md         how programs are run, the limits, and the verdict rules
 docs/json.md            the --json output format
 ```
