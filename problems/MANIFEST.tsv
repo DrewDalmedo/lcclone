@@ -3,8 +3,14 @@
 # docs/authoring.md for the columns. Only facts (numbers, slugs, titles,
 # difficulty) come from LeetCode; every statement and test is our own.
 #
-# The Easy rows were listed on 2026-10-30 from the problem index in
-# github.com/doocs/leetcode (solution/result.json at commit 1cc0ae2).
+# Source: the problem index of doocs/leetcode by the doocs contributors,
+# https://github.com/doocs/leetcode (solution/result.json at commit
+# 1cc0ae26dd63, 2026-10-30), licensed under CC BY-SA 4.0,
+# https://creativecommons.org/licenses/by-sa/4.0/. Changes: only the Easy
+# problems, and of each only its number, slug, title, difficulty and
+# premium flag; the group and status columns are ours. This file is
+# shared under the same license, CC BY-SA 4.0. How it was built:
+# docs/authoring.md, "How MANIFEST.tsv was built".
 #
 # id	slug	title	difficulty	premium	group	status
 1	two-sum	Two Sum	easy	no	unordered	verified

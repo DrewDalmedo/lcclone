@@ -203,7 +203,9 @@ Each random case runs `ref` and `brute` once each, a process apiece, so
 
 `problems/MANIFEST.tsv` lists the LeetCode problems in scope, with how far
 each one's pack is. It holds only facts: numbers, slugs, titles and
-difficulties. One row per problem, in increasing ID order, with seven
+difficulties. It lists every Easy problem (see
+[How MANIFEST.tsv was built](#how-manifesttsv-was-built)); medium and
+hard ones come with M9. One row per problem, in increasing ID order, with seven
 fields separated by tabs:
 
 ```
@@ -226,8 +228,8 @@ The groups, from `docs/PLAN.md` §2.2:
 
 | Group          | Problems |
 |----------------|----------|
-| `plain`        | plain functions of scalars, arrays, strings and 2D arrays |
-| `bits`         | `uint32`, `long` and `char` |
+| `plain`        | plain functions of scalars (`char` included), arrays, strings and 2D arrays |
+| `bits`         | `uint32` and `long` |
 | `float`        | `double` results, compared with a tolerance |
 | `inplace`      | a parameter changed in place (`check:`) |
 | `unordered`    | results in any order (`compare: unordered`) |
@@ -249,3 +251,81 @@ every pack against its row, and fails for a pack with no row; a broken
 status and by group, the ones out of scope, and three kinds of loose
 ends: rows marked `draft` or `verified` that have no pack, rows still
 `todo` that have one, and packs that aren't listed.
+
+## How MANIFEST.tsv was built
+
+The Easy rows were made once, on 2026-10-30, from a public problem index
+rather than from LeetCode itself, so no request went to LeetCode. Groups
+were assigned by script from each problem's function signature, then
+checked by hand.
+
+**Source and credit.** The facts come from the problem index of
+[doocs/leetcode](https://github.com/doocs/leetcode), by the doocs
+contributors: `solution/result.json` at commit `1cc0ae26dd63`. That
+project is licensed under
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), so
+`MANIFEST.tsv` says so in its header, credits it, says what was changed
+(only the Easy problems; only number, slug, title, difficulty and premium
+flag; the group and status columns are ours) and is shared under the same
+license. Keep that header when you edit the file.
+
+**What was used, and what wasn't.** The index has every problem from 1 to
+4096, with no gaps; 974 are Easy. From each, only the facts above were
+kept. Its C++ and C code templates were read to pick a group. Its problem
+statements were only searched for a few phrases ("any order", "return
+any", "in-place", "first k"), as hints for the group: no text was copied.
+
+**Out of scope.** A problem in a category lc doesn't cover gets
+`skip:<category>` (`skip:sql`, `skip:pandas`, `skip:javascript`,
+`skip:shell`, `skip:concurrency`), even when it is also premium; its
+premium column still says `yes`. A premium problem of the algorithms
+category gets `skip:premium`. Of the 974 rows, 223 are out of scope.
+
+**Groups.** From the C++ template, in this order:
+
+1. a class other than `Solution` (or a `Solution` constructor): `design`;
+2. an interactive problem, or one whose template declares an API it
+   calls: `api`;
+3. `Node*` with `children`: `nary`; `ListNode`: `list` (141 and 160:
+   `list-builder`); `TreeNode`: `tree` (1379: `tree-ref`);
+4. a type outside lc's type table: `extend` (no Easy problem needed it);
+5. otherwise, from the statement's wording and the return type: several
+   answers accepted, `checker`; "in any order", `unordered`; a `void`
+   result or a "first k" result, `inplace`; a `double` result, `float`;
+   `uint32_t` or `long long` anywhere, `bits`; else `plain`. A `char`
+   argument stays `plain`, as in the shipped 744.
+
+A problem that needs two features gets the group of the later milestone
+(M8's `design`, `api` and `checker` before M7's lists and trees, before
+M6's groups). So 108 is `checker`, and 257, 501 and 637 are `tree`.
+
+**Checked by hand.** 37 first guesses were corrected: 26, 27 and
+1089 to `inplace`; 108, 888, 905, 922, 942, 1030, 1304, 1317, 1374, 1417,
+1576, 2099, 2733, 2900, 2903, 3692, 3963, 3992 and 4074 to `checker`; 448
+to `unordered`; and 14 rows the wording matched by accident back to
+`plain` (205, 541, 1295, 1403, 1640, 1816, 1961, 2138, 2239, 2243, 2500,
+3541, 3794, 3875). The rows of the shipped packs were kept as they were.
+
+**Worth a second look when the pack is written:**
+
+- 448 is `unordered` because `docs/PLAN.md` §2.2 says so, though its
+  statement doesn't mention order;
+- 1030 (ties in any order within a sort) and 3692 (a string whose
+  characters may come in any order) are `checker`, since `unordered`
+  can't express them;
+- 2099, 2733, 2903 and 4074 are `checker` because several answers are
+  accepted;
+- 27 is `inplace`, but its first k elements may come in any order;
+- 191 and 2235 are `plain`: LeetCode's signatures now use `int`, though
+  `docs/PLAN.md` §2.2 gives them as `bits` examples.
+
+**Differences from LeetCode today.** LeetCode now gives 190 as
+`int reverseBits(int n)`; the shipped pack keeps `uint32`. The title of
+1560 has a double space on LeetCode, kept as it is, so its pack's title
+must have it too (`lc check` compares them).
+
+The counts, by group: `plain` 639, `tree` 31, `checker` 19, `unordered`
+16, `design` 10, `bits` 8, `float` 7, `list` 7, `inplace` 6, `nary` 3,
+`list-builder` 2, `api` 2, `tree-ref` 1; and out of scope: `skip:sql` 113,
+`skip:premium` 61, `skip:javascript` 30, `skip:pandas` 15, `skip:shell` 2,
+`skip:concurrency` 2. `lc stats --manifest` gives the current ones.

@@ -42,7 +42,8 @@ Milestones **M0** to **M4** are in.
 Eleven problems are included: 1, 9, 14, 20, 70, 104, 121, 190, 643, 744
 and 867. All but 104 can be judged; binary trees, linked lists, design
 problems and the like come in later milestones (`docs/PLAN.md` section 9).
-`problems/MANIFEST.tsv` lists only these so far.
+`problems/MANIFEST.tsv` lists every LeetCode Easy problem: 974, of
+which 751 are in scope.
 
 ## Building
 
@@ -203,6 +204,16 @@ statement) and `tests.txt` (the test cases). The format is specified in
 [docs/problem-format.md](docs/problem-format.md). Statements, examples and
 tests must be original: LeetCode's text and test data are copyrighted, so
 nothing is copied from it.
+
+## Credits
+
+The list of problems in `problems/MANIFEST.tsv` (numbers, slugs, titles,
+difficulty and premium flags) comes from the problem index of
+[doocs/leetcode](https://github.com/doocs/leetcode) by the doocs
+contributors, licensed under
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/);
+`MANIFEST.tsv` is shared under the same license. See
+[docs/authoring.md](docs/authoring.md#how-manifesttsv-was-built).
 
 ## Repository layout
 

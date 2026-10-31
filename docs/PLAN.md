@@ -42,7 +42,8 @@ be solved in C or C++**. Medium and hard come after that.
 - the Database (SQL), Pandas, JavaScript, Bash and Concurrency categories.
 
 My rough estimate is 500–600 problems in scope. The exact list and count come
-from the manifest (§6).
+from the manifest (§6). (As built in M4: 751 of the 974 Easy problems are
+in scope; 223 are premium or in the categories above.)
 
 ### 2.1 Content rules
 
@@ -634,9 +635,11 @@ numbers, titles and difficulty. `lc stats --manifest` reports coverage.
 status`, tab-separated in increasing id order; difficulty is there for
 when medium and hard come in M9. The groups are named `plain`, `bits`,
 `float`, `inplace`, `unordered`, `list`, `list-builder`, `tree`,
-`tree-ref`, `nary`, `design`, `api`, `checker` and `extend`. So far it
-lists only the shipped problems; filling it in from the public list is
-still to do. See docs/authoring.md.)
+`tree-ref`, `nary`, `design`, `api`, `checker` and `extend`. It lists all
+974 Easy problems, 751 of them in scope, built from the problem index of
+github.com/doocs/leetcode (CC BY-SA 4.0, credited in the file, which is
+shared under the same license) rather than from LeetCode itself. See
+docs/authoring.md, "How MANIFEST.tsv was built".)
 
 ### 6.2 Authoring each problem
 
