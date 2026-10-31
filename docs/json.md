@@ -130,6 +130,7 @@ is an error document.
 | `id`, `slug`, `title`, `difficulty`, `tags`, `status` | | as in `lc list` |
 | `progress`        | object          | `lang` (`"c"` or `"cpp"`: of the last accepted submission, else of the last one), `best_ms` (the slowest case of the best accepted submission) and `last_submitted` (seconds since 1970); each null when there is none |
 | `signature`       | string or null  | the raw `signature:` header value |
+| `prototypes`      | object or null  | the function lc's harness calls, as `lc test` shows it after errors in `lc_harness`: `c` and `cpp`, e.g. `"int* twoSum(int* nums, int numsSize, int target, int* returnSize)"` and `"vector<int> Solution::twoSum(vector<int>& nums, int target)"`; null when there is no signature |
 | `time_limit_ms`   | integer         | default 1000 |
 | `memory_limit_mb` | integer         | default 256 |
 | `dir`             | string          | absolute path of the pack directory |
@@ -228,7 +229,7 @@ errors before or during the run). For example:
 
 ```
 {"schema":1,"event":"build_start","reference":false,"lang":"cpp","std":"c++11","source":"/home/me/lc/0001-two-sum/solution.cpp","compiler":"c++","sanitize":false}
-{"schema":1,"event":"build_done","reference":false,"lang":"cpp","std":"c++11","source":"...","compiler":"c++","sanitize":false,"ok":true,"cached":false,"time_ms":412,"output":"","diagnostics":[]}
+{"schema":1,"event":"build_done","reference":false,"lang":"cpp","std":"c++11","source":"...","compiler":"c++","sanitize":false,"ok":true,"cached":false,"time_ms":412,"output":"","diagnostics":[],"prototype":"vector<int> Solution::twoSum(vector<int>& nums, int target)"}
 {"schema":1,"event":"case_start","index":0,"total":3,"file":"/home/me/lcclone/problems/0001-two-sum/tests.txt","line":5}
 {"schema":1,"event":"case_done","total":3,"index":0,"file":"...","line":5,"example":true,"custom":false,"verdict":"accepted","message":null,"inputs":[{"name":"nums","value":"[5,2,7,9]"},{"name":"target","value":"11"}],"expected":"[1,3]","output":"[1,3]","stdout":"","stdout_truncated":false,"stderr":"","stderr_truncated":false,"time_ms":2,"wall_ms":3,"memory_kb":1360,"exit_code":0,"signal":null}
 {"schema":1,"event":"done","verdict":"accepted","passed":3,"total":3,"cancelled":false,"max_time_ms":2,"max_memory_kb":1360,"warnings":[]}
@@ -257,8 +258,9 @@ the problem's reference solution, after it.
 | `ok`          | boolean | it compiled |
 | `cached`      | boolean | an earlier build of exactly the same input was reused |
 | `time_ms`     | integer | how long compiling took; 0 when cached |
-| `output`      | string  | what the compiler printed (empty when cached) |
-| `diagnostics` | array   | the compiler's messages, below |
+| `output`      | string  | what the compiler printed; when cached, what it printed for the build that was reused |
+| `diagnostics` | array   | the compiler's messages, below; when cached, those of the build that was reused |
+| `prototype`   | string or null | the function lc's harness calls, in this build's language, as in `lc show`'s `prototypes`: what errors in `lc_harness` mean the solution doesn't match. Null for `lc check`'s generator, which has no harness |
 
 Each diagnostic has `file` (as the compiler printed it: your solution's
 absolute path, `"lc_harness"` for lc's harness, or a tool such as `"ld"`),

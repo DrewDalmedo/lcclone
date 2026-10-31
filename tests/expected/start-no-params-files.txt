@@ -1,0 +1,34 @@
+--- 0014-no-params/README.md
+# 14. No Params
+
+**Difficulty:** Easy
+
+Return 42.
+
+**Example 1:**
+
+```
+Input:
+Output: 42
+```
+
+---
+
+In this directory, `lc test` runs your solution on the examples and on your
+own cases in `cases.txt`, and `lc submit` runs it on every case.
+--- 0014-no-params/cases.txt
+# Your own cases for 14. No Params. 'lc test' runs them after the examples.
+#
+# The function has no parameters, so a case is the single line
+#
+#   ()
+#
+# then, if you like, a line '=> expected result'. Without it, the expected
+# result comes from lc's reference solution. Leave a blank line between
+# cases. Values are written as in the examples: 7, [1,2,3], "text",
+# true, 2.5. Lines starting with '#' are comments.
+#
+# For example:
+#
+# ()
+# => 42
