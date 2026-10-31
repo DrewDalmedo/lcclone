@@ -388,6 +388,15 @@ public:
 `check: prefix nums` checks a returned `k` together with the first `k`
 elements of `nums`.
 
+(As built in M6: the checked value is the result. Expected outputs are
+written in the parameter's type, for `prefix` as its first `k` elements
+(`=> [1,2]`), as LeetCode shows them; `compare:` applies to that value, so
+27 is `check: prefix nums` with `compare: unordered 0`. `param` takes an
+array of any depth and needs a `void` return; `prefix`, a one-dimensional
+array and an `int` return. A `k` outside the array, whose size a C++
+solution may change, is a Runtime Error from the harness. See
+docs/problem-format.md, "check".)
+
 **Builders and hidden inputs.** Some test inputs only shape the data and are
 never passed to your function. In 141, `pos` sets where the cycle starts; in
 160, `skipA` and `skipB` set where the lists join. The problem declares these
@@ -695,7 +704,11 @@ the expected results, keeping results that already match, and `lc
 check` fails when one is stale. The cross-check uses 300 cases by
 default (`--count`), since each costs two processes; the batch runner of
 §9's later work would make thousands cheap. `lc check` also warns when
-`ref` needs more than a third of the time limit.)
+`ref` needs more than a third of the time limit. Step 3's cases at the
+constraint limits are only in packs whose limits are small, such as 812's
+50 points: one case of 10^5 numbers is about a megabyte of text, too much
+to store in every pack. M7 makes those cases when a solution is judged;
+see §6.4.)
 
 ### 6.3 Batches
 
@@ -706,6 +719,138 @@ default (`--count`), since each costs two processes; the batch runner of
 
 This work parallelizes well across contributors or agents, because every
 problem is self-contained.
+
+### 6.4 Full-size cases
+
+People use lc to build problem-solving skill, and designing for the largest
+inputs is part of that skill. So a solution that is right but too slow, or
+that overflows only on big numbers, must fail as it would on LeetCode. That
+takes cases at the constraint limits, which packs don't have yet when the
+limits are big (§6.2). M7 starts with them, so every pack from then on
+has them, and the earlier packs get them in one pass.
+
+**Making the cases:**
+
+- **Made when judged, not stored.** One case of 10^5 numbers is about a
+  megabyte of text. Two or three per pack would add hundreds of megabytes
+  to the repository for the easy problems alone, and gigabytes once medium
+  and hard come; git keeps every version, so each change to a `gen.c`
+  would add them again. Making them when judged loses nothing in test
+  strength. `tests.txt` keeps a line with the case's seed (the syntax is
+  still to be decided), a short hash of the input, and the expected result
+  when it is short, as most are: a number, a bool, a short list. Users are
+  then judged against results that CI checked on every system. `lc`
+  builds the pack's `gen.c`, runs it for the input and checks the hash.
+  When the result is long, `ref` makes it, as it already does for a case
+  of yours that has none (docs/judging.md). Building `gen.c` takes `cc`,
+  which in practice comes with every C++ compiler.
+- **The same case everywhere.** `gen.c`'s random numbers are the same on
+  every system, but that alone doesn't make the case the same: clang on
+  arm64 fuses `rnd_double`'s multiply and add into one instruction today,
+  which changes the last bit, and libm functions and sorts of equal items
+  differ between systems too. So `lc` builds `gen.c` without fused
+  floating-point operations, `gen.c` calls no libm function but `sqrt`
+  and sorts nothing whose ties matter, and the hash catches the rest, in
+  `lc check` on every CI system and in `lc` when judging.
+- **The cache.** What `ref` makes when judged is cached, keyed by the build
+  keys of `gen` and `ref` (which cover `lc`'s runtime and the compiler)
+  and the seed. Inputs aren't kept, since making one again takes
+  milliseconds, so the cache stays small.
+- **`gen.c` runs on every user's machine,** so it must make a full-size
+  case in well under the time limit, and `lc check` warns when it doesn't
+  (0001's `gen.c` checks that its pair is unique in `O(n^2)`: fine at its
+  10^4, not at 10^5). When `gen` or `ref` fails on a full-size case while
+  judging, or the hash doesn't match, `lc` reports an error in the pack
+  that names the seed. That is no verdict on the solution, and nothing is
+  recorded.
+
+**Which cases:**
+
+- **Worst cases, not only big ones.** Random input is often easy for a slow
+  method: a duplicate turns up early, or the answer sits near the start.
+  `gen.c`'s full-size mode should also make the shapes that are slowest
+  for the naive method. The seed can pick among them.
+- **Up to the edges, never past them.** Full-size cases reach the limits
+  the statement allows: values at their limits, and an answer near the
+  `int` limit when the statement says it fits in one. A case past those
+  limits fails right solutions, and neither `brute` nor the sanitizers
+  notice, so the review checks `gen.c` against every guarantee of the
+  statement, not only the sizes.
+
+**Time limits:**
+
+- **Limits that tell methods apart.** The limit should reject what LeetCode
+  rejects, such as an `O(n^2)` method at n = 10^5, and accept what it
+  usually accepts, such as `O(n^2)` at n = 10^4. The default of a second
+  can't do this by itself: at n = 10^5, 121's `brute` (two nested loops)
+  takes 0.2 s when clang vectorizes it and 1.3 s when gcc builds it, on
+  the same machine. LeetCode is stricter: it builds C and C++ with
+  AddressSanitizer, and its limit is generally taken to cover all of a
+  problem's cases together. So a pack with big limits sets
+  `time_limit_ms` from measured times. `lc check` times `ref` without
+  sanitizers on the full-size cases, so its third-of-the-limit warning
+  covers them, and reports `brute`'s time on them as a multiple of the
+  limit. It warns when that is between a third of the limit and three
+  times it, where the verdict would depend on the machine or the
+  compiler. A pack may also keep a solution that must fail on time
+  (`slow.c`), which `lc check` runs on every CI system, so a faster
+  machine or compiler that lets it pass is noticed.
+- **Slow machines.** A limit set on CI's machines fails right solutions on
+  a machine several times slower, and `ref`'s own time is too short to
+  measure that by: it is mostly starting up and reading the input. How
+  `lc` scales limits is still to decide; one way is to time a fixed loop
+  that it ships, once per machine, and compare with CI's time for it.
+
+**Trusting the expected results:**
+
+- **Checking `ref` at full size.** `lc check` runs `brute` on the full-size
+  cases to time it; when `brute` finishes within ten times the limit, its
+  result is compared with `ref`'s too, so most packs get `ref` checked at
+  full size. `lc check` also runs `ref` under the sanitizers on them where
+  the compiler has them (not musl's gcc, where the step is skipped with a
+  note), so UBSan catches a signed overflow. It doesn't catch a `long
+  long` cut down to an `int`, so the review still reads `ref`'s types, and
+  each batch's review tries slow and overflowing wrong solutions against
+  the full-size cases.
+
+**Seeing them:**
+
+- **`lc submit` runs them,** after the stored cases, as LeetCode's submit
+  does. `lc test` stays quick, with the examples and your own cases, and
+  `cases.txt` may hold a seed line, so you can time a full-size case
+  without submitting. The first run says that it is making the cases.
+- **A full-size case is shown by its seed and sizes** (`nums`: 100000
+  items), not by a cut-off literal: n is what you need to reason about
+  speed. `--json` gives the seed and leaves such inputs out, and lc.nvim
+  adds a failed full-size case to `cases.txt` as its seed line.
+
+**The runner:**
+
+- **Memory.** `lc` holds megabytes of a full-size case when it forks, and
+  Linux counts what a program inherited from `fork()` in its peak memory
+  (docs/judging.md), while macOS doesn't. M7 keeps that out of the count,
+  or has `lc` hold less of the case when it starts the program, so the
+  memory verdict is the same on both.
+- **Lists and trees,** M7's other half, need full-size cases as much: a
+  list of 10^5 nodes, or a tree as deep as it is long. Such a case should
+  pass a recursive solution that LeetCode passes, on every system: 64 MB
+  of stack, macOS's cap, holds a depth of 10^5 with frames of up to about
+  600 bytes. The harness builds and prints lists and trees without
+  recursion, and a crash from recursion too deep is reported as a stack
+  overflow where `lc` can tell, not only as SIGSEGV.
+
+**Cost, and the earlier packs:**
+
+- **CI.** The full-size checks are slow, so CI runs them only for the packs
+  a PR changes, for every pack when `lc`'s runtime or `lc_gen.h` changes,
+  and on a schedule.
+- **The pass over earlier packs.** Most of them have a `gen.c` that makes
+  full-size input (the rule since M4, checked for M6's first batch), and
+  M6's later batches also write the worst-case shapes (docs/authoring.md).
+  Seven of M3's packs (9, 14, 20, 70, 190, 744, 867) have no `gen.c` or
+  `brute.c` yet, so the pass writes those first. Adding the seed lines is
+  mechanical; setting each pack's time limit takes the effort, and it
+  needs M7's tools anyway.
 
 ## 7. Source layout
 
@@ -792,7 +937,7 @@ The Neovim plugin is in its own repository, lc.nvim (§3.1).
 | M4 | Progress and content tooling | store, `stats`, `random`, history, config; `MANIFEST.tsv`; `lc check` with `--regen` and the brute cross-check |
 | M5 | Neovim plugin            | `:Lc` commands, background runs with progress, diagnostics and quickfix, pickers, adding a failed case to `cases.txt`, help file, headless tests (in its own repository, lc.nvim) |
 | M6 | Plain-function easies    | author every problem in the plain-function, bits, float, in-place and any-order groups    |
-| M7 | Lists and trees          | `ListNode`, `TreeNode`, `NaryNode`, builders, hidden inputs, node references; author those groups |
+| M7 | Full-size cases, lists and trees | cases at the constraint limits, made when judged, with time limits that tell slow methods from fast ones (§6.4), in every pack from then on and added to the earlier ones; `ListNode`, `TreeNode`, `NaryNode`, builders, hidden inputs, node references; author those groups |
 | M8 | Design, API and checkers | class/call-sequence harness, `api.c`, `checker.c`, `extend.c`; author those groups. **All free easies covered.** |
 | M9 | Medium and hard          | same pipeline, in batches                                                                 |
 
@@ -823,8 +968,9 @@ Possible later work:
 - **Newer C++ in solutions written for LeetCode.** Code that uses C++14/17
   features fails under the C++11 default. When a C++ build fails, the error
   message says which standard was used and how to raise it.
-- **Timing noise.** Judge on CPU time, and set limits generously (about 3× the
-  reference solution's time on the largest cases).
+- **Timing noise and machine speed.** Judge on CPU time. A limit must leave
+  room for slower machines and other correct solutions, and still reject
+  the slow methods LeetCode rejects; §6.4 says how packs set it.
 
 ## 11. Decisions so far
 
@@ -836,6 +982,13 @@ Possible later work:
 - **C++ standard:** C++11 by default, adjustable through config, environment or
   flag, including `max`. C defaults to C11.
 - **Problem IDs:** LeetCode's numbers and slugs.
+- **Practice first:** people come to build problem-solving skill, designing
+  for the largest inputs included, so test strength comes before
+  repository size. Every pack gets cases at its constraint limits, with
+  time limits that reject the slow methods LeetCode rejects (§6.4). The
+  cases are made when judged, not stored, because storing them would take
+  gigabytes, which git would add again with every change to a generator.
+  Test strength is the same either way.
 - **Editor:** Neovim gets first-class support, in three layers: a generated
   `.clangd`, plain `:make`, and a Lua plugin built on `lc --json`, kept in
   its own repository (lc.nvim). Any `$EDITOR` still works.

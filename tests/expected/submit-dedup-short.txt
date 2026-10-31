@@ -1,0 +1,12 @@
+--- stdout
+Building tests/fixtures/judge/0016-dedup/short.cpp (C++, c++11)
+
+tests/fixtures/judge/0016-dedup/short.cpp:1: Runtime Error on case 1 of 4 (exited with status 70)
+  Input:    nums = [1,1,2,3,3]
+  Expected: [1,2,3]
+  Stderr:
+    lc: dedup returned 5, but nums has 0 elements
+
+Runtime Error: 0/4 cases passed
+--- stderr
+--- exit 1

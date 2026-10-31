@@ -30,6 +30,13 @@ int main(void)
     lc_rt_end_input();
     int lc_ret_size = -1;
     double* lc_ret = arrays(a, aSize, b, bSize, c, cSize, d, dSize, e, eSize, f, fSize, g, gSize, &lc_ret_size);
+    lc_check_int_end("arrays", "a", a, aSize);
+    lc_check_long_end("arrays", "b", b, bSize);
+    lc_check_uint32_end("arrays", "c", c, cSize);
+    lc_check_double_end("arrays", "d", d, dSize);
+    lc_check_bool_end("arrays", "e", e, eSize);
+    lc_check_char_end("arrays", "f", f, fSize);
+    lc_check_string_end("arrays", "g", g, gSize);
     lc_write_double_array("arrays", lc_ret, lc_ret_size);
     lc_rt_flush();
     return 0;

@@ -292,6 +292,18 @@ static void cases_template(lc_str *s, const lc_problem *p,
                 "# cases. Values are written as in the examples: 7, "
                 "[1,2,3], \"text\",\n"
                 "# true, 2.5. Lines starting with '#' are comments.\n");
+    /* check: the result is a parameter, not what the function returns. */
+    if (p->check.mode == LC_RESULT_PARAM)
+        lc_str_printf(s, "#\n# The result here is %s after the call (%s "
+                      "returns nothing), so\n# write the expected result as "
+                      "the new value of %s.\n",
+                      p->sig->params[p->check.param].name, p->sig->name,
+                      p->sig->params[p->check.param].name);
+    else if (p->check.mode == LC_RESULT_PREFIX)
+        lc_str_printf(s, "#\n# The result here is the first k elements of %s "
+                      "after the call, where k\n# is what %s returns. Write "
+                      "those elements as the expected\n# result, not k.\n",
+                      p->sig->params[p->check.param].name, p->sig->name);
     for (i = 0; cases && i < cases->count && !ex; i++)
         if (cases->items[i].example &&
             cases->items[i].nargs == p->sig->nparams)

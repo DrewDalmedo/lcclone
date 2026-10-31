@@ -1,0 +1,15 @@
+# check: prefix nums: the first k elements of nums, k being what dedup
+# returns.
+
+@example
+[1,1,2,3,3]
+=> [1,2,3]
+
+[]
+=> []
+
+[5]
+=> [5]
+
+[2,2,2]
+=> [2]

@@ -101,6 +101,15 @@ static int text_is_url(const lc_md_span *sp, size_t n)
     return off == ulen;
 }
 
+/* One span; a code span is never broken across lines. */
+static void wrap_span(cli_wrap *w, const lc_md_span *sp, unsigned base)
+{
+    if (sp->flags & LC_MD_SPAN_CODE)
+        cli_wrap_word(w, base | span_style(sp), sp->text, sp->len);
+    else
+        cli_wrap_text(w, base | span_style(sp), sp->text, sp->len);
+}
+
 /* Feeds inline spans to a wrapper. A link shows as "text (url)", or just
  * as its text when that is the url. */
 static void wrap_spans(cli_wrap *w, const lc_md_span *sp, size_t n,
@@ -115,8 +124,7 @@ static void wrap_spans(cli_wrap *w, const lc_md_span *sp, size_t n,
             continue;
         }
         if (!is_link(&sp[i])) {
-            cli_wrap_text(w, base | span_style(&sp[i]), sp[i].text,
-                          sp[i].len);
+            wrap_span(w, &sp[i], base);
             i++;
             continue;
         }
@@ -124,8 +132,7 @@ static void wrap_spans(cli_wrap *w, const lc_md_span *sp, size_t n,
         start = i;
         while (i < n && is_link(&sp[i]) &&
                strcmp(sp[i].url, sp[start].url) == 0) {
-            cli_wrap_text(w, base | span_style(&sp[i]), sp[i].text,
-                          sp[i].len);
+            wrap_span(w, &sp[i], base);
             i++;
         }
         if (!text_is_url(&sp[start], i - start)) {

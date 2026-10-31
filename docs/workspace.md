@@ -113,6 +113,12 @@ Lines starting with `#` are comments. A case whose input breaks the
 problem's constraints may make the reference solution fail; `lc` then
 says so instead of guessing.
 
+For a problem solved in place, such as Move Zeroes or Remove Duplicates
+from Sorted Array, the result is the array after the call (or its first k
+elements, k being what the function returns), so the expected result is
+written as that array: `=> [1,2]`, not `=> 2`. The instructions at the top
+of `cases.txt` say so for those problems ([problem-format.md](problem-format.md#check)).
+
 ## Languages and standards
 
 C solutions are built as C11 and C++ solutions as C++11, as on LeetCode by

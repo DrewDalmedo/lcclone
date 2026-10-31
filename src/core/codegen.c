@@ -14,6 +14,7 @@
  * both languages.
  */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "internal.h"
@@ -307,7 +308,7 @@ int lc_prototype(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
 /* Harnesses                                                           */
 /* ------------------------------------------------------------------ */
 
-int lc_codegen_check(lc_ctx *ctx, const lc_problem *p)
+int lc_codegen_supported(lc_ctx *ctx, const lc_problem *p)
 {
     char name[LC_TYPE_NAME_MAX];
     size_t i;
@@ -315,10 +316,6 @@ int lc_codegen_check(lc_ctx *ctx, const lc_problem *p)
 
     if (rc != LC_OK)
         return rc;
-    if (p->sig->ret.kind == LC_T_VOID)
-        return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): judging "
-                            "a function that returns void is not supported "
-                            "yet", p->id, p->slug);
     if (p->nhidden)
         return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): hidden "
                             "inputs are not supported yet", p->id, p->slug);
@@ -336,6 +333,65 @@ int lc_codegen_check(lc_ctx *ctx, const lc_problem *p)
                                 p->slug,
                                 lc_type_name(p->sig->params[i].type, name));
     return LC_OK;
+}
+
+int lc_codegen_check(lc_ctx *ctx, const lc_problem *p)
+{
+    int rc = lc_codegen_supported(ctx, p);
+
+    if (rc != LC_OK)
+        return rc;
+    if (lc_result_type(p)->kind == LC_T_VOID) {
+        char why[LC_VOID_REASON_MAX];
+
+        lc_codegen_void_reason(p, why);
+        return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): %s",
+                            p->id, p->slug, why);
+    }
+    return LC_OK;
+}
+
+void lc_codegen_void_reason(const lc_problem *p, char *buf)
+{
+    size_t i;
+
+    for (i = 0; i < p->sig->nparams; i++)
+        if (p->sig->params[i].type.dims > 0)
+            break;
+    if (i == p->sig->nparams)
+        snprintf(buf, LC_VOID_REASON_MAX, "%.64s returns void and has no "
+                 "array parameter, so it has no result to judge",
+                 p->sig->name);
+    else
+        snprintf(buf, LC_VOID_REASON_MAX, "%.64s returns void, so it needs "
+                 "'check: param NAME' to be judged", p->sig->name);
+}
+
+/*
+ * check: writes the parameter after the call as the result: all of it
+ * (param), or its first lc_ret elements (prefix, a one-dimensional array),
+ * once the runtime has made sure lc_ret is a count that fits.
+ */
+static void c_write_param(lc_str *s, const lc_problem *p)
+{
+    const lc_sig *sig = p->sig;
+    const lc_param *pr = &sig->params[p->check.param];
+    const char *rt = kinds[pr->type.kind].rt;
+
+    /* The runtime's messages then speak of the parameter. */
+    lc_str_printf(s, "    lc_rt_param = \"%s\";\n", pr->name);
+    if (p->check.mode == LC_RESULT_PREFIX)
+        lc_str_printf(s, "    lc_rt_check_prefix(\"%s\", \"%s\", lc_ret, "
+                      "%sSize);\n    lc_write_%s_array(\"%s\", %s, "
+                      "(int)lc_ret);\n", sig->name, pr->name, pr->name, rt,
+                      sig->name, pr->name);
+    else if (pr->type.dims == 1)
+        lc_str_printf(s, "    lc_write_%s_array(\"%s\", %s, %sSize);\n", rt,
+                      sig->name, pr->name, pr->name);
+    else
+        lc_str_printf(s, "    lc_write_%s_array2(\"%s\", %s, %sSize, "
+                      "%sColSize);\n", rt, sig->name, pr->name, pr->name,
+                      pr->name);
 }
 
 static void c_harness(lc_str *s, const lc_problem *p)
@@ -376,8 +432,16 @@ static void c_harness(lc_str *s, const lc_problem *p)
     if (sig->ret.dims == 2)
         lc_str_puts(s, "    int* lc_ret_cols = NULL;\n");
     lc_str_puts(s, "    ");
-    put_c_type(s, sig->ret, 0);
-    lc_str_printf(s, " lc_ret = %s(", sig->name);
+    /* A prefix count is kept wide, so a solution that made its function
+     * return long long can't get a huge count past the check by
+     * truncation. */
+    if (p->check.mode == LC_RESULT_PREFIX) {
+        lc_str_puts(s, "long long lc_ret = ");
+    } else if (sig->ret.kind != LC_T_VOID) {
+        put_c_type(s, sig->ret, 0);
+        lc_str_puts(s, " lc_ret = ");
+    }
+    lc_str_printf(s, "%s(", sig->name);
     for (i = 0; i < sig->nparams; i++) {
         const lc_param *pr = &sig->params[i];
 
@@ -392,7 +456,17 @@ static void c_harness(lc_str *s, const lc_problem *p)
     if (sig->ret.dims == 2)
         lc_str_puts(s, ", &lc_ret_cols");
     lc_str_puts(s, ");\n");
-    if (sig->ret.dims == 0)
+    /* Arrays come with a spare zeroed element (lc_rt.c); a solution that
+     * changed it wrote past the end of the array. */
+    for (i = 0; i < sig->nparams; i++)
+        if (sig->params[i].type.dims == 1)
+            lc_str_printf(s, "    lc_check_%s_end(\"%s\", \"%s\", %s, "
+                          "%sSize);\n", kinds[sig->params[i].type.kind].rt,
+                          sig->name, sig->params[i].name,
+                          sig->params[i].name, sig->params[i].name);
+    if (p->check.mode != LC_RESULT_RETURN)
+        c_write_param(s, p);
+    else if (sig->ret.dims == 0)
         lc_str_printf(s, "    lc_write_%s(\"%s\", lc_ret);\n", rt, sig->name);
     else if (sig->ret.dims == 1)
         lc_str_printf(s, "    lc_write_%s_array(\"%s\", lc_ret, "
@@ -423,12 +497,31 @@ static void cpp_harness(lc_str *s, const lc_problem *p)
     }
     lc_str_puts(s, "    lc_rt_end_input();\n"
                 "    Solution *lc_sol = new Solution();\n    ");
-    put_cpp_type(s, sig->ret, 1);
-    lc_str_printf(s, " lc_ret = lc_sol->%s(", sig->name);
+    if (p->check.mode == LC_RESULT_PREFIX) {
+        lc_str_puts(s, "long long lc_ret = ");
+    } else if (sig->ret.kind != LC_T_VOID) {
+        put_cpp_type(s, sig->ret, 1);
+        lc_str_puts(s, " lc_ret = ");
+    }
+    lc_str_printf(s, "lc_sol->%s(", sig->name);
     for (i = 0; i < sig->nparams; i++)
         lc_str_printf(s, "%s%s", i ? ", " : "", sig->params[i].name);
-    lc_str_puts(s, ");\n    lc_put(lc_ret);\n    lc_rt_flush();\n"
-                "    return 0;\n}\n");
+    lc_str_puts(s, ");\n");
+    if (p->check.mode == LC_RESULT_RETURN) {
+        lc_str_puts(s, "    lc_put(lc_ret);\n");
+    } else {
+        /* check: the parameter after the call is the result; for prefix,
+         * its first lc_ret elements (the solution may have resized it). */
+        const char *name = sig->params[p->check.param].name;
+
+        if (p->check.mode == LC_RESULT_PREFIX)
+            lc_str_printf(s, "    lc_rt_check_prefix(\"%s\", \"%s\", "
+                          "lc_ret, (long long)%s.size());\n"
+                          "    %s.resize((size_t)lc_ret);\n", sig->name,
+                          name, name, name);
+        lc_str_printf(s, "    lc_put(%s);\n", name);
+    }
+    lc_str_puts(s, "    lc_rt_flush();\n    return 0;\n}\n");
 }
 
 int lc_codegen_harness(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,

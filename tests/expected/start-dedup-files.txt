@@ -1,0 +1,24 @@
+--- 0016-dedup/solution.c
+int dedup(int* nums, int numsSize) {
+
+}
+--- 0016-dedup/cases.txt
+# Your own cases for 16. Dedup. 'lc test' runs them after the examples.
+#
+# A case is one line per input, in this order:
+#
+#   nums  int[]
+#
+# then, if you like, a line '=> expected result'. Without it, the expected
+# result comes from lc's reference solution. Leave a blank line between
+# cases. Values are written as in the examples: 7, [1,2,3], "text",
+# true, 2.5. Lines starting with '#' are comments.
+#
+# The result here is the first k elements of nums after the call, where k
+# is what dedup returns. Write those elements as the expected
+# result, not k.
+#
+# For example:
+#
+# [1,1,2,3,3]
+# => [1,2,3]

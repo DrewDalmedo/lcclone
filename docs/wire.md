@@ -17,7 +17,10 @@ other side.
   in the order of the signature's parameters, then the `hidden:` inputs. A
   case with no inputs writes nothing.
 - The harness writes the result in the same format on file descriptor 3, so
-  whatever the solution prints on stdout stays separate.
+  whatever the solution prints on stdout stays separate. The result is what
+  the function returns or, for a problem solved in place
+  ([`check:`](problem-format.md#check)), the parameter after the call, or
+  its first k elements: an array like any other.
 - The type of every value is known to both sides from the signature, so
   nothing in the format says what type a token is.
 

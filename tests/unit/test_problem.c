@@ -1074,6 +1074,90 @@ static void test_typed_fields(void)
                "nestings from 0)");
 }
 
+/* check: makes a parameter the result, which compare: then applies to. */
+static void test_check_field(void)
+{
+    lc_ctx *ctx;
+    const lc_problem *p;
+    char name[LC_TYPE_NAME_MAX];
+
+    /* Without check:, the result is what the function returns. */
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "signature: long f(int[] a)"
+                  "\n---\n");
+    if (p) {
+        CHECK_INT(p->check.mode, LC_RESULT_RETURN);
+        CHECK(lc_result_type(p) == &p->sig->ret);
+    }
+    lc_close(ctx);
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "---\n");
+    if (p)
+        CHECK(lc_result_type(p) == NULL);
+    lc_close(ctx);
+    CHECK(lc_result_type(NULL) == NULL);
+
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "signature: void merge("
+                  "int[] a, int m, int[] b, int n)\ncheck: param b\n---\n");
+    if (p) {
+        CHECK_INT(p->check.mode, LC_RESULT_PARAM);
+        CHECK_INT(p->check.param, 2);
+        CHECK(lc_result_type(p) == &p->sig->params[2].type);
+        CHECK_INT(p->compare.mode, LC_CMP_EXACT);
+        CHECK_STR(lc_problem_field(p, "check"), "param b");
+    }
+    lc_close(ctx);
+
+    /* The parameter's type sets the default comparison, and compare: is
+     * checked against it. */
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "signature: void halve("
+                  "double[] xs)\ncheck: param xs\n---\n");
+    if (p) {
+        CHECK_STR(lc_type_name(*lc_result_type(p), name), "double[]");
+        CHECK_INT(p->compare.mode, LC_CMP_FLOAT);
+        CHECK(p->compare.tolerance == 1e-5);
+    }
+    lc_close(ctx);
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "signature: int drop(int[] "
+                  "nums, int val)\ncompare: unordered 0\n"
+                  "check: prefix nums\n---\n");
+    if (p) {
+        CHECK_INT(p->check.mode, LC_RESULT_PREFIX);
+        CHECK_INT(p->check.param, 0);
+        CHECK_INT(p->compare.mode, LC_CMP_UNORDERED);
+        CHECK_INT(p->compare.levels, 1);
+    }
+    lc_close(ctx);
+    p = load_good(&ctx, "0001-a", HDR("1", "a") "signature: void f(int[][] "
+                  "g)\ncheck: param g\ncompare: unordered 0,1\n---\n");
+    if (p)
+        CHECK_INT(p->compare.levels, 3);
+    lc_close(ctx);
+
+    expect_bad("0001-a", HDR("1", "a") "check: param a\n---\n",
+               ":5: check: needs a signature");
+    expect_bad("0001-a", HDR("1", "a") "signature: void f(int[] a)\n"
+               "check: param\n---\n",
+               ":6: check: param needs the name of a parameter, e.g. "
+               "'param nums'");
+    expect_bad("0001-a", HDR("1", "a") "signature: void f(int[] a)\n"
+               "hidden: int[] h\ncheck: param h\n---\n",
+               ":7: check: 'h' is not a parameter of the signature");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int[] a)\n"
+               "check: param a\n---\n",
+               ":6: check: param needs a function that returns void, not "
+               "int");
+    expect_bad("0001-a", HDR("1", "a") "signature: void f(int[] a)\n"
+               "check: param a\ncheck: param a\n---\n",
+               ":7: duplicate key 'check' (first on line 6)");
+    expect_bad("0001-a", HDR("1", "a") "signature: void f(int[] a)\n"
+               "check: param a\ncompare: float\n---\n",
+               ":7: compare: float needs a result made of doubles, not "
+               "int[]");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int[] a)\n"
+               "check: prefix a\ncompare: unordered 1\n---\n",
+               ":7: compare: int[] has no level 1 (levels count its array "
+               "nestings from 0)");
+}
+
 static void test_limits(void)
 {
     static const char *const bad[] = {"0", "-5", "1.5", "", "2147483648", "1 0",
@@ -1499,6 +1583,7 @@ int main(void)
     RUN(test_tags);
     RUN(test_signature_and_hidden);
     RUN(test_typed_fields);
+    RUN(test_check_field);
     RUN(test_limits);
     RUN(test_directory_name);
     RUN(test_statement);

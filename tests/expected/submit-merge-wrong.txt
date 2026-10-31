@@ -1,0 +1,11 @@
+--- stdout
+Building tests/fixtures/judge/0015-merge/wrong.c (C, c11)
+
+tests/fixtures/judge/0015-merge/wrong.c:1: Wrong Answer on case 1 of 3
+  Input:    a = [1,3,5,0,0], m = 3, b = [2,4], n = 2
+  Output:   [1,3,5,0,0]
+  Expected: [1,2,3,4,5]
+
+Wrong Answer: 0/3 cases passed
+--- stderr
+--- exit 1

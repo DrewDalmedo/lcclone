@@ -305,6 +305,12 @@ void cli_wrap_text(cli_wrap *w, unsigned style, const char *s, size_t n)
     }
 }
 
+void cli_wrap_word(cli_wrap *w, unsigned style, const char *s, size_t n)
+{
+    if (!w->nomem && n > 0)
+        add_piece(w, style, s, n);
+}
+
 void cli_wrap_break(cli_wrap *w)
 {
     flush_word(w);

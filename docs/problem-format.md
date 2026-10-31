@@ -101,12 +101,13 @@ You have a list of integers `nums` and a goal value `target`. ...
 | `tags`            | no       | comma-separated; each tag uses lowercase letters, digits and dashes. Empty entries (`a,,b` or a trailing comma) are errors |
 | `signature`       | no       | e.g. `int[] twoSum(int[] nums, int target)`; see below |
 | `hidden`          | no       | extra inputs that only shape test data, e.g. `int pos`; see below |
+| `check`           | no       | for a problem solved in place: `param NAME` or `prefix NAME`, a parameter that is the result; see below |
 | `compare`         | no       | how a result is checked: `exact`, `float [TOL]`, `unordered LEVELS` or `checker`; see below |
 | `time_limit_ms`   | no       | positive integer, default 1000 |
 | `memory_limit_mb` | no       | positive integer, default 256 |
 
-Any other key (`class`, `api`, `check`, ...) is kept as-is for later
-milestones and not interpreted yet. Every field, known or not, is available
+Any other key (`class`, `api`, ...) is kept as-is for later milestones
+and not interpreted yet. Every field, known or not, is available
 through `lc_problem.fields` and `lc_problem_field()`.
 
 ### Signature and hidden inputs
@@ -131,7 +132,11 @@ hidden: int pos
   ones included, and some can't be used because the generated C and C++ code
   needs them: keywords of either language (`class`, `new`, `bool`, ...),
   `main`, `Solution`, `ListNode`, `TreeNode`, `Node`, `NULL`, `EOF`, `errno`,
-  `stdin`, `stdout`, `stderr`, and names starting with `_`, `lc_` or `LC_`.
+  `stdin`, `stdout`, `stderr`, `returnSize`, `returnColumnSizes`, and names
+  starting with `_`, `lc_` or `LC_`. The C code also gives an array
+  parameter's size the name `<name>Size` (and a 2D one's row sizes
+  `<name>ColSize`), so those can't be other names in the signature, and
+  the function can't share a name with a parameter.
 - **Argument names.** To show an example as `nums = [1,2], target = 3`, a
   case's inputs are named after the signature's parameters followed by the
   hidden inputs (`lc_problem.arg_names`). Without a `signature` there are no
@@ -166,11 +171,68 @@ How a solution's result is checked against the expected one.
   (LeetCode 2215), and `unordered 0,1` ignores both. Duplicates count: `[1,1,2]`
   does not match `[1,2,2]`. A TreeNode, ListNode or NaryNode is compared
   whole; only arrays of them can be unordered.
-- **Checked against the signature:** `float` needs a result made of doubles,
-  and each level must exist in the return type (`int[]` has only level 0).
-  A `void` return has no result, so it allows only `exact` and `checker` for
-  now; in-place problems (`check:`, milestone M6) will compare a parameter
-  instead.
+- **Checked against the result:** `float` needs a result made of doubles,
+  and each level must exist in the result's type (`int[]` has only level
+  0). The result is what the function returns, or with `check:` (below)
+  the parameter checked, so `compare:` and its default apply to that
+  parameter. A `void` return without `check:` has no result: it allows
+  only `exact` and `checker`, and such a problem can't be judged.
+
+### check
+
+Some problems are solved **in place**: the function changes an array it
+is given, and that array, not what the function returns, is the answer.
+`check:` says which parameter that is.
+
+| Value         | The function returns | The result is |
+|---------------|----------------------|---------------|
+| `param NAME`  | `void`               | NAME, after the call |
+| `prefix NAME` | `int`, a count k     | the first k elements of NAME, after the call |
+
+```
+signature: void moveZeroes(int[] nums)
+check: param nums
+```
+
+```
+signature: int removeElement(int[] nums, int val)
+check: prefix nums
+compare: unordered 0
+```
+
+- **NAME** is a parameter of the signature (not a `hidden:` input). For
+  `param` it is an array of any depth (`int[]`, `char[][]`, ...), and for
+  `prefix` a one-dimensional array. Lists and trees can't be checked yet.
+- **The result's type** is NAME's type: expected outputs in tests.txt are
+  written as NAME's value (`=> [1,3,0,0]`), or for `prefix` as its first k
+  elements, so the count is their length (`=> [1,2]`, not `2`). That is
+  what LeetCode shows as the output of these problems too.
+- **compare:** applies to that value. `unordered 0` with `prefix` accepts
+  the first k elements in any order (LeetCode 27); without it, they must
+  be in order (LeetCode 26). What lies beyond the first k doesn't matter.
+- **A count that doesn't fit**, below 0 or above NAME's length after the
+  call, is a Runtime Error: the harness stops with a message such as
+  `removeElement returned 6, but nums has 5 elements`. A C++ solution may
+  resize the vector (e.g. with `erase`), as on LeetCode; the count is
+  checked against its size after the call.
+- **Errors** skip the pack: `check: needs a signature`,
+  `check: unknown mode 'x' (expected param or prefix)`,
+  `check: 'x' is not a parameter of the signature`,
+  `check: param needs a function that returns void, not int`,
+  `check: prefix needs a function that returns int (the count), not void`,
+  `check: param needs an array such as int[] or char[][], but 'n' is int`,
+  `check: prefix needs a one-dimensional array such as int[], but 'g' is int[][]`,
+  `check: lists and trees can't be checked yet, but 'head' is ListNode`,
+  and the like.
+- **Writing past the end** of an array is caught in C: the harness gives
+  every array one zeroed element more than it holds (so a `char[]` is also
+  a NUL-terminated string), and a solution that changes it gets a Runtime
+  Error, `duplicateZeros wrote past the end of arr (arr[8])`, as LeetCode
+  reports a heap buffer overflow. This holds for every one-dimensional
+  array parameter, not only the checked one.
+- **A `void` function without `check:`** has nothing to judge: `lc test`
+  and `lc submit` say so, and `lc check` reports it as an error, not as a
+  problem it can't judge yet.
 
 ### Statement
 
@@ -188,7 +250,7 @@ The types a signature may use. Each has a literal form for tests.txt (see
 | `int`      | `-5`                            | 32-bit signed: -2147483648 to 2147483647 |
 | `long`     | `-5`                            | 64-bit signed |
 | `uint32`   | `5`                             | 0 to 4294967295 |
-| `double`   | `2.5`, `-1e-3`, `2`             | an integer literal is fine; `2` is shown as `2.0` |
+| `double`   | `2.5`, `-1e-3`, `2`             | an integer literal is fine; when lc prints the value, `2` becomes `2.0` |
 | `bool`     | `true`, `false`                 | |
 | `char`     | `"a"`                           | a string of exactly one ASCII character |
 | `string`   | `"a b"`                         | UTF-8; no NUL bytes |
@@ -245,7 +307,9 @@ range for int`, `column 5: expected ',' or ']'`.
 back as the same number, with `.0` added to whole numbers (`2.0`, `0.1`,
 `1e+20`). Control characters in strings print as escapes, and, in a
 program's result only, bytes that aren't valid UTF-8 print as `\xHH`, and
-non-finite doubles as `NaN`, `Infinity` and `-Infinity`.
+non-finite doubles as `NaN`, `Infinity` and `-Infinity`. A run's report
+prints the expected and actual results this way; its inputs, and the
+examples `lc show` shows, appear as written in tests.txt.
 
 ## tests.txt
 
@@ -284,8 +348,10 @@ them, and `lc submit` runs every case.
 - **Literals** are kept as text when the file is read (leading and trailing
   spaces and tabs trimmed). `lc_case_values` parses a case's literals
   against the signature: each input against its parameter (then the hidden
-  inputs), and the expected output against the return type. The number of
-  inputs must match. Without a signature, or for a `void` return, values
+  inputs). The number of inputs must match. The expected output is parsed
+  against the result's
+  type: the return type, or with `check:` the checked parameter's.
+  Without a signature, or for a `void` return without `check:`, values
   are parsed without a type. Its errors look like
   `.../tests.txt:12: target: column 1: expected int, got a string`, where
   the line is the case's first line.

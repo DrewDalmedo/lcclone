@@ -1,0 +1,111 @@
+# Minimum Index Sum of Two Lists. compare: unordered 0 accepts the strings
+# in any order; the expected answers below list them in list1's order.
+
+@example lamp is first in list1 and bed first in list2, but each sums to 4 (0 + 4 and 4 + 0); chair sums to 2 + 1 = 3.
+["lamp","desk","chair","sofa","bed"]
+["bed","chair","rug","shelf","lamp"]
+=> ["chair"]
+
+@example juice sums to 2 + 2 and milk to 3 + 1: a tie at 4, so both are returned.
+["tea","coffee","juice","milk"]
+["water","milk","juice"]
+=> ["juice","milk"]
+
+@example elm and Elm differ in case, so oak (0 + 2) is the only common string.
+["oak","pine","elm"]
+["Elm","ash","oak"]
+=> ["oak"]
+
+# One string in each list.
+["x"]
+["x"]
+=> ["x"]
+
+# The only common string is last in both lists.
+["a","b","c","d"]
+["e","f","g","d"]
+=> ["d"]
+
+# Common at index 0 of both lists: the sum is 0.
+["k","m","n"]
+["k","n","m"]
+=> ["k"]
+
+# Reversed lists: every string sums to 3.
+["p","q","r","s"]
+["s","r","q","p"]
+=> ["p","q","r","s"]
+
+# The strings at the front of either list lose to one in the middle of both.
+["aa","bb","cc","dd","ee","ff"]
+["ff","xx","cc","yy","zz","aa"]
+=> ["cc"]
+
+# Spaces count: "icecream" and "ice cream " are not "ice cream".
+["ice cream","pie","sorbet"]
+["icecream","ice cream ","sorbet","ice cream"]
+=> ["ice cream"]
+
+# A prefix is not a match: "car" is not in list2, though "cart" and
+# "carts" are.
+["car","cart","care"]
+["ca","carts","care","cart"]
+=> ["cart","care"]
+
+# Case counts: only "rose" and "ROSE" are in both lists.
+["Rose","rose","ROSE"]
+["rOse","ROSE","rose"]
+=> ["rose","ROSE"]
+
+# A string of one space, and one of 30 letters.
+[" ","abcdefghijklmnopqrstuvwxyzABCD"]
+["abcdefghijklmnopqrstuvwxyzABCD"," "]
+=> [" ","abcdefghijklmnopqrstuvwxyzABCD"]
+
+# Leading and trailing spaces count: "fig " and " kiwi" are not "fig"
+# and "kiwi", so plum (1 + 2) is the only common string.
+["fig ","plum"," kiwi"]
+["fig","kiwi","plum"]
+=> ["plum"]
+
+# Lists of different lengths.
+["only"]
+["one","two","three","four","only"]
+=> ["only"]
+
+# Lists of 1000 strings each whose only common string is the last of
+# both: its index sum, 999 + 999 = 1998, is the largest possible.
+["VD","br","UU","zu","eU","UI","cH","Sd","cO","EV","Qh","cn","UQ","At","oY","xm","TI","ma","XE","Cr","nm","WB","Om","Tg","VM","IW","Jn","Wn","Ch","xA","oz","ZD","cw","gO","VB","DW","ic","eN","hA","Ak","MD","Gz","ti","le","bx","yI","xI","cN","Mn","af","PE","Si","ps","be","Bj","Ls","NJ","Tx","eB","hb","yD","pU","kd","lq","eE","NB","un","Jh","xb","Tq","Me","my","Tr","fr","tP","EQ","db","LB","lz","Cf","Ex","bG","dR","UY","Wq","Bi","cU","DH","cX","Sh","bg","US","yS","Vp","Wa","mT","Dk","xU","Mm","gL","SI","Nz","rZ","KP","nl","fc","Zv","OU","tA","wJ","ga","pj","Gx","MM","ci","lG","Zo","Uo","Ef","qA","ae","bd","My","DL","Nm","Im","bB","Ov","pk","sX","Ew","ld","Tt","KH","VS","Mf","Pe","vG","BI","yH","Sq","ew","CY","qb","Cv","rT","aN","Hw","zR","EA","JZ","uJ","Xj","fF","bO","Oh","hS","Ok","lQ","pF","XV","Cy","Qn","rH","BR","Es","nM","eW","Pz","cR","Oi","XH","Jo","KN","Tl","GX","mm","By","bj","Ai","nY","dw","Yj","Gd","fq","ig","mf","wD","LR","ia","AY","IX","Ma","ox","KC","Qa","gN","wz","gl","uV","jZ","nJ","eu","SO","ms","hm","Kr","YS","Bw","jz","Dy","iF","xa","zL","bU","as","EO","Lh","IJ","OQ","JM","rd","JU","jU","SM","oF","dH","Fx","CD","dL","JF","ut","ZU","VK","sR","TF","lD","oQ","oK","cy","Ng","rE","Al","TX","uQ","TU","qy","Et","GH","Cc","uw","ws","yA","dn","Nj","Vg","hj","FY","sq","Ul","os","FN","po","yM","hk","ck","Aj","wm","PV","mI","aB","Fm","Od","yZ","SW","QU","UB","TC","we","ZL","uL","iI","pv","qd","Ju","YK","Hz","rK","bM","rA","Bv","KI","vo","FQ","RD","vJ","vx","Ms","Xf","hM","XW","QK","RV","xS","iT","ww","eC","ne","Wd","YE","WZ","eD","eH","UJ","jx","qh","ty","Rd","RP","Jj","pi","yW","XD","qm","Qs","re","nr","pr","dV","oG","Hp","yF","Gk","AE","Is","IH","dK","nF","DC","op","uY","OY","gz","Pd","fB","fA","vy","ym","bX","aQ","GI","hs","JQ","eX","dY","rv","NI","TE","cd","MR","ab","Vw","tn","Zj","es","MQ","qc","Ie","PD","EL","Ar","Zy","uq","MW","Ek","Gj","Ab","ns","tF","OA","SA","iU","yi","dj","ct","QI","We","nq","bL","wk","OL","Xs","KM","HQ","jF","yp","eO","gI","xc","sp","Pf","pC","LF","Os","Zg","Se","Rz","jo","iu","gT","GG","cE","Io","oL","oS","PI","DF","Pc","zk","UC","Py","Cu","su","Ur","ac","zK","ek","Km","Ro","kC","fH","Ao","sZ","IB","BS","fj","sG","np","qz","mk","sU","IO","Fk","Ww","lU","uS","rG","el","dm","fP","sj","ZI","fV","Vt","cu","zx","Ly","UM","Zq","IA","li","ED","am","Ko","Hv","jr","nQ","tQ","hU","Nk","rr","Td","qx","SX","GE","Ez","Xq","xi","fQ","QS","fh","Px","kB","Ay","Yg","oU","uI","vD","oE","gS","cV","CW","Cq","vj","Xa","mA","om","kL","YW","rM","xv","nR","gU","Uz","Xr","Dg","KR","oH","HW","cT","Gr","HZ","Pt","Su","Zb","CP","NK","GL","QJ","No","qE","jj","WQ","us","yk","VI","xC","fg","CB","pZ","eo","lL","qP","lp","GS","VN","rt","sb","Bx","Bf","eq","qu","rP","DO","Sc","Yq","XI","cl","bW","Cl","QP","mD","pc","PG","RO","LZ","Qp","ka","DP","al","yv","zD","cC","ph","bN","kl","cp","ij","lE","Pi","IY","aS","kw","vP","KB","vi","wP","sJ","iz","Am","Fc","gx","aY","pP","AZ","BA","Mo","LY","aJ","Wt","gc","Tk","CQ","vS","In","IR","hL","Tb","vK","lM","SP","ya","rJ","NT","Iv","WT","OP","xs","nP","DT","vV","sT","bF","EM","rD","VR","Nr","nk","yO","lB","lx","Pl","ZM","xL","df","ir","qs","Ds","iB","Wl","fa","Rc","Gq","zU","mB","jt","PR","ZV","Nh","ES","Xc","PC","pf","Jg","sa","zq","hv","UH","Mk","fz","GB","Jp","TO","YJ","Rh","cS","zl","Wv","vE","Ig","hE","bi","vu","Pg","Og","ue","in","OO","kX","GO","CM","SN","ui","fs","fE","wX","tE","HA","uc","Vn","ER","Vx","cg","qQ","kz","hI","ta","bt","IG","qv","yo","Lr","aG","rh","TG","MH","jK","Aw","LJ","up","ok","Qo","Mw","Qq","CF","mh","lj","WW","kt","Ci","fJ","wv","EY","qI","nu","ng","AI","Qb","Ih","hf","cZ","uT","mS","WE","dx","Gl","On","WY","MJ","Yf","fS","qO","XP","mW","sI","FF","oJ","ib","ro","lf","AP","mp","nc","kN","QW","Vc","zN","NR","ZB","KD","rl","Tc","Ty","Rb","FJ","TR","fw","tx","bT","QD","mJ","BG","Pn","Wf","hF","tc","nb","PZ","IP","ef","Kt","kg","Bo","xN","gC","zj","qo","WV","DN","UN","YL","VW","BD","JG","st","DB","Ve","Lg","Lq","Zd","LM","KF","mw","zn","xk","hQ","RM","gk","nG","bH","Oj","JJ","xl","jq","LC","aE","iX","Yo","iy","ZX","Ax","wp","yP","Wg","cP","Ka","kU","WA","wl","Up","Sz","HY","Ut","pV","gQ","uC","LD","dp","il","Iq","Qr","oT","Kx","ry","RJ","ur","Ee","xy","kh","wR","wf","oR","Vb","ri","zf","rL","bh","fo","jl","RB","Ye","yY","OR","xj","Bp","WN","WR","RY","OV","ja","SZ","Gs","Pq","kn","OJ","CN","ZS","ID","RU","DG","QR","pz","fO","NF","ll","UP","Gn","yt","eg","rO","ua","vW","vI","ge","RG","ob","AD","qW","GT","ah","Za","FZ","Vu","Dl","sW","Fi","bE","SK","Vl","ce","Ot","Ht","lP","Ki","Dd","GU","lk","dy","Hr","uM","co","NZ","Du","wY","WG","zv","mO","dU","Sw","pS","xD","pK","YV","hY","ly","yx","pX","Kb","IF","AQ","ZK","xn","HF","BL","PL","uv","Oz","dM","XS","Ct","JL","zZ","Pv","Ys","Qy","gY","DX","Rn","Bb","GN","se","qt","vn","Hs","gj","TK","zt","NL","tj","Jm","Mv","eL","um","UR","ih","hx","RC","Ob","ku","TL","WL","Qz","dr","GR","zF","hz","ZO","vv","xO","yT","sm","xX","EW","Rm","Eu","qj","Kf","QV","SE","nA","rm","aX","pb","Nd","nK","ul","II","uF","KT","do"]
+["QL","wC","tu","zH","Hn","Yn","QZ","ye","OT","An","YC","wh","Dq","kK","uG","tB","DJ","Ja","zr","zi","bK","PW","tD","iK","IN","Ip","DK","Aa","nw","iO","Eo","te","RL","yr","pG","Ta","xg","rR","eY","tz","UL","sN","uh","Fg","iD","qM","yy","vq","tp","ZP","cQ","lm","nD","ff","sL","CU","gb","JI","Ub","lw","DY","Vs","dZ","JK","mc","PU","Hx","Yu","gK","Oe","Vz","on","fx","bw","JY","IK","JP","VL","iN","sd","lh","wi","nZ","CL","Ge","Ed","az","eG","nI","vH","JS","AJ","cL","BU","mR","zA","Mb","sA","GJ","Lw","xz","sF","CS","sM","Ij","jH","ss","fK","ql","Mp","iw","NS","so","Uj","sk","Dh","Pr","HN","gm","yu","sC","Fz","Af","kS","Ql","Zf","pN","je","UT","Xl","Ir","fp","yL","Ps","QQ","MF","IL","Ym","GF","RN","hZ","tW","mt","mz","Pw","LE","Zr","yz","ai","Bz","jO","dq","iP","kH","jP","dF","cs","VY","Kn","Dp","rf","Gu","ji","jh","MV","zQ","rB","KY","Fn","GA","uE","Xp","XB","hO","Ck","ys","wT","mG","Iy","BY","LS","Ft","ke","oe","zG","qp","gs","YT","Fu","YF","AR","Qk","Te","at","yC","og","Ej","AS","Xz","ZZ","FS","ug","od","vf","tg","kZ","Tj","ar","HD","aq","ts","rq","KG","Sr","lb","XJ","LI","QE","YU","Ws","dA","pw","IC","zE","Zz","CE","lt","Cw","ey","Cz","gB","Uk","Iz","Ag","Bm","dB","uA","me","BJ","HS","nV","Pk","TH","tf","wS","Um","Dr","zX","En","aC","mP","TA","Ga","xx","hr","Ph","TJ","Zm","Cs","mY","Ue","MZ","gP","hC","GP","sz","qH","HJ","OI","jd","Ne","gr","aR","rC","yq","aP","vd","rb","Iu","PH","OX","Dv","Ap","kq","wa","Qf","dc","Mi","Xx","Iw","qT","Bq","Rs","Tn","NH","km","ME","Of","bR","Pp","rV","jY","Fw","KA","Da","wg","pB","qU","cx","tt","GQ","Jk","tO","no","Ns","Nl","Ui","Ua","HG","gy","pE","cI","eS","jA","fI","cf","cK","Jd","Po","pq","hT","Kv","TD","Er","ow","nB","pW","mx","jB","Oy","lr","eV","tC","VU","du","ZA","Yz","yj","cc","oy","Ox","wW","nh","FI","zh","SD","dX","Xw","mC","aK","mo","WX","fZ","or","JV","pM","zc","hd","Dn","tq","lF","xQ","gX","LW","HM","gi","gn","py","xB","kG","jn","Sn","Zn","Lc","gH","OW","XM","zT","eJ","Us","ds","hP","HL","rI","OS","cJ","gp","FK","ud","uR","WM","mn","Jw","Cb","tY","dg","NX","pp","Rk","GK","EC","fm","LL","uk","Yv","yU","aW","ch","Rf","Ey","ho","XF","QH","JO","YN","SF","tS","AB","Ss","kr","Jz","la","bC","Tz","PX","jc","iE","Sx","si","vw","WH","Rq","vM","qG","FP","vO","Ks","PN","ET","ZW","LN","XC","Ld","oj","mL","Ud","pJ","wF","kk","Ji","AH","wr","Bh","Lt","Op","dO","vb","oX","Gm","qi","BK","NE","BV","fi","Xg","UV","sS","PY","GW","vR","Yi","Hm","IT","nT","SY","Xt","iW","Hi","nn","uN","Pj","vk","XL","Dz","Np","MU","To","QX","xW","zC","Mz","bf","bY","kT","pY","hq","sP","cm","cA","kA","CV","BM","bb","yV","Pm","IU","TV","sv","iv","yJ","vs","aI","fu","pt","YG","Yl","nE","FE","HH","Fb","Au","AV","TN","ej","qY","ky","uU","FA","Ny","ay","Rr","Ib","kO","yh","pD","FO","lC","EG","De","Le","VQ","iH","Jy","cB","Uu","MB","HU","HX","vg","Aq","Be","Sj","CR","eT","jS","wA","kY","Ec","fL","bq","Ze","zm","va","jJ","NP","nz","KL","tl","Mg","ag","kP","hB","Cj","ub","EF","cq","Eb","Fy","aU","he","Dt","tK","HI","Qm","aa","qC","jp","MX","WP","fb","EJ","WI","Md","VO","FR","tI","xf","bS","PB","Qv","Hk","YR","DA","oM","Lb","QT","Vr","Sp","MT","ZR","Sm","pT","Ou","Ea","ei","YX","oi","ux","YA","sc","wV","cF","eh","Ti","MY","Av","iJ","rN","Wz","Na","MI","qV","aV","yR","UO","CK","bn","DE","KQ","go","Zu","ax","MN","hp","au","BT","hi","Wp","Sl","CJ","VF","sY","Xy","MK","Jl","eM","Sy","vL","KJ","nj","bz","Xn","nH","ZC","Gw","wU","uy","Mu","zP","MS","PM","WC","ev","UG","dG","Ik","Jf","wI","pI","id","sw","Wi","xp","Eg","LV","OD","FM","Fr","Re","nO","bc","gt","QB","kJ","Rl","Xk","ht","qB","YO","PO","ix","ZN","pO","Nf","HE","mQ","yn","gA","fN","jw","Kg","vT","mF","qZ","jv","Zw","XQ","rz","kj","Wc","Ii","YD","sy","lK","Yd","PA","pa","jL","SH","cY","ee","HT","Hu","iL","bP","uj","Kh","of","mK","tG","BC","OG","xE","ve","CZ","oV","nX","VX","GD","NV","gf","AL","Fv","LQ","EI","IS","lW","mj","bQ","RQ","wd","Vv","yE","dE","ST","yQ","Ix","BF","ak","dN","pH","PS","sD","gq","Oa","vN","Br","GZ","fk","TS","LG","CO","DR","LK","vc","Wx","AO","tX","DV","rS","yb","gg","bv","sB","MA","NN","mg","Lz","xu","Qj","GM","WO","OM","kR","Bu","FC","XN","LP","FG","BP","AU","DQ","ed","EU","ao","Qu","ze","pm","wt","Qg","Wh","Cx","Vk","Gh","KE","Rw","hg","QM","fM","gZ","DI","oN","YI","ZQ","BZ","zg","sO","oD","qD","yK","kE","FB","Jq","Uv","ba","RH","wB","Yb","NA","Vj","NG","zV","rc","ZG","th","Oq","PT","oC","aj","AK","Pb","BX","Mx","Mj","Kc","Fd","em","vh","ol","NM","Ce","lN","WK","Hb","Nq","uZ","wM","hl","Id","wc","pL","qn","OK","NC","Wu","Pa","sf","bp","nS","hJ","Do","Fs","Ic","mN","WS","hV","mH","Mt","Yw","rF","EX","qJ","Kp","pu","RF","QA","pn","oO","Cg","Wy","iG","cW","VE","AN","xt","Ev","jy","Nw","nC","Xv","Ni","Oo","zJ","pg","BE","sn","gw","sl","Zk","ea","Tw","ik","Gc","dh","Hq","vC","Fe","Ts","YH","SQ","Bl","ca","ha","td","bV","It","qe","jI","qr","wE","YY","lI","AW","zO","dS","DM","xF","LA","SR","JD","Yk","PK","Ia","Ya","ON","gh","gR","IM","Em","tJ","Wj","oa","fv","BW","Qt","av","Kz","VT","rj","Jv","PF","xq","Fq","Ri","HB","YQ","RE","ND","Mc","do"]
+=> ["do"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["Aa ","  ","Aab"]
+["  "]
+=> ["  "]
+
+@gen 2 small
+["aaa","b","bA "," b","ba"]
+[" ab","bA ","b"]
+=> ["b","bA "]
+
+@gen 3 small
+["a A","b","a","A ","A","bba"]
+["abb","baa","bbb","a A","baA"]
+=> ["a A"]
+
+@gen 4 small
+["bA","ab"]
+["AaA","aab","aa","ab","bA"]
+=> ["bA","ab"]
+
+@gen 5 small
+["  ","A "," b","Ab"]
+[" b","Ab"]
+=> [" b"]
+
+@gen 6 small
+["b ","A a","bA "," b"]
+["a"," b","bA ","b "]
+=> ["b "]

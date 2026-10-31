@@ -1,0 +1,6 @@
+--- stdout
+Building tests/fixtures/judge/0016-dedup/solution.cpp (C++, c++11)
+
+Accepted: 4/4 cases passed, slowest N ms, peak memory N MB
+--- stderr
+--- exit 0

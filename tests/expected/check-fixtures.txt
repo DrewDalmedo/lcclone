@@ -41,9 +41,17 @@ tests/fixtures/check/0011-renamed/problem.md:3: error: title 'Renamed' differs f
 tests/fixtures/check/0013-unused-gen/gen.c: warning: gen.c is not used: add brute.c to compare ref with on random cases, or @gen cases to tests.txt
 0013-unused-gen: ok (2 cases; ref.c slowest N ms)
 0014-no-params: ok (2 cases; ref.c slowest N ms)
+0015-inplace: ok (3 cases; ref.c slowest N ms; agrees with brute.c on 30 random cases)
+tests/fixtures/check/0016-no-check/problem.md:5: error: sortIt returns void, so it needs 'check: param NAME' to be judged
+0016-no-check: FAILED (1 error)
+tests/fixtures/check/0017-bad-count/tests.txt:5: error: ref.c gets Runtime Error on this case (exited with status 70: dedup returned 1, but nums has 0 elements)
+    Input:    nums = []
+    Expected: []
+    Output:   (none)
+0017-bad-count: FAILED (1 error)
 tests/fixtures/check/0012-broken/problem.md: error: missing required field 'difficulty'
 0012-broken: FAILED (it does not load)
 
-Checked 14 packs: 3 ok, 1 not judged yet, 10 failed
+Checked 17 packs: 4 ok, 1 not judged yet, 12 failed
 --- stderr
 --- exit 1

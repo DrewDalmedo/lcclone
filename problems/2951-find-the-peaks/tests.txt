@@ -1,0 +1,102 @@
+# Find the Peaks. compare: unordered 0 accepts the indices in any order;
+# the expected answers below list them in increasing order.
+
+@example 6 at index 2 is taller than 3 and 4, and 5 at index 4 is taller than 4 and 2.
+[1,3,6,4,5,2]
+=> [2,4]
+
+@example 5 at index 1 is a peak. 8 is taller, but the last index never counts.
+[3,5,4,8]
+=> [1]
+
+@example The two 7s are equal, so neither is strictly taller than both neighbours.
+[2,7,7,3]
+=> []
+
+# The shortest range, with a peak in the middle.
+[1,2,1]
+=> [1]
+
+# The shortest range: the middle only ties its left neighbour.
+[5,5,1]
+=> []
+
+# The shortest range, shaped like a V.
+[3,1,3]
+=> []
+
+# Every height the same.
+[6,6,6,6,6]
+=> []
+
+# Only rising, then only falling: the tallest point is an end.
+[1,2,3,4,5,6]
+=> []
+
+[100,80,60,40,20]
+=> []
+
+# Extreme heights at the ends, and a plateau at the top.
+[100,1,100]
+=> []
+
+[1,100,100,1]
+=> []
+
+# Peaks right next to both ends.
+[1,5,2,2,5,1]
+=> [1,4]
+
+# Taller by only 1 on each side, then a plateau.
+[10,11,10,10,9]
+=> [1]
+
+# Zig-zag: every other index is a peak.
+[1,100,1,100,1,100,1]
+=> [1,3,5]
+
+# The longest range, zig-zagging; the last index is tall but never a peak.
+[1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2]
+=> [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95,97]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[2,3,3]
+=> []
+
+@gen 2 small
+[1,1,1,1,1,1,1]
+=> []
+
+@gen 3 small
+[1,1,1,2,2,2,1,1,1]
+=> []
+
+@gen 4 small
+[2,1,3]
+=> []
+
+@gen 5 small
+[2,2,1]
+=> []
+
+@gen 6 small
+[5,2,3,6,3,4,4,1]
+=> [3]
+
+@gen 7 small
+[2,2,5]
+=> []
+
+@gen 8 small
+[1,3,3,1,3,1,1,3,1]
+=> [4,7]
+
+# Random full-size cases.
+@gen 9
+[27,34,86,2,89,98,10,78,23,61,1,43,21,71,24,47,26,11,79,74,21,4,18,96,90,22,46,78,32,8,21,98,1,31,72,20,12,33,39,47,50,55,16,49,48,99,24,77,24,51,61,18,97,29,67,100,4,15,10,91,49,40,99,74,38,30,52,34,10,60,56,30,18,7,33,53,3,15,49,31,73,20,66,37,20,94,25,9,12,29,96,74,77,56,52,87,16,83,68,88]
+=> [2,5,7,9,11,13,15,18,23,27,31,34,41,43,45,47,50,52,55,57,59,62,66,69,75,78,80,82,85,90,92,95,97]
+
+@gen 10
+[8,53,52,5,93,1,22,30,36,73,92,44,43,84,22,29,100,52,92,33,82,35,71,21,40,17,15,89,52,53,91,72,79,61,71,1,74,22,9,97,64,58,3,53,40,59,45,62,76,28,51,59,71,46,79,8,90,2,87,98,1,29,90,83,6,70,70,60,20,87,58,82,65,31,86,78,15,67,26,93,72,72,56,100,43,16,27,34,68,87,33,27,59,76,92,14,8,24,95,94]
+=> [1,4,10,13,16,18,20,22,24,27,30,32,34,36,39,43,45,48,52,54,56,59,62,69,71,74,77,79,83,89,94,98]

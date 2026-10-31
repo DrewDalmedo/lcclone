@@ -5,7 +5,7 @@ void sortIt(int* nums, int numsSize) {
 == C prototype
 void sortIt(int* nums, int numsSize)
 == C harness
-error: problem 8 (void): judging a function that returns void is not supported yet
+error: problem 8 (void): sortIt returns void, so it needs 'check: param NAME' to be judged
 == C++ stub
 class Solution {
 public:
@@ -16,4 +16,4 @@ public:
 == C++ prototype
 void Solution::sortIt(vector<int>& nums)
 == C++ harness
-error: problem 8 (void): judging a function that returns void is not supported yet
+error: problem 8 (void): sortIt returns void, so it needs 'check: param NAME' to be judged

@@ -560,6 +560,11 @@ files_golden start-867-files "$WS" 0867-transpose-matrix/README.md \
     0867-transpose-matrix/solution.c 0867-transpose-matrix/cases.txt
 check start-104 LC_WORKSPACE="$WS" LC_PROBLEMS=problems -- start 104 --no-edit --json
 files_golden start-104-files "$WS" 0104-maximum-depth-of-binary-tree/solution.cpp
+# In-place problems (check:): cases.txt says what the result is.
+check start-dedup LC_WORKSPACE="$WS" LC_PROBLEMS=$JFIX -- start dedup --lang c --no-edit
+files_golden start-dedup-files "$WS" 0016-dedup/solution.c 0016-dedup/cases.txt
+check start-merge LC_WORKSPACE="$WS" LC_PROBLEMS=$JFIX -- start merge --no-edit
+files_golden start-merge-files "$WS" 0015-merge/solution.cpp 0015-merge/cases.txt
 
 # Your files are never overwritten; README.md is rewritten.
 echo '// mine' >"$WS/0001-two-sum/solution.cpp"
@@ -649,6 +654,13 @@ check submit-add-flood LC_PROBLEMS=$JFIX -- submit $J/flood.c
 check test-add-mycases LC_PROBLEMS=$JFIX -- test $J/wrong.c --case $J/mycases.txt
 check submit-reverse-unset LC_PROBLEMS=$JFIX -- submit $JFIX/0011-reverse/unset.c
 check submit-reverse-null LC_PROBLEMS=$JFIX -- submit $JFIX/0011-reverse/null.c
+# check: param and check: prefix, the in-place problems.
+check submit-merge-wrong LC_PROBLEMS=$JFIX -- submit $JFIX/0015-merge/wrong.c
+check submit-dedup-cpp LC_PROBLEMS=$JFIX -- submit $JFIX/0016-dedup/solution.cpp
+check submit-dedup-big LC_PROBLEMS=$JFIX -- submit $JFIX/0016-dedup/big.c
+check submit-dedup-short LC_PROBLEMS=$JFIX -- submit $JFIX/0016-dedup/short.cpp
+check submit-merge-past LC_PROBLEMS=$JFIX -- submit $JFIX/0015-merge/past.c
+check submit-upper-nullrow LC_PROBLEMS=$JFIX -- submit $JFIX/0018-upper/nullrow.c
 check err-test-badcase LC_PROBLEMS=$JFIX -- test $J/solution.c --case $J/badcase.txt
 check err-test-no-ref LC_PROBLEMS=$JFIX -- test $JFIX/0011-reverse/solution.c
 check err-test-bad-ref LC_PROBLEMS=$JFIX -- test $JFIX/0012-bad-ref/solution.c
@@ -803,6 +815,8 @@ print(" ".join(evs))' <"$TMP/out" 2>&1) && [ "$got" = "$3" ]; then
 }
 run LC_PROBLEMS=$JFIX -- test $J/wrong.c --case $J/mycases.txt --json
 json_events "lc test wrong.c --case mycases.txt --json" 1 "build_start build_done build_start(ref) build_done(ref) case_start case_done:accepted case_start case_done:wrong_answer case_start case_done:accepted case_start case_done:accepted case_start case_done:wrong_answer done:wrong_answer:3/5"
+run LC_PROBLEMS=$JFIX -- submit $JFIX/0017-drop/solution.c --json
+json_events "lc submit drop/solution.c --json (check: prefix, unordered)" 0 "build_start build_done case_start case_done:accepted case_start case_done:accepted case_start case_done:accepted done:accepted:3/3"
 run LC_PROBLEMS=$JFIX -- submit $J/crash.c --json
 json_events "lc submit crash.c --json" 1 "build_start build_done case_start case_done:accepted case_start case_done:accepted case_start case_done:runtime_error done:runtime_error:2/5"
 run LC_PROBLEMS=$JFIX -- submit $J/ce.c --json
@@ -1150,6 +1164,13 @@ cp $CFIX/0014-no-params/* "$RG/np/0014-no-params/"
 printf '@example\n()\n=> 42\n\n@gen 1\n5\n=> 7\n\n@gen 2\n' >"$RG/np/0014-no-params/tests.txt"
 check check-regen-no-params LC_PROBLEMS="$RG/np" -- check --regen
 files_golden check-regen-no-params-files "$RG/np/0014-no-params" tests.txt
+# An in-place problem (check: prefix, compare: unordered 0): a result in
+# another order than ref's is kept, a missing or wrong one is ref's.
+mkdir -p "$RG/ip/0015-inplace"
+cp $CFIX/0015-inplace/* "$RG/ip/0015-inplace/"
+printf '@example\n[3,1,2,3,4]\n3\n=> [4,2,1]\n\n[5,5,1]\n5\n\n[1,2]\n9\n=> [2]\n' >"$RG/ip/0015-inplace/tests.txt"
+check check-regen-inplace LC_PROBLEMS="$RG/ip" -- check --regen --count 10
+files_golden check-regen-inplace-files "$RG/ip/0015-inplace" tests.txt
 printf '1\n2\n=> 3\n' >"$RG/0001-good/tests.txt"
 rm "$RG/0001-good/ref.c"
 check err-check-regen-no-ref LC_PROBLEMS="$RG" -- check --regen

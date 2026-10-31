@@ -165,7 +165,8 @@ static void test_types(void)
         const char *pack;
         int cpp;                  /* 0 none, 1 default std, 2 also max */
     } packs[] = {{"1", 1}, {"2", 1}, {"3", 1}, {"4", 2}, {"5", 1}, {"6", 1},
-                 {"7", 2}, {"8", 1}, {"9", 2}, {"10", 1}, {"11", 0}};
+                 {"7", 2}, {"8", 1}, {"9", 2}, {"10", 1}, {"11", 0},
+                 {"15", 1}, {"16", 2}, {"17", 1}, {"18", 1}};
     lc_ctx *ctx = open_ctx(JUDGE);
     size_t i;
 
@@ -423,6 +424,48 @@ static void test_verdicts(void)
             CHECK_STR(rep->results[0].stderr_text,
                       "lc: reverse returned NULL, but *returnSize is 3\n");
         lc_report_free(rep);
+    }
+
+    /* check: a parameter after the call is the result, and for prefix the
+     * harness makes sure the count fits it, in either language. */
+    {
+        static const struct {
+            const char *pack, *src;
+            lc_verdict v;
+            const char *output, *err;
+        } inplace[] = {
+            {"merge", "wrong.c", LC_WRONG_ANSWER, "[1,3,5,0,0]", ""},
+            {"dedup", "wrong.c", LC_WRONG_ANSWER, "[1,1,2]", ""},
+            {"dedup", "big.c", LC_RUNTIME_ERROR, NULL,
+             "lc: dedup returned 6, but nums has 5 elements\n"},
+            {"dedup", "neg.cpp", LC_RUNTIME_ERROR, NULL,
+             "lc: dedup returned -1, but nums has 5 elements\n"},
+            {"dedup", "short.cpp", LC_RUNTIME_ERROR, NULL,
+             "lc: dedup returned 5, but nums has 0 elements\n"},
+            {"merge", "past.c", LC_RUNTIME_ERROR, NULL,
+             "lc: merge wrote past the end of a (a[5])\n"},
+            {"upper", "nullrow.c", LC_RUNTIME_ERROR, NULL,
+             "lc: upper left grid[0] NULL, but its size is 2\n"},
+        };
+
+        for (i = 0; i < sizeof inplace / sizeof inplace[0]; i++) {
+            lc_report *rep = judge(ctx, inplace[i].pack, inplace[i].src,
+                                   NULL, 1, NULL);
+
+            CHECK(rep && rep->nresults);
+            if (!rep || !rep->nresults) {
+                lc_report_free(rep);
+                continue;
+            }
+            CHECK_INT(rep->verdict, inplace[i].v);
+            CHECK_INT(rep->results[0].verdict, inplace[i].v);
+            if (inplace[i].output)
+                CHECK_STR(rep->results[0].output, inplace[i].output);
+            else
+                CHECK(rep->results[0].output == NULL);
+            CHECK_STR(rep->results[0].stderr_text, inplace[i].err);
+            lc_report_free(rep);
+        }
     }
     lc_close(ctx);
 }

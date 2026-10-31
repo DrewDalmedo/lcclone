@@ -142,7 +142,7 @@ A case that ran gets the first verdict below whose rule applies.
 | Memory Limit Exceeded | the peak resident memory passed the memory limit, or `lc` killed the program at the address-space guard |
 | Time Limit Exceeded | the CPU time passed the time limit, or `RLIMIT_CPU` stopped the program, or it was still running at the wall-clock deadline |
 | Runtime Error | the program was killed by a signal, or exited with a status other than 0 |
-| Runtime Error | it exited 0 without writing a result, or with a result that isn't valid wire format for the return type, or with extra text after the result |
+| Runtime Error | it exited 0 without writing a result, or with a result that isn't valid wire format for the result's type, or with extra text after the result |
 | Wrong Answer | the result doesn't match the expected one under the problem's `compare:` mode |
 | Accepted | it matches |
 
@@ -164,6 +164,16 @@ that says why, for example:
 - `printed more than 1 MiB on stdout`
 - `exited without returning a result`
 - `its result could not be read: byte 5: expected an int, got 'x'`
+
+When the harness can't write the result, because the solution handed back
+something it can't use, it stops with status 70 and says why on stderr:
+`lc: twoSum did not set *returnSize`, `lc: reverse returned NULL, but
+*returnSize is 3`, or for a problem solved in place
+([`check: prefix`](problem-format.md#check)) `lc: removeElement returned
+6, but nums has 5 elements`. It does the same, in C, when the solution
+wrote past the end of an array it was given: `lc: duplicateZeros wrote
+past the end of arr (arr[8])`. That is a Runtime Error too, shown with the
+message (and `lc check` adds the message to its finding).
 
 ## A run's report
 

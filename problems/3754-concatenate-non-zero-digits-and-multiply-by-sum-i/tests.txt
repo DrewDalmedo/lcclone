@@ -1,0 +1,92 @@
+# Concatenate Non-Zero Digits and Multiply by Sum I.
+
+@example Dropping the zeros of 3050 gives x = 35. Its digits add up to 8, and 35 * 8 = 280.
+3050
+=> 280
+
+@example A single digit is its own x and its own digit total: 7 * 7 = 49.
+7
+=> 49
+
+@example Striking out the only digit of 0 leaves nothing, so x = 0 and the product is 0.
+0
+=> 0
+
+# The smallest positive n.
+1
+=> 1
+
+9
+=> 81
+
+# A trailing zero.
+10
+=> 1
+
+# The largest n, 10^9: x = 1.
+1000000000
+=> 1
+
+# The largest product: x = 999999999, whose digits add up to 81.
+999999999
+=> 80999999919
+
+# No zero, and a product past 2^31 - 1.
+987654321
+=> 44444444445
+
+999999990
+=> 7199999928
+
+# Zeros between every pair of digits: x = 2468, with digit total 20.
+20406080
+=> 49360
+
+# Long runs of zeros.
+100000001
+=> 22
+
+530000000
+=> 424
+
+# Zeros alternating with nines: x = 99999, with digit total 45.
+909090909
+=> 4499955
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+800
+=> 64
+
+@gen 2 small
+21009
+=> 2628
+
+@gen 3 small
+900007
+=> 1552
+
+@gen 4 small
+71
+=> 568
+
+@gen 5 small
+2007
+=> 243
+
+@gen 6 small
+8600
+=> 1204
+
+# Random full-size cases.
+@gen 1
+793593000
+=> 28569348
+
+@gen 2
+301009054
+=> 702988
+
+@gen 3
+1000000000
+=> 1

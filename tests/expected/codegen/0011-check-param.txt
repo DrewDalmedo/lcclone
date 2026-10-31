@@ -1,0 +1,54 @@
+== C stub
+void rotate(int** matrix, int matrixSize, int* matrixColSize, char* tag, int tagSize, char** words, int wordsSize) {
+
+}
+== C prototype
+void rotate(int** matrix, int matrixSize, int* matrixColSize, char* tag, int tagSize, char** words, int wordsSize)
+== C harness
+/* lc's harness for problem 11 (check-param). */
+int main(void)
+{
+    lc_rt_read_input();
+    int matrixSize;
+    int* matrixColSize;
+    int** matrix = lc_read_int_array2(&matrixSize, &matrixColSize);
+    int tagSize;
+    char* tag = lc_read_char_array(&tagSize);
+    int wordsSize;
+    char** words = lc_read_string_array(&wordsSize);
+    lc_rt_end_input();
+    rotate(matrix, matrixSize, matrixColSize, tag, tagSize, words, wordsSize);
+    lc_check_char_end("rotate", "tag", tag, tagSize);
+    lc_check_string_end("rotate", "words", words, wordsSize);
+    lc_rt_param = "matrix";
+    lc_write_int_array2("rotate", matrix, matrixSize, matrixColSize);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+class Solution {
+public:
+    void rotate(vector<vector<int>>& matrix, vector<char>& tag, vector<string>& words) {
+
+    }
+};
+== C++ prototype
+void Solution::rotate(vector<vector<int>>& matrix, vector<char>& tag, vector<string>& words)
+== C++ harness
+// lc's harness for problem 11 (check-param).
+int main()
+{
+    lc_rt_read_input();
+    std::vector<std::vector<int>> matrix;
+    lc_get(matrix);
+    std::vector<char> tag;
+    lc_get(tag);
+    std::vector<std::string> words;
+    lc_get(words);
+    lc_rt_end_input();
+    Solution *lc_sol = new Solution();
+    lc_sol->rotate(matrix, tag, words);
+    lc_put(matrix);
+    lc_rt_flush();
+    return 0;
+}

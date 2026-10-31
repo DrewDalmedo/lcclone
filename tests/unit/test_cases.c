@@ -754,9 +754,32 @@ static void test_case_values(void)
     case_values(&p, "1\n=> \"x\"\n", "d/tests.txt:1: case has 1 input, "
                 "expected 0", pool, &args, &exp);
 
-    /* A void result is parsed without a type, for now. */
+    /* A void result without check: is parsed without a type. */
     p = make_problem(&a, "void moveZeroes(int[] nums)", NULL);
     case_values(&p, "[0,1]\n=> [1,0]\n", NULL, pool, &args, &exp);
+
+    /* With check:, the expected output has the checked parameter's type:
+     * all of it for param, its first k elements for prefix. */
+    p.check.mode = LC_RESULT_PARAM;
+    case_values(&p, "[0,1]\n=> [1,0]\n", NULL, pool, &args, &exp);
+    case_values(&p, "[0,1]\n=> 2\n", "d/tests.txt:1: expected output: "
+                "column 1: expected int[], got 2", pool, &args, &exp);
+    p = make_problem(&a, "int removeElement(int[] nums, int val)", NULL);
+    p.check.mode = LC_RESULT_PREFIX;
+    if (case_values(&p, "[3,2,3]\n3\n=> [2]\n", NULL, pool, &args,
+                    &exp) == LC_OK) {
+        CHECK_INT(exp->kind, LC_V_ARRAY);
+        CHECK_INT(exp->len, 1);
+    }
+    case_values(&p, "[3,2,3]\n3\n=> 1\n", "d/tests.txt:1: expected "
+                "output: column 1: expected int[], got 1", pool, &args, &exp);
+    p = make_problem(&a, "void f(int k, char[][] g)", NULL);
+    p.check.mode = LC_RESULT_PARAM;
+    p.check.param = 1;
+    case_values(&p, "1\n[[\"a\"]]\n=> [[\"b\"]]\n", NULL, pool, &args,
+                &exp);
+    case_values(&p, "1\n[[\"a\"]]\n=> [[1]]\n", "d/tests.txt:1: expected "
+                "output: column 3: expected char, got 1", pool, &args, &exp);
 
     /* Without a signature everything is untyped, with no names. */
     p = make_problem(&a, NULL, NULL);

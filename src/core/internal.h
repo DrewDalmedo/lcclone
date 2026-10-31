@@ -233,6 +233,17 @@ int lc_parse_compare(const char *p, size_t n, const lc_type *result,
 /* The default comparison for a result of type `result` (NULL: unknown). */
 lc_compare lc_default_compare(const lc_type *result);
 
+/*
+ * `check:`, such as "param nums" or "prefix nums", against the signature
+ * `sig` (NULL when the problem has none, which is an error).
+ */
+int lc_parse_check(const char *p, size_t n, const lc_sig *sig,
+                   lc_result_check *out, lc_str *err);
+
+/* The type a problem's result has under `check` (lc_result_type). */
+const lc_type *lc_sig_result_type(const lc_sig *sig,
+                                  const lc_result_check *check);
+
 /* Deep copies into `a`. They return NULL only when out of memory. */
 lc_sig *lc_copy_sig(lc_arena *a, const lc_sig *sig);
 lc_param *lc_copy_params(lc_arena *a, const lc_param *params, size_t n);
@@ -505,6 +516,16 @@ int lc_std_pick(lc_ctx *ctx, const lc_lang *lang, const lc_compiler *cc,
 /* LC_OK if lc can build a harness for the problem, else LC_ERR_INVALID
  * with a message saying what isn't supported yet. */
 int lc_codegen_check(lc_ctx *ctx, const lc_problem *p);
+/*
+ * lc_codegen_check without its last test, that the problem has a result:
+ * whether lc supports what the signature uses. With it, lc check tells a
+ * problem lc can't judge yet from one that returns void and has no
+ * check: (a mistake). lc_codegen_void_reason writes what is wrong with
+ * that one into buf, LC_VOID_REASON_MAX bytes.
+ */
+#define LC_VOID_REASON_MAX 160
+int lc_codegen_supported(lc_ctx *ctx, const lc_problem *p);
+void lc_codegen_void_reason(const lc_problem *p, char *buf);
 
 /* Appends the harness: a main() that reads a case, calls the solution
  * and writes the result, using the runtime (lc_rt_core.h, lc_rt.c(pp)). */
@@ -587,6 +608,19 @@ int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
                 const char *cwd, const lc_case *c, const lc_hooks *hooks,
                 lc_arena *a, const char **out, lc_verdict *verdict,
                 lc_str *why, int *cancelled);
+
+/* The exit status of a harness that can't go on (LC_RT_FAIL in
+ * runtime/common/lc_rt_core.h). It says why on stderr, in a line that
+ * starts with "lc: ". */
+#define LC_HARNESS_FAIL 70
+
+/*
+ * When a program exited with LC_HARNESS_FAIL, appends the harness's reason
+ * from its stderr `err` (NULL is none) to `why`, e.g. "exited with status
+ * 70" becomes "exited with status 70: f returned 6, but nums has 5
+ * elements". lc check uses it, as its findings show no stderr.
+ */
+void lc_add_harness_reason(lc_str *why, int exit_code, const char *err);
 
 /* The directory part of a path, in `a`. */
 char *lc_dir_of(lc_arena *a, const char *path);

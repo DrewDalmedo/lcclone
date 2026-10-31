@@ -47,6 +47,7 @@ enum {
     F_TAGS,
     F_SIGNATURE,
     F_HIDDEN,
+    F_CHECK,
     F_COMPARE,
     F_TIME,
     F_MEMORY,
@@ -55,7 +56,7 @@ enum {
 
 static const char *const field_names[NFIELDS] = {
     "id", "slug", "title", "difficulty", "tags", "signature", "hidden",
-    "compare", "time_limit_ms", "memory_limit_mb"
+    "check", "compare", "time_limit_ms", "memory_limit_mb"
 };
 
 /* Scratch state for one lc_load call, reused from pack to pack. */
@@ -80,6 +81,7 @@ typedef struct loader {
     int has_sig;
     lc_param *hidden;    /* in `typed` */
     size_t nhidden;
+    lc_result_check check;
     lc_compare cmp;
     lc_problem *probs;   /* accepted problems, in directory-name order */
     size_t nprobs, capprobs;
@@ -478,8 +480,8 @@ static int typed_status(loader *L, int line, int rc)
 }
 
 /*
- * Parses `signature`, `hidden` and `compare` (types.c) into L, and puts
- * the argument names in L->args.
+ * Parses `signature`, `hidden`, `check` and `compare` (types.c) into L,
+ * and puts the argument names in L->args.
  */
 static int parse_typed_fields(loader *L, const pack *pk)
 {
@@ -492,6 +494,7 @@ static int parse_typed_fields(loader *L, const pack *pk)
     L->has_sig = 0;
     L->hidden = NULL;
     L->nhidden = 0;
+    memset(&L->check, 0, sizeof L->check);
     lc_arena_free(&L->typed);
 
     if (pk->f[F_SIGNATURE] != NONE) {
@@ -526,6 +529,16 @@ static int parse_typed_fields(loader *L, const pack *pk)
                        mkspan(name, strlen(name)));
         if (rc != LC_OK)
             return rc;
+    }
+
+    /* With check:, the result is a parameter, and compare: applies to it. */
+    if (pk->f[F_CHECK] != NONE) {
+        h = &L->lines[pk->f[F_CHECK]];
+        rc = lc_parse_check(h->val.p, h->val.n, L->has_sig ? &L->sig : NULL,
+                            &L->check, &L->err);
+        if (rc != LC_OK)
+            return typed_status(L, h->line, rc);
+        result = lc_sig_result_type(&L->sig, &L->check);
     }
 
     L->cmp = lc_default_compare(result);
@@ -743,6 +756,7 @@ static int add_problem(loader *L, const pack *pk)
     }
     p->hidden = lc_copy_params(a, L->hidden, L->nhidden);
     p->nhidden = L->nhidden;
+    p->check = L->check;
     p->compare = L->cmp;
     p->time_limit_ms = pk->time_ms;
     p->memory_limit_mb = pk->mem_mb;
@@ -1099,6 +1113,11 @@ const char *lc_problem_field(const lc_problem *p, const char *key)
         if (strcmp(p->fields[i].key, key) == 0)
             return p->fields[i].value;
     return NULL;
+}
+
+const lc_type *lc_result_type(const lc_problem *p)
+{
+    return p ? lc_sig_result_type(p->sig, &p->check) : NULL;
 }
 
 int lc_problem_has_tag(const lc_problem *p, const char *tag)

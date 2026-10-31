@@ -1,0 +1,15 @@
+# check: prefix nums with compare: unordered 0. The expected results keep
+# the order of nums.
+
+@example
+[3,1,2,3,4]
+3
+=> [1,2,4]
+
+[1,1]
+1
+=> []
+
+[]
+5
+=> []

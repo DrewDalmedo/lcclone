@@ -698,10 +698,10 @@ static int still_matches(checker *ck, const char *old, const char *now)
     pool = lc_pool_new();
     if (!pool)
         return -1;
-    if (lc_value_parse(ck->ctx, pool, &ck->p->sig->ret, old, strlen(old),
-                       &a) == LC_OK &&
-        lc_value_parse(ck->ctx, pool, &ck->p->sig->ret, now, strlen(now),
-                       &b) == LC_OK &&
+    if (lc_value_parse(ck->ctx, pool, lc_result_type(ck->p), old,
+                       strlen(old), &a) == LC_OK &&
+        lc_value_parse(ck->ctx, pool, lc_result_type(ck->p), now,
+                       strlen(now), &b) == LC_OK &&
         lc_value_match(ck->ctx, &ck->p->compare, b, a, &match) != LC_OK)
         match = 0;
     lc_pool_free(pool);
@@ -1055,9 +1055,17 @@ static int check_ref(checker *ck, const lc_cases *cases)
         if (detail.failed) {
             rc = lc_oom(ck->ctx);
         } else if (res->message) {
-            rc = finding(ck, LC_FINDING_ERROR, ck->tests, res->line,
-                         detail.data, "%s gets %s on this case (%s)", name,
-                         lc_verdict_name(res->verdict), res->message);
+            lc_str why = LC_STR_INIT;
+
+            lc_str_puts(&why, res->message);
+            lc_add_harness_reason(&why, res->exit_code, res->stderr_text);
+            rc = why.failed ? lc_oom(ck->ctx)
+                            : finding(ck, LC_FINDING_ERROR, ck->tests,
+                                      res->line, detail.data, "%s gets %s "
+                                      "on this case (%s)", name,
+                                      lc_verdict_name(res->verdict),
+                                      why.data);
+            lc_str_free(&why);
         } else {
             rc = finding(ck, LC_FINDING_ERROR, ck->tests, res->line,
                          detail.data, "%s gets %s on this case", name,
@@ -1264,12 +1272,15 @@ static int cross_check(checker *ck, const lc_check_options *opts)
         } else {
             case_detail(&detail, ck->p, res->inputs, res->ninputs, NULL,
                         NULL, NULL, NULL);
-            rc = detail.failed ? lc_oom(ck->ctx)
-                               : finding(ck, LC_FINDING_ERROR, ck->ref, 0,
-                                         detail.data, "%s gets %s on the "
-                                         "random case for seed %llu (%s)",
-                                         ref, lc_verdict_name(res->verdict), s,
-                                         res->message ? res->message : "");
+            lc_str_clear(&why);
+            lc_str_puts(&why, res->message ? res->message : "");
+            lc_add_harness_reason(&why, res->exit_code, res->stderr_text);
+            rc = detail.failed || why.failed
+                     ? lc_oom(ck->ctx)
+                     : finding(ck, LC_FINDING_ERROR, ck->ref, 0, detail.data,
+                               "%s gets %s on the random case for seed %llu "
+                               "(%s)", ref, lc_verdict_name(res->verdict), s,
+                               lc_str_cstr(&why));
         }
     }
 done:
@@ -1306,7 +1317,7 @@ int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
     lc_check_options defaults;
     lc_cases *cases = NULL;
     checker ck;
-    int rc, bad = 0;
+    int rc, bad = 0, no_result = 0;
 
     if (!out)
         return lc_set_error(ctx, LC_ERR_INVALID, "lc_check: bad arguments");
@@ -1362,18 +1373,29 @@ int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
         goto done;
     }
 
-    /* Whether lc can judge this problem at all yet. */
-    if (lc_codegen_check(ctx, p) != LC_OK) {
+    /* Whether lc can judge this problem at all yet. A function that
+     * returns void with nothing to check is not that but a mistake in
+     * the pack: an error, and nothing can be run either. */
+    if (lc_codegen_supported(ctx, p) != LC_OK) {
         ck.r->skipped = lc_arena_strdup(&ck.box->arena, lc_last_error(ctx));
         if (!ck.r->skipped) {
             rc = lc_oom(ctx);
             goto done;
         }
+    } else if (lc_result_type(p)->kind == LC_T_VOID) {
+        char why[LC_VOID_REASON_MAX];
+
+        lc_codegen_void_reason(p, why);
+        no_result = 1;
+        rc = finding(&ck, LC_FINDING_ERROR, ck.problem_md,
+                     field_line(p, "signature"), NULL, "%s", why);
+        if (rc != LC_OK)
+            goto done;
     }
-    if (opts->regen && ck.r->skipped)
+    if (opts->regen && (ck.r->skipped || no_result))
         rc = finding(&ck, LC_FINDING_NOTE, ck.tests, 0, NULL, "--regen: "
-                     "tests.txt was not rewritten, as nothing can be run "
-                     "yet");
+                     "tests.txt was not rewritten, as nothing can be "
+                     "run%s", no_result ? "" : " yet");
     else if (opts->regen)
         rc = regen(&ck);
     if (rc != LC_OK || ck.r->cancelled)
@@ -1387,6 +1409,8 @@ int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
                      "built or run: %s", ck.r->skipped);
         goto done;
     }
+    if (no_result)
+        goto done;
     rc = check_stubs(&ck);
     if (rc == LC_OK && !ck.ref)
         rc = finding(&ck, LC_FINDING_ERROR, NULL, 0, NULL, "no reference "

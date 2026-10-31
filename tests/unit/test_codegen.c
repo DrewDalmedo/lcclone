@@ -69,7 +69,7 @@ static void test_golden(void)
     ctx = lc_open(&opt);
     CHECK_INT(lc_load(ctx), LC_OK);
     CHECK_INT(lc_warning_count(ctx), 0);
-    CHECK_INT(lc_problem_count(ctx), 10);
+    CHECK_INT(lc_problem_count(ctx), 14);
     for (i = 0; i < lc_problem_count(ctx); i++) {
         const lc_problem *p = lc_problem_at(ctx, i);
         lc_str got = LC_STR_INIT, want = LC_STR_INIT;

@@ -12,3 +12,6 @@
 12	broken	Broken	easy	no	plain	draft
 13	unused-gen	Unused Gen	easy	no	plain	draft
 14	no-params	No Params	easy	no	plain	draft
+15	inplace	In Place	easy	no	inplace	draft
+16	no-check	No Check	easy	no	inplace	draft
+17	bad-count	Bad Count	easy	no	inplace	draft
