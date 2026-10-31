@@ -226,7 +226,8 @@ a `CXX` set for other programs, and `--std` wins over everything.
 ## Neovim, and other editors
 
 `lc` is designed to work from Neovim in layers, each working without the
-next. M3 has the first two; the plugin comes in a later milestone.
+next: clangd and `:make` need nothing but `lc`, and the plugin,
+[lc.nvim](https://github.com/DrewDalmedo/lc.nvim), adds the rest.
 
 **clangd.** A solution file has no `#include`s, so clangd would see
 `vector` and `uint32_t` as errors. `lc start` writes `~/lc/.clangd`,
@@ -247,6 +248,23 @@ to keep your own changes to lc's, delete its first line.
 Compile errors and failed cases fill the quickfix list, because they are
 printed as `file:line:` messages that the default `errorformat` reads.
 `:set makeprg=lc\ submit\ %` does the same for a submission.
+
+**The plugin.** [lc.nvim](https://github.com/DrewDalmedo/lc.nvim) lives in
+its own repository; install it with your plugin manager (with lazy.nvim,
+`{ "DrewDalmedo/lc.nvim", opts = {} }`). It gives you `:Lc`:
+
+```vim
+:Lc list --status todo     " a picker over the problems
+:Lc start 1                " sets up Two Sum, opens the solution beside its statement
+:Lc test                   " in the background: progress and result in a window
+:Lc submit
+:Lc std c++17              " the standard for this Neovim session
+```
+
+Compile errors and sanitizer reports become diagnostics on your solution
+and fill the quickfix list; in the result window, `a` adds the case under
+the cursor to `cases.txt`. It works through `lc ... --json`, so it follows
+your config file. `:help lcclone` has the rest.
 
 **Other front-ends** run `lc test --json` or `lc submit --json`, which
 print one JSON object per event as it happens ([json.md](json.md)).
