@@ -182,6 +182,13 @@ char *lc_realpath(lc_arena *a, const char *path);
 int lc_mkdir_p(lc_ctx *ctx, const char *path, mode_t mode);
 
 /*
+ * Removes a file, or a directory and everything in it (like rm -rf),
+ * without following symbolic links. Best effort, and it sets no error:
+ * returns 0 when `path` is gone (or was never there), else -1.
+ */
+int lc_remove_tree(const char *path);
+
+/*
  * Writes a file atomically: the data goes to a temporary file in the same
  * directory, which is then renamed over `path`. The new file's mode is
  * 0666 minus the umask.

@@ -1,0 +1,4 @@
+--- stdout
+@TMP@/wsnp1/0014-no-params/solution.c
+--- stderr
+--- exit 0

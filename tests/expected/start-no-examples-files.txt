@@ -1,0 +1,11 @@
+--- 0014-no-params/README.md
+# 14. No Params
+
+**Difficulty:** Easy
+
+Return 42.
+
+---
+
+In this directory, `lc test` runs your solution on the examples and on your
+own cases in `cases.txt`, and `lc submit` runs it on every case.

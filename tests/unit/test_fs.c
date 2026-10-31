@@ -311,6 +311,67 @@ static void test_list_dir_oom(void)
     CHECK(k > 3); /* several allocations were really failed */
 }
 
+/* A tree like the .dSYM directory Apple's dsymutil writes. */
+#define TREE TMP "/tree.dSYM"
+static void make_tree(void)
+{
+    CHECK_INT(system("mkdir -p " TREE "/Contents/Resources/DWARF " TREE
+                     "/Contents/Resources/Relocations/aarch64 && "
+                     "echo x >" TREE "/Contents/Info.plist && "
+                     "echo x >" TREE "/Contents/Resources/DWARF/prog && "
+                     "echo x >" TREE "/Contents/Resources/Relocations/"
+                     "aarch64/prog.yml"), 0);
+}
+
+/*
+ * lc_remove_tree removes a directory with everything in it, a file, or
+ * nothing; a symbolic link goes, not what it points to. With each
+ * allocation failing in turn it fails without leaking.
+ */
+static void test_remove_tree(void)
+{
+    long k;
+    int saw_ok = 0;
+
+    make_tree();
+    CHECK_INT(lc_remove_tree(TREE), 0);
+    CHECK(!lc_is_dir(TREE) && access(TREE, F_OK) != 0);
+    CHECK_INT(lc_remove_tree(TREE), 0); /* already gone */
+
+    CHECK_INT(system("echo x >" TMP "/plain"), 0);
+    CHECK_INT(lc_remove_tree(TMP "/plain"), 0);
+    CHECK(access(TMP "/plain", F_OK) != 0);
+
+    make_tree();
+    CHECK_INT(system("mkdir -p " TMP "/linked && ln -s ../tree.dSYM " TMP
+                     "/linked/to-tree"), 0);
+    CHECK_INT(lc_remove_tree(TMP "/linked"), 0);
+    CHECK(access(TMP "/linked", F_OK) != 0);
+    CHECK(lc_is_file(TREE "/Contents/Resources/DWARF/prog"));
+
+    for (k = 0; k < 200 && !saw_ok; k++) {
+        int rc;
+
+        make_tree();
+        oom.count = 0;
+        oom.fail_at = k;
+        oom.live = 0;
+        oom.armed = 1;
+        rc = lc_remove_tree(TREE);
+        oom.armed = 0;
+        CHECK_INT(oom.live, 0);
+        if (rc == 0) {
+            saw_ok = 1;
+            CHECK(access(TREE, F_OK) != 0);
+        } else {
+            CHECK_INT(rc, -1);
+        }
+    }
+    CHECK(saw_ok);
+    CHECK(k > 3); /* several allocations were really failed */
+    CHECK_INT(lc_remove_tree(TREE), 0);
+}
+
 int main(void)
 {
     lc_ctx *ctx = lc_open(NULL);
@@ -326,5 +387,6 @@ int main(void)
     RUN(test_paths);
     RUN(test_env);
     RUN(test_list_dir_oom);
+    RUN(test_remove_tree);
     return test_report();
 }

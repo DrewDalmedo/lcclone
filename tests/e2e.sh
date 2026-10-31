@@ -596,6 +596,32 @@ fi
 check start-cxxstd LC_WORKSPACE="$TMP/ws3" LC_CXXSTD=c++17 LC_PROBLEMS=problems -- start 20 --no-edit
 files_golden start-cxxstd-files "$TMP/ws3" .clangd
 
+# A function without parameters: cases.txt shows its cases as '()'. With
+# no examples at all, README.md has no blank line where they would be.
+NP=tests/fixtures/check/0014-no-params
+mkdir -p "$TMP/np1/0014-no-params" "$TMP/np2/0014-no-params"
+cp $NP/problem.md $NP/tests.txt "$TMP/np1/0014-no-params/"
+cp $NP/problem.md "$TMP/np2/0014-no-params/"
+printf '()\n=> 42\n' >"$TMP/np2/0014-no-params/tests.txt"
+check start-no-params LC_WORKSPACE="$TMP/wsnp1" LC_PROBLEMS="$TMP/np1" -- start 14 --lang c --no-edit
+files_golden start-no-params-files "$TMP/wsnp1" 0014-no-params/README.md \
+    0014-no-params/cases.txt
+run LC_WORKSPACE="$TMP/wsnp2" LC_PROBLEMS="$TMP/np2" -- start 14 --lang c --no-edit
+expect_clean "lc start 14 (no examples)"
+files_golden start-no-examples-files "$TMP/wsnp2" 0014-no-params/README.md
+# The example in cases.txt, uncommented, is a case lc runs.
+sed -n '/^# For example:/,$p' "$TMP/wsnp1/0014-no-params/cases.txt" |
+    sed -e '1,2d' -e 's/^# //' >"$TMP/np-case.txt"
+printf 'int answer(void) { return 42; }\n' >"$TMP/wsnp1/0014-no-params/solution.c"
+run LC_PROBLEMS="$TMP/np1" -- test "$TMP/wsnp1/0014-no-params/solution.c" \
+    --case "$TMP/np-case.txt"
+if [ "$st" = 0 ] && [ "$(head -n 1 "$TMP/np-case.txt")" = '()' ] &&
+    grep -q '^Accepted: 2/2 cases passed' "$TMP/out"; then
+    ok
+else
+    bad "lc test with the example of cases.txt (no parameters)" "exit $st: $(cat "$TMP/np-case.txt" "$TMP/out" "$TMP/err")"
+fi
+
 check err-start-missing -- start
 check err-start-lang -- start 1 --lang rust
 check err-start-no-signature LC_WORKSPACE="$WS" LC_PROBLEMS=$CLIFIX -- start 3 --no-edit
@@ -720,6 +746,9 @@ expect_run "lc test sig.cpp" 2 '^    int Solution::add(int a, int b)$' \
     -- test $J/sig.cpp
 expect_run "lc test warn.c" 0 "^$D/warn.c:4:[0-9]*: warning: " \
     '^Accepted: 2/2 cases passed' -- test $J/warn.c
+# The second time the build is cached, and its warnings are shown again.
+expect_run "lc test warn.c (cached)" 0 "^$D/warn.c:4:[0-9]*: warning: " \
+    '^Accepted: 2/2 cases passed' -- test $J/warn.c
 expect_run "lc test cxx14.cpp" 2 '^lc: this was built as C++11' \
     -- test $J/cxx14.cpp
 expect_run "lc test cxx14.cpp --std c++14" 0 '(C++, c++14)$' \
@@ -823,6 +852,37 @@ run LC_PROBLEMS=$JFIX -- submit $J/ce.c --json
 json_events "lc submit ce.c --json" 2 "build_start build_done! done:compile_error:0/5"
 run LC_PROBLEMS=$JFIX -- submit $J/solution.c --std c++17 --json
 json_events "lc submit --std c++17 --json" 3 "error"
+# build_done_check DESC ASSERTIONS: Python assertions about the last run's
+# build_done event for the solution, which is `d`.
+build_done_check() {
+    [ -n "$PYTHON" ] || { ok; return; }
+    if "$PYTHON" -c '
+import json, sys
+ev = [json.loads(l) for l in sys.stdin.buffer.read().decode("utf-8").splitlines()]
+d = [e for e in ev if e.get("event") == "build_done" and not e["reference"]][0]
+'"$2" <"$TMP/out"; then
+        ok
+    else
+        bad "$1" "build_done: $(grep '"build_done"' "$TMP/out" | head -n 1)"
+    fi
+}
+# A cached build has the output and messages of the build that made it.
+run LC_PROBLEMS=$JFIX -- test $J/warn.c --json
+build_done_check "lc test warn.c --json (cached)" '
+assert d["ok"] and d["cached"] and d["time_ms"] == 0, d
+assert "warning" in d["output"], d
+w = [m for m in d["diagnostics"] if m["severity"] == "warning"]
+assert w and w[0]["in_solution"] and w[0]["line"] == 4, d
+assert d["prototype"] == "int add(int a, int b)", d'
+# What the harness calls, for errors in lc_harness.
+run LC_PROBLEMS=$JFIX -- test $J/sig.c --json
+build_done_check "lc test sig.c --json" '
+assert not d["ok"], d
+assert any(m["file"] == "lc_harness" for m in d["diagnostics"]), d
+assert d["prototype"] == "int add(int a, int b)", d'
+run LC_PROBLEMS=$JFIX -- test $J/sig.cpp --json
+build_done_check "lc test sig.cpp --json" '
+assert d["prototype"] == "int Solution::add(int a, int b)", d'
 run LC_PROBLEMS=$JFIX -- test $J/chatty.c --json
 check_json_lines() {
     [ -n "$PYTHON" ] || return 0
@@ -876,6 +936,20 @@ if $E2E_CC -fsanitize=address,undefined -o "$TMP/san" "$TMP/san.c" >/dev/null 2>
         '(C, c11, sanitizers)$' 'overflow.c:1: Runtime Error on case 3 of 5' \
         -- submit $J/overflow.c --sanitize
     expect_run "lc submit overflow.c" 0 '^Accepted' -- submit $J/overflow.c
+    # On macOS the stack trace's file:line come from the .dSYM next to the
+    # program, which must be under the program's own name on the first
+    # run already, and no copy may be left under the name it was built as.
+    if [ "$(uname -s)" = Darwin ]; then
+        expect_run "lc submit heap.c --sanitize (stack frames)" 1 \
+            '#[0-9]* 0x[0-9a-f]* in .* heap\.c:[0-9]' \
+            -- submit $J/heap.c --sanitize
+        # (Inside a .dSYM, files keep the name it was built as.)
+        left=$(find "$TMP/cache/lcclone/build" -name 'prog-*.tmp-*' -print \
+            -o -name '*.dSYM' -prune)
+        if [ -z "$left" ]; then ok; else
+            bad "lc submit --sanitize (build directory)" "left behind: $left"
+        fi
+    fi
 else
     echo "note: skipped the --sanitize tests ($E2E_CC has no sanitizers)"
 fi
@@ -1126,6 +1200,7 @@ assert f[0]["pack"] == "0002-wrong-ref" and f[0]["line"] == 6, f[0]
 assert f[0]["detail"].startswith("Input:"), f[0]
 b = [e for e in ev if e["event"] == "build_done"]
 assert {e["role"] for e in b} >= {"stub", "reference", "brute", "generator"}, b
+assert all((e["prototype"] is None) == (e["role"] == "generator") for e in b), b
 assert ev[-1]["failed"] == 1 and ev[-1]["ok"] == 1 and ev[-1]["skipped"] == 1
 ' <"$TMP/out"; then
     bad "lc check --json" "$(head -c 600 "$TMP/out")"

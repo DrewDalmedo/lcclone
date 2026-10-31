@@ -615,13 +615,19 @@ typedef struct lc_build {
     int cached;               /* an earlier build of the same input was used */
     long time_ms;             /* how long compiling took; 0 when cached */
     /*
-     * What the compiler printed, stdout then stderr (empty when cached).
-     * Paths in it are absolute.
+     * What the compiler printed, stdout then stderr; when cached, what it
+     * printed when the program was built. Paths in it are absolute.
      */
     const char *output;
     size_t output_len;
     const lc_diag *diags;     /* the messages found in `output` */
     size_t ndiags;
+    /*
+     * The function the harness calls, as lc_prototype gives it in this
+     * build's language; NULL for lc check's generator, which has no
+     * harness. Set from LC_EV_BUILD_START on.
+     */
+    const char *prototype;
 } lc_build;
 
 /* The outcome of a judging run. Release it with lc_report_free. */
@@ -669,7 +675,8 @@ typedef struct lc_event {
     const lc_case_result *result; /* LC_EV_CASE_DONE: how it went */
     const lc_report *report;  /* LC_EV_DONE: the whole run */
     /* build events: what is built; at LC_EV_BUILD_START only `reference`,
-     * `role`, `lang`, `std`, `source`, `compiler` and `sanitize` are set */
+     * `role`, `lang`, `std`, `source`, `compiler`, `sanitize` and
+     * `prototype` are set */
     const lc_build *build;
     const lc_finding *finding; /* LC_EV_FINDING */
 } lc_event;

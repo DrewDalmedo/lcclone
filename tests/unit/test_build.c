@@ -9,11 +9,14 @@
 #define _POSIX_C_SOURCE 200809L
 #endif
 
+#include <dirent.h>
+#include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "internal.h"
@@ -23,6 +26,8 @@
 #define CODEGEN "tests/fixtures/codegen"
 #define TMP "tests/tmp/build"
 #define CACHE TMP "/cache"
+/* Where problem 10's C solutions are built. */
+#define ADD_C CACHE "/build/0010-add/c-c11"
 
 static void write_file(const char *path, const char *data)
 {
@@ -33,6 +38,43 @@ static void write_file(const char *path, const char *data)
         fputs(data, f);
         fclose(f);
     }
+}
+
+/* How many entries of `dir` are named `prefix`...`suffix`; the path of
+ * the last one goes in `path` (of `size` bytes) unless it is NULL. */
+static int entries(const char *dir, const char *prefix, const char *suffix,
+                   char *path, size_t size)
+{
+    DIR *d = opendir(dir);
+    struct dirent *e;
+    size_t pl = strlen(prefix), sl = strlen(suffix);
+    int n = 0;
+
+    if (!d)
+        return 0;
+    while ((e = readdir(d)) != NULL) {
+        size_t l = strlen(e->d_name);
+
+        if (l >= pl + sl && strncmp(e->d_name, prefix, pl) == 0 &&
+            strcmp(e->d_name + l - sl, suffix) == 0) {
+            n++;
+            if (path && snprintf(path, size, "%s/%s", dir, e->d_name) >=
+                            (int)size)
+                path[0] = '\0';
+        }
+    }
+    closedir(d);
+    return n;
+}
+
+/* Makes a file look unused since 2000. */
+static void make_old(const char *path)
+{
+    struct timespec t[2];
+
+    t[0].tv_sec = t[1].tv_sec = 946684800;
+    t[0].tv_nsec = t[1].tv_nsec = 0;
+    CHECK(utimensat(AT_FDCWD, path, t, AT_SYMLINK_NOFOLLOW) == 0);
 }
 
 static lc_ctx *open_ctx(const char *problems)
@@ -317,6 +359,81 @@ static void test_cache_and_events(void)
     lc_close(ctx);
 }
 
+/*
+ * A cached build has the output and messages of the build that made the
+ * program, kept in prog-<key>.log. Old programs go with their .log and
+ * .dSYM.
+ */
+static void test_cached_output(void)
+{
+    lc_ctx *ctx = open_ctx(JUDGE);
+    lc_report *rep;
+    char first[4096] = "", log[512] = "";
+    size_t i;
+    int found = 0;
+
+    CHECK(system("rm -rf " ADD_C) == 0);
+    rep = judge(ctx, "add", "warn.c", NULL, 0, NULL);
+    CHECK(rep && rep->build && rep->build->ok && !rep->build->cached);
+    CHECK(rep && rep->build && rep->build->output_len > 0 &&
+          rep->build->ndiags > 0);
+    if (rep && rep->build)
+        snprintf(first, sizeof first, "%s", rep->build->output);
+    lc_report_free(rep);
+    CHECK_INT(entries(ADD_C, "prog-", ".log", log, sizeof log), 1);
+
+    rep = judge(ctx, "add", "warn.c", NULL, 0, NULL);
+    CHECK(rep && rep->build && rep->build->cached);
+    if (rep && rep->build) {
+        CHECK_INT(rep->build->time_ms, 0);
+        CHECK_STR(rep->build->output, first);
+        CHECK_INT(rep->build->output_len, strlen(first));
+        for (i = 0; i < rep->build->ndiags; i++)
+            if (rep->build->diags[i].in_solution &&
+                rep->build->diags[i].line == 4 &&
+                strcmp(rep->build->diags[i].severity, "warning") == 0)
+                found = 1;
+        CHECK(found);
+    }
+    lc_report_free(rep);
+
+    /* A program without its .log (from an older lc) is built again. */
+    CHECK(unlink(log) == 0);
+    rep = judge(ctx, "add", "warn.c", NULL, 0, NULL);
+    CHECK(rep && rep->build && !rep->build->cached &&
+          rep->build->ndiags > 0);
+    lc_report_free(rep);
+    CHECK_INT(entries(ADD_C, "prog-", ".log", NULL, 0), 1);
+    rep = judge(ctx, "add", "warn.c", NULL, 0, NULL);
+    CHECK(rep && rep->build && rep->build->cached);
+    lc_report_free(rep);
+
+    /* A new build removes the programs unused for ten minutes with their
+     * .log and .dSYM, and the .dSYM an interrupted build left. */
+    CHECK(system("mkdir -p " ADD_C "/prog-0123456789abcdef.dSYM/Contents/"
+                 "Resources/DWARF " ADD_C "/prog-0123456789abcdef.tmp-1-1."
+                 "dSYM/Contents") == 0);
+    write_file(ADD_C "/prog-0123456789abcdef", "");
+    write_file(ADD_C "/prog-0123456789abcdef.log", "");
+    write_file(ADD_C "/prog-0123456789abcdef.dSYM/Contents/Resources/DWARF/"
+               "prog-0123456789abcdef", "");
+    make_old(ADD_C "/prog-0123456789abcdef");
+    make_old(ADD_C "/prog-0123456789abcdef.log");
+    make_old(ADD_C "/prog-0123456789abcdef.dSYM");
+    make_old(ADD_C "/prog-0123456789abcdef.tmp-1-1.dSYM");
+    CHECK(system("mkdir -p " TMP "/0010-add") == 0);
+    write_file(TMP "/0010-add/fresh.c",
+               "int add(int a, int b) { return a + b; } /* fresh */\n");
+    rep = judge(ctx, "add", "../../../tmp/build/0010-add/fresh.c", NULL, 0,
+                NULL);
+    CHECK(rep && rep->build && rep->build->ok && !rep->build->cached);
+    lc_report_free(rep);
+    CHECK_INT(entries(ADD_C, "prog-0123456789abcdef", "", NULL, 0), 0);
+    /* warn.c's program was used just now, so it stays. */
+    CHECK_INT(entries(ADD_C, "prog-", ".log", NULL, 0), 2);
+    lc_close(ctx);
+}
+
 static void test_compile_error(void)
 {
     lc_ctx *ctx = open_ctx(JUDGE);
@@ -340,16 +457,21 @@ static void test_compile_error(void)
                 strcmp(rep->build->diags[i].severity, "error") == 0)
                 found = 1;
         CHECK(found);
+        CHECK_STR(rep->build ? rep->build->prototype : NULL,
+                  "int add(int a, int b)");
     }
     lc_report_free(rep);
 
-    /* A signature that doesn't match: the error is in the harness. */
+    /* A signature that doesn't match: the error is in the harness, and
+     * the build says what the harness calls. */
     rep = judge(ctx, "add", "sig.cpp", NULL, 1, NULL);
     found = 0;
     for (i = 0; rep && rep->build && i < rep->build->ndiags; i++)
         if (strcmp(rep->build->diags[i].file, LC_HARNESS_FILE) == 0)
             found = 1;
     CHECK(rep && rep->verdict == LC_COMPILE_ERROR && found);
+    CHECK_STR(rep && rep->build ? rep->build->prototype : NULL,
+              "int Solution::add(int a, int b)");
     lc_report_free(rep);
 
     /* C++14 code needs --std. */
@@ -665,11 +787,28 @@ static void test_sanitize(void)
         printf("test_build: note: skipped the sanitizer test (the C "
                "compiler has no sanitizers)\n");
     } else if (rep) {
+        char dsym[512] = "";
+
         CHECK(rep->build && rep->build->sanitize);
         CHECK_INT(rep->verdict, LC_RUNTIME_ERROR);
         CHECK_INT(rep->passed, 4);
         CHECK(rep->nresults == 5 &&
               rep->results[2].verdict == LC_RUNTIME_ERROR);
+#ifdef __APPLE__
+        /* The debug info dsymutil wrote is under the program's name,
+         * where atos looks for it, and no copy is left under the name it
+         * was built as. */
+        CHECK_INT(entries(ADD_C "-sanitize", "prog-", ".dSYM", dsym,
+                          sizeof dsym), 1);
+        CHECK(strstr(dsym, ".tmp-") == NULL);
+        if (strlen(dsym) > 5) {
+            dsym[strlen(dsym) - 5] = '\0';
+            CHECK(access(dsym, X_OK) == 0);
+        }
+#else
+        CHECK_INT(entries(ADD_C "-sanitize", "prog-", ".dSYM", dsym,
+                          sizeof dsym), 0);
+#endif
     }
     lc_report_free(rep);
     lc_close(ctx);
@@ -683,6 +822,7 @@ int main(void)
     RUN(test_types);
     RUN(test_stubs_compile);
     RUN(test_cache_and_events);
+    RUN(test_cached_output);
     RUN(test_compile_error);
     RUN(test_verdicts);
     RUN(test_errors);

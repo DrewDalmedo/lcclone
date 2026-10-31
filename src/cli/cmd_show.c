@@ -535,12 +535,38 @@ static void json_examples(lc_json *j, const lc_problem *p,
     lc_json_end_array(j);
 }
 
-static void render_json(lc_json *j, lc_ctx *ctx, const lc_problem *p,
-                        const lc_md_doc *doc, const lc_cases *cases,
-                        const char *cases_warning)
+/* The function lc's harness calls, in each language; null for a problem
+ * without a signature. */
+static int json_prototypes(lc_json *j, lc_ctx *ctx, const lc_problem *p)
+{
+    lc_str s = LC_STR_INIT;
+    size_t i;
+    int rc = LC_OK;
+
+    lc_json_key(j, "prototypes");
+    if (!p->sig) {
+        lc_json_null(j);
+        return LC_OK;
+    }
+    lc_json_begin_object(j);
+    for (i = 0; i < lc_lang_count() && rc == LC_OK; i++) {
+        lc_str_clear(&s);
+        rc = lc_prototype(ctx, p, lc_lang_at(i), &s);
+        lc_json_key(j, lc_lang_at(i)->name);
+        lc_json_string(j, rc == LC_OK ? s.data : NULL);
+    }
+    lc_json_end_object(j);
+    lc_str_free(&s);
+    return rc;
+}
+
+static int render_json(lc_json *j, lc_ctx *ctx, const lc_problem *p,
+                       const lc_md_doc *doc, const lc_cases *cases,
+                       const char *cases_warning)
 {
     lc_progress_entry e;
     size_t i;
+    int rc;
 
     lc_json_begin_object(j);
     lc_json_key(j, "schema");
@@ -581,6 +607,7 @@ static void render_json(lc_json *j, lc_ctx *ctx, const lc_problem *p,
     lc_json_end_object(j);
     lc_json_key(j, "signature");
     lc_json_string(j, p->signature);
+    rc = json_prototypes(j, ctx, p);
     lc_json_key(j, "time_limit_ms");
     lc_json_int(j, p->time_limit_ms);
     lc_json_key(j, "memory_limit_mb");
@@ -601,6 +628,7 @@ static void render_json(lc_json *j, lc_ctx *ctx, const lc_problem *p,
     lc_json_end_object(j);
     cli_json_warnings(j, ctx, cases_warning);
     lc_json_end_object(j);
+    return rc;
 }
 
 /* ------------------------------------------------------------------ */
@@ -650,8 +678,10 @@ int cmd_show(cli *c)
 
     if (c->json) {
         lc_json_init(&j, &out);
-        render_json(&j, ctx, p, doc, cases, warning.data);
-        rc = cli_emit_json(c, ctx, &j, &out);
+        if (render_json(&j, ctx, p, doc, cases, warning.data) != LC_OK)
+            rc = cli_error(c, ctx, "%s", lc_last_error(ctx));
+        else
+            rc = cli_emit_json(c, ctx, &j, &out);
         goto done;
     }
     memset(&r, 0, sizeof r);
