@@ -205,6 +205,12 @@ statement) and `tests.txt` (the test cases). The format is specified in
 tests must be original: LeetCode's text and test data are copyrighted, so
 nothing is copied from it.
 
+## Third-party code
+
+`runtime/c/uthash.h` is [uthash](https://troydhanson.github.io/uthash/)
+2.3.0 by Troy D. Hanson, under the BSD license at the top of the file. It
+is included unchanged, so that C solutions can use it as on LeetCode.
+
 ## Credits
 
 The list of problems in `problems/MANIFEST.tsv` (numbers, slugs, titles,

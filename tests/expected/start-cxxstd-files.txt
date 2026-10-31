@@ -5,7 +5,7 @@
 If:
   PathMatch: .*\.c
 CompileFlags:
-  Add: [-xc, -std=c11, -include, "@TMP@/ws3/.lcclone/lc_prelude.h"]
+  Add: [-xc, -std=c11, -I, "@TMP@/ws3/.lcclone", -include, "@TMP@/ws3/.lcclone/lc_prelude.h"]
 ---
 If:
   PathMatch: .*\.(cpp|cc|cxx)

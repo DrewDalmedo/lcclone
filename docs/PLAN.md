@@ -486,8 +486,10 @@ one file, the C++ harness can see `class Solution`.
 - **C:** stdio, stdlib, string, stdbool, stdint, limits, math, ctype, the node
   structs, and a vendored `uthash.h` (single BSD-licensed header) because
   LeetCode's C environment has it. (M3: `_DEFAULT_SOURCE` is defined first,
-  so `strdup` and `M_PI` are there under `-std=c11` on glibc and musl;
-  `uthash.h` is not vendored yet.)
+  so `strdup` and `M_PI` are there under `-std=c11` on glibc and musl.
+  `runtime/c/uthash.h` is uthash 2.3.0; `lc` writes it next to each C
+  build and compiles with `-I.`, so a solution that includes it itself
+  works too, and `.clangd` gets a matching `-I`.)
 - **Node structs, in both preludes, only when the problem uses them:**
   `lc` defines `LC_LISTNODE`, `LC_TREENODE` or `LC_NARYNODE` before the
   prelude. Solutions often define a `struct Node` of their own, which an

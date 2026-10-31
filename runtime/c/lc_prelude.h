@@ -1,7 +1,8 @@
 /*
  * lc_prelude.h: what a C solution can use without an #include, as on
- * LeetCode. lc puts it at the top of every C build, and the .clangd file
- * it writes in the workspace makes clangd read it too.
+ * LeetCode: the usual headers and uthash. lc puts it at the top of every
+ * C build, and the .clangd file it writes in the workspace makes clangd
+ * read it too.
  *
  * The node structs are defined only for a problem that uses them, because
  * solutions often define a `struct Node` of their own. lc defines
@@ -53,5 +54,11 @@ struct Node {
     struct Node **children;
 };
 #endif
+
+/* uthash (uthash.h, from https://troydhanson.github.io/uthash/), the hash
+ * table macros LeetCode's C environment has. lc keeps a copy next to the
+ * file it compiles, and one next to the copy of this file that .clangd
+ * points at. */
+#include "uthash.h"
 
 #endif /* LC_PRELUDE_H */

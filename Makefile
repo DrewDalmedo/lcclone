@@ -62,6 +62,7 @@ CORE_OBJ = \
 RUNTIME = \
 	runtime/c/lc_prelude.h \
 	runtime/c/lc_rt.c \
+	runtime/c/uthash.h \
 	runtime/common/lc_rt_core.h \
 	runtime/cpp/lc_prelude.hpp \
 	runtime/cpp/lc_rt.cpp \

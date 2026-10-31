@@ -547,7 +547,8 @@ check start-1 LC_WORKSPACE="$WS" LC_PROBLEMS=problems -- start 1 --no-edit
 files_golden start-1-files "$WS" 0001-two-sum/README.md \
     0001-two-sum/solution.cpp 0001-two-sum/cases.txt .clangd
 if cmp -s "$WS/.lcclone/lc_prelude.hpp" runtime/cpp/lc_prelude.hpp &&
-    cmp -s "$WS/.lcclone/lc_prelude.h" runtime/c/lc_prelude.h; then
+    cmp -s "$WS/.lcclone/lc_prelude.h" runtime/c/lc_prelude.h &&
+    cmp -s "$WS/.lcclone/uthash.h" runtime/c/uthash.h; then
     ok
 else
     bad "lc start 1" "the preludes in .lcclone are not the runtime's"
@@ -865,6 +866,19 @@ else
     echo "note: skipped the --sanitize tests ($E2E_CC has no sanitizers)"
 fi
 
+# uthash comes with the C prelude, as on LeetCode; a solution may also
+# include it itself, either way.
+for inc in '"uthash.h"' '<uthash.h>'; do
+    mkdir -p "$TMP/uthash/0001-two-sum"
+    { printf '#include %s\n' "$inc"
+      cat tests/fixtures/solutions/0001-two-sum.c; } \
+        >"$TMP/uthash/0001-two-sum/solution.c"
+    run LC_PROBLEMS=problems -- submit "$TMP/uthash/0001-two-sum/solution.c"
+    if [ "$st" = 0 ]; then ok; else
+        bad "lc submit (uthash solution with #include $inc)" "$(tail -n 8 "$TMP/out") $(cat "$TMP/err")"
+    fi
+done
+
 # ^C stops a run: lc kills the program and exits with status 130.
 if [ -z "$WRAP_PROG" ]; then
     env -i PATH="$PATH" HOME="$TMP/home" XDG_CACHE_HOME="$TMP/cache" \
@@ -884,19 +898,20 @@ if [ -z "$WRAP_PROG" ]; then
     fi
 fi
 
-# Every shipped problem: its reference solution in C, and the C++
-# solution in tests/fixtures/solutions at c++11 and at the newest
-# standard, pass every case.
+# Every shipped problem: its reference solution in C, any C solution in
+# tests/fixtures/solutions, and the C++ one there at c++11 and at the
+# newest standard, pass every case.
 for d in problems/*/; do
     b=$(basename "$d")
-    if [ -f "$d/ref.c" ]; then
+    for c in "$d/ref.c" "tests/fixtures/solutions/$b.c"; do
+        [ -f "$c" ] || continue
         mkdir -p "$TMP/shipped/$b"
-        cp "$d/ref.c" "$TMP/shipped/$b/solution.c"
+        cp "$c" "$TMP/shipped/$b/solution.c"
         run LC_PROBLEMS=problems -- submit "$TMP/shipped/$b/solution.c"
         if [ "$st" = 0 ]; then ok; else
-            bad "lc submit (problem $b, ref.c)" "$(tail -n 5 "$TMP/out") $(cat "$TMP/err")"
+            bad "lc submit (problem $b, $c)" "$(tail -n 5 "$TMP/out") $(cat "$TMP/err")"
         fi
-    fi
+    done
     if [ -f "tests/fixtures/solutions/$b.cpp" ]; then
         mkdir -p "$TMP/shipped/$b"
         cp "tests/fixtures/solutions/$b.cpp" "$TMP/shipped/$b/solution.cpp"
