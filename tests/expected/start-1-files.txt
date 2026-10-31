@@ -84,7 +84,7 @@ public:
 If:
   PathMatch: .*\.c
 CompileFlags:
-  Add: [-xc, -std=c11, -include, "@TMP@/ws/.lcclone/lc_prelude.h"]
+  Add: [-xc, -std=c11, -I, "@TMP@/ws/.lcclone", -include, "@TMP@/ws/.lcclone/lc_prelude.h"]
 ---
 If:
   PathMatch: .*\.(cpp|cc|cxx)

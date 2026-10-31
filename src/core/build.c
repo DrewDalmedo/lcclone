@@ -136,6 +136,10 @@ static size_t flags(const lc_build_req *req, const char *std_arg,
 
     out[n++] = std_arg;
     out[n++] = "-O2";
+    /* uthash.h is next to the unit, also for a solution that includes it
+     * with <> (see lc_build_source). */
+    if (req->lang->id == LC_LANG_C)
+        out[n++] = "-I.";
     if (req->sanitize) {
         out[n++] = "-g";
         out[n++] = "-fsanitize=address,undefined";
@@ -153,7 +157,7 @@ static size_t flags(const lc_build_req *req, const char *std_arg,
     return n;
 }
 
-#define MAX_FLAGS 10
+#define MAX_FLAGS 11
 
 /* ------------------------------------------------------------------ */
 /* Diagnostics                                                         */
@@ -322,6 +326,7 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
 {
     lc_arena tmp = {NULL};
     lc_str src = LC_STR_INIT, tu = LC_STR_INIT, out = LC_STR_INIT;
+    const lc_rt_file *uthash;
     const char *cache, *fl[MAX_FLAGS], *args[MAX_FLAGS + 4];
     char *dir, *prog, *prog_tmp, *unit, *unit_final, *std_arg, **argv;
     char key[17];
@@ -351,6 +356,10 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
     for (i = 0; i < nfl; i++)
         h = fnv(h, fl[i], strlen(fl[i]) + 1);
     h = fnv(h, tu.data, tu.len);
+    uthash = req->lang->id == LC_LANG_C ? lc_rt_file_get("c/uthash.h")
+                                        : NULL;
+    if (uthash)
+        h = fnv(h, uthash->text, uthash->len);
     snprintf(key, sizeof key, "%016llx", (unsigned long long)h);
 
     cache = lc_cache_dir(ctx);
@@ -392,6 +401,14 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
         goto done;
     }
     rc = lc_write_file_atomic(ctx, unit, tu.data, tu.len);
+    /* The prelude's #include "uthash.h" finds it next to the unit. */
+    if (rc == LC_OK && uthash) {
+        char *path = lc_arena_printf(&tmp, "%s/uthash.h", dir);
+
+        rc = path ? lc_write_file_atomic(ctx, path, uthash->text,
+                                         uthash->len)
+                  : lc_oom(ctx);
+    }
     if (rc != LC_OK)
         goto done;
     for (i = 0; i < nfl; i++)

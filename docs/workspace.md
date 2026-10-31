@@ -129,7 +129,10 @@ include arguments, as in `CXX='ccache g++'`.
 
 **What a solution can use without `#include`:** the C prelude includes the
 usual C headers (`stdio.h`, `stdlib.h`, `string.h`, `stdbool.h`,
-`stdint.h`, `limits.h`, `math.h`, `ctype.h` and a few more). The C++
+`stdint.h`, `limits.h`, `math.h`, `ctype.h` and a few more) and
+[uthash](https://troydhanson.github.io/uthash/), the hash table macros
+(`HASH_ADD_INT`, `HASH_FIND_STR` and the rest) LeetCode's C environment
+has. Writing `#include "uthash.h"` yourself works too. The C++
 prelude includes the standard headers one by one, plus the C++17 and C++20
 ones when the standard has them, and says `using namespace std;`. Both are
 in `runtime/`.

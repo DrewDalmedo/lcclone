@@ -13,7 +13,7 @@ the solution, and writes the result. The build is one source file made of:
 
 1. the **prelude** (`runtime/c/lc_prelude.h` or
    `runtime/cpp/lc_prelude.hpp`): the headers a LeetCode solution expects
-   without `#include`, and `using namespace std;` in C++;
+   without `#include`, uthash in C, and `using namespace std;` in C++;
 2. `#line 1 "<your file>"`, then **your source**, so the compiler's
    messages give your file's own line numbers;
 3. the **runtime** (`runtime/common/lc_rt_core.h`, then `runtime/c/lc_rt.c`
@@ -27,9 +27,12 @@ The runtime files are compiled into `lc` itself, so `lc` needs nothing
 else on disk to build. Because it is one file, the C++ harness sees
 `class Solution`.
 
-**Compiling.** C is built with `$CC -std=c11 -O2 ... -lm` and C++ with
-`$CXX -std=c++11 -O2` (`cc` and `c++` when the variables aren't set), each
-through `/bin/sh`, so a compiler command may have arguments. The standard
+**Compiling.** C is built with `$CC -std=c11 -O2 -I. ... -lm` and C++
+with `$CXX -std=c++11 -O2` (`cc` and `c++` when the variables aren't set),
+each through `/bin/sh`, so a compiler command may have arguments. For C,
+`lc` puts `uthash.h` (`runtime/c/uthash.h`) in the build directory, where
+the prelude's `#include "uthash.h"` and a solution's own include of it
+find it. The standard
 can be raised (see [workspace.md](workspace.md#languages-and-standards));
 a standard other than the default is first tried on an empty file, once
 per compiler, and the answer is kept in the cache.

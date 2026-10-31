@@ -340,10 +340,12 @@ static int write_clangd(lc_ctx *ctx, const char *ws)
         const char *file;
         const char *match;
         const char *x;
+        const char *extra;    /* another runtime file it needs, or NULL */
     } parts[] = {
-        {LC_LANG_C, "c/lc_prelude.h", "lc_prelude.h", ".*\\.c", "-xc"},
+        {LC_LANG_C, "c/lc_prelude.h", "lc_prelude.h", ".*\\.c", "-xc",
+         "c/uthash.h"},
         {LC_LANG_CPP, "cpp/lc_prelude.hpp", "lc_prelude.hpp",
-         ".*\\.(cpp|cc|cxx)", "-xc++"},
+         ".*\\.(cpp|cc|cxx)", "-xc++", NULL},
     };
     lc_str path = LC_STR_INIT, text = LC_STR_INIT, old = LC_STR_INIT;
     size_t i;
@@ -371,6 +373,24 @@ static int write_clangd(lc_ctx *ctx, const char *ws)
         rc = lc_mkdir_p(ctx, path.data, 0777);
         if (rc != LC_OK)
             goto done;
+        if (parts[i].extra) {
+            const lc_rt_file *x = lc_rt_file_get(parts[i].extra);
+            const char *base = strrchr(parts[i].extra, '/') + 1;
+            size_t keep = path.len;
+
+            lc_str_printf(&path, "/%s", base);
+            if (path.failed || !x) {
+                rc = x ? lc_oom(ctx)
+                       : lc_set_error(ctx, LC_ERR_INVALID, "internal error: "
+                                      "no %s", parts[i].extra);
+                goto done;
+            }
+            rc = write_if_changed(ctx, path.data, x->text, x->len);
+            if (rc != LC_OK)
+                goto done;
+            path.len = keep;
+            path.data[keep] = '\0';
+        }
         lc_str_printf(&path, "/%s", parts[i].file);
         if (path.failed) {
             rc = lc_oom(ctx);
@@ -382,8 +402,20 @@ static int write_clangd(lc_ctx *ctx, const char *ws)
         if (rc != LC_OK)
             goto done;
         lc_str_printf(&text, "%sIf:\n  PathMatch: %s\nCompileFlags:\n"
-                      "  Add: [%s, -std=%s, -include, ", i ? "---\n" : "",
+                      "  Add: [%s, -std=%s, ", i ? "---\n" : "",
                       parts[i].match, parts[i].x, std);
+        if (parts[i].extra) {
+            /* For a solution that includes uthash.h itself: the
+             * directory part of `path`. */
+            size_t dlen = path.len - strlen(parts[i].file) - 1;
+
+            lc_str_puts(&text, "-I, ");
+            path.data[dlen] = '\0';
+            yaml_quote(&text, path.data);
+            path.data[dlen] = '/';
+            lc_str_puts(&text, ", ");
+        }
+        lc_str_puts(&text, "-include, ");
         yaml_quote(&text, path.data);
         lc_str_puts(&text, "]\n");
     }

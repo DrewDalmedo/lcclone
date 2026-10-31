@@ -203,7 +203,7 @@ static void test_diags(void)
 static void test_runtime_files(void)
 {
     static const char *const names[] = {
-        "c/lc_prelude.h", "c/lc_rt.c", "common/lc_rt_core.h",
+        "c/lc_prelude.h", "c/lc_rt.c", "c/uthash.h", "common/lc_rt_core.h",
         "cpp/lc_prelude.hpp", "cpp/lc_rt.cpp"};
     size_t i, k;
 
