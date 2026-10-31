@@ -1,0 +1,94 @@
+# Valid Palindrome.
+
+@example Cleaned up, it is "step22pets", which is the same backwards.
+"Step 2: 2 pets"
+=> true
+
+@example Cleaned up, it is "madami", but backwards that is "imadam".
+"Mad am I?"
+=> false
+
+@example Every character is dropped, and the empty text left over is its own reverse.
+"#_~ ?!"
+=> true
+
+# A single letter.
+"a"
+=> true
+
+# Letters that differ only in case match.
+"Aa"
+=> true
+
+# Two different letters.
+"ab"
+=> false
+
+# The codes of 4 and T differ by 32, as do those of 9 and Y, the gap between
+# a lowercase and an uppercase letter; they still don't match.
+"4T"
+=> false
+
+"9Y"
+=> false
+
+# The underscore is dropped like any other punctuation.
+"_x"
+=> true
+
+# The characters just outside the digit and letter ranges are all dropped.
+"/:@[`{ m"
+=> true
+
+# Digits are kept; the cleaned-up text has odd length.
+"x1y1x"
+=> true
+
+# A mismatch in the middle, between separators.
+"ab,c;d!ba"
+=> false
+
+# Separators at both ends, with and without a mismatch inside.
+",,,ab..."
+=> false
+
+"!!!z!!!"
+=> true
+
+# Characters that are escaped in a literal: the string is "\x\".
+"\"\\x\\\""
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+":b_y`[@_ "
+=> false
+
+@gen 2 small
+"@ :[:/,"
+=> true
+
+@gen 3 small
+"09/b90"
+=> true
+
+@gen 4 small
+"9Aa9"
+=> true
+
+@gen 5 small
+"9PP9PP9pP9"
+=> true
+
+@gen 6 small
+",,"
+=> true
+
+@gen 7 small
+"b`"
+=> true
+
+@gen 8 small
+"0yAYaY0"
+=> true
+

@@ -1,0 +1,103 @@
+# Sqrt(x).
+
+@example 7 * 7 = 49 is at most 50, but 8 * 8 = 64 is more.
+50
+=> 7
+
+@example 144 is a perfect square: 12 * 12.
+144
+=> 12
+
+@example 143 is one less than 12 * 12, so the answer drops to 11.
+143
+=> 11
+
+# Zero and one are their own roots.
+0
+=> 0
+
+1
+=> 1
+
+# The answer stays 1 until x reaches 4.
+2
+=> 1
+
+3
+=> 1
+
+# Just below and at a small perfect square.
+24
+=> 4
+
+25
+=> 5
+
+# One below a million.
+999999
+=> 999
+
+# At and just below 2^30 = 32768 * 32768.
+1073741824
+=> 32768
+
+1073741823
+=> 32767
+
+# 46340^2 = 2147395600 is the largest perfect square that fits in a 32-bit
+# int; squaring any larger guess overflows one.
+2147395600
+=> 46340
+
+2147395599
+=> 46339
+
+# The largest x.
+2147483647
+=> 46340
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+546
+=> 23
+
+@gen 2 small
+840
+=> 28
+
+@gen 3 small
+100
+=> 10
+
+@gen 4 small
+1762
+=> 41
+
+@gen 5 small
+1
+=> 1
+
+@gen 6 small
+1155
+=> 33
+
+@gen 7 small
+120
+=> 10
+
+# Random full-size cases.
+@gen 1
+2104291822
+=> 45872
+
+@gen 2
+1494672920
+=> 38660
+
+@gen 3
+1538051524
+=> 39218
+
+@gen 5
+2147388496
+=> 46339

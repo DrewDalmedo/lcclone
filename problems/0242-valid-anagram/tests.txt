@@ -1,0 +1,129 @@
+# Valid Anagram.
+
+@example Both strings hold one each of d, s, t, u and y.
+"dusty"
+"study"
+=> true
+
+@example t has an extra s, so it is one letter longer than s.
+"melon"
+"lemons"
+=> false
+
+@example The same two letters, but s has three b's and t only two.
+"aabbb"
+"ababa"
+=> false
+
+# Shortest strings.
+"a"
+"a"
+=> true
+
+"a"
+"b"
+=> false
+
+# The two ends of the alphabet.
+"za"
+"az"
+=> true
+
+# t is s with one letter more, then t is s with one letter less: counting
+# only one string's letters off against the other's misses these.
+"abc"
+"abcc"
+=> false
+
+"abcd"
+"abc"
+=> false
+
+# The same letters and length, but different counts.
+"aabb"
+"abbb"
+=> false
+
+# a + d = b + c, so the sums of the character codes are equal.
+"ad"
+"bc"
+=> false
+
+# Equal sums and equal xors of the character codes.
+"aadd"
+"bbcc"
+=> false
+
+# A string is a shuffle of itself.
+"repeat"
+"repeat"
+=> true
+
+# A single letter repeated.
+"zzzz"
+"zzzz"
+=> true
+
+# All 26 letters, backwards.
+"abcdefghijklmnopqrstuvwxyz"
+"zyxwvutsrqponmlkjihgfedcba"
+=> true
+
+# All 26 letters, against a string with z replaced by a second y.
+"abcdefghijklmnopqrstuvwxyz"
+"abcdefghijklmnopqrstuvwxyy"
+=> false
+
+# 256 a's against 256 b's: letter counts kept in 8 bits wrap back to zero.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> false
+
+# 64 a's and a b against 65 a's. A product of one prime per letter, with 2
+# for a, is a multiple of 2^64 for both, so the two agree once they wrap
+# in 64 bits.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"z"
+"zz"
+=> false
+
+@gen 2 small
+"a"
+"a"
+=> true
+
+@gen 3 small
+"k"
+"k"
+=> true
+
+@gen 4 small
+"amfyse"
+"ysfame"
+=> true
+
+@gen 5 small
+"baabaa"
+"bbaaaa"
+=> true
+
+@gen 6 small
+"bcc"
+"acaa"
+=> false
+
+@gen 7 small
+"bbbc"
+"cbcb"
+=> false
+
+@gen 8 small
+"azazazzz"
+"zaaazzzz"
+=> true
+

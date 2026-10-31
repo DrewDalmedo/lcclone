@@ -1,0 +1,97 @@
+# Ugly Number.
+
+@example 360 = 2^3 * 3^2 * 5.
+360
+=> true
+
+@example 66 = 2 * 3 * 11, and 11 is a prime larger than 5.
+66
+=> false
+
+@example A negative number is never ugly, even though 30 = 2 * 3 * 5 is.
+-30
+=> false
+
+# 1 = 2^0 * 3^0 * 5^0 is ugly.
+1
+=> true
+
+# Zero is not positive (and stays divisible by 2 however often it is
+# divided).
+0
+=> false
+
+# The smallest prime larger than 5.
+7
+=> false
+
+# A repeated factor: 50 = 2 * 5^2, so 5 must be divided out twice.
+50
+=> true
+
+# The largest powers of 2, 3 and 5 that fit in an int.
+1073741824
+=> true
+
+1162261467
+=> true
+
+1220703125
+=> true
+
+# The largest ugly int: 2^5 * 3^12 * 5^3.
+2125764000
+=> true
+
+# The largest int, 2^31 - 1, is prime.
+2147483647
+=> false
+
+# The largest int that is an ugly number times 7: 2^6 * 3^14 * 7.
+2142770112
+=> false
+
+# Negatives: dividing -2^31 by 2 over and over ends at -1, not 1.
+-1
+=> false
+
+-2147483648
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+-225
+=> false
+
+@gen 3 small
+63
+=> false
+
+@gen 4 small
+85
+=> false
+
+@gen 5 small
+11
+=> false
+
+@gen 6 small
+105
+=> false
+
+@gen 7 small
+117
+=> false
+
+# Random full-size cases.
+@gen 1
+-1366875000
+=> false
+
+@gen 2
+1679616000
+=> true
+
+@gen 3
+616383730
+=> false

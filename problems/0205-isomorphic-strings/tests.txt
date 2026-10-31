@@ -1,0 +1,126 @@
+# Isomorphic Strings. Some inputs hold characters that are escaped in a
+# literal: \" is a double quote, \\ a backslash, \t a tab and \u007f DEL.
+
+@example The code h -> j, e -> i, l -> m, o -> y turns s into t.
+"hello"
+"jimmy"
+=> true
+
+@example a and r would both need the code character o.
+"bark"
+"tool"
+=> false
+
+@example The first "-" of s would have to become "+", but the second one stays "-".
+"a-b-c"
+"x+y-z"
+=> false
+
+# Length 1: any character can be coded as any other.
+"a"
+"?"
+=> true
+
+# Equal strings: each character is its own code.
+"abcabc"
+"abcabc"
+=> true
+
+# All of s is one character but t is not, and the other way round.
+"aaa"
+"aab"
+=> false
+
+"xyz"
+"qqq"
+=> false
+
+# The same counts of characters (two of each), but in different places.
+"aabb"
+"abab"
+=> false
+
+# The first character repeats at once in one string and not in the other.
+"aab"
+"xyz"
+=> false
+
+"xyz"
+"aab"
+=> false
+
+# Upper and lower case are different characters, so they need different codes.
+"aA"
+"bb"
+=> false
+
+# Each letter coded as the next one (z as a), then 0, the 27th different
+# character of s, would need b, which is already the code of a.
+"abcdefghijklmnopqrstuvwxyz0"
+"bcdefghijklmnopqrstuvwxyzab"
+=> false
+
+# Quotes and a backslash: s is "\" and t is /./.
+"\"\\\""
+"/./"
+=> true
+
+# DEL (code 127) and tab are characters like any other: a -> DEL and
+# DEL -> tab.
+"a\u007fa\u007f"
+"\u007f\t\u007f\t"
+=> true
+
+# All 95 printable characters, then the same backwards: a one-to-one code.
+" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+"~}|{zyxwvutsrqponmlkjihgfedcba`_^]\\[ZYXWVUTSRQPONMLKJIHGFEDCBA@?>=<;:9876543210/.-,+*)('&%$#\"! "
+=> true
+
+# The same, except that the last character of t is ~ as well as the first:
+# the space and ~ would both need the code ~. Checking only that each
+# character of s keeps one code misses this.
+" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+"~}|{zyxwvutsrqponmlkjihgfedcba`_^]\\[ZYXWVUTSRQPONMLKJIHGFEDCBA@?>=<;:9876543210/.-,+*)('&%$#\"!~"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"cccbbbc"
+"aaabbba"
+=> true
+
+@gen 2 small
+"a\u0001\u0001\u0001~"
+"babbb"
+=> false
+
+@gen 3 small
+"11 a1a11"
+"\t\n\t\t\t\t\t\u007f"
+=> false
+
+@gen 4 small
+"abaa"
+"hahh"
+=> true
+
+@gen 5 small
+"\u0001\u0001~\u0001\u0001~"
+"ccacca"
+=> true
+
+@gen 6 small
+"aa"
+"\"\""
+=> true
+
+@gen 7 small
+"bbcbcc"
+"aa~~~~"
+=> false
+
+@gen 8 small
+" a aa a"
+"'\\'\"\\'\\"
+=> false
+

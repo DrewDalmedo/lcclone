@@ -1,0 +1,99 @@
+# Happy Number.
+
+@example 239 -> 94 -> 97 -> 130 -> 10 -> 1, so 239 is happy.
+239
+=> true
+
+@example 15 -> 26 -> 40 -> 16 -> 37 -> 58 -> 89 -> 145 -> 42 -> 20 -> 4 -> 16: 16 comes round again, and 1 is never reached.
+15
+=> false
+
+@example 7 -> 49 -> 97 -> 130 -> 10 -> 1: a single digit other than 1 can still be happy.
+7
+=> true
+
+# 1 is happy without taking a step.
+1
+=> true
+
+# 4 lies on the loop that every unhappy number ends in.
+4
+=> false
+
+# Another single digit; only 1 and 7 are happy.
+9
+=> false
+
+# One step to 1: zeros add nothing.
+10
+=> true
+
+1000000000
+=> true
+
+# Through 7 on the way: 2111 -> 7 -> 49 -> ... (6 steps).
+2111
+=> true
+
+# 7 steps, the most any n in range needs:
+# 78999 -> 356 -> 70 -> 49 -> 97 -> 130 -> 10 -> 1.
+78999
+=> true
+
+# Ten digits whose squares also add up to 356.
+1099995211
+=> true
+
+# An unhappy number that visits 19 different values before one repeats.
+269
+=> false
+
+# The largest n: 2147483647 -> 260 -> 40 -> 16 -> ... (unhappy).
+2147483647
+=> false
+
+# The largest happy n: 2147483645 -> 236 -> 49 -> ...
+2147483645
+=> true
+
+# The largest first step any n in range can take: 1999999999 -> 730.
+1999999999
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+370564846
+=> false
+
+@gen 2 small
+2815500
+=> false
+
+@gen 3 small
+484850
+=> false
+
+@gen 4 small
+6362
+=> false
+
+@gen 5 small
+1447779977
+=> true
+
+@gen 7 small
+24
+=> false
+
+# Random full-size cases.
+@gen 1
+1854908808
+=> true
+
+@gen 2
+2100504076
+=> false
+
+@gen 3
+2147482797
+=> false

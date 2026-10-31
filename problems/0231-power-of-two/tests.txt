@@ -1,0 +1,116 @@
+# Power of Two.
+
+@example 256 is 2^8.
+256
+=> true
+
+@example 96 = 3 * 32 is even, but the factor 3 keeps it from being a power of two.
+96
+=> false
+
+@example -8 is the negative of 2^3, and no power of two is negative.
+-8
+=> false
+
+# Zero is not a power of two.
+0
+=> false
+
+# 2^0 and 2^1.
+1
+=> true
+
+2
+=> true
+
+# 2^2 + 1 and 2^3 - 1, odd neighbours of powers of two.
+5
+=> false
+
+7
+=> false
+
+# 5 * 2^6: even six times over, with an odd factor other than 3 left.
+320
+=> false
+
+# 2^29: on common systems, log(n) / log(2) in floating point isn't exactly 29.
+536870912
+=> true
+
+# 2^30, the largest power of two that fits in a 32-bit int, and its
+# neighbours; doubling an int up to n overflows past 2^30.
+1073741824
+=> true
+
+1073741823
+=> false
+
+1073741825
+=> false
+
+# The largest int.
+2147483647
+=> false
+
+# The smallest int, -2^31, has a single bit set in two's complement.
+-2147483648
+=> false
+
+# The negative of 2^30.
+-1073741824
+=> false
+
+# 3 * 2^28: even many times over, with an odd factor left.
+805306368
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+64
+=> true
+
+@gen 5 small
+448
+=> false
+
+@gen 13 small
+-1
+=> false
+
+@gen 17 small
+4
+=> true
+
+@gen 26 small
+63
+=> false
+
+@gen 28 small
+0
+=> false
+
+@gen 34 small
+65
+=> false
+
+@gen 40 small
+2048
+=> true
+
+# Random full-size cases.
+@gen 1
+-1300329096
+=> false
+
+@gen 7
+1248006811
+=> false
+
+@gen 17
+1610612736
+=> false
+
+@gen 35
+134217728
+=> true

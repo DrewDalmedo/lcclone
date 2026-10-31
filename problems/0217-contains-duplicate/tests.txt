@@ -1,0 +1,104 @@
+# Contains Duplicate.
+
+@example -3 occurs twice, second and fourth in the list.
+[7,-3,12,-3,0]
+=> true
+
+@example 10 and -10 are different values, so no value occurs twice.
+[10,-10,25]
+=> false
+
+@example A single value has nothing to repeat with.
+[42]
+=> false
+
+# Two equal elements.
+[0,0]
+=> true
+
+# One element, at the lower bound.
+[-1000000000]
+=> false
+
+# Both bounds, different values.
+[1000000000,-1000000000]
+=> false
+
+# The only repeat is at the two ends.
+[13,2,5,8,11,13]
+=> true
+
+# The only repeat is side by side, in the middle.
+[4,9,0,0,6,3]
+=> true
+
+# The only repeat is in the middle, not side by side: comparing neighbours
+# without sorting misses it.
+[30,10,20,40,20,50]
+=> true
+
+# A value three times.
+[3,7,3,1,3]
+=> true
+
+# Every element the same.
+[-4,-4,-4,-4]
+=> true
+
+# x and -x are different values; zero and both bounds, nothing repeats.
+[1,-1,2,-2,0,1000000000,-1000000000]
+=> false
+
+# Both bounds, one of them repeated.
+[1000000000,0,-1000000000,7,1000000000]
+=> true
+
+[-1000000000,999999999,-999999999,1000000000,-1000000000]
+=> true
+
+# Decreasing values, all different.
+[50,40,30,20,10]
+=> false
+
+# No repeat, and the largest value is 0: a scan of the sorted values that
+# goes one step past the end must not count that as a repeat.
+[-6,0,-2,-9]
+=> false
+
+# Different values that agree in their low 20 bits and modulo 10^6: a
+# table indexed by part of the value must still compare the values.
+[1048576,3000000,0,-1048576,-3000000]
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[377916154,-78174755,1000000000,-1000000000,619106364,-397537133,377916154]
+=> true
+
+@gen 2 small
+[999999999,999999999,999999999,999999999,999999999]
+=> true
+
+@gen 3 small
+[999999996,999999993,999999994,999999995,999999996,999999998,999999993,999999996]
+=> true
+
+@gen 4 small
+[-999999998,-999999995,-999999996,-999999994]
+=> false
+
+@gen 5 small
+[-999999999,-999999999,-1000000000,-999999999,-999999999,-1000000000]
+=> true
+
+@gen 6 small
+[1,1]
+=> true
+
+@gen 7 small
+[-463499796,222098994,1000000000,386477428,-1000000000,-270323103]
+=> false
+
+@gen 8 small
+[1000000000,1000000000,1000000000,1000000000,1000000000,1000000000,1000000000]
+=> true

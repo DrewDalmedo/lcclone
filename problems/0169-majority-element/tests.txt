@@ -1,0 +1,99 @@
+# Majority Element.
+
+@example 8 fills 3 of the 5 places, which is more than half.
+[8,-1,8,8,-1]
+=> 8
+
+@example 6 elements need 4 copies for a majority, and -5 has exactly 4.
+[-5,9,-5,-5,4,-5]
+=> -5
+
+@example 11 is the majority, although 0 comes first.
+[0,0,11,11,11]
+=> 11
+
+# One element, and two equal elements.
+[7]
+=> 7
+
+[-1000000000,-1000000000]
+=> -1000000000
+
+# Three elements: 2 copies are enough.
+[1,9,9]
+=> 9
+
+# Both extreme values in one array, as the majority and as the other value.
+# The other value comes first: x and -x are different values, so a count
+# keyed on the absolute value finds the wrong one.
+[-1000000000,1000000000,-1000000000,1000000000,1000000000]
+=> 1000000000
+
+[1000000000,-1000000000,-1000000000]
+=> -1000000000
+
+# The majority as one block at the end, and at the start.
+[3,1,4,6,6,6,6]
+=> 6
+
+[2,2,2,2,5,8,1]
+=> 2
+
+# Alternating with the other values.
+[5,0,5,0,5,0,5]
+=> 5
+
+# The strongest possible rival, which also fills the first half.
+[4,4,4,8,8,8,8,8]
+=> 8
+
+# The other values all different; the majority is 0.
+[0,13,0,-20,0,40,0]
+=> 0
+
+# A negative majority: its sign bit must be counted too.
+[-7,-7,3,-7,8]
+=> -7
+
+# The last element is not the majority.
+[9,9,9,1]
+=> 9
+
+# The longest run of equal neighbours belongs to the other value, not to
+# the majority.
+[6,6,1,1,1,6,2,6,6]
+=> 6
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[-2,3,-2]
+=> -2
+
+@gen 2 small
+[-1000000000,516960237,-1000000000,1000000000,-1000000000,856355675,-1000000000,-1000000000]
+=> -1000000000
+
+@gen 3 small
+[-277192107,-277192107,-277192107,-277192107,1000000000,-62108287]
+=> -277192107
+
+@gen 4 small
+[480703199,480703199]
+=> 480703199
+
+@gen 5 small
+[2,2,2,2]
+=> 2
+
+@gen 6 small
+[1,1,1,-4]
+=> 1
+
+@gen 7 small
+[3]
+=> 3
+
+@gen 8 small
+[-2,-2,-2]
+=> -2
+

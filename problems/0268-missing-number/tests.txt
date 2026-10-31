@@ -1,0 +1,88 @@
+# Missing Number.
+
+@example Of the five numbers 0 to 4, every one but 3 is present.
+[4,1,0,2]
+=> 3
+
+@example The low end is the one left out: 1, 2 and 3 are all present.
+[3,2,1]
+=> 0
+
+@example The high end, n = 6, is the one left out: 0 to 5 are all present.
+[2,0,5,3,1,4]
+=> 6
+
+# n = 1: either number can be the missing one.
+[0]
+=> 1
+
+[1]
+=> 0
+
+# n = 2, the middle number missing, in both orders.
+[0,2]
+=> 1
+
+[2,0]
+=> 1
+
+# Sorted, with a gap inside.
+[0,1,2,4,5]
+=> 3
+
+# Sorted with no gap inside: the missing number is n, past the last element.
+[0,1,2,3,4,5,6,7]
+=> 8
+
+# Sorted in reverse, missing 0 and missing a number in the middle.
+[7,6,5,4,3,2,1]
+=> 0
+
+[6,5,3,2,1,0]
+=> 4
+
+# n itself is there, so it can't be used as an index into nums.
+[5,0,1,3,4]
+=> 2
+
+# n - 1 is missing, and n is the last element.
+[1,2,3,4,0,6]
+=> 5
+
+# A longer scrambled array: n = 30, and 17 is missing.
+[12,29,3,24,0,18,7,30,15,21,9,1,26,5,19,11,28,2,22,14,8,25,6,16,27,4,20,10,13,23]
+=> 17
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[2,1,3]
+=> 0
+
+@gen 2 small
+[6,4,5,3,2,7,8,1]
+=> 0
+
+@gen 3 small
+[0,1,2,3,4,6]
+=> 5
+
+@gen 4 small
+[2,1]
+=> 0
+
+@gen 5 small
+[3,1,0,2]
+=> 4
+
+@gen 6 small
+[0,1,2,3]
+=> 4
+
+@gen 7 small
+[0]
+=> 1
+
+@gen 8 small
+[0,1,2]
+=> 3
+
