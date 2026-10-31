@@ -2,6 +2,7 @@
 #
 #   make                  build liblc.a and lc
 #   make test             unit tests and end-to-end tests
+#   make check-packs      lc check over every pack in problems/
 #   make install          install to $(DESTDIR)$(PREFIX)
 #   make clean
 #
@@ -35,17 +36,21 @@ CORE_OBJ = \
 	src/core/arena.o \
 	src/core/build.o \
 	src/core/cases.o \
+	src/core/check.o \
 	src/core/codegen.o \
 	src/core/compare.o \
+	src/core/config.o \
 	src/core/ctx.o \
 	src/core/fs.o \
 	src/core/json.o \
 	src/core/judge.o \
 	src/core/lang.o \
+	src/core/manifest.o \
 	src/core/md.o \
 	src/core/problem.o \
 	src/core/rt_files.o \
 	src/core/runner.o \
+	src/core/store.o \
 	src/core/str.o \
 	src/core/types.o \
 	src/core/value.o \
@@ -60,13 +65,17 @@ RUNTIME = \
 	runtime/c/uthash.h \
 	runtime/common/lc_rt_core.h \
 	runtime/cpp/lc_prelude.hpp \
-	runtime/cpp/lc_rt.cpp
+	runtime/cpp/lc_rt.cpp \
+	runtime/gen/lc_gen.h \
+	runtime/gen/lc_gen_main.c
 
 CLI_OBJ = \
 	src/cli/ansi.o \
+	src/cli/cmd_check.o \
 	src/cli/cmd_list.o \
 	src/cli/cmd_show.o \
 	src/cli/cmd_start.o \
+	src/cli/cmd_stats.o \
 	src/cli/cmd_test.o \
 	src/cli/main.o \
 	src/cli/pager.o
@@ -77,13 +86,16 @@ UNIT_TESTS = \
 	tests/unit/test_cases \
 	tests/unit/test_codegen \
 	tests/unit/test_compare \
+	tests/unit/test_config \
 	tests/unit/test_ctx \
 	tests/unit/test_fs \
 	tests/unit/test_json \
 	tests/unit/test_judge \
+	tests/unit/test_manifest \
 	tests/unit/test_md \
 	tests/unit/test_problem \
 	tests/unit/test_runner \
+	tests/unit/test_store \
 	tests/unit/test_str \
 	tests/unit/test_types \
 	tests/unit/test_value \
@@ -136,11 +148,12 @@ lc: $(CLI_OBJ) liblc.a
 
 # Unit tests: one program per suite, each linked against liblc.a.
 tests/unit/test_arena.o tests/unit/test_build.o tests/unit/test_cases.o \
-tests/unit/test_codegen.o tests/unit/test_compare.o \
+tests/unit/test_codegen.o tests/unit/test_compare.o tests/unit/test_config.o \
 tests/unit/test_ctx.o tests/unit/test_fs.o tests/unit/test_json.o \
-tests/unit/test_judge.o tests/unit/test_md.o tests/unit/test_problem.o \
-tests/unit/test_runner.o tests/unit/test_str.o tests/unit/test_types.o \
-tests/unit/test_value.o tests/unit/test_wire.o: \
+tests/unit/test_judge.o tests/unit/test_manifest.o tests/unit/test_md.o \
+tests/unit/test_problem.o tests/unit/test_runner.o tests/unit/test_store.o \
+tests/unit/test_str.o tests/unit/test_types.o tests/unit/test_value.o \
+tests/unit/test_wire.o: \
 	include/lc.h src/core/internal.h tests/unit/test.h
 # These two #include core sources (to wrap malloc), so they carry their own
 # copies of those modules and never use the ones in liblc.a.
@@ -158,6 +171,8 @@ tests/unit/test_cases: tests/unit/test_cases.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_cases.o liblc.a $(LDLIBS)
 tests/unit/test_compare: tests/unit/test_compare.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_compare.o liblc.a $(LDLIBS)
+tests/unit/test_config: tests/unit/test_config.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_config.o liblc.a $(LDLIBS)
 tests/unit/test_ctx: tests/unit/test_ctx.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_ctx.o liblc.a $(LDLIBS)
 tests/unit/test_fs: tests/unit/test_fs.o liblc.a
@@ -166,12 +181,16 @@ tests/unit/test_json: tests/unit/test_json.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_json.o liblc.a $(LDLIBS)
 tests/unit/test_judge: tests/unit/test_judge.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_judge.o liblc.a $(LDLIBS)
+tests/unit/test_manifest: tests/unit/test_manifest.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_manifest.o liblc.a $(LDLIBS)
 tests/unit/test_md: tests/unit/test_md.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_md.o liblc.a $(LDLIBS)
 tests/unit/test_problem: tests/unit/test_problem.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_problem.o liblc.a $(LDLIBS)
 tests/unit/test_runner: tests/unit/test_runner.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_runner.o liblc.a $(LDLIBS)
+tests/unit/test_store: tests/unit/test_store.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_store.o liblc.a $(LDLIBS)
 tests/unit/test_str: tests/unit/test_str.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_str.o liblc.a $(LDLIBS)
 tests/unit/test_types: tests/unit/test_types.o liblc.a
@@ -199,10 +218,17 @@ tests/fixtures/run/throw: tests/fixtures/run/throw.cpp
 check: test
 test: all $(UNIT_TESTS) $(FIXTURE_PROGS)
 	@fail=0; \
-	for t in $(UNIT_TESTS); do ./$$t || fail=1; done; \
+	for t in $(UNIT_TESTS); do \
+		LC_CONFIG=tests/fixtures/config/empty ./$$t || fail=1; \
+	done; \
 	sh tests/e2e.sh ./lc || fail=1; \
 	if [ $$fail -ne 0 ]; then echo 'make test: FAILED'; exit 1; fi; \
 	echo 'make test: all passed'
+
+# Checks every shipped pack with lc check (docs/authoring.md), comparing
+# ref and brute on more random cases than make test does.
+check-packs: lc
+	LC_PROBLEMS=problems ./lc check
 
 # The installed files must be usable by everyone whatever the umask of the
 # checkout or of the installer: directories install creates get mode 755,
@@ -216,6 +242,7 @@ install: all
 	for d in problems/*/; do \
 		chmod -R a+rX "$(DESTDIR)$(DATADIR)/problems/`basename "$$d"`"; \
 	done
+	chmod a+r $(DESTDIR)$(DATADIR)/problems/MANIFEST.tsv
 
 # Removes only what install added: the binary and the packs shipped in
 # problems/. With PREFIX=~/.local the data directory is also where your own
@@ -225,6 +252,7 @@ uninstall:
 	for d in problems/*/; do \
 		rm -rf "$(DESTDIR)$(DATADIR)/problems/`basename "$$d"`"; \
 	done
+	rm -f $(DESTDIR)$(DATADIR)/problems/MANIFEST.tsv
 	-rmdir "$(DESTDIR)$(DATADIR)/problems" "$(DESTDIR)$(DATADIR)" 2>/dev/null
 
 clean:
@@ -234,4 +262,4 @@ clean:
 	rm -f .datadir .datadir.tmp
 	rm -rf tests/tmp
 
-.PHONY: all check test install uninstall clean FORCE
+.PHONY: all check check-packs test install uninstall clean FORCE

@@ -1,0 +1,6 @@
+--- stdout
+0001-good: ok (4 cases; ref.c slowest N ms; agrees with brute.c on 30 random cases)
+
+Checked 1 pack: 1 ok, 0 not judged yet, 0 failed
+--- stderr
+--- exit 0

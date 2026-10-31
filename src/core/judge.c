@@ -662,14 +662,10 @@ static char **sanitize_env(lc_arena *a)
     return env;
 }
 
-/*
- * Builds `src`, with build events. On LC_OK, *bout is the build (in `a`)
- * unless *cancelled is set, and *exe the program when it compiled.
- */
-static int build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
-                      const char *src, const char *std, int sanitize,
-                      int reference, const lc_hooks *hooks, lc_arena *a,
-                      lc_build **bout, const char **exe, int *cancelled)
+int lc_build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+                  const char *src, const char *std, int sanitize, int role,
+                  const lc_hooks *hooks, lc_arena *a, lc_build **bout,
+                  const char **exe, int *cancelled)
 {
     lc_compiler cc;
     lc_build_req req;
@@ -689,7 +685,7 @@ static int build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     req.cc = &cc;
     req.src = src;
     req.sanitize = sanitize;
-    req.reference = reference;
+    req.role = role;
     req.cancel = hooks ? hooks->cancel : NULL;
     rc = lc_std_pick(ctx, lang, &cc, std, &req.std, &req.std_flag);
     if (rc != LC_OK)
@@ -717,8 +713,7 @@ static int build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     return LC_OK;
 }
 
-/* The directory part of a path, in `a`. */
-static char *dir_of(lc_arena *a, const char *path)
+char *lc_dir_of(lc_arena *a, const char *path)
 {
     const char *slash = strrchr(path, '/');
 
@@ -727,18 +722,13 @@ static char *dir_of(lc_arena *a, const char *path)
     return lc_arena_strndup(a, path, slash == path ? 1 : (size_t)(slash - path));
 }
 
-/*
- * Runs the reference solution `exe` on case `c` and sets *out to its
- * result as a literal, in `a`. A reference that fails on the case is an
- * error, since its answer can't be trusted.
- */
-static int ref_expected(lc_ctx *ctx, const lc_problem *p, const char *exe,
-                        const char *cwd, const lc_case *c,
-                        const lc_hooks *hooks, lc_arena *a, const char **out,
-                        int *cancelled)
+int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
+                const char *cwd, const lc_case *c, const lc_hooks *hooks,
+                lc_arena *a, const char **out, lc_verdict *verdict,
+                lc_str *why, int *cancelled)
 {
     lc_pool *pool = lc_pool_new();
-    lc_str in = LC_STR_INIT, why = LC_STR_INIT, text = LC_STR_INIT;
+    lc_str in = LC_STR_INIT, text = LC_STR_INIT;
     const lc_value *args, *exp, *got = NULL;
     const char *res;
     lc_limits lim;
@@ -749,6 +739,9 @@ static int ref_expected(lc_ctx *ctx, const lc_problem *p, const char *exe,
     int rc;
 
     *out = NULL;
+    *verdict = LC_VERDICT_NONE;
+    *cancelled = 0;
+    lc_str_clear(why);
     lc_run_result_init(&r);
     if (!pool)
         return lc_oom(ctx);
@@ -763,7 +756,6 @@ static int ref_expected(lc_ctx *ctx, const lc_problem *p, const char *exe,
         goto done;
 
     memset(&spec, 0, sizeof spec);
-    /* Room for a big case of your own on a busy machine. */
     lc_limits_init(&lim, p->time_limit_ms <= INT_MAX / 2
                              ? 2 * p->time_limit_ms : p->time_limit_ms,
                    p->memory_limit_mb);
@@ -781,7 +773,7 @@ static int ref_expected(lc_ctx *ctx, const lc_problem *p, const char *exe,
         *cancelled = 1;
         goto done;
     }
-    v = lc_classify(&lim, &r, &why);
+    v = lc_classify(&lim, &r, why);
     res = lc_str_cstr(&r.result);
     if (v == LC_VERDICT_NONE) {
         rc = lc_wire_decode(ctx, pool, &p->sig->ret, res, r.result.len, &pos,
@@ -790,16 +782,15 @@ static int ref_expected(lc_ctx *ctx, const lc_problem *p, const char *exe,
             goto done;
         if (rc != LC_OK) {
             v = LC_RUNTIME_ERROR;
-            lc_str_printf(&why, "its result could not be read: %s",
+            lc_str_printf(why, "its result could not be read: %s",
                           lc_last_error(ctx));
+            rc = LC_OK;
         }
     }
     if (v != LC_VERDICT_NONE) {
-        rc = lc_set_error(ctx, LC_ERR_INVALID, "%s:%d: the reference "
-                          "solution failed on this case (%s: %s); check that "
-                          "the case fits the problem's constraints",
-                          c->file ? c->file : "?", c->line, lc_verdict_name(v),
-                          lc_str_cstr(&why));
+        *verdict = v;
+        if (why->failed)
+            rc = lc_oom(ctx);
         goto done;
     }
     rc = lc_value_print(got, &text);
@@ -813,27 +804,58 @@ static int ref_expected(lc_ctx *ctx, const lc_problem *p, const char *exe,
 done:
     lc_run_result_free(&r);
     lc_str_free(&in);
-    lc_str_free(&why);
     lc_str_free(&text);
     lc_pool_free(pool);
     return rc;
 }
 
-/* The pack's reference solution and its language, or NULL. */
-static char *find_ref(lc_arena *a, const lc_problem *p, const lc_lang **lang)
+/*
+ * Runs the reference solution `exe` on case `c` and sets *out to its
+ * result as a literal, in `a`. A reference that fails on the case is an
+ * error, since its answer can't be trusted.
+ */
+static int ref_expected(lc_ctx *ctx, const lc_problem *p, const char *exe,
+                        const char *cwd, const lc_case *c,
+                        const lc_hooks *hooks, lc_arena *a, const char **out,
+                        int *cancelled)
 {
-    static const char *const names[] = {"ref.c", "ref.cpp"};
+    lc_str why = LC_STR_INIT;
+    lc_verdict v;
+    int rc = lc_run_case(ctx, p, exe, cwd, c, hooks, a, out, &v, &why,
+                         cancelled);
+
+    if (rc == LC_OK && v != LC_VERDICT_NONE)
+        rc = lc_set_error(ctx, LC_ERR_INVALID, "%s:%d: the reference "
+                          "solution failed on this case (%s: %s); check that "
+                          "the case fits the problem's constraints",
+                          c->file ? c->file : "?", c->line, lc_verdict_name(v),
+                          lc_str_cstr(&why));
+    lc_str_free(&why);
+    return rc;
+}
+
+char *lc_pack_source(lc_arena *a, const lc_problem *p, const char *base,
+                     const lc_lang **lang, int *both)
+{
+    static const char *const exts[] = {"c", "cpp"};
+    char *found = NULL;
     size_t i;
 
-    for (i = 0; i < sizeof names / sizeof names[0]; i++) {
-        char *path = lc_path_join(a, p->dir, names[i]);
+    *lang = NULL;
+    *both = 0;
+    for (i = 0; i < sizeof exts / sizeof exts[0]; i++) {
+        char *path = lc_arena_printf(a, "%s/%s.%s", p->dir, base, exts[i]);
 
-        if (path && lc_is_file(path)) {
-            *lang = lc_lang_for_path(path);
-            return path;
+        if (!path || !lc_is_file(path))
+            continue;
+        if (found) {
+            *both = 1;
+            continue;
         }
+        found = path;
+        *lang = lc_lang_for_path(path);
     }
-    return NULL;
+    return found;
 }
 
 /* A report for a run that stopped at a build: a compile error, or
@@ -944,7 +966,11 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
         if (rc != LC_OK)
             goto done;
     }
-    ref = need_ref ? find_ref(&side, p, &rlang) : NULL;
+    {
+        int both;
+
+        ref = need_ref ? lc_pack_source(&side, p, "ref", &rlang, &both) : NULL;
+    }
     if (need_ref && !ref) {
         rc = lc_set_error(ctx, LC_ERR_INVALID, "%s:%d: this case has no "
                           "expected result ('=> ...'), and problem %d (%s) "
@@ -955,8 +981,9 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
         goto done;
     }
 
-    rc = build_step(ctx, p, lang, src, opts->std, opts->sanitize, 0, hooks,
-                    &side, &build, &exe, &cancelled);
+    rc = lc_build_step(ctx, p, lang, src, opts->std, opts->sanitize,
+                       LC_ROLE_SOLUTION, hooks, &side, &build, &exe,
+                       &cancelled);
     if (rc != LC_OK)
         goto done;
     if (cancelled || !build->ok) {
@@ -965,8 +992,9 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     }
 
     if (need_ref) {
-        rc = build_step(ctx, p, rlang, ref, rlang->default_std, 0, 1, hooks,
-                        &side, &rbuild, &rexe, &cancelled);
+        rc = lc_build_step(ctx, p, rlang, ref, rlang->default_std, 0,
+                           LC_ROLE_REF, hooks, &side, &rbuild, &rexe,
+                           &cancelled);
         if (rc != LC_OK)
             goto done;
         if (cancelled) {
@@ -979,7 +1007,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
                               rbuild->output);
             goto done;
         }
-        rdir = dir_of(&side, rexe);
+        rdir = lc_dir_of(&side, rexe);
         if (!rdir) {
             rc = lc_oom(ctx);
             goto done;
@@ -999,7 +1027,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     }
 
     memset(&jo, 0, sizeof jo);
-    jo.cwd = dir_of(&side, exe);
+    jo.cwd = lc_dir_of(&side, exe);
     jo.stop_on_failure = opts->stop_on_failure;
     jo.ncustom = nuser;
     jo.sanitize = opts->sanitize;

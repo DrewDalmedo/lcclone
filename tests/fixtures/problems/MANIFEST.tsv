@@ -1,7 +1,13 @@
-id	slug	title	premium	group	status
-1	two-sum	Two Sum	no	plain	verified
-4	median-of-two-sorted-arrays	Median of Two Sorted Arrays	no	float	draft
-141	linked-list-cycle	Linked List Cycle	no	list	draft
-155	min-stack	Min Stack	no	design	draft
-650	2-keys-keyboard	2 Keys Keyboard	no	plain	draft
-2667	create-hello-world-function	Create Hello World Function	no	skip:javascript	todo
+# Fixture manifest: the packs here, a few rows without a pack, and
+# out-of-scope rows. (The loader ignores this file; lc stats --manifest
+# and lc check read it.)
+# id	slug	title	difficulty	premium	group	status
+1	two-sum	Two Sum	easy	no	unordered	verified
+4	median-of-two-sorted-arrays	Median of Two Sorted Arrays	hard	no	float	draft
+13	roman-to-integer	Roman to Integer	easy	no	plain	todo
+21	merge-two-sorted-lists	Merge Two Sorted Lists	easy	no	list	draft
+141	linked-list-cycle	Linked List Cycle	easy	no	list-builder	draft
+155	min-stack	Min Stack	medium	no	design	todo
+175	combine-two-tables	Combine Two Tables	easy	no	skip:sql	todo
+252	meeting-rooms	Meeting Rooms	easy	yes	skip:premium	todo
+2667	create-hello-world-function	Create Hello World Function	easy	no	skip:javascript	todo

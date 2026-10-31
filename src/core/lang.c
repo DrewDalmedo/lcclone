@@ -52,6 +52,16 @@ static const lc_lang langs[] = {
 
 #define NLANGS (sizeof langs / sizeof langs[0])
 
+/* Each language's keys in the config file, by lc_lang_id. */
+static const struct {
+    const char *compiler;
+    const char *std;
+    const char *flags;
+} config_keys[] = {
+    {"cc", "cstd", "cflags"},
+    {"cxx", "cxxstd", "cxxflags"},
+};
+
 size_t lc_lang_count(void)
 {
     return NLANGS;
@@ -104,7 +114,9 @@ static int is_blank(int c)
 int lc_compiler_get(lc_ctx *ctx, const lc_lang *lang, lc_arena *a,
                     lc_compiler *out)
 {
-    const char *cmd = lc_getenv(lang->compiler_env), *p, *e;
+    const char *conf = lc_config_get(ctx, config_keys[lang->id].compiler);
+    const char *flags = lc_config_get(ctx, config_keys[lang->id].flags);
+    const char *cmd = conf ? conf : lc_getenv(lang->compiler_env), *p, *e;
     char *word, *path, *id;
     struct stat st;
 
@@ -120,6 +132,14 @@ int lc_compiler_get(lc_ctx *ctx, const lc_lang *lang, lc_arena *a,
         return lc_oom(ctx);
     path = *word ? lc_which(a, word) : NULL;
     if (!path || stat(path, &st) != 0) {
+        if (conf)
+            return lc_set_error(ctx, LC_ERR_NOTFOUND, "the %s compiler '%s' "
+                                "(from %s in %s:%d) was not found",
+                                lang->title, cmd,
+                                config_keys[lang->id].compiler,
+                                lc_config_file(ctx),
+                                lc_config_line(ctx,
+                                               config_keys[lang->id].compiler));
         if (lc_getenv(lang->compiler_env))
             return lc_set_error(ctx, LC_ERR_NOTFOUND, "the %s compiler '%s' "
                                 "(from $%s) was not found", lang->title, cmd,
@@ -133,7 +153,8 @@ int lc_compiler_get(lc_ctx *ctx, const lc_lang *lang, lc_arena *a,
     id = lc_arena_printf(a, "%s|%s|%lld|%lld", cmd, path,
                          (long long)st.st_size, (long long)st.st_mtime);
     out->cmd = lc_arena_strdup(a, cmd);
-    if (!id || !out->cmd)
+    out->flags = flags ? lc_arena_strdup(a, flags) : NULL;
+    if (!id || !out->cmd || (flags && !out->flags))
         return lc_oom(ctx);
     for (p = id; *p; p++)
         if (*p == '\t' || *p == '\n' || *p == '\r')
@@ -162,9 +183,11 @@ int lc_lang_installed(lc_ctx *ctx, const lc_lang *lang)
     return ok;
 }
 
-/* argv for running the compiler with `args`: /bin/sh -c 'exec CMD "$@"'. */
+/* argv for running the compiler with `args`:
+ * /bin/sh -c 'exec CMD "$@" EXTRA'. */
 char **lc_compiler_argv(lc_arena *a, const lc_compiler *cc,
-                        const char *const *args, size_t nargs)
+                        const char *const *args, size_t nargs,
+                        const char *extra)
 {
     char **argv = lc_arena_array(a, nargs + 5, sizeof *argv);
     size_t i;
@@ -173,7 +196,9 @@ char **lc_compiler_argv(lc_arena *a, const lc_compiler *cc,
         return NULL;
     argv[0] = "/bin/sh";
     argv[1] = "-c";
-    argv[2] = lc_arena_printf(a, "exec %s \"$@\"", cc->cmd);
+    argv[2] = lc_arena_printf(a, "exec %s \"$@\"%s%s", cc->cmd,
+                              extra && *extra ? " " : "",
+                              extra ? extra : "");
     argv[3] = "lc-compile";
     if (!argv[2])
         return NULL;
@@ -270,7 +295,7 @@ static int probe(lc_ctx *ctx, const lc_lang *lang, const lc_compiler *cc,
     args[0] = file ? lc_arena_printf(&a, "-std=%s", flag) : NULL;
     args[1] = "-fsyntax-only";
     args[2] = file;
-    argv = args[0] ? lc_compiler_argv(&a, cc, args, 3) : NULL;
+    argv = args[0] ? lc_compiler_argv(&a, cc, args, 3, NULL) : NULL;
     if (!argv) {
         lc_arena_free(&a);
         return lc_oom(ctx);
@@ -368,6 +393,11 @@ int lc_std_pick(lc_ctx *ctx, const lc_lang *lang, const lc_compiler *cc,
         from = lang->std_env;
     }
     if (!want) {
+        /* The config file's value was checked when it was read. */
+        want = lc_config_get(ctx, config_keys[lang->id].std);
+        from = config_keys[lang->id].std;
+    }
+    if (!want) {
         *name = *flag = lang->default_std;
         return LC_OK;
     }
@@ -401,6 +431,11 @@ int lc_std_pick(lc_ctx *ctx, const lc_lang *lang, const lc_compiler *cc,
         if (from[0] == '-')
             rc = lc_set_error(ctx, LC_ERR_INVALID, "unknown %s standard '%s' "
                               "(expected %s)", lang->title, want, list.data);
+        else if (from == config_keys[lang->id].std)
+            rc = lc_set_error(ctx, LC_ERR_INVALID, "unknown %s standard '%s' "
+                              "in %s:%d (expected %s)", lang->title, want,
+                              lc_config_file(ctx), lc_config_line(ctx, from),
+                              list.data);
         else
             rc = lc_set_error(ctx, LC_ERR_INVALID, "unknown %s standard '%s' "
                               "in $%s (expected %s)", lang->title, want, from,

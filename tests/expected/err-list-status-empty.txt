@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: empty entry in --status list 'solved,'
+Run 'lc help list'.
+--- exit 3

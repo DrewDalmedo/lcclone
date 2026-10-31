@@ -1,0 +1,4 @@
+--- stdout
+{"schema":1,"manifest":"@ROOT@/tests/fixtures/problems/MANIFEST.tsv","total":9,"premium":1,"skipped":3,"todo":2,"draft":3,"verified":1,"groups":[{"group":"unordered","total":1,"todo":0,"draft":0,"verified":1},{"group":"float","total":1,"todo":0,"draft":1,"verified":0},{"group":"plain","total":1,"todo":1,"draft":0,"verified":0},{"group":"list","total":1,"todo":0,"draft":1,"verified":0},{"group":"list-builder","total":1,"todo":0,"draft":1,"verified":0},{"group":"design","total":1,"todo":1,"draft":0,"verified":0}],"skips":[{"reason":"sql","total":1,"todo":1,"draft":0,"verified":0},{"reason":"premium","total":1,"todo":1,"draft":0,"verified":0},{"reason":"javascript","total":1,"todo":1,"draft":0,"verified":0}],"no_pack":[21],"todo_with_pack":[155],"unlisted":[650],"warnings":[]}
+--- stderr
+--- exit 0

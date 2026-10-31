@@ -1,0 +1,6 @@
+--- stdout
+Building tests/fixtures/judge/0010-add/solution.c (C, c11)
+
+Accepted: 5/5 cases passed, slowest N ms, peak memory N MB
+--- stderr
+--- exit 0

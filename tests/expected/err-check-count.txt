@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: invalid --count value '0' (expected a number from 1 to 10000000)
+Run 'lc help check'.
+--- exit 3

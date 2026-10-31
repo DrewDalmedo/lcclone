@@ -1,0 +1,6 @@
+--- stdout
+ID  Title                        Difficulty  Tags
+ 4  Median of Two Sorted Arrays  Hard        array, binary-search, divide-and-conquer
+--- stderr
+lc: warning: cannot read the config file '@TMP@/cfg/nope' (from $LC_CONFIG): No such file or directory
+--- exit 0

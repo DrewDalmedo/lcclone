@@ -1,0 +1,9 @@
+--- stdout
+@TMP@/regen/0001-good/tests.txt: note: --regen: tests.txt was not rewritten, because of the errors below
+@TMP@/regen/0001-good/tests.txt: warning: no case is marked @example, so the statement shows no examples
+@TMP@/regen/0001-good: error: no reference solution: write ref.c or ref.cpp
+0001-good: FAILED (1 error)
+
+Checked 1 pack: 0 ok, 0 not judged yet, 1 failed
+--- stderr
+--- exit 1

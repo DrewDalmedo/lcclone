@@ -1,0 +1,21 @@
+--- stdout
+usage: lc stats [--manifest] [--json] [--color=WHEN]
+
+Show how many problems you have solved and attempted: in all, by
+difficulty and by tag. A problem is solved once a submission of it was
+accepted, and attempted when it was submitted but never accepted. Only
+'lc submit' counts; your progress is kept in progress.tsv in
+$XDG_DATA_HOME/lcclone, and a copy of each submission in submissions/
+next to it.
+
+With --manifest, show instead how much of the problem set listed in
+the problem directory's MANIFEST.tsv has been written (for authors).
+
+Options:
+  --manifest         report on MANIFEST.tsv
+  --json             print JSON
+  --color=WHEN       colour the output: auto (the default), always or
+                     never
+  -h, --help         show this help
+--- stderr
+--- exit 0

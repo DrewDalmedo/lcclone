@@ -1,13 +1,14 @@
 # Problem pack format
 
 A problem pack is a directory holding one problem. This document describes
-the parts `lc` reads so far: `problem.md` with its typed signature,
-`tests.txt` and the literals its cases are written in, the reference
-solution, and the markdown subset used for statements. Later milestones add
-`gen.c`, `brute.c`, `checker.c` and the other files listed in
-`docs/PLAN.md` §5.5. How values travel between `lc` and a solution's
-harness is in [wire.md](wire.md); how solutions are built and judged is in
-[judging.md](judging.md).
+the parts `lc` reads: `problem.md` with its typed signature, `tests.txt`
+and the literals its cases are written in, the reference solution, and the
+markdown subset used for statements. How to write a pack, with `gen.c`,
+`brute.c`, `MANIFEST.tsv` and `lc check`, is in
+[authoring.md](authoring.md); `checker.c` and the other files listed in
+`docs/PLAN.md` §5.5 come in later milestones. How values travel between
+`lc` and a solution's harness is in [wire.md](wire.md); how solutions are
+built and judged is in [judging.md](judging.md).
 
 ## Where packs live
 
@@ -28,6 +29,8 @@ problems/0001-two-sum/
   problem.md     required: header and statement
   tests.txt      test cases; lc show shows the ones marked @example
   ref.c          the reference solution (or ref.cpp)
+  brute.c        optional: a slow, obviously right solution (or brute.cpp)
+  gen.c          optional: makes random cases (authoring.md)
 ```
 
 **The reference solution** is written like any solution: just the
@@ -44,7 +47,8 @@ Both must match `problem.md`.
 **Which entries are packs.** Every entry of the problems directory whose name
 starts with an ASCII digit and is a directory is loaded as a pack. Everything
 else (files such as `MANIFEST.tsv`, directories starting with a letter or a
-dot) is ignored.
+dot) is ignored by the loader; `MANIFEST.tsv` is read by `lc check` and
+`lc stats --manifest` ([authoring.md](authoring.md#manifesttsv)).
 
 **Bad packs are skipped, not fatal.** A pack that fails to load is left out of
 the index and recorded as a warning that names the file and line, for example
@@ -245,8 +249,8 @@ non-finite doubles as `NaN`, `Infinity` and `-Infinity`.
 
 ## tests.txt
 
-Test cases. `lc show` shows the cases marked `@example`; later milestones
-run all of them.
+Test cases. `lc show` shows the cases marked `@example`, `lc test` runs
+them, and `lc submit` runs every case.
 
 ```
 # Comments start with '#'.
@@ -288,8 +292,14 @@ run all of them.
 - **`@example`** on its own line marks the next case as an example. Any text
   after `@example` and a space or tab is that example's explanation, shown as
   plain text.
-- **Every line is trimmed** of spaces and tabs first, so `#`, `@example` and
-  `=>` may be indented.
+- **`@gen SEED`** or **`@gen SEED small`** on its own line marks the next
+  case as made by the pack's `gen.c` from that seed, a decimal number below
+  2^64 ([authoring.md](authoring.md#generated-cases)). The case must follow
+  right away: a blank line after an `@gen` line with no inputs yet is an
+  error, which `lc check --regen` fixes by making the case. Judging treats
+  it as any other case. A case can't be both `@gen` and `@example`.
+- **Every line is trimmed** of spaces and tabs first, so `#`, `@example`,
+  `@gen` and `=>` may be indented.
 - **Blank lines and `#` comment lines** are ignored between cases. A comment
   line inside a case is ignored too, but a blank line inside a case (after an
   input line and before its `=>`) is an error, because it nearly always means
@@ -301,7 +311,9 @@ run all of them.
   - `()` together with other input lines in one case;
   - a `=>` with nothing after it;
   - an `@example` that is not followed by a case, or two in a row;
-  - a line starting with `@` other than `@example`;
+  - an `@gen` with a bad seed, not followed right away by a case, or two
+    in a row; `@gen` and `@example` on one case;
+  - a line starting with `@` other than `@example` and `@gen`;
   - a case still open at the end of the file;
   - a NUL byte;
   - a file larger than 256 MiB.

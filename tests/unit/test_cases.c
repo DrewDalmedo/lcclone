@@ -333,6 +333,121 @@ static void test_errors(void)
     expect_error("1", "t.txt:1: case has no '=>' line");
 }
 
+/* @gen marks a case gen.c makes; lc_case keeps its arguments and where
+ * its lines are, for lc check --regen. */
+static void test_gen_directive(void)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    lc_cases *cs = parse_ok(ctx, "# c\n@gen 7\n[1,2]\n# inside\n3\n=> 4\n"
+                                 "\n@gen  12   small\n5\n=> 6\n"
+                                 "@example\n7\n=> 8\n");
+
+    if (cs && cs->count == 3) {
+        CHECK_STR(cs->items[0].gen, "7");
+        CHECK_INT(cs->items[0].line, 3);
+        CHECK_INT(cs->items[0].last_line, 5);
+        CHECK_INT(cs->items[0].expected_line, 6);
+        CHECK_INT(cs->items[0].example, 0);
+        CHECK_STR(cs->items[1].gen, "12 small");
+        CHECK_INT(cs->items[1].line, 9);
+        CHECK_INT(cs->items[1].last_line, 9);
+        CHECK_INT(cs->items[1].expected_line, 10);
+        CHECK(cs->items[2].gen == NULL);
+        CHECK_INT(cs->items[2].example, 1);
+    } else {
+        CHECK(0);
+    }
+    lc_cases_free(cs);
+    cs = parse_ok(ctx, "@gen 18446744073709551615 small\n1\n=> 2\n");
+    if (cs && cs->count == 1)
+        CHECK_STR(cs->items[0].gen, "18446744073709551615 small");
+    lc_cases_free(cs);
+    lc_close(ctx);
+
+    expect_error("@gen\n1\n=> 2\n", "t.txt:1: expected '@gen SEED' or "
+                 "'@gen SEED small', where SEED is a number");
+    expect_error("@gen x\n1\n=> 2\n", "t.txt:1: expected '@gen SEED' or "
+                 "'@gen SEED small', where SEED is a number");
+    expect_error("@gen 1 big\n1\n=> 2\n", "t.txt:1: expected '@gen SEED' or "
+                 "'@gen SEED small', where SEED is a number");
+    expect_error("@gen 07\n1\n=> 2\n", "t.txt:1: expected '@gen SEED' or "
+                 "'@gen SEED small', where SEED is a number");
+    expect_error("@gen 18446744073709551616\n1\n=> 2\n", "t.txt:1: expected "
+                 "'@gen SEED' or '@gen SEED small', where SEED is a number");
+    expect_error("@gen 1\n", "t.txt:1: @gen is not followed by a case (run "
+                 "'lc check --regen' to make it)");
+    expect_error("@gen 1\n\n1\n=> 2\n", "t.txt:1: @gen is not followed by a "
+                 "case (run 'lc check --regen' to make it)");
+    expect_error("@gen 1\n@gen 2\n1\n=> 2\n", "t.txt:2: two @gen lines in a "
+                 "row");
+    expect_error("@example\n@gen 2\n1\n=> 2\n", "t.txt:2: a case can't be "
+                 "both @example and @gen");
+    expect_error("@gen 2\n@example\n1\n=> 2\n", "t.txt:2: a case can't be "
+                 "both @example and @gen");
+    expect_error("1\n@gen 2\n=> 2\n", "t.txt:2: @gen inside a case (missing "
+                 "'=>'?)");
+    expect_error("@gen 2\n=> 2\n", "t.txt:2: '=>' with no input lines before "
+                 "it");
+}
+
+/* --regen reads tests.txt leniently: cases may lack their "=>", and a
+ * bare @gen line is a case still to be made. */
+static void test_regen_mode(void)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    lc_cases *cs = NULL;
+    const char *text = "@gen 1 small\n\n@gen 2\n@gen 3\n=> 9\n# hand\n"
+                       "[3,1]\n\n[4]\n=>\n@example\n1\n=> 2\n@gen 4\n";
+    int rc = lc_parse_regen_cases(ctx, text, strlen(text), "t.txt", &cs);
+
+    CHECK_INT(rc, LC_OK);
+    if (rc == LC_OK && cs->count == 7) {
+        /* "@gen 1 small", then a blank line: no inputs yet. */
+        CHECK_STR(cs->items[0].gen, "1 small");
+        CHECK_INT(cs->items[0].nargs, 0);
+        CHECK_INT(cs->items[0].line, 1);
+        CHECK_INT(cs->items[0].last_line, 0);
+        CHECK_INT(cs->items[0].expected_line, 0);
+        /* "@gen 2", ended by the next directive. */
+        CHECK_STR(cs->items[1].gen, "2");
+        CHECK_INT(cs->items[1].line, 3);
+        /* "@gen 3", then "=> 9" with no inputs. */
+        CHECK_STR(cs->items[2].gen, "3");
+        CHECK_INT(cs->items[2].nargs, 0);
+        CHECK_STR(cs->items[2].expected, "9");
+        CHECK_INT(cs->items[2].expected_line, 5);
+        /* A case without "=>", ended by a blank line. */
+        CHECK(cs->items[3].gen == NULL);
+        CHECK_INT(cs->items[3].nargs, 1);
+        CHECK(cs->items[3].expected == NULL);
+        CHECK_INT(cs->items[3].last_line, 7);
+        /* "=>" with nothing after it: to be filled in. */
+        CHECK(cs->items[4].expected == NULL);
+        CHECK_INT(cs->items[4].expected_line, 10);
+        CHECK_INT(cs->items[5].example, 1);
+        /* "@gen 4" at the end of the file. */
+        CHECK_STR(cs->items[6].gen, "4");
+        CHECK_INT(cs->items[6].line, 14);
+    } else {
+        CHECK(0);
+    }
+    lc_cases_free(cs);
+    cs = NULL;
+    /* Still errors: an @example with no case, a bad directive. */
+    CHECK_INT(lc_parse_regen_cases(ctx, "@example\n", 9, "t.txt", &cs),
+              LC_ERR_PARSE);
+    CHECK_STR(lc_last_error(ctx), "t.txt:1: @example is not followed by a "
+              "case");
+    CHECK_INT(lc_parse_regen_cases(ctx, "@gen x\n", 7, "t.txt", &cs),
+              LC_ERR_PARSE);
+    /* Your cases may not use @gen. */
+    CHECK_INT(lc_parse_user_cases(ctx, "@gen 1\n1\n", 9, "c.txt", &cs),
+              LC_ERR_PARSE);
+    CHECK_STR(lc_last_error(ctx), "c.txt:1: @gen is only for a problem's "
+              "tests.txt");
+    lc_close(ctx);
+}
+
 static void test_filename_and_misuse(void)
 {
     lc_ctx *ctx = lc_open(NULL);
@@ -828,6 +943,8 @@ int main(void)
     RUN(test_empty);
     RUN(test_nul_byte);
     RUN(test_errors);
+    RUN(test_gen_directive);
+    RUN(test_regen_mode);
     RUN(test_filename_and_misuse);
     RUN(test_many_cases);
     RUN(test_load_cases);

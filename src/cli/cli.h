@@ -32,7 +32,12 @@ enum {
     CLI_OPT_STD = 1 << 5,
     CLI_OPT_SANITIZE = 1 << 6,
     CLI_OPT_CASE = 1 << 7,
-    CLI_OPT_NO_EDIT = 1 << 8
+    CLI_OPT_NO_EDIT = 1 << 8,
+    CLI_OPT_STATUS = 1 << 9,
+    CLI_OPT_MANIFEST = 1 << 10,
+    CLI_OPT_REGEN = 1 << 11,
+    CLI_OPT_COUNT = 1 << 12,
+    CLI_OPT_SEED = 1 << 13
 };
 
 typedef struct cli cli;
@@ -55,8 +60,10 @@ struct cli {
     int json;
     int help;
     int color;              /* CLI_COLOR_* */
+    int color_given;        /* --color was given (else the config decides) */
     int no_pager;
     unsigned difficulties;  /* bit (1 << lc_difficulty) per wanted one; 0 = all */
+    unsigned statuses;      /* bit (1 << lc_status) per wanted one; 0 = all */
     char **args;            /* positional arguments */
     size_t nargs;
     const char **tags;      /* --tag values; a problem must have all of them */
@@ -66,6 +73,13 @@ struct cli {
     int sanitize;           /* --sanitize */
     const char *case_file;  /* --case */
     int no_edit;            /* --no-edit */
+    int manifest;           /* --manifest */
+    int regen;              /* --regen */
+    unsigned long count;    /* --count (0: not given) */
+    unsigned long long seed; /* --seed */
+    int seed_given;
+    int quiet_packs;        /* cli_load: don't print the loader's warnings
+                               about packs (lc check shows them itself) */
 };
 
 /* ------------------------------------------------------------------ */
@@ -86,10 +100,27 @@ int cli_usage(cli *c, const char *fmt, ...) LC_PRINTF(2, 3);
 void cli_warn(const char *msg);
 
 /*
- * Opens a context and loads the problem packs, printing the loader's
- * warnings. Returns CLI_EXIT_OK and sets *out, or reports the error.
+ * Opens a context and loads the problem packs, printing the warnings of
+ * the config file and the loader. The config's color applies unless
+ * --color was given. Returns CLI_EXIT_OK and sets *out, or reports the
+ * error.
  */
 int cli_load(cli *c, lc_ctx **out);
+
+/* Like cli_load, with options for the context (may be NULL). */
+int cli_load_with(cli *c, const lc_options *opt, lc_ctx **out);
+
+/* Reads your progress (progress.tsv) and prints the warnings that gives.
+ * Returns CLI_EXIT_OK, or reports running out of memory. */
+int cli_progress(cli *c, lc_ctx *ctx);
+
+/* 1 if problem `p` passes --difficulty, --tag and --status. Sets *rc and
+ * returns 0 after reporting an error (reading progress.tsv failed). */
+int cli_matches(cli *c, lc_ctx *ctx, const lc_problem *p, int *rc);
+
+/* Writes one problem's summary into an open JSON object: id, slug,
+ * title, difficulty, tags and status. */
+void cli_json_problem(lc_json *j, lc_ctx *ctx, const lc_problem *p);
 
 /* Writes "warnings": [...] into an open JSON object: the context's
  * warnings, then `extra` unless it is NULL. */
@@ -107,6 +138,14 @@ int cli_emit_json(cli *c, lc_ctx *ctx, lc_json *j, lc_str *out);
 
 int cmd_list(cli *c);
 int cmd_show(cli *c);
+int cmd_random(cli *c);
+
+/* ------------------------------------------------------------------ */
+/* cmd_stats.c, cmd_check.c                                            */
+/* ------------------------------------------------------------------ */
+
+int cmd_stats(cli *c);
+int cmd_check(cli *c);
 
 /* ------------------------------------------------------------------ */
 /* cmd_start.c, cmd_test.c                                             */
@@ -115,6 +154,10 @@ int cmd_show(cli *c);
 int cmd_start(cli *c);
 int cmd_test(cli *c);
 int cmd_submit(cli *c);
+
+/* Writes the members of a build event into an open JSON object; `done`
+ * adds those known once it is built (docs/json.md). */
+void cli_json_build(lc_json *j, const lc_build *b, int done);
 
 /* The language --lang names, or NULL after reporting a usage error
  * (*rc is set). NULL with *rc = CLI_EXIT_OK when there is no --lang. */

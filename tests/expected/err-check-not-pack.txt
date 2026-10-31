@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: 'tests/fixtures' is not a problem pack (a directory named like 0001-two-sum, with a problem.md)
+--- exit 3

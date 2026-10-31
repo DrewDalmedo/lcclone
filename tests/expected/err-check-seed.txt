@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: invalid --seed value '-1' (expected a non-negative number)
+Run 'lc help check'.
+--- exit 3

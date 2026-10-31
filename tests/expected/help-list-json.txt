@@ -1,4 +1,4 @@
 --- stdout
-{"schema":1,"commands":[{"name":"list","summary":"List problems, filtered by difficulty and tags","usage":"lc list [--difficulty LIST] [--tag TAG]... [--json] [--color=WHEN]"}]}
+{"schema":1,"commands":[{"name":"list","summary":"List problems, filtered by difficulty, tags and status","usage":"lc list [--difficulty LIST] [--tag TAG]... [--status LIST] [--json] [--color=WHEN]"}]}
 --- stderr
 --- exit 0

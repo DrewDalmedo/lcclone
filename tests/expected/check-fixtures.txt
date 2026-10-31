@@ -1,0 +1,49 @@
+--- stdout
+0001-good: ok (4 cases; ref.c slowest N ms; agrees with brute.c on 30 random cases)
+tests/fixtures/check/0002-wrong-ref/tests.txt:6: error: ref.c gets Wrong Answer on this case
+    Input:    a = -5, b = 5
+    Expected: 0
+    Output:   -10
+tests/fixtures/check/0002-wrong-ref/tests.txt:10: error: ref.c gets Wrong Answer on this case
+    Input:    a = -1, b = 4
+    Expected: 3
+    Output:   -5
+tests/fixtures/check/0002-wrong-ref/tests.txt:14: error: ref.c gets Wrong Answer on this case
+    Input:    a = -2, b = -2
+    Expected: -4
+    Output:   0
+0002-wrong-ref: FAILED (3 errors)
+tests/fixtures/check/0003-disagree/ref.c: error: ref.c and brute.c disagree on the random case for seed 2 (small)
+    Input:    a = -10, b = -19
+    ref.c:    -29
+    brute.c:  -10
+0003-disagree: FAILED (1 error)
+tests/fixtures/check/0004-stale-gen/tests.txt:11: error: this case is not what gen.c makes for '@gen 1 small' now; run 'lc check --regen' to make it again
+0004-stale-gen: FAILED (1 error)
+tests/fixtures/check/0005-no-gen/tests.txt:11: error: @gen needs the pack's gen.c, which makes this case
+tests/fixtures/check/0005-no-gen/brute.c: error: brute.c needs gen.c, which makes the random cases to compare it with ref.c on
+0005-no-gen: FAILED (2 errors)
+tests/fixtures/check/0006-two-refs: error: the pack has both ref.c and ref.cpp; keep one (lc uses ref.c)
+0006-two-refs: FAILED (1 error)
+tests/fixtures/check/0007-bad-case/tests.txt:5: error: a: column 1: expected int, got a string
+tests/fixtures/check/0007-bad-case/tests.txt:9: error: case has 1 input, expected 2 (a, b)
+tests/fixtures/check/0007-bad-case/tests.txt: warning: no case is marked @example, so the statement shows no examples
+0007-bad-case: FAILED (2 errors)
+tests/fixtures/check/0008-tree: note: nothing was built or run: problem 8 (tree): TreeNode parameters are not supported yet
+0008-tree: ok (2 cases; not judged yet)
+tests/fixtures/check/MANIFEST.tsv:10: warning: problem 9 has a pack, but is still marked todo
+tests/fixtures/check/0009-no-ref: error: no reference solution: write ref.c or ref.cpp
+0009-no-ref: FAILED (1 error)
+tests/fixtures/check/0010-unlisted/problem.md:1: error: problem 10 is not in MANIFEST.tsv
+0010-unlisted: FAILED (1 error)
+tests/fixtures/check/0011-renamed/problem.md:3: error: title 'Renamed' differs from 'Old Name' in MANIFEST.tsv:11
+0011-renamed: FAILED (1 error)
+tests/fixtures/check/0013-unused-gen/gen.c: warning: gen.c is not used: add brute.c to compare ref with on random cases, or @gen cases to tests.txt
+0013-unused-gen: ok (2 cases; ref.c slowest N ms)
+0014-no-params: ok (2 cases; ref.c slowest N ms)
+tests/fixtures/check/0012-broken/problem.md: error: missing required field 'difficulty'
+0012-broken: FAILED (it does not load)
+
+Checked 14 packs: 3 ok, 1 not judged yet, 10 failed
+--- stderr
+--- exit 1

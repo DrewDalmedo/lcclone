@@ -42,7 +42,8 @@ be solved in C or C++**. Medium and hard come after that.
 - the Database (SQL), Pandas, JavaScript, Bash and Concurrency categories.
 
 My rough estimate is 500–600 problems in scope. The exact list and count come
-from the manifest (§6).
+from the manifest (§6). (As built in M4: 751 of the 974 Easy problems are
+in scope; 223 are premium or in the categories above.)
 
 ### 2.1 Content rules
 
@@ -515,7 +516,7 @@ works.
 
 **Choosing the C++ standard.** The default is C++11. Ways to raise it, with the
 later ones winning:
-- `cxxstd = c++17` in the config file (M4; M3 has the other two);
+- `cxxstd = c++17` in the config file (since M4);
 - `LC_CXXSTD=c++20` in the environment;
 - `--std=c++20` on a single `lc test` or `lc submit` run.
 
@@ -600,6 +601,25 @@ Every write is atomic: the data goes to a temp file, then `rename()` moves it
 into place. The core re-reads progress before each update, so a CLI and a GUI
 running at the same time don't overwrite each other's results.
 
+(As built in M4:
+- **Progress:** only `lc submit` records, and `lc test` doesn't. A problem
+  is `solved` once accepted and stays so; `attempted` otherwise. `lang` is
+  that of the last accepted submission, else of the last one; `best_ms`
+  is the slowest case of the best accepted run without `--sanitize`; `-`
+  marks an empty field. The update also takes an `fcntl` lock on
+  `progress.lock`, and rewrites only its problem's line, so comments,
+  unreadable lines and columns of a later version survive.
+- **History:** `submissions/NNNN/` (the ID zero-padded like pack
+  directories), the time in UTC as `20261030T201503Z`, the verdict as its
+  JSON id (`accepted`, `wrong_answer`, ...), and `-2`, `-3` for more in the
+  same second.
+- **Config:** also `open_statement` (§3.1); `$LC_CONFIG` names another
+  file. Which setting wins: a command-line option, then an `LC_`
+  variable, then the config, then a general variable (`CC`, `CXX`,
+  `VISUAL`, `EDITOR`, `NO_COLOR`), as git puts `core.editor` before
+  `$EDITOR`. A bad line is a warning, never fatal. `cflags`/`cxxflags`
+  apply to your solutions only.)
+
 ## 6. Content pipeline (the bulk of the work)
 
 ### 6.1 Manifest
@@ -612,6 +632,16 @@ running at the same time don't overwrite each other's results.
 
 It is built once from the public problem list. That list is only facts:
 numbers, titles and difficulty. `lc stats --manifest` reports coverage.
+
+(As built in M4: the columns are `id slug title difficulty premium group
+status`, tab-separated in increasing id order; difficulty is there for
+when medium and hard come in M9. The groups are named `plain`, `bits`,
+`float`, `inplace`, `unordered`, `list`, `list-builder`, `tree`,
+`tree-ref`, `nary`, `design`, `api`, `checker` and `extend`. It lists all
+974 Easy problems, 751 of them in scope, built from the problem index of
+github.com/doocs/leetcode (CC BY-SA 4.0, credited in the file, which is
+shared under the same license) rather than from LeetCode itself. See
+docs/authoring.md, "How MANIFEST.tsv was built".)
 
 ### 6.2 Authoring each problem
 
@@ -629,6 +659,17 @@ numbers, titles and difficulty. `lc stats --manifest` reports coverage.
 5. **Cross-check.** `lc check` compares `ref` against `brute` on thousands of
    small random cases, builds the C and C++ stubs, and confirms that `ref`
    passes every case.
+
+(As built in M4: `gen.c` defines `void gen(int small)`, which prints one
+case's literals using a portable PRNG and printing helpers from
+`runtime/gen/lc_gen.h`; `lc` supplies `main`. Random cases live in
+`tests.txt` as ordinary cases under an `@gen SEED [small]` line, so
+judging needs no generator; `lc check --regen` makes them and fills in
+the expected results, keeping results that already match, and `lc
+check` fails when one is stale. The cross-check uses 300 cases by
+default (`--count`), since each costs two processes; the batch runner of
+§9's later work would make thousands cheap. `lc check` also warns when
+`ref` needs more than a third of the time limit.)
 
 ### 6.3 Batches
 

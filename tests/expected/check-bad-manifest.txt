@@ -1,0 +1,6 @@
+--- stdout
+@TMP@/badman/MANIFEST.tsv:1: error: unknown group 'graph' (expected one of plain, bits, float, inplace, unordered, list, list-builder, tree, tree-ref, nary, design, api, checker, extend, or skip:REASON)
+
+Checked 0 packs: 0 ok, 0 not judged yet, 0 failed; MANIFEST.tsv is broken
+--- stderr
+--- exit 1

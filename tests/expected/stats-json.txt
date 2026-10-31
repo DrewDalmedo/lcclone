@@ -1,0 +1,5 @@
+--- stdout
+{"schema":1,"total":6,"solved":2,"attempted":1,"difficulties":[{"difficulty":"easy","total":3,"solved":1,"attempted":0},{"difficulty":"medium","total":2,"solved":1,"attempted":0},{"difficulty":"hard","total":1,"solved":0,"attempted":1}],"tags":[{"tag":"array","total":2,"solved":1,"attempted":1},{"tag":"binary-search","total":1,"solved":0,"attempted":1},{"tag":"design","total":1,"solved":0,"attempted":0},{"tag":"divide-and-conquer","total":1,"solved":0,"attempted":1},{"tag":"dynamic-programming","total":1,"solved":1,"attempted":0},{"tag":"hash-table","total":2,"solved":1,"attempted":0},{"tag":"linked-list","total":1,"solved":0,"attempted":0},{"tag":"math","total":1,"solved":1,"attempted":0},{"tag":"stack","total":1,"solved":0,"attempted":0},{"tag":"two-pointers","total":1,"solved":0,"attempted":0}],"warnings":["@TMP@/data2/lcclone/progress.tsv:5: expected 5 tab-separated fields; line skipped"]}
+--- stderr
+lc: warning: @TMP@/data2/lcclone/progress.tsv:5: expected 5 tab-separated fields; line skipped
+--- exit 0

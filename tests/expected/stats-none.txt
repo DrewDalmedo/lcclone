@@ -1,0 +1,5 @@
+--- stdout
+No problems.
+--- stderr
+lc: warning: @TMP@/data2/lcclone/progress.tsv:5: expected 5 tab-separated fields; line skipped
+--- exit 0

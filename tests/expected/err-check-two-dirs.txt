@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: the packs to check must be in one problem directory
+--- exit 3

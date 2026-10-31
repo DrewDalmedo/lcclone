@@ -39,40 +39,74 @@ static const char main_help_tail[] =
     "  LC_PROBLEMS  directory of problem packs (default:\n"
     "               $XDG_DATA_HOME/lcclone/problems, else\n"
     "               ~/.local/share/lcclone/problems, then the installed ones)\n"
-    "  LC_WORKSPACE directory for your solutions (default: ~/lc)\n"
-    "  CC, CXX      the C and C++ compilers (default: cc, c++)\n"
+    "  LC_WORKSPACE directory for your solutions (default: the config's\n"
+    "               workspace, else ~/lc)\n"
+    "  LC_CONFIG    the config file (default:\n"
+    "               $XDG_CONFIG_HOME/lcclone/config, else\n"
+    "               ~/.config/lcclone/config)\n"
+    "  CC, CXX      the C and C++ compilers, unless the config sets cc or cxx\n"
+    "               (default: cc, c++)\n"
     "  LC_CSTD, LC_CXXSTD\n"
-    "               the C and C++ standards (default: c11, c++11)\n"
+    "               the C and C++ standards (default: the config's cstd and\n"
+    "               cxxstd, else c11 and c++11)\n"
     "  VISUAL, EDITOR\n"
-    "               editor for 'lc start' (default: vi)\n"
+    "               editor for 'lc start', unless the config sets editor\n"
+    "               (default: vi)\n"
     "  PAGER        pager for 'lc show' (default: less, then more)\n"
     "  NO_COLOR     if set and not empty, --color=auto never uses colour\n"
     "  COLUMNS      width to wrap text at (default: the terminal's, or 80)\n"
     "  XDG_CACHE_HOME\n"
     "               builds go in $XDG_CACHE_HOME/lcclone (default:\n"
     "               ~/.cache/lcclone)\n"
+    "  XDG_DATA_HOME\n"
+    "               your progress and submissions go in\n"
+    "               $XDG_DATA_HOME/lcclone (default: ~/.local/share/lcclone)\n"
     "\n"
-    "Exit status: 0 on success or Accepted, 1 for any other verdict, 2 for\n"
-    "Compile Error, 3 on a usage error, an unknown problem or any other\n"
-    "failure, and 130 when ^C stopped a run.\n";
+    "Exit status: 0 on success or Accepted, 1 for any other verdict (or a\n"
+    "pack 'lc check' fails), 2 for Compile Error, 3 on a usage error, an\n"
+    "unknown problem or any other failure, and 130 when ^C stopped a run.\n";
 
 static const cli_cmd commands[] = {
-    {"list", "List problems, filtered by difficulty and tags",
-     "lc list [--difficulty LIST] [--tag TAG]... [--json] [--color=WHEN]",
-     "List problems in ID order: a table of ID, title, difficulty and tags.\n"
-     "Prints nothing when no problem matches.\n"
+    {"list", "List problems, filtered by difficulty, tags and status",
+     "lc list [--difficulty LIST] [--tag TAG]... [--status LIST] [--json] "
+     "[--color=WHEN]",
+     "List problems in ID order: a table of ID, title, difficulty and tags,\n"
+     "and once you have submitted something, your status on each. Prints\n"
+     "nothing when no problem matches.\n"
      "\n"
      "Options:\n"
      "  --difficulty LIST  only these difficulties: a comma-separated list\n"
      "                     of easy, medium and hard\n"
      "  --tag TAG          only problems with this tag; repeat it to require\n"
      "                     several tags\n"
+     "  --status LIST      only problems with these statuses: a\n"
+     "                     comma-separated list of todo (never submitted),\n"
+     "                     attempted (submitted, never accepted) and solved\n"
      "  --json             print JSON instead of a table\n"
      "  --color=WHEN       colour the output: auto (the default: only on a\n"
      "                     terminal, without NO_COLOR, when TERM is not\n"
      "                     dumb), always or never\n"
      "  -h, --help         show this help\n",
-     CLI_OPT_COLOR | CLI_OPT_DIFFICULTY | CLI_OPT_TAG, 0, 0, NULL, cmd_list},
+     CLI_OPT_COLOR | CLI_OPT_DIFFICULTY | CLI_OPT_TAG | CLI_OPT_STATUS, 0, 0,
+     NULL, cmd_list},
+    {"random", "Pick a random problem, filtered like 'lc list'",
+     "lc random [--difficulty LIST] [--tag TAG]... [--status LIST] [--json]",
+     "Pick one problem at random among those that pass the filters, and\n"
+     "print its ID, title and difficulty. For example, 'lc random\n"
+     "--difficulty easy --status todo' picks an easy problem you haven't\n"
+     "submitted yet. It is an error when no problem passes the filters.\n"
+     "\n"
+     "Options:\n"
+     "  --difficulty LIST  only these difficulties: a comma-separated list\n"
+     "                     of easy, medium and hard\n"
+     "  --tag TAG          only problems with this tag; repeat it to require\n"
+     "                     several tags\n"
+     "  --status LIST      only problems with these statuses: todo,\n"
+     "                     attempted, solved\n"
+     "  --json             print JSON\n"
+     "  -h, --help         show this help\n",
+     CLI_OPT_DIFFICULTY | CLI_OPT_TAG | CLI_OPT_STATUS, 0, 0, NULL,
+     cmd_random},
     {"show", "Show a problem's statement and examples",
      "lc show <problem> [--json] [--no-pager] [--color=WHEN]",
      "Show a problem's statement and examples. <problem> is an ID (1 or\n"
@@ -93,16 +127,17 @@ static const cli_cmd commands[] = {
     {"start", "Set up a problem's directory and open your editor",
      "lc start <problem> [--lang LANG] [--no-edit] [--json]",
      "Set up the problem's directory in your workspace (~/lc, or\n"
-     "$LC_WORKSPACE) and open the solution file in your editor ($VISUAL,\n"
-     "$EDITOR or vi). The directory gets README.md with the statement,\n"
-     "solution.c or solution.cpp with the function to write, and cases.txt\n"
-     "for cases of your own. The solution and cases.txt are never\n"
-     "overwritten. The workspace also gets a .clangd file, so that clangd\n"
-     "understands solution files.\n"
+     "$LC_WORKSPACE) and open the solution file in your editor (the\n"
+     "config's editor, else $VISUAL, $EDITOR or vi). The directory gets\n"
+     "README.md with the statement, solution.c or solution.cpp with the\n"
+     "function to write, and cases.txt for cases of your own. The solution\n"
+     "and cases.txt are never overwritten. The workspace also gets a\n"
+     ".clangd file, so that clangd understands solution files. With\n"
+     "open_statement = yes in the config, the editor gets README.md too.\n"
      "\n"
      "Options:\n"
      "  --lang LANG        c or cpp (default: the language of an existing\n"
-     "                     solution, else cpp)\n"
+     "                     solution, else the config's lang, else cpp)\n"
      "  --no-edit          don't open the editor; print the solution's path\n"
      "  --json             print what was set up as JSON (implies --no-edit)\n"
      "  -h, --help         show this help\n",
@@ -155,6 +190,58 @@ static const cli_cmd commands[] = {
      "  -h, --help         show this help\n",
      CLI_OPT_COLOR | CLI_OPT_LANG | CLI_OPT_STD | CLI_OPT_SANITIZE, 0, 1,
      NULL, cmd_submit},
+    {"stats", "Show how many problems you have solved",
+     "lc stats [--manifest] [--json] [--color=WHEN]",
+     "Show how many problems you have solved and attempted: in all, by\n"
+     "difficulty and by tag. A problem is solved once a submission of it was\n"
+     "accepted, and attempted when it was submitted but never accepted. Only\n"
+     "'lc submit' counts; your progress is kept in progress.tsv in\n"
+     "$XDG_DATA_HOME/lcclone, and a copy of each submission in submissions/\n"
+     "next to it.\n"
+     "\n"
+     "With --manifest, show instead how much of the problem set listed in\n"
+     "the problem directory's MANIFEST.tsv has been written (for authors).\n"
+     "\n"
+     "Options:\n"
+     "  --manifest         report on MANIFEST.tsv\n"
+     "  --json             print JSON\n"
+     "  --color=WHEN       colour the output: auto (the default), always or\n"
+     "                     never\n"
+     "  -h, --help         show this help\n",
+     CLI_OPT_COLOR | CLI_OPT_MANIFEST, 0, 0, NULL, cmd_stats},
+    {"check", "Check problem packs (for authors)",
+     "lc check [<pack>...] [--regen] [--count N] [--seed N] [--json] "
+     "[--color=WHEN]",
+     "Check problem packs: each <pack> is a pack directory, an ID or a\n"
+     "slug; without one, every pack of the problem directory. For each\n"
+     "pack, lc checks that:\n"
+     "\n"
+     "  - problem.md loads, and agrees with MANIFEST.tsv if there is one;\n"
+     "  - tests.txt reads, and every case fits the signature;\n"
+     "  - the C and C++ stubs build with lc's harness;\n"
+     "  - the reference solution (ref.c or ref.cpp) passes every case,\n"
+     "    using at most a third of the time limit;\n"
+     "  - the cases marked @gen are what gen.c makes;\n"
+     "  - ref and brute.c (or brute.cpp) give the same results on random\n"
+     "    small cases from gen.c.\n"
+     "\n"
+     "A problem that needs something lc can't judge yet only has its\n"
+     "tests.txt checked. Problems are printed as file:line: messages. The\n"
+     "exit status is 0 when every pack is fine, 1 when one isn't.\n"
+     "\n"
+     "Options:\n"
+     "  --regen            first rewrite tests.txt: make the @gen cases with\n"
+     "                     gen.c, and work out every expected result with\n"
+     "                     ref (results that already match are kept)\n"
+     "  --count N          random cases to compare ref and brute on\n"
+     "                     (default 300)\n"
+     "  --seed N           the seed of the first random case (default 1)\n"
+     "  --json             print JSON Lines: one object per event\n"
+     "  --color=WHEN       colour the output: auto (the default), always or\n"
+     "                     never\n"
+     "  -h, --help         show this help\n",
+     CLI_OPT_COLOR | CLI_OPT_REGEN | CLI_OPT_COUNT | CLI_OPT_SEED, 0,
+     (size_t)-1, NULL, cmd_check},
     {"help", "Show help for lc or for one command",
      "lc help [<command>] [--json]",
      "Show help for lc, or for one command.\n"
@@ -279,18 +366,30 @@ int cli_usage(cli *c, const char *fmt, ...)
     return CLI_EXIT_ERROR;
 }
 
-int cli_load(cli *c, lc_ctx **out)
+int cli_load_with(cli *c, const lc_options *opt, lc_ctx **out)
 {
-    lc_ctx *ctx = lc_open(NULL);
+    lc_ctx *ctx = lc_open(opt);
+    const char *color;
     size_t i;
     int rc;
 
     *out = NULL;
     if (!ctx)
         return cli_error(c, NULL, "out of memory");
+    color = lc_config_get(ctx, "color");
+    if (!c->color_given && color)
+        c->color = strcmp(color, "always") == 0  ? CLI_COLOR_ALWAYS
+                   : strcmp(color, "never") == 0 ? CLI_COLOR_NEVER
+                                                 : CLI_COLOR_AUTO;
     rc = lc_load(ctx);
-    for (i = 0; i < lc_warning_count(ctx); i++)
-        cli_warn(lc_warning_at(ctx, i));
+    for (i = 0; i < lc_warning_count(ctx); i++) {
+        const char *w = lc_warning_at(ctx, i), *dir = lc_problems_dir(ctx);
+
+        if (c->quiet_packs && dir && strncmp(w, dir, strlen(dir)) == 0 &&
+            w[strlen(dir)] == '/')
+            continue;
+        cli_warn(w);
+    }
     if (rc != LC_OK) {
         rc = cli_error(c, ctx, "%s", lc_last_error(ctx));
         lc_close(ctx);
@@ -298,6 +397,68 @@ int cli_load(cli *c, lc_ctx **out)
     }
     *out = ctx;
     return CLI_EXIT_OK;
+}
+
+int cli_load(cli *c, lc_ctx **out)
+{
+    return cli_load_with(c, NULL, out);
+}
+
+int cli_progress(cli *c, lc_ctx *ctx)
+{
+    lc_progress_entry e;
+    size_t i, n = lc_warning_count(ctx);
+
+    if (lc_progress(ctx, 0, &e) != LC_OK)
+        return cli_error(c, ctx, "%s", lc_last_error(ctx));
+    for (i = n; i < lc_warning_count(ctx); i++)
+        cli_warn(lc_warning_at(ctx, i));
+    return CLI_EXIT_OK;
+}
+
+int cli_matches(cli *c, lc_ctx *ctx, const lc_problem *p, int *rc)
+{
+    lc_progress_entry e;
+    size_t i;
+
+    *rc = CLI_EXIT_OK;
+    if (c->difficulties && !(c->difficulties & (1u << p->difficulty)))
+        return 0;
+    for (i = 0; i < c->ntags; i++)
+        if (!lc_problem_has_tag(p, c->tags[i]))
+            return 0;
+    if (!c->statuses)
+        return 1;
+    if (lc_progress(ctx, p->id, &e) != LC_OK) {
+        *rc = cli_error(c, ctx, "%s", lc_last_error(ctx));
+        return 0;
+    }
+    return (c->statuses & (1u << e.status)) != 0;
+}
+
+void cli_json_problem(lc_json *j, lc_ctx *ctx, const lc_problem *p)
+{
+    lc_progress_entry e;
+    size_t t;
+
+    lc_json_key(j, "id");
+    lc_json_int(j, p->id);
+    lc_json_key(j, "slug");
+    lc_json_string(j, p->slug);
+    lc_json_key(j, "title");
+    lc_json_string(j, p->title);
+    lc_json_key(j, "difficulty");
+    lc_json_string(j, lc_difficulty_name(p->difficulty));
+    lc_json_key(j, "tags");
+    lc_json_begin_array(j);
+    for (t = 0; t < p->ntags; t++)
+        lc_json_string(j, p->tags[t]);
+    lc_json_end_array(j);
+    /* Progress was read already (or the caller checked it can be). */
+    if (lc_progress(ctx, p->id, &e) != LC_OK)
+        e.status = LC_TODO;
+    lc_json_key(j, "status");
+    lc_json_string(j, lc_status_name(e.status));
 }
 
 int cli_emit_json(cli *c, lc_ctx *ctx, lc_json *j, lc_str *out)
@@ -445,7 +606,8 @@ static int cmd_version(cli *c)
 
 enum {
     O_JSON, O_HELP, O_COLOR, O_NO_PAGER, O_DIFFICULTY, O_TAG, O_LANG, O_STD,
-    O_SANITIZE, O_CASE, O_NO_EDIT
+    O_SANITIZE, O_CASE, O_NO_EDIT, O_STATUS, O_MANIFEST, O_REGEN, O_COUNT,
+    O_SEED
 };
 
 static const struct opt_def {
@@ -466,6 +628,11 @@ static const struct opt_def {
     {"--sanitize", CLI_OPT_SANITIZE, 0, O_SANITIZE},
     {"--case", CLI_OPT_CASE, 1, O_CASE},
     {"--no-edit", CLI_OPT_NO_EDIT, 0, O_NO_EDIT},
+    {"--status", CLI_OPT_STATUS, 1, O_STATUS},
+    {"--manifest", CLI_OPT_MANIFEST, 0, O_MANIFEST},
+    {"--regen", CLI_OPT_REGEN, 0, O_REGEN},
+    {"--count", CLI_OPT_COUNT, 1, O_COUNT},
+    {"--seed", CLI_OPT_SEED, 1, O_SEED},
 };
 
 static void parse_error(lc_str *err, const char *fmt, ...) LC_PRINTF(2, 3);
@@ -496,15 +663,36 @@ static const struct opt_def *find_option(const cli_cmd *cmd, const char *name,
     return NULL;
 }
 
-/* "easy,medium" -> bits in c->difficulties. */
-static void parse_difficulties(cli *c, const char *list, lc_str *err)
+/* The bit for one --difficulty entry, or 0 when it is unknown. */
+static unsigned difficulty_bit(const char *name)
+{
+    lc_difficulty d = lc_difficulty_from_name(name);
+
+    return d == LC_DIFF_UNKNOWN ? 0 : 1u << d;
+}
+
+/* The bit for one --status entry, or 0 when it is unknown. */
+static unsigned status_bit(const char *name)
+{
+    int st = lc_status_from_name(name);
+
+    return st < 0 ? 0 : 1u << st;
+}
+
+/*
+ * A comma-separated list such as "easy,medium" -> bits in *bits. `what`
+ * names the option and `expected` the names it takes.
+ */
+static void parse_list(const char *list, const char *what,
+                       const char *expected, unsigned (*bit)(const char *),
+                       unsigned *bits, lc_str *err)
 {
     const char *p = list, *e;
 
     for (;;) {
         char buf[16];
         const char *a, *b;
-        lc_difficulty d;
+        unsigned v;
 
         e = strchr(p, ',');
         if (!e)
@@ -514,25 +702,46 @@ static void parse_difficulties(cli *c, const char *list, lc_str *err)
         for (b = e; b > a && b[-1] == ' '; b--)
             ;
         if (a == b) {
-            parse_error(err, "empty entry in --difficulty list '%s'", list);
+            parse_error(err, "empty entry in --%s list '%s'", what, list);
             return;
         }
-        d = LC_DIFF_UNKNOWN;
+        v = 0;
         if ((size_t)(b - a) < sizeof buf) {
             memcpy(buf, a, (size_t)(b - a));
             buf[b - a] = '\0';
-            d = lc_difficulty_from_name(buf);
+            v = bit(buf);
         }
-        if (d == LC_DIFF_UNKNOWN) {
-            parse_error(err, "unknown difficulty '%.*s' (expected easy, "
-                        "medium or hard)", (int)(b - a), a);
+        if (!v) {
+            parse_error(err, "unknown %s '%.*s' (expected %s)", what,
+                        (int)(b - a), a, expected);
             return;
         }
-        c->difficulties |= 1u << d;
+        *bits |= v;
         if (!*e)
             return;
         p = e + 1;
     }
+}
+
+/* A decimal number from 0 to `max`; 0 is returned for 0 too, so *ok says
+ * whether it parsed. */
+static unsigned long long parse_number(const char *v, unsigned long long max,
+                                       int *ok)
+{
+    unsigned long long n = 0;
+    const char *p;
+
+    *ok = 0;
+    if (!*v)
+        return 0;
+    for (p = v; *p; p++) {
+        unsigned d = (unsigned)(*p - '0');
+        if (d > 9 || n > (max - d) / 10)
+            return 0;
+        n = n * 10 + d;
+    }
+    *ok = 1;
+    return n;
 }
 
 static void apply_option(cli *c, const struct opt_def *o, const char *value,
@@ -549,6 +758,7 @@ static void apply_option(cli *c, const struct opt_def *o, const char *value,
         c->no_pager = 1;
         break;
     case O_COLOR:
+        c->color_given = 1;
         if (strcmp(value, "auto") == 0)
             c->color = CLI_COLOR_AUTO;
         else if (strcmp(value, "always") == 0)
@@ -560,8 +770,36 @@ static void apply_option(cli *c, const struct opt_def *o, const char *value,
                         "always or never)", value);
         break;
     case O_DIFFICULTY:
-        parse_difficulties(c, value, err);
+        parse_list(value, "difficulty", "easy, medium or hard",
+                   difficulty_bit, &c->difficulties, err);
         break;
+    case O_STATUS:
+        parse_list(value, "status", "todo, attempted or solved", status_bit,
+                   &c->statuses, err);
+        break;
+    case O_MANIFEST:
+        c->manifest = 1;
+        break;
+    case O_REGEN:
+        c->regen = 1;
+        break;
+    case O_COUNT: {
+        int ok;
+        c->count = (unsigned long)parse_number(value, 10000000, &ok);
+        if (!ok || c->count == 0)
+            parse_error(err, "invalid --count value '%s' (expected a number "
+                        "from 1 to 10000000)", value);
+        break;
+    }
+    case O_SEED: {
+        int ok;
+        c->seed = parse_number(value, 18446744073709551615ull, &ok);
+        c->seed_given = 1;
+        if (!ok)
+            parse_error(err, "invalid --seed value '%s' (expected a "
+                        "non-negative number)", value);
+        break;
+    }
     case O_TAG:
         c->tags[c->ntags++] = value;
         break;

@@ -32,6 +32,10 @@ jobs:
         run: $CC --version
       - name: Build and test
         run: make CC="$CC" CFLAGS="-O2 $WFLAGS" test
+      - name: Check the problem packs
+        # Every pack: its stubs build, ref passes every case, and ref and
+        # brute agree on 300 random cases (make test uses fewer).
+        run: make CC="$CC" CFLAGS="-O2 $WFLAGS" check-packs
       - name: Incremental rebuilds
         run: |
           # test_fs.c and test_md.c #include core sources, so their objects
@@ -127,6 +131,8 @@ jobs:
         run: clang --version
       - name: Build and test
         run: make CC=clang CFLAGS="-O2 $WFLAGS" test
+      - name: Check the problem packs
+        run: make CC=clang CFLAGS="-O2 $WFLAGS" check-packs
 
   install:
     # Installs, then runs lc with no LC_PROBLEMS and an empty HOME, so the

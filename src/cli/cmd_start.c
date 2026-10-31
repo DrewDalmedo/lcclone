@@ -46,18 +46,22 @@ static const lc_lang *existing_lang(lc_ctx *ctx, const lc_problem *p)
 }
 
 /*
- * Runs $VISUAL, else $EDITOR, else vi, through /bin/sh (so the value may
- * have arguments), on `file` in `dir`, and waits for it. Like system(),
- * lc ignores ^C meanwhile: it is the editor's.
+ * Runs the config's editor, else $VISUAL, else $EDITOR, else vi, through
+ * /bin/sh (so the value may have arguments), on `file` in `dir`, and on
+ * `extra` too unless it is NULL; and waits for it. Like system(), lc
+ * ignores ^C meanwhile: it is the editor's.
  */
-static int run_editor(cli *c, lc_ctx *ctx, const char *dir, const char *file)
+static int run_editor(cli *c, lc_ctx *ctx, const char *dir, const char *file,
+                      const char *extra)
 {
-    const char *ed = getenv("VISUAL");
+    const char *ed = lc_config_get(ctx, "editor");
     struct sigaction ign, old_int, old_quit;
     lc_str script = LC_STR_INIT;
     pid_t pid;
     int st = 0, rc = CLI_EXIT_OK;
 
+    if (!ed)
+        ed = getenv("VISUAL");
     if (!ed || !*ed)
         ed = getenv("EDITOR");
     if (!ed || !*ed)
@@ -77,7 +81,8 @@ static int run_editor(cli *c, lc_ctx *ctx, const char *dir, const char *file)
         signal(SIGPIPE, SIG_DFL);
         if (chdir(dir) != 0)
             _exit(126);
-        execl("/bin/sh", "sh", "-c", script.data, "sh", file, (char *)NULL);
+        execl("/bin/sh", "sh", "-c", script.data, "sh", file, extra,
+              (char *)NULL);
         _exit(127);
     }
     if (pid < 0) {
@@ -87,8 +92,9 @@ static int run_editor(cli *c, lc_ctx *ctx, const char *dir, const char *file)
         while (waitpid(pid, &st, 0) < 0 && errno == EINTR)
             ;
         if (WIFEXITED(st) && WEXITSTATUS(st) == 127)
-            rc = cli_error(c, ctx, "cannot run the editor '%s' (set VISUAL "
-                           "or EDITOR, or use --no-edit)", ed);
+            rc = cli_error(c, ctx, "cannot run the editor '%s' (set editor "
+                           "in the config file, VISUAL or EDITOR, or use "
+                           "--no-edit)", ed);
         else if (WIFEXITED(st) && WEXITSTATUS(st) == 126)
             rc = cli_error(c, ctx, "cannot run the editor '%s' in '%s'", ed,
                            dir);
@@ -162,6 +168,8 @@ int cmd_start(cli *c)
     if (!lang)
         lang = existing_lang(ctx, p);
     if (!lang)
+        lang = lc_lang_find(lc_config_get(ctx, "lang"));
+    if (!lang)
         lang = lc_lang_find("cpp");
 
     nwarn = lc_warning_count(ctx);
@@ -188,7 +196,11 @@ int cmd_start(cli *c)
         const char *base = strrchr(info.solution.data, '/');
 
         rc = run_editor(c, ctx, info.dir.data,
-                        base ? base + 1 : info.solution.data);
+                        base ? base + 1 : info.solution.data,
+                        lc_config_bool(lc_config_get(ctx, "open_statement"))
+                                == 1
+                            ? "README.md"
+                            : NULL);
     }
 done:
     lc_start_info_free(&info);

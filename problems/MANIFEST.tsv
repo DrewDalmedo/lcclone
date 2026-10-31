@@ -1,0 +1,989 @@
+# lcclone manifest: the LeetCode problems in scope and how far each pack is.
+# Tab-separated, one row per problem, in increasing id order. See
+# docs/authoring.md for the columns. Only facts (numbers, slugs, titles,
+# difficulty) come from LeetCode; every statement and test is our own.
+#
+# Source: the problem index of doocs/leetcode by the doocs contributors,
+# https://github.com/doocs/leetcode (solution/result.json at commit
+# 1cc0ae26dd63, 2026-10-30), licensed under CC BY-SA 4.0,
+# https://creativecommons.org/licenses/by-sa/4.0/. Changes: only the Easy
+# problems, and of each only its number, slug, title, difficulty and
+# premium flag; the group and status columns are ours. This file is
+# shared under the same license, CC BY-SA 4.0. How it was built:
+# docs/authoring.md, "How MANIFEST.tsv was built".
+#
+# id	slug	title	difficulty	premium	group	status
+1	two-sum	Two Sum	easy	no	unordered	verified
+9	palindrome-number	Palindrome Number	easy	no	plain	verified
+13	roman-to-integer	Roman to Integer	easy	no	plain	todo
+14	longest-common-prefix	Longest Common Prefix	easy	no	plain	verified
+20	valid-parentheses	Valid Parentheses	easy	no	plain	verified
+21	merge-two-sorted-lists	Merge Two Sorted Lists	easy	no	list	todo
+26	remove-duplicates-from-sorted-array	Remove Duplicates from Sorted Array	easy	no	inplace	todo
+27	remove-element	Remove Element	easy	no	inplace	todo
+28	find-the-index-of-the-first-occurrence-in-a-string	Find the Index of the First Occurrence in a String	easy	no	plain	todo
+35	search-insert-position	Search Insert Position	easy	no	plain	todo
+58	length-of-last-word	Length of Last Word	easy	no	plain	todo
+66	plus-one	Plus One	easy	no	plain	todo
+67	add-binary	Add Binary	easy	no	plain	todo
+69	sqrtx	Sqrt(x)	easy	no	plain	todo
+70	climbing-stairs	Climbing Stairs	easy	no	plain	verified
+83	remove-duplicates-from-sorted-list	Remove Duplicates from Sorted List	easy	no	list	todo
+88	merge-sorted-array	Merge Sorted Array	easy	no	inplace	todo
+94	binary-tree-inorder-traversal	Binary Tree Inorder Traversal	easy	no	tree	todo
+100	same-tree	Same Tree	easy	no	tree	todo
+101	symmetric-tree	Symmetric Tree	easy	no	tree	todo
+104	maximum-depth-of-binary-tree	Maximum Depth of Binary Tree	easy	no	tree	draft
+108	convert-sorted-array-to-binary-search-tree	Convert Sorted Array to Binary Search Tree	easy	no	checker	todo
+110	balanced-binary-tree	Balanced Binary Tree	easy	no	tree	todo
+111	minimum-depth-of-binary-tree	Minimum Depth of Binary Tree	easy	no	tree	todo
+112	path-sum	Path Sum	easy	no	tree	todo
+118	pascals-triangle	Pascal's Triangle	easy	no	plain	todo
+119	pascals-triangle-ii	Pascal's Triangle II	easy	no	plain	todo
+121	best-time-to-buy-and-sell-stock	Best Time to Buy and Sell Stock	easy	no	plain	verified
+125	valid-palindrome	Valid Palindrome	easy	no	plain	todo
+136	single-number	Single Number	easy	no	plain	todo
+141	linked-list-cycle	Linked List Cycle	easy	no	list-builder	todo
+144	binary-tree-preorder-traversal	Binary Tree Preorder Traversal	easy	no	tree	todo
+145	binary-tree-postorder-traversal	Binary Tree Postorder Traversal	easy	no	tree	todo
+157	read-n-characters-given-read4	Read N Characters Given Read4	easy	yes	skip:premium	todo
+160	intersection-of-two-linked-lists	Intersection of Two Linked Lists	easy	no	list-builder	todo
+163	missing-ranges	Missing Ranges	easy	yes	skip:premium	todo
+168	excel-sheet-column-title	Excel Sheet Column Title	easy	no	plain	todo
+169	majority-element	Majority Element	easy	no	plain	todo
+170	two-sum-iii-data-structure-design	Two Sum III - Data structure design	easy	yes	skip:premium	todo
+171	excel-sheet-column-number	Excel Sheet Column Number	easy	no	plain	todo
+175	combine-two-tables	Combine Two Tables	easy	no	skip:sql	todo
+181	employees-earning-more-than-their-managers	Employees Earning More Than Their Managers	easy	no	skip:sql	todo
+182	duplicate-emails	Duplicate Emails	easy	no	skip:sql	todo
+183	customers-who-never-order	Customers Who Never Order	easy	no	skip:sql	todo
+190	reverse-bits	Reverse Bits	easy	no	bits	verified
+191	number-of-1-bits	Number of 1 Bits	easy	no	plain	todo
+193	valid-phone-numbers	Valid Phone Numbers	easy	no	skip:shell	todo
+195	tenth-line	Tenth Line	easy	no	skip:shell	todo
+196	delete-duplicate-emails	Delete Duplicate Emails	easy	no	skip:sql	todo
+197	rising-temperature	Rising Temperature	easy	no	skip:sql	todo
+202	happy-number	Happy Number	easy	no	plain	todo
+203	remove-linked-list-elements	Remove Linked List Elements	easy	no	list	todo
+205	isomorphic-strings	Isomorphic Strings	easy	no	plain	todo
+206	reverse-linked-list	Reverse Linked List	easy	no	list	todo
+217	contains-duplicate	Contains Duplicate	easy	no	plain	todo
+219	contains-duplicate-ii	Contains Duplicate II	easy	no	plain	todo
+225	implement-stack-using-queues	Implement Stack using Queues	easy	no	design	todo
+226	invert-binary-tree	Invert Binary Tree	easy	no	tree	todo
+228	summary-ranges	Summary Ranges	easy	no	plain	todo
+231	power-of-two	Power of Two	easy	no	plain	todo
+232	implement-queue-using-stacks	Implement Queue using Stacks	easy	no	design	todo
+234	palindrome-linked-list	Palindrome Linked List	easy	no	list	todo
+242	valid-anagram	Valid Anagram	easy	no	plain	todo
+243	shortest-word-distance	Shortest Word Distance	easy	yes	skip:premium	todo
+246	strobogrammatic-number	Strobogrammatic Number	easy	yes	skip:premium	todo
+252	meeting-rooms	Meeting Rooms	easy	yes	skip:premium	todo
+257	binary-tree-paths	Binary Tree Paths	easy	no	tree	todo
+258	add-digits	Add Digits	easy	no	plain	todo
+263	ugly-number	Ugly Number	easy	no	plain	todo
+266	palindrome-permutation	Palindrome Permutation	easy	yes	skip:premium	todo
+268	missing-number	Missing Number	easy	no	plain	todo
+270	closest-binary-search-tree-value	Closest Binary Search Tree Value	easy	yes	skip:premium	todo
+278	first-bad-version	First Bad Version	easy	no	api	todo
+283	move-zeroes	Move Zeroes	easy	no	inplace	todo
+290	word-pattern	Word Pattern	easy	no	plain	todo
+292	nim-game	Nim Game	easy	no	plain	todo
+293	flip-game	Flip Game	easy	yes	skip:premium	todo
+303	range-sum-query-immutable	Range Sum Query - Immutable	easy	no	design	todo
+326	power-of-three	Power of Three	easy	no	plain	todo
+338	counting-bits	Counting Bits	easy	no	plain	todo
+342	power-of-four	Power of Four	easy	no	plain	todo
+344	reverse-string	Reverse String	easy	no	inplace	todo
+345	reverse-vowels-of-a-string	Reverse Vowels of a String	easy	no	plain	todo
+346	moving-average-from-data-stream	Moving Average from Data Stream	easy	yes	skip:premium	todo
+349	intersection-of-two-arrays	Intersection of Two Arrays	easy	no	unordered	todo
+350	intersection-of-two-arrays-ii	Intersection of Two Arrays II	easy	no	unordered	todo
+359	logger-rate-limiter	Logger Rate Limiter	easy	yes	skip:premium	todo
+367	valid-perfect-square	Valid Perfect Square	easy	no	plain	todo
+374	guess-number-higher-or-lower	Guess Number Higher or Lower	easy	no	api	todo
+383	ransom-note	Ransom Note	easy	no	plain	todo
+387	first-unique-character-in-a-string	First Unique Character in a String	easy	no	plain	todo
+389	find-the-difference	Find the Difference	easy	no	plain	todo
+392	is-subsequence	Is Subsequence	easy	no	plain	todo
+401	binary-watch	Binary Watch	easy	no	unordered	todo
+404	sum-of-left-leaves	Sum of Left Leaves	easy	no	tree	todo
+405	convert-a-number-to-hexadecimal	Convert a Number to Hexadecimal	easy	no	plain	todo
+408	valid-word-abbreviation	Valid Word Abbreviation	easy	yes	skip:premium	todo
+409	longest-palindrome	Longest Palindrome	easy	no	plain	todo
+412	fizz-buzz	Fizz Buzz	easy	no	plain	todo
+414	third-maximum-number	Third Maximum Number	easy	no	plain	todo
+415	add-strings	Add Strings	easy	no	plain	todo
+422	valid-word-square	Valid Word Square	easy	yes	skip:premium	todo
+434	number-of-segments-in-a-string	Number of Segments in a String	easy	no	plain	todo
+441	arranging-coins	Arranging Coins	easy	no	plain	todo
+448	find-all-numbers-disappeared-in-an-array	Find All Numbers Disappeared in an Array	easy	no	unordered	todo
+455	assign-cookies	Assign Cookies	easy	no	plain	todo
+459	repeated-substring-pattern	Repeated Substring Pattern	easy	no	plain	todo
+461	hamming-distance	Hamming Distance	easy	no	plain	todo
+463	island-perimeter	Island Perimeter	easy	no	plain	todo
+476	number-complement	Number Complement	easy	no	plain	todo
+482	license-key-formatting	License Key Formatting	easy	no	plain	todo
+485	max-consecutive-ones	Max Consecutive Ones	easy	no	plain	todo
+492	construct-the-rectangle	Construct the Rectangle	easy	no	plain	todo
+495	teemo-attacking	Teemo Attacking	easy	no	plain	todo
+496	next-greater-element-i	Next Greater Element I	easy	no	plain	todo
+500	keyboard-row	Keyboard Row	easy	no	plain	todo
+501	find-mode-in-binary-search-tree	Find Mode in Binary Search Tree	easy	no	tree	todo
+504	base-7	Base 7	easy	no	plain	todo
+506	relative-ranks	Relative Ranks	easy	no	plain	todo
+507	perfect-number	Perfect Number	easy	no	plain	todo
+509	fibonacci-number	Fibonacci Number	easy	no	plain	todo
+511	game-play-analysis-i	Game Play Analysis I	easy	no	skip:sql	todo
+512	game-play-analysis-ii	Game Play Analysis II	easy	yes	skip:sql	todo
+520	detect-capital	Detect Capital	easy	no	plain	todo
+521	longest-uncommon-subsequence-i	Longest Uncommon Subsequence I	easy	no	plain	todo
+530	minimum-absolute-difference-in-bst	Minimum Absolute Difference in BST	easy	no	tree	todo
+541	reverse-string-ii	Reverse String II	easy	no	plain	todo
+543	diameter-of-binary-tree	Diameter of Binary Tree	easy	no	tree	todo
+551	student-attendance-record-i	Student Attendance Record I	easy	no	plain	todo
+557	reverse-words-in-a-string-iii	Reverse Words in a String III	easy	no	plain	todo
+559	maximum-depth-of-n-ary-tree	Maximum Depth of N-ary Tree	easy	no	nary	todo
+561	array-partition	Array Partition	easy	no	plain	todo
+563	binary-tree-tilt	Binary Tree Tilt	easy	no	tree	todo
+566	reshape-the-matrix	Reshape the Matrix	easy	no	plain	todo
+572	subtree-of-another-tree	Subtree of Another Tree	easy	no	tree	todo
+575	distribute-candies	Distribute Candies	easy	no	plain	todo
+577	employee-bonus	Employee Bonus	easy	no	skip:sql	todo
+584	find-customer-referee	Find Customer Referee	easy	no	skip:sql	todo
+586	customer-placing-the-largest-number-of-orders	Customer Placing the Largest Number of Orders	easy	no	skip:sql	todo
+589	n-ary-tree-preorder-traversal	N-ary Tree Preorder Traversal	easy	no	nary	todo
+590	n-ary-tree-postorder-traversal	N-ary Tree Postorder Traversal	easy	no	nary	todo
+594	longest-harmonious-subsequence	Longest Harmonious Subsequence	easy	no	plain	todo
+595	big-countries	Big Countries	easy	no	skip:sql	todo
+596	classes-with-at-least-5-students	Classes With at Least 5 Students	easy	no	skip:sql	todo
+597	friend-requests-i-overall-acceptance-rate	Friend Requests I Overall Acceptance Rate	easy	yes	skip:sql	todo
+598	range-addition-ii	Range Addition II	easy	no	plain	todo
+599	minimum-index-sum-of-two-lists	Minimum Index Sum of Two Lists	easy	no	unordered	todo
+603	consecutive-available-seats	Consecutive Available Seats	easy	yes	skip:sql	todo
+604	design-compressed-string-iterator	Design Compressed String Iterator	easy	yes	skip:premium	todo
+605	can-place-flowers	Can Place Flowers	easy	no	plain	todo
+607	sales-person	Sales Person	easy	no	skip:sql	todo
+610	triangle-judgement	Triangle Judgement	easy	no	skip:sql	todo
+613	shortest-distance-in-a-line	Shortest Distance in a Line	easy	yes	skip:sql	todo
+617	merge-two-binary-trees	Merge Two Binary Trees	easy	no	tree	todo
+619	biggest-single-number	Biggest Single Number	easy	no	skip:sql	todo
+620	not-boring-movies	Not Boring Movies	easy	no	skip:sql	todo
+627	swap-sex-of-employees	Swap Sex of Employees	easy	no	skip:sql	todo
+628	maximum-product-of-three-numbers	Maximum Product of Three Numbers	easy	no	plain	todo
+637	average-of-levels-in-binary-tree	Average of Levels in Binary Tree	easy	no	tree	todo
+643	maximum-average-subarray-i	Maximum Average Subarray I	easy	no	float	verified
+645	set-mismatch	Set Mismatch	easy	no	plain	todo
+653	two-sum-iv-input-is-a-bst	Two Sum IV - Input is a BST	easy	no	tree	todo
+657	robot-return-to-origin	Robot Return to Origin	easy	no	plain	todo
+661	image-smoother	Image Smoother	easy	no	plain	todo
+671	second-minimum-node-in-a-binary-tree	Second Minimum Node In a Binary Tree	easy	no	tree	todo
+674	longest-continuous-increasing-subsequence	Longest Continuous Increasing Subsequence	easy	no	plain	todo
+680	valid-palindrome-ii	Valid Palindrome II	easy	no	plain	todo
+682	baseball-game	Baseball Game	easy	no	plain	todo
+693	binary-number-with-alternating-bits	Binary Number with Alternating Bits	easy	no	plain	todo
+696	count-binary-substrings	Count Binary Substrings	easy	no	plain	todo
+697	degree-of-an-array	Degree of an Array	easy	no	plain	todo
+700	search-in-a-binary-search-tree	Search in a Binary Search Tree	easy	no	tree	todo
+703	kth-largest-element-in-a-stream	Kth Largest Element in a Stream	easy	no	design	todo
+704	binary-search	Binary Search	easy	no	plain	todo
+705	design-hashset	Design HashSet	easy	no	design	todo
+706	design-hashmap	Design HashMap	easy	no	design	todo
+709	to-lower-case	To Lower Case	easy	no	plain	todo
+717	1-bit-and-2-bit-characters	1-bit and 2-bit Characters	easy	no	plain	todo
+724	find-pivot-index	Find Pivot Index	easy	no	plain	todo
+728	self-dividing-numbers	Self Dividing Numbers	easy	no	plain	todo
+733	flood-fill	Flood Fill	easy	no	plain	todo
+734	sentence-similarity	Sentence Similarity	easy	yes	skip:premium	todo
+744	find-smallest-letter-greater-than-target	Find Smallest Letter Greater Than Target	easy	no	plain	verified
+746	min-cost-climbing-stairs	Min Cost Climbing Stairs	easy	no	plain	todo
+747	largest-number-at-least-twice-of-others	Largest Number At Least Twice of Others	easy	no	plain	todo
+748	shortest-completing-word	Shortest Completing Word	easy	no	plain	todo
+760	find-anagram-mappings	Find Anagram Mappings	easy	yes	skip:premium	todo
+762	prime-number-of-set-bits-in-binary-representation	Prime Number of Set Bits in Binary Representation	easy	no	plain	todo
+766	toeplitz-matrix	Toeplitz Matrix	easy	no	plain	todo
+771	jewels-and-stones	Jewels and Stones	easy	no	plain	todo
+783	minimum-distance-between-bst-nodes	Minimum Distance Between BST Nodes	easy	no	tree	todo
+796	rotate-string	Rotate String	easy	no	plain	todo
+800	similar-rgb-color	Similar RGB Color	easy	yes	skip:premium	todo
+804	unique-morse-code-words	Unique Morse Code Words	easy	no	plain	todo
+806	number-of-lines-to-write-string	Number of Lines To Write String	easy	no	plain	todo
+812	largest-triangle-area	Largest Triangle Area	easy	no	float	todo
+819	most-common-word	Most Common Word	easy	no	plain	todo
+821	shortest-distance-to-a-character	Shortest Distance to a Character	easy	no	plain	todo
+824	goat-latin	Goat Latin	easy	no	plain	todo
+830	positions-of-large-groups	Positions of Large Groups	easy	no	plain	todo
+832	flipping-an-image	Flipping an Image	easy	no	plain	todo
+836	rectangle-overlap	Rectangle Overlap	easy	no	plain	todo
+844	backspace-string-compare	Backspace String Compare	easy	no	plain	todo
+859	buddy-strings	Buddy Strings	easy	no	plain	todo
+860	lemonade-change	Lemonade Change	easy	no	plain	todo
+867	transpose-matrix	Transpose Matrix	easy	no	plain	verified
+868	binary-gap	Binary Gap	easy	no	plain	todo
+872	leaf-similar-trees	Leaf-Similar Trees	easy	no	tree	todo
+876	middle-of-the-linked-list	Middle of the Linked List	easy	no	list	todo
+883	projection-area-of-3d-shapes	Projection Area of 3D Shapes	easy	no	plain	todo
+884	uncommon-words-from-two-sentences	Uncommon Words from Two Sentences	easy	no	unordered	todo
+888	fair-candy-swap	Fair Candy Swap	easy	no	checker	todo
+892	surface-area-of-3d-shapes	Surface Area of 3D Shapes	easy	no	plain	todo
+896	monotonic-array	Monotonic Array	easy	no	plain	todo
+897	increasing-order-search-tree	Increasing Order Search Tree	easy	no	tree	todo
+905	sort-array-by-parity	Sort Array By Parity	easy	no	checker	todo
+908	smallest-range-i	Smallest Range I	easy	no	plain	todo
+914	x-of-a-kind-in-a-deck-of-cards	X of a Kind in a Deck of Cards	easy	no	plain	todo
+917	reverse-only-letters	Reverse Only Letters	easy	no	plain	todo
+922	sort-array-by-parity-ii	Sort Array By Parity II	easy	no	checker	todo
+925	long-pressed-name	Long Pressed Name	easy	no	plain	todo
+929	unique-email-addresses	Unique Email Addresses	easy	no	plain	todo
+933	number-of-recent-calls	Number of Recent Calls	easy	no	design	todo
+938	range-sum-of-bst	Range Sum of BST	easy	no	tree	todo
+941	valid-mountain-array	Valid Mountain Array	easy	no	plain	todo
+942	di-string-match	DI String Match	easy	no	checker	todo
+944	delete-columns-to-make-sorted	Delete Columns to Make Sorted	easy	no	plain	todo
+953	verifying-an-alien-dictionary	Verifying an Alien Dictionary	easy	no	plain	todo
+961	n-repeated-element-in-size-2n-array	N-Repeated Element in Size 2N Array	easy	no	plain	todo
+965	univalued-binary-tree	Univalued Binary Tree	easy	no	tree	todo
+976	largest-perimeter-triangle	Largest Perimeter Triangle	easy	no	plain	todo
+977	squares-of-a-sorted-array	Squares of a Sorted Array	easy	no	plain	todo
+989	add-to-array-form-of-integer	Add to Array-Form of Integer	easy	no	plain	todo
+993	cousins-in-binary-tree	Cousins in Binary Tree	easy	no	tree	todo
+997	find-the-town-judge	Find the Town Judge	easy	no	plain	todo
+999	available-captures-for-rook	Available Captures for Rook	easy	no	plain	todo
+1002	find-common-characters	Find Common Characters	easy	no	unordered	todo
+1005	maximize-sum-of-array-after-k-negations	Maximize Sum Of Array After K Negations	easy	no	plain	todo
+1009	complement-of-base-10-integer	Complement of Base 10 Integer	easy	no	plain	todo
+1013	partition-array-into-three-parts-with-equal-sum	Partition Array Into Three Parts With Equal Sum	easy	no	plain	todo
+1018	binary-prefix-divisible-by-5	Binary Prefix Divisible By 5	easy	no	plain	todo
+1021	remove-outermost-parentheses	Remove Outermost Parentheses	easy	no	plain	todo
+1022	sum-of-root-to-leaf-binary-numbers	Sum of Root To Leaf Binary Numbers	easy	no	tree	todo
+1025	divisor-game	Divisor Game	easy	no	plain	todo
+1030	matrix-cells-in-distance-order	Matrix Cells in Distance Order	easy	no	checker	todo
+1037	valid-boomerang	Valid Boomerang	easy	no	plain	todo
+1046	last-stone-weight	Last Stone Weight	easy	no	plain	todo
+1047	remove-all-adjacent-duplicates-in-string	Remove All Adjacent Duplicates In String	easy	no	plain	todo
+1050	actors-and-directors-who-cooperated-at-least-three-times	Actors and Directors Who Cooperated At Least Three Times	easy	no	skip:sql	todo
+1051	height-checker	Height Checker	easy	no	plain	todo
+1056	confusing-number	Confusing Number	easy	yes	skip:premium	todo
+1064	fixed-point	Fixed Point	easy	yes	skip:premium	todo
+1065	index-pairs-of-a-string	Index Pairs of a String	easy	yes	skip:premium	todo
+1068	product-sales-analysis-i	Product Sales Analysis I	easy	no	skip:sql	todo
+1069	product-sales-analysis-ii	Product Sales Analysis II	easy	yes	skip:sql	todo
+1071	greatest-common-divisor-of-strings	Greatest Common Divisor of Strings	easy	no	plain	todo
+1075	project-employees-i	Project Employees I	easy	no	skip:sql	todo
+1076	project-employees-ii	Project Employees II	easy	yes	skip:sql	todo
+1078	occurrences-after-bigram	Occurrences After Bigram	easy	no	plain	todo
+1082	sales-analysis-i	Sales Analysis I	easy	yes	skip:sql	todo
+1083	sales-analysis-ii	Sales Analysis II	easy	yes	skip:sql	todo
+1084	sales-analysis-iii	Sales Analysis III	easy	no	skip:sql	todo
+1085	sum-of-digits-in-the-minimum-number	Sum of Digits in the Minimum Number	easy	yes	skip:premium	todo
+1086	high-five	High Five	easy	yes	skip:premium	todo
+1089	duplicate-zeros	Duplicate Zeros	easy	no	inplace	todo
+1099	two-sum-less-than-k	Two Sum Less Than K	easy	yes	skip:premium	todo
+1103	distribute-candies-to-people	Distribute Candies to People	easy	no	plain	todo
+1108	defanging-an-ip-address	Defanging an IP Address	easy	no	plain	todo
+1113	reported-posts	Reported Posts	easy	yes	skip:sql	todo
+1114	print-in-order	Print in Order	easy	no	skip:concurrency	todo
+1118	number-of-days-in-a-month	Number of Days in a Month	easy	yes	skip:premium	todo
+1119	remove-vowels-from-a-string	Remove Vowels from a String	easy	yes	skip:premium	todo
+1122	relative-sort-array	Relative Sort Array	easy	no	plain	todo
+1128	number-of-equivalent-domino-pairs	Number of Equivalent Domino Pairs	easy	no	plain	todo
+1133	largest-unique-number	Largest Unique Number	easy	yes	skip:premium	todo
+1134	armstrong-number	Armstrong Number	easy	yes	skip:premium	todo
+1137	n-th-tribonacci-number	N-th Tribonacci Number	easy	no	plain	todo
+1141	user-activity-for-the-past-30-days-i	User Activity for the Past 30 Days I	easy	no	skip:sql	todo
+1142	user-activity-for-the-past-30-days-ii	User Activity for the Past 30 Days II	easy	yes	skip:sql	todo
+1148	article-views-i	Article Views I	easy	no	skip:sql	todo
+1150	check-if-a-number-is-majority-element-in-a-sorted-array	Check If a Number Is Majority Element in a Sorted Array	easy	yes	skip:premium	todo
+1154	day-of-the-year	Day of the Year	easy	no	plain	todo
+1160	find-words-that-can-be-formed-by-characters	Find Words That Can Be Formed by Characters	easy	no	plain	todo
+1165	single-row-keyboard	Single-Row Keyboard	easy	yes	skip:premium	todo
+1173	immediate-food-delivery-i	Immediate Food Delivery I	easy	yes	skip:sql	todo
+1175	prime-arrangements	Prime Arrangements	easy	no	plain	todo
+1176	diet-plan-performance	Diet Plan Performance	easy	yes	skip:premium	todo
+1179	reformat-department-table	Reformat Department Table	easy	no	skip:sql	todo
+1180	count-substrings-with-only-one-distinct-letter	Count Substrings with Only One Distinct Letter	easy	yes	skip:premium	todo
+1184	distance-between-bus-stops	Distance Between Bus Stops	easy	no	plain	todo
+1185	day-of-the-week	Day of the Week	easy	no	plain	todo
+1189	maximum-number-of-balloons	Maximum Number of Balloons	easy	no	plain	todo
+1196	how-many-apples-can-you-put-into-the-basket	How Many Apples Can You Put into the Basket	easy	yes	skip:premium	todo
+1200	minimum-absolute-difference	Minimum Absolute Difference	easy	no	plain	todo
+1207	unique-number-of-occurrences	Unique Number of Occurrences	easy	no	plain	todo
+1211	queries-quality-and-percentage	Queries Quality and Percentage	easy	no	skip:sql	todo
+1213	intersection-of-three-sorted-arrays	Intersection of Three Sorted Arrays	easy	yes	skip:premium	todo
+1217	minimum-cost-to-move-chips-to-the-same-position	Minimum Cost to Move Chips to The Same Position	easy	no	plain	todo
+1221	split-a-string-in-balanced-strings	Split a String in Balanced Strings	easy	no	plain	todo
+1228	missing-number-in-arithmetic-progression	Missing Number In Arithmetic Progression	easy	yes	skip:premium	todo
+1232	check-if-it-is-a-straight-line	Check If It Is a Straight Line	easy	no	plain	todo
+1241	number-of-comments-per-post	Number of Comments per Post	easy	yes	skip:sql	todo
+1243	array-transformation	Array Transformation	easy	yes	skip:premium	todo
+1251	average-selling-price	Average Selling Price	easy	no	skip:sql	todo
+1252	cells-with-odd-values-in-a-matrix	Cells with Odd Values in a Matrix	easy	no	plain	todo
+1260	shift-2d-grid	Shift 2D Grid	easy	no	plain	todo
+1266	minimum-time-visiting-all-points	Minimum Time Visiting All Points	easy	no	plain	todo
+1271	hexspeak	Hexspeak	easy	yes	skip:premium	todo
+1275	find-winner-on-a-tic-tac-toe-game	Find Winner on a Tic Tac Toe Game	easy	no	plain	todo
+1279	traffic-light-controlled-intersection	Traffic Light Controlled Intersection	easy	yes	skip:concurrency	todo
+1280	students-and-examinations	Students and Examinations	easy	no	skip:sql	todo
+1281	subtract-the-product-and-sum-of-digits-of-an-integer	Subtract the Product and Sum of Digits of an Integer	easy	no	plain	todo
+1287	element-appearing-more-than-25-in-sorted-array	Element Appearing More Than 25% In Sorted Array	easy	no	plain	todo
+1290	convert-binary-number-in-a-linked-list-to-integer	Convert Binary Number in a Linked List to Integer	easy	no	list	todo
+1294	weather-type-in-each-country	Weather Type in Each Country	easy	yes	skip:sql	todo
+1295	find-numbers-with-even-number-of-digits	Find Numbers with Even Number of Digits	easy	no	plain	todo
+1299	replace-elements-with-greatest-element-on-right-side	Replace Elements with Greatest Element on Right Side	easy	no	plain	todo
+1303	find-the-team-size	Find the Team Size	easy	yes	skip:sql	todo
+1304	find-n-unique-integers-sum-up-to-zero	Find N Unique Integers Sum up to Zero	easy	no	checker	todo
+1309	decrypt-string-from-alphabet-to-integer-mapping	Decrypt String from Alphabet to Integer Mapping	easy	no	plain	todo
+1313	decompress-run-length-encoded-list	Decompress Run-Length Encoded List	easy	no	plain	todo
+1317	convert-integer-to-the-sum-of-two-no-zero-integers	Convert Integer to the Sum of Two No-Zero Integers	easy	no	checker	todo
+1322	ads-performance	Ads Performance	easy	yes	skip:sql	todo
+1323	maximum-69-number	Maximum 69 Number	easy	no	plain	todo
+1327	list-the-products-ordered-in-a-period	List the Products Ordered in a Period	easy	no	skip:sql	todo
+1331	rank-transform-of-an-array	Rank Transform of an Array	easy	no	plain	todo
+1332	remove-palindromic-subsequences	Remove Palindromic Subsequences	easy	no	plain	todo
+1337	the-k-weakest-rows-in-a-matrix	The K Weakest Rows in a Matrix	easy	no	plain	todo
+1342	number-of-steps-to-reduce-a-number-to-zero	Number of Steps to Reduce a Number to Zero	easy	no	plain	todo
+1346	check-if-n-and-its-double-exist	Check If N and Its Double Exist	easy	no	plain	todo
+1350	students-with-invalid-departments	Students With Invalid Departments	easy	yes	skip:sql	todo
+1351	count-negative-numbers-in-a-sorted-matrix	Count Negative Numbers in a Sorted Matrix	easy	no	plain	todo
+1356	sort-integers-by-the-number-of-1-bits	Sort Integers by The Number of 1 Bits	easy	no	plain	todo
+1360	number-of-days-between-two-dates	Number of Days Between Two Dates	easy	no	plain	todo
+1365	how-many-numbers-are-smaller-than-the-current-number	How Many Numbers Are Smaller Than the Current Number	easy	no	plain	todo
+1370	increasing-decreasing-string	Increasing Decreasing String	easy	no	plain	todo
+1374	generate-a-string-with-characters-that-have-odd-counts	Generate a String With Characters That Have Odd Counts	easy	no	checker	todo
+1378	replace-employee-id-with-the-unique-identifier	Replace Employee ID With The Unique Identifier	easy	no	skip:sql	todo
+1379	find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree	Find a Corresponding Node of a Binary Tree in a Clone of That Tree	easy	no	tree-ref	todo
+1380	lucky-numbers-in-a-matrix	Lucky Numbers in a Matrix	easy	no	unordered	todo
+1385	find-the-distance-value-between-two-arrays	Find the Distance Value Between Two Arrays	easy	no	plain	todo
+1389	create-target-array-in-the-given-order	Create Target Array in the Given Order	easy	no	plain	todo
+1394	find-lucky-integer-in-an-array	Find Lucky Integer in an Array	easy	no	plain	todo
+1399	count-largest-group	Count Largest Group	easy	no	plain	todo
+1403	minimum-subsequence-in-non-increasing-order	Minimum Subsequence in Non-Increasing Order	easy	no	plain	todo
+1407	top-travellers	Top Travellers	easy	no	skip:sql	todo
+1408	string-matching-in-an-array	String Matching in an Array	easy	no	unordered	todo
+1413	minimum-value-to-get-positive-step-by-step-sum	Minimum Value to Get Positive Step by Step Sum	easy	no	plain	todo
+1417	reformat-the-string	Reformat The String	easy	no	checker	todo
+1421	npv-queries	NPV Queries	easy	yes	skip:sql	todo
+1422	maximum-score-after-splitting-a-string	Maximum Score After Splitting a String	easy	no	plain	todo
+1426	counting-elements	Counting Elements	easy	yes	skip:premium	todo
+1427	perform-string-shifts	Perform String Shifts	easy	yes	skip:premium	todo
+1431	kids-with-the-greatest-number-of-candies	Kids With the Greatest Number of Candies	easy	no	plain	todo
+1435	create-a-session-bar-chart	Create a Session Bar Chart	easy	yes	skip:sql	todo
+1436	destination-city	Destination City	easy	no	plain	todo
+1437	check-if-all-1s-are-at-least-length-k-places-away	Check If All 1's Are at Least Length K Places Away	easy	no	plain	todo
+1446	consecutive-characters	Consecutive Characters	easy	no	plain	todo
+1450	number-of-students-doing-homework-at-a-given-time	Number of Students Doing Homework at a Given Time	easy	no	plain	todo
+1455	check-if-a-word-occurs-as-a-prefix-of-any-word-in-a-sentence	Check If a Word Occurs As a Prefix of Any Word in a Sentence	easy	no	plain	todo
+1460	make-two-arrays-equal-by-reversing-subarrays	Make Two Arrays Equal by Reversing Subarrays	easy	no	plain	todo
+1464	maximum-product-of-two-elements-in-an-array	Maximum Product of Two Elements in an Array	easy	no	plain	todo
+1469	find-all-the-lonely-nodes	Find All The Lonely Nodes	easy	yes	skip:premium	todo
+1470	shuffle-the-array	Shuffle the Array	easy	no	plain	todo
+1474	delete-n-nodes-after-m-nodes-of-a-linked-list	Delete N Nodes After M Nodes of a Linked List	easy	yes	skip:premium	todo
+1475	final-prices-with-a-special-discount-in-a-shop	Final Prices With a Special Discount in a Shop	easy	no	plain	todo
+1480	running-sum-of-1d-array	Running Sum of 1d Array	easy	no	plain	todo
+1484	group-sold-products-by-the-date	Group Sold Products By The Date	easy	no	skip:sql	todo
+1486	xor-operation-in-an-array	XOR Operation in an Array	easy	no	plain	todo
+1491	average-salary-excluding-the-minimum-and-maximum-salary	Average Salary Excluding the Minimum and Maximum Salary	easy	no	float	todo
+1495	friendly-movies-streamed-last-month	Friendly Movies Streamed Last Month	easy	yes	skip:sql	todo
+1496	path-crossing	Path Crossing	easy	no	plain	todo
+1502	can-make-arithmetic-progression-from-sequence	Can Make Arithmetic Progression From Sequence	easy	no	plain	todo
+1507	reformat-date	Reformat Date	easy	no	plain	todo
+1511	customer-order-frequency	Customer Order Frequency	easy	yes	skip:sql	todo
+1512	number-of-good-pairs	Number of Good Pairs	easy	no	plain	todo
+1517	find-users-with-valid-e-mails	Find Users With Valid E-Mails	easy	no	skip:sql	todo
+1518	water-bottles	Water Bottles	easy	no	plain	todo
+1523	count-odd-numbers-in-an-interval-range	Count Odd Numbers in an Interval Range	easy	no	plain	todo
+1527	patients-with-a-condition	Patients With a Condition	easy	no	skip:sql	todo
+1528	shuffle-string	Shuffle String	easy	no	plain	todo
+1534	count-good-triplets	Count Good Triplets	easy	no	plain	todo
+1539	kth-missing-positive-number	Kth Missing Positive Number	easy	no	plain	todo
+1543	fix-product-name-format	Fix Product Name Format	easy	yes	skip:sql	todo
+1544	make-the-string-great	Make The String Great	easy	no	plain	todo
+1550	three-consecutive-odds	Three Consecutive Odds	easy	no	plain	todo
+1556	thousand-separator	Thousand Separator	easy	no	plain	todo
+1560	most-visited-sector-in-a-circular-track	Most Visited Sector in  a Circular Track	easy	no	plain	todo
+1565	unique-orders-and-customers-per-month	Unique Orders and Customers Per Month	easy	yes	skip:sql	todo
+1566	detect-pattern-of-length-m-repeated-k-or-more-times	Detect Pattern of Length M Repeated K or More Times	easy	no	plain	todo
+1571	warehouse-manager	Warehouse Manager	easy	yes	skip:sql	todo
+1572	matrix-diagonal-sum	Matrix Diagonal Sum	easy	no	plain	todo
+1576	replace-all-s-to-avoid-consecutive-repeating-characters	Replace All 's to Avoid Consecutive Repeating Characters	easy	no	checker	todo
+1581	customer-who-visited-but-did-not-make-any-transactions	Customer Who Visited but Did Not Make Any Transactions	easy	no	skip:sql	todo
+1582	special-positions-in-a-binary-matrix	Special Positions in a Binary Matrix	easy	no	plain	todo
+1587	bank-account-summary-ii	Bank Account Summary II	easy	no	skip:sql	todo
+1588	sum-of-all-odd-length-subarrays	Sum of All Odd Length Subarrays	easy	no	plain	todo
+1592	rearrange-spaces-between-words	Rearrange Spaces Between Words	easy	no	plain	todo
+1598	crawler-log-folder	Crawler Log Folder	easy	no	plain	todo
+1603	design-parking-system	Design Parking System	easy	no	design	todo
+1607	sellers-with-no-sales	Sellers With No Sales	easy	yes	skip:sql	todo
+1608	special-array-with-x-elements-greater-than-or-equal-x	Special Array With X Elements Greater Than or Equal X	easy	no	plain	todo
+1614	maximum-nesting-depth-of-the-parentheses	Maximum Nesting Depth of the Parentheses	easy	no	plain	todo
+1619	mean-of-array-after-removing-some-elements	Mean of Array After Removing Some Elements	easy	no	float	todo
+1623	all-valid-triplets-that-can-represent-a-country	All Valid Triplets That Can Represent a Country	easy	yes	skip:sql	todo
+1624	largest-substring-between-two-equal-characters	Largest Substring Between Two Equal Characters	easy	no	plain	todo
+1629	slowest-key	Slowest Key	easy	no	plain	todo
+1633	percentage-of-users-attended-a-contest	Percentage of Users Attended a Contest	easy	no	skip:sql	todo
+1636	sort-array-by-increasing-frequency	Sort Array by Increasing Frequency	easy	no	plain	todo
+1637	widest-vertical-area-between-two-points-containing-no-points	Widest Vertical Area Between Two Points Containing No Points	easy	no	plain	todo
+1640	check-array-formation-through-concatenation	Check Array Formation Through Concatenation	easy	no	plain	todo
+1646	get-maximum-in-generated-array	Get Maximum in Generated Array	easy	no	plain	todo
+1652	defuse-the-bomb	Defuse the Bomb	easy	no	plain	todo
+1656	design-an-ordered-stream	Design an Ordered Stream	easy	no	design	todo
+1661	average-time-of-process-per-machine	Average Time of Process per Machine	easy	no	skip:sql	todo
+1662	check-if-two-string-arrays-are-equivalent	Check If Two String Arrays are Equivalent	easy	no	plain	todo
+1667	fix-names-in-a-table	Fix Names in a Table	easy	no	skip:sql	todo
+1668	maximum-repeating-substring	Maximum Repeating Substring	easy	no	plain	todo
+1672	richest-customer-wealth	Richest Customer Wealth	easy	no	plain	todo
+1677	products-worth-over-invoices	Product's Worth Over Invoices	easy	yes	skip:sql	todo
+1678	goal-parser-interpretation	Goal Parser Interpretation	easy	no	plain	todo
+1683	invalid-tweets	Invalid Tweets	easy	no	skip:sql	todo
+1684	count-the-number-of-consistent-strings	Count the Number of Consistent Strings	easy	no	plain	todo
+1688	count-of-matches-in-tournament	Count of Matches in Tournament	easy	no	plain	todo
+1693	daily-leads-and-partners	Daily Leads and Partners	easy	no	skip:sql	todo
+1694	reformat-phone-number	Reformat Phone Number	easy	no	plain	todo
+1700	number-of-students-unable-to-eat-lunch	Number of Students Unable to Eat Lunch	easy	no	plain	todo
+1704	determine-if-string-halves-are-alike	Determine if String Halves Are Alike	easy	no	plain	todo
+1708	largest-subarray-length-k	Largest Subarray Length K	easy	yes	skip:premium	todo
+1710	maximum-units-on-a-truck	Maximum Units on a Truck	easy	no	plain	todo
+1716	calculate-money-in-leetcode-bank	Calculate Money in Leetcode Bank	easy	no	plain	todo
+1720	decode-xored-array	Decode XORed Array	easy	no	plain	todo
+1725	number-of-rectangles-that-can-form-the-largest-square	Number Of Rectangles That Can Form The Largest Square	easy	no	plain	todo
+1729	find-followers-count	Find Followers Count	easy	no	skip:sql	todo
+1731	the-number-of-employees-which-report-to-each-employee	The Number of Employees Which Report to Each Employee	easy	no	skip:sql	todo
+1732	find-the-highest-altitude	Find the Highest Altitude	easy	no	plain	todo
+1736	latest-time-by-replacing-hidden-digits	Latest Time by Replacing Hidden Digits	easy	no	plain	todo
+1741	find-total-time-spent-by-each-employee	Find Total Time Spent by Each Employee	easy	no	skip:sql	todo
+1742	maximum-number-of-balls-in-a-box	Maximum Number of Balls in a Box	easy	no	plain	todo
+1748	sum-of-unique-elements	Sum of Unique Elements	easy	no	plain	todo
+1752	check-if-array-is-sorted-and-rotated	Check if Array Is Sorted and Rotated	easy	no	plain	todo
+1757	recyclable-and-low-fat-products	Recyclable and Low Fat Products	easy	no	skip:sql	todo
+1758	minimum-changes-to-make-alternating-binary-string	Minimum Changes To Make Alternating Binary String	easy	no	plain	todo
+1763	longest-nice-substring	Longest Nice Substring	easy	no	plain	todo
+1768	merge-strings-alternately	Merge Strings Alternately	easy	no	plain	todo
+1773	count-items-matching-a-rule	Count Items Matching a Rule	easy	no	plain	todo
+1777	products-price-for-each-store	Product's Price for Each Store	easy	yes	skip:sql	todo
+1779	find-nearest-point-that-has-the-same-x-or-y-coordinate	Find Nearest Point That Has the Same X or Y Coordinate	easy	no	plain	todo
+1784	check-if-binary-string-has-at-most-one-segment-of-ones	Check if Binary String Has at Most One Segment of Ones	easy	no	plain	todo
+1789	primary-department-for-each-employee	Primary Department for Each Employee	easy	no	skip:sql	todo
+1790	check-if-one-string-swap-can-make-strings-equal	Check if One String Swap Can Make Strings Equal	easy	no	plain	todo
+1791	find-center-of-star-graph	Find Center of Star Graph	easy	no	plain	todo
+1795	rearrange-products-table	Rearrange Products Table	easy	no	skip:sql	todo
+1796	second-largest-digit-in-a-string	Second Largest Digit in a String	easy	no	plain	todo
+1800	maximum-ascending-subarray-sum	Maximum Ascending Subarray Sum	easy	no	plain	todo
+1805	number-of-different-integers-in-a-string	Number of Different Integers in a String	easy	no	plain	todo
+1809	ad-free-sessions	Ad-Free Sessions	easy	yes	skip:sql	todo
+1812	determine-color-of-a-chessboard-square	Determine Color of a Chessboard Square	easy	no	plain	todo
+1816	truncate-sentence	Truncate Sentence	easy	no	plain	todo
+1821	find-customers-with-positive-revenue-this-year	Find Customers With Positive Revenue this Year	easy	yes	skip:sql	todo
+1822	sign-of-the-product-of-an-array	Sign of the Product of an Array	easy	no	plain	todo
+1826	faulty-sensor	Faulty Sensor	easy	yes	skip:premium	todo
+1827	minimum-operations-to-make-the-array-increasing	Minimum Operations to Make the Array Increasing	easy	no	plain	todo
+1832	check-if-the-sentence-is-pangram	Check if the Sentence Is Pangram	easy	no	plain	todo
+1837	sum-of-digits-in-base-k	Sum of Digits in Base K	easy	no	plain	todo
+1844	replace-all-digits-with-characters	Replace All Digits with Characters	easy	no	plain	todo
+1848	minimum-distance-to-the-target-element	Minimum Distance to the Target Element	easy	no	plain	todo
+1853	convert-date-format	Convert Date Format	easy	yes	skip:sql	todo
+1854	maximum-population-year	Maximum Population Year	easy	no	plain	todo
+1859	sorting-the-sentence	Sorting the Sentence	easy	no	plain	todo
+1863	sum-of-all-subset-xor-totals	Sum of All Subset XOR Totals	easy	no	plain	todo
+1869	longer-contiguous-segments-of-ones-than-zeros	Longer Contiguous Segments of Ones than Zeros	easy	no	plain	todo
+1873	calculate-special-bonus	Calculate Special Bonus	easy	no	skip:sql	todo
+1876	substrings-of-size-three-with-distinct-characters	Substrings of Size Three with Distinct Characters	easy	no	plain	todo
+1880	check-if-word-equals-summation-of-two-words	Check if Word Equals Summation of Two Words	easy	no	plain	todo
+1886	determine-whether-matrix-can-be-obtained-by-rotation	Determine Whether Matrix Can Be Obtained By Rotation	easy	no	plain	todo
+1890	the-latest-login-in-2020	The Latest Login in 2020	easy	no	skip:sql	todo
+1893	check-if-all-the-integers-in-a-range-are-covered	Check if All the Integers in a Range Are Covered	easy	no	plain	todo
+1897	redistribute-characters-to-make-all-strings-equal	Redistribute Characters to Make All Strings Equal	easy	no	plain	todo
+1903	largest-odd-number-in-string	Largest Odd Number in String	easy	no	plain	todo
+1909	remove-one-element-to-make-the-array-strictly-increasing	Remove One Element to Make the Array Strictly Increasing	easy	no	plain	todo
+1913	maximum-product-difference-between-two-pairs	Maximum Product Difference Between Two Pairs	easy	no	plain	todo
+1920	build-array-from-permutation	Build Array from Permutation	easy	no	plain	todo
+1925	count-square-sum-triples	Count Square Sum Triples	easy	no	plain	todo
+1929	concatenation-of-array	Concatenation of Array	easy	no	plain	todo
+1933	check-if-string-is-decomposable-into-value-equal-substrings	Check if String Is Decomposable Into Value-Equal Substrings	easy	yes	skip:premium	todo
+1935	maximum-number-of-words-you-can-type	Maximum Number of Words You Can Type	easy	no	plain	todo
+1939	users-that-actively-request-confirmation-messages	Users That Actively Request Confirmation Messages	easy	yes	skip:sql	todo
+1941	check-if-all-characters-have-equal-number-of-occurrences	Check if All Characters Have Equal Number of Occurrences	easy	no	plain	todo
+1945	sum-of-digits-of-string-after-convert	Sum of Digits of String After Convert	easy	no	plain	todo
+1952	three-divisors	Three Divisors	easy	no	plain	todo
+1957	delete-characters-to-make-fancy-string	Delete Characters to Make Fancy String	easy	no	plain	todo
+1961	check-if-string-is-a-prefix-of-array	Check If String Is a Prefix of Array	easy	no	plain	todo
+1965	employees-with-missing-information	Employees With Missing Information	easy	no	skip:sql	todo
+1967	number-of-strings-that-appear-as-substrings-in-word	Number of Strings That Appear as Substrings in Word	easy	no	plain	todo
+1971	find-if-path-exists-in-graph	Find if Path Exists in Graph	easy	no	plain	todo
+1974	minimum-time-to-type-word-using-special-typewriter	Minimum Time to Type Word Using Special Typewriter	easy	no	plain	todo
+1978	employees-whose-manager-left-the-company	Employees Whose Manager Left the Company	easy	no	skip:sql	todo
+1979	find-greatest-common-divisor-of-array	Find Greatest Common Divisor of Array	easy	no	plain	todo
+1984	minimum-difference-between-highest-and-lowest-of-k-scores	Minimum Difference Between Highest and Lowest of K Scores	easy	no	plain	todo
+1991	find-the-middle-index-in-array	Find the Middle Index in Array	easy	no	plain	todo
+1995	count-special-quadruplets	Count Special Quadruplets	easy	no	plain	todo
+2000	reverse-prefix-of-word	Reverse Prefix of Word	easy	no	plain	todo
+2006	count-number-of-pairs-with-absolute-difference-k	Count Number of Pairs With Absolute Difference K	easy	no	plain	todo
+2011	final-value-of-variable-after-performing-operations	Final Value of Variable After Performing Operations	easy	no	plain	todo
+2016	maximum-difference-between-increasing-elements	Maximum Difference Between Increasing Elements	easy	no	plain	todo
+2022	convert-1d-array-into-2d-array	Convert 1D Array Into 2D Array	easy	no	plain	todo
+2026	low-quality-problems	Low-Quality Problems	easy	yes	skip:sql	todo
+2027	minimum-moves-to-convert-string	Minimum Moves to Convert String	easy	no	plain	todo
+2032	two-out-of-three	Two Out of Three	easy	no	unordered	todo
+2037	minimum-number-of-moves-to-seat-everyone	Minimum Number of Moves to Seat Everyone	easy	no	plain	todo
+2042	check-if-numbers-are-ascending-in-a-sentence	Check if Numbers Are Ascending in a Sentence	easy	no	plain	todo
+2047	number-of-valid-words-in-a-sentence	Number of Valid Words in a Sentence	easy	no	plain	todo
+2053	kth-distinct-string-in-an-array	Kth Distinct String in an Array	easy	no	plain	todo
+2057	smallest-index-with-equal-value	Smallest Index With Equal Value	easy	no	plain	todo
+2062	count-vowel-substrings-of-a-string	Count Vowel Substrings of a String	easy	no	plain	todo
+2068	check-whether-two-strings-are-almost-equivalent	Check Whether Two Strings are Almost Equivalent	easy	no	plain	todo
+2072	the-winner-university	The Winner University	easy	yes	skip:sql	todo
+2073	time-needed-to-buy-tickets	Time Needed to Buy Tickets	easy	no	plain	todo
+2078	two-furthest-houses-with-different-colors	Two Furthest Houses With Different Colors	easy	no	plain	todo
+2082	the-number-of-rich-customers	The Number of Rich Customers	easy	yes	skip:sql	todo
+2085	count-common-words-with-one-occurrence	Count Common Words With One Occurrence	easy	no	plain	todo
+2089	find-target-indices-after-sorting-array	Find Target Indices After Sorting Array	easy	no	plain	todo
+2094	finding-3-digit-even-numbers	Finding 3-Digit Even Numbers	easy	no	plain	todo
+2099	find-subsequence-of-length-k-with-the-largest-sum	Find Subsequence of Length K With the Largest Sum	easy	no	checker	todo
+2103	rings-and-rods	Rings and Rods	easy	no	plain	todo
+2108	find-first-palindromic-string-in-the-array	Find First Palindromic String in the Array	easy	no	plain	todo
+2114	maximum-number-of-words-found-in-sentences	Maximum Number of Words Found in Sentences	easy	no	plain	todo
+2119	a-number-after-a-double-reversal	A Number After a Double Reversal	easy	no	plain	todo
+2124	check-if-all-as-appears-before-all-bs	Check if All A's Appears Before All B's	easy	no	plain	todo
+2129	capitalize-the-title	Capitalize the Title	easy	no	plain	todo
+2133	check-if-every-row-and-column-contains-all-numbers	Check if Every Row and Column Contains All Numbers	easy	no	plain	todo
+2138	divide-a-string-into-groups-of-size-k	Divide a String Into Groups of Size k	easy	no	plain	todo
+2144	minimum-cost-of-buying-candies-with-discount	Minimum Cost of Buying Candies With Discount	easy	no	plain	todo
+2148	count-elements-with-strictly-smaller-and-greater-elements	Count Elements With Strictly Smaller and Greater Elements	easy	no	plain	todo
+2154	keep-multiplying-found-values-by-two	Keep Multiplying Found Values by Two	easy	no	plain	todo
+2160	minimum-sum-of-four-digit-number-after-splitting-digits	Minimum Sum of Four Digit Number After Splitting Digits	easy	no	plain	todo
+2164	sort-even-and-odd-indices-independently	Sort Even and Odd Indices Independently	easy	no	plain	todo
+2169	count-operations-to-obtain-zero	Count Operations to Obtain Zero	easy	no	plain	todo
+2176	count-equal-and-divisible-pairs-in-an-array	Count Equal and Divisible Pairs in an Array	easy	no	plain	todo
+2180	count-integers-with-even-digit-sum	Count Integers With Even Digit Sum	easy	no	plain	todo
+2185	counting-words-with-a-given-prefix	Counting Words With a Given Prefix	easy	no	plain	todo
+2190	most-frequent-number-following-key-in-an-array	Most Frequent Number Following Key In an Array	easy	no	plain	todo
+2194	cells-in-a-range-on-an-excel-sheet	Cells in a Range on an Excel Sheet	easy	no	plain	todo
+2200	find-all-k-distant-indices-in-an-array	Find All K-Distant Indices in an Array	easy	no	plain	todo
+2205	the-number-of-users-that-are-eligible-for-discount	The Number of Users That Are Eligible for Discount	easy	yes	skip:sql	todo
+2206	divide-array-into-equal-pairs	Divide Array Into Equal Pairs	easy	no	plain	todo
+2210	count-hills-and-valleys-in-an-array	Count Hills and Valleys in an Array	easy	no	plain	todo
+2215	find-the-difference-of-two-arrays	Find the Difference of Two Arrays	easy	no	unordered	todo
+2220	minimum-bit-flips-to-convert-number	Minimum Bit Flips to Convert Number	easy	no	plain	todo
+2224	minimum-number-of-operations-to-convert-time	Minimum Number of Operations to Convert Time	easy	no	plain	todo
+2229	check-if-an-array-is-consecutive	Check if an Array Is Consecutive	easy	yes	skip:premium	todo
+2230	the-users-that-are-eligible-for-discount	The Users That Are Eligible for Discount	easy	yes	skip:sql	todo
+2231	largest-number-after-digit-swaps-by-parity	Largest Number After Digit Swaps by Parity	easy	no	plain	todo
+2235	add-two-integers	Add Two Integers	easy	no	plain	todo
+2236	root-equals-sum-of-children	Root Equals Sum of Children	easy	no	tree	todo
+2239	find-closest-number-to-zero	Find Closest Number to Zero	easy	no	plain	todo
+2243	calculate-digit-sum-of-a-string	Calculate Digit Sum of a String	easy	no	plain	todo
+2248	intersection-of-multiple-arrays	Intersection of Multiple Arrays	easy	no	plain	todo
+2255	count-prefixes-of-a-given-string	Count Prefixes of a Given String	easy	no	plain	todo
+2259	remove-digit-from-number-to-maximize-result	Remove Digit From Number to Maximize Result	easy	no	plain	todo
+2264	largest-3-same-digit-number-in-string	Largest 3-Same-Digit Number in String	easy	no	plain	todo
+2269	find-the-k-beauty-of-a-number	Find the K-Beauty of a Number	easy	no	plain	todo
+2273	find-resultant-array-after-removing-anagrams	Find Resultant Array After Removing Anagrams	easy	no	plain	todo
+2278	percentage-of-letter-in-string	Percentage of Letter in String	easy	no	plain	todo
+2283	check-if-number-has-equal-digit-count-and-digit-value	Check if Number Has Equal Digit Count and Digit Value	easy	no	plain	todo
+2287	rearrange-characters-to-make-target-string	Rearrange Characters to Make Target String	easy	no	plain	todo
+2293	min-max-game	Min Max Game	easy	no	plain	todo
+2299	strong-password-checker-ii	Strong Password Checker II	easy	no	plain	todo
+2303	calculate-amount-paid-in-taxes	Calculate Amount Paid in Taxes	easy	no	float	todo
+2309	greatest-english-letter-in-upper-and-lower-case	Greatest English Letter in Upper and Lower Case	easy	no	plain	todo
+2315	count-asterisks	Count Asterisks	easy	no	plain	todo
+2319	check-if-matrix-is-x-matrix	Check if Matrix Is X-Matrix	easy	no	plain	todo
+2325	decode-the-message	Decode the Message	easy	no	plain	todo
+2329	product-sales-analysis-v	Product Sales Analysis V	easy	yes	skip:sql	todo
+2331	evaluate-boolean-binary-tree	Evaluate Boolean Binary Tree	easy	no	tree	todo
+2335	minimum-amount-of-time-to-fill-cups	Minimum Amount of Time to Fill Cups	easy	no	plain	todo
+2339	all-the-matches-of-the-league	All the Matches of the League	easy	yes	skip:sql	todo
+2341	maximum-number-of-pairs-in-array	Maximum Number of Pairs in Array	easy	no	plain	todo
+2347	best-poker-hand	Best Poker Hand	easy	no	plain	todo
+2351	first-letter-to-appear-twice	First Letter to Appear Twice	easy	no	plain	todo
+2356	number-of-unique-subjects-taught-by-each-teacher	Number of Unique Subjects Taught by Each Teacher	easy	no	skip:sql	todo
+2357	make-array-zero-by-subtracting-equal-amounts	Make Array Zero by Subtracting Equal Amounts	easy	no	plain	todo
+2363	merge-similar-items	Merge Similar Items	easy	no	plain	todo
+2367	number-of-arithmetic-triplets	Number of Arithmetic Triplets	easy	no	plain	todo
+2373	largest-local-values-in-a-matrix	Largest Local Values in a Matrix	easy	no	plain	todo
+2377	sort-the-olympic-table	Sort the Olympic Table	easy	yes	skip:sql	todo
+2379	minimum-recolors-to-get-k-consecutive-black-blocks	Minimum Recolors to Get K Consecutive Black Blocks	easy	no	plain	todo
+2383	minimum-hours-of-training-to-win-a-competition	Minimum Hours of Training to Win a Competition	easy	no	plain	todo
+2389	longest-subsequence-with-limited-sum	Longest Subsequence With Limited Sum	easy	no	plain	todo
+2395	find-subarrays-with-equal-sum	Find Subarrays With Equal Sum	easy	no	plain	todo
+2399	check-distances-between-same-letters	Check Distances Between Same Letters	easy	no	plain	todo
+2404	most-frequent-even-element	Most Frequent Even Element	easy	no	plain	todo
+2409	count-days-spent-together	Count Days Spent Together	easy	no	plain	todo
+2413	smallest-even-multiple	Smallest Even Multiple	easy	no	plain	todo
+2418	sort-the-people	Sort the People	easy	no	plain	todo
+2423	remove-letter-to-equalize-frequency	Remove Letter To Equalize Frequency	easy	no	plain	todo
+2427	number-of-common-factors	Number of Common Factors	easy	no	plain	todo
+2432	the-employee-that-worked-on-the-longest-task	The Employee That Worked on the Longest Task	easy	no	plain	todo
+2437	number-of-valid-clock-times	Number of Valid Clock Times	easy	no	plain	todo
+2441	largest-positive-integer-that-exists-with-its-negative	Largest Positive Integer That Exists With Its Negative	easy	no	plain	todo
+2446	determine-if-two-events-have-conflict	Determine if Two Events Have Conflict	easy	no	plain	todo
+2451	odd-string-difference	Odd String Difference	easy	no	plain	todo
+2455	average-value-of-even-numbers-that-are-divisible-by-three	Average Value of Even Numbers That Are Divisible by Three	easy	no	plain	todo
+2460	apply-operations-to-an-array	Apply Operations to an Array	easy	no	plain	todo
+2465	number-of-distinct-averages	Number of Distinct Averages	easy	no	plain	todo
+2469	convert-the-temperature	Convert the Temperature	easy	no	float	todo
+2475	number-of-unequal-triplets-in-array	Number of Unequal Triplets in Array	easy	no	plain	todo
+2480	form-a-chemical-bond	Form a Chemical Bond	easy	yes	skip:sql	todo
+2481	minimum-cuts-to-divide-a-circle	Minimum Cuts to Divide a Circle	easy	no	plain	todo
+2485	find-the-pivot-integer	Find the Pivot Integer	easy	no	plain	todo
+2490	circular-sentence	Circular Sentence	easy	no	plain	todo
+2496	maximum-value-of-a-string-in-an-array	Maximum Value of a String in an Array	easy	no	plain	todo
+2500	delete-greatest-value-in-each-row	Delete Greatest Value in Each Row	easy	no	plain	todo
+2504	concatenate-the-name-and-the-profession	Concatenate the Name and the Profession	easy	yes	skip:sql	todo
+2506	count-pairs-of-similar-strings	Count Pairs Of Similar Strings	easy	no	plain	todo
+2511	maximum-enemy-forts-that-can-be-captured	Maximum Enemy Forts That Can Be Captured	easy	no	plain	todo
+2515	shortest-distance-to-target-string-in-a-circular-array	Shortest Distance to Target String in a Circular Array	easy	no	plain	todo
+2520	count-the-digits-that-divide-a-number	Count the Digits That Divide a Number	easy	no	plain	todo
+2525	categorize-box-according-to-criteria	Categorize Box According to Criteria	easy	no	plain	todo
+2529	maximum-count-of-positive-integer-and-negative-integer	Maximum Count of Positive Integer and Negative Integer	easy	no	plain	todo
+2535	difference-between-element-sum-and-digit-sum-of-an-array	Difference Between Element Sum and Digit Sum of an Array	easy	no	plain	todo
+2540	minimum-common-value	Minimum Common Value	easy	no	plain	todo
+2544	alternating-digit-sum	Alternating Digit Sum	easy	no	plain	todo
+2549	count-distinct-numbers-on-board	Count Distinct Numbers on Board	easy	no	plain	todo
+2553	separate-the-digits-in-an-array	Separate the Digits in an Array	easy	no	plain	todo
+2558	take-gifts-from-the-richest-pile	Take Gifts From the Richest Pile	easy	no	bits	todo
+2562	find-the-array-concatenation-value	Find the Array Concatenation Value	easy	no	bits	todo
+2566	maximum-difference-by-remapping-a-digit	Maximum Difference by Remapping a Digit	easy	no	plain	todo
+2570	merge-two-2d-arrays-by-summing-values	Merge Two 2D Arrays by Summing Values	easy	no	plain	todo
+2574	left-and-right-sum-differences	Left and Right Sum Differences	easy	no	plain	todo
+2578	split-with-minimum-sum	Split With Minimum Sum	easy	no	plain	todo
+2582	pass-the-pillow	Pass the Pillow	easy	no	plain	todo
+2586	count-the-number-of-vowel-strings-in-range	Count the Number of Vowel Strings in Range	easy	no	plain	todo
+2591	distribute-money-to-maximum-children	Distribute Money to Maximum Children	easy	no	plain	todo
+2595	number-of-even-and-odd-bits	Number of Even and Odd Bits	easy	no	plain	todo
+2600	k-items-with-the-maximum-sum	K Items With the Maximum Sum	easy	no	plain	todo
+2605	form-smallest-number-from-two-digit-arrays	Form Smallest Number From Two Digit Arrays	easy	no	plain	todo
+2609	find-the-longest-balanced-substring-of-a-binary-string	Find the Longest Balanced Substring of a Binary String	easy	no	plain	todo
+2614	prime-in-diagonal	Prime In Diagonal	easy	no	plain	todo
+2619	array-prototype-last	Array Prototype Last	easy	no	skip:javascript	todo
+2620	counter	Counter	easy	no	skip:javascript	todo
+2621	sleep	Sleep	easy	no	skip:javascript	todo
+2626	array-reduce-transformation	Array Reduce Transformation	easy	no	skip:javascript	todo
+2629	function-composition	Function Composition	easy	no	skip:javascript	todo
+2634	filter-elements-from-array	Filter Elements from Array	easy	no	skip:javascript	todo
+2635	apply-transform-over-each-element-in-array	Apply Transform Over Each Element in Array	easy	no	skip:javascript	todo
+2639	find-the-width-of-columns-of-a-grid	Find the Width of Columns of a Grid	easy	no	plain	todo
+2643	row-with-maximum-ones	Row With Maximum Ones	easy	no	plain	todo
+2644	find-the-maximum-divisibility-score	Find the Maximum Divisibility Score	easy	no	plain	todo
+2648	generate-fibonacci-sequence	Generate Fibonacci Sequence	easy	no	skip:javascript	todo
+2651	calculate-delayed-arrival-time	Calculate Delayed Arrival Time	easy	no	plain	todo
+2652	sum-multiples	Sum Multiples	easy	no	plain	todo
+2656	maximum-sum-with-exactly-k-elements	Maximum Sum With Exactly K Elements	easy	no	plain	todo
+2660	determine-the-winner-of-a-bowling-game	Determine the Winner of a Bowling Game	easy	no	plain	todo
+2665	counter-ii	Counter II	easy	no	skip:javascript	todo
+2666	allow-one-function-call	Allow One Function Call	easy	no	skip:javascript	todo
+2667	create-hello-world-function	Create Hello World Function	easy	no	skip:javascript	todo
+2668	find-latest-salaries	Find Latest Salaries	easy	yes	skip:sql	todo
+2669	count-artist-occurrences-on-spotify-ranking-list	Count Artist Occurrences On Spotify Ranking List	easy	yes	skip:sql	todo
+2670	find-the-distinct-difference-array	Find the Distinct Difference Array	easy	no	plain	todo
+2677	chunk-array	Chunk Array	easy	no	skip:javascript	todo
+2678	number-of-senior-citizens	Number of Senior Citizens	easy	no	plain	todo
+2682	find-the-losers-of-the-circular-game	Find the Losers of the Circular Game	easy	no	plain	todo
+2687	bikes-last-time-used	Bikes Last Time Used	easy	yes	skip:sql	todo
+2689	extract-kth-character-from-the-rope-tree	Extract Kth Character From The Rope Tree	easy	yes	skip:premium	todo
+2690	infinite-method-object	Infinite Method Object	easy	yes	skip:javascript	todo
+2695	array-wrapper	Array Wrapper	easy	no	skip:javascript	todo
+2696	minimum-string-length-after-removing-substrings	Minimum String Length After Removing Substrings	easy	no	plain	todo
+2697	lexicographically-smallest-palindrome	Lexicographically Smallest Palindrome	easy	no	plain	todo
+2703	return-length-of-arguments-passed	Return Length of Arguments Passed	easy	no	skip:javascript	todo
+2704	to-be-or-not-to-be	To Be Or Not To Be	easy	no	skip:javascript	todo
+2706	buy-two-chocolates	Buy Two Chocolates	easy	no	plain	todo
+2710	remove-trailing-zeros-from-a-string	Remove Trailing Zeros From a String	easy	no	plain	todo
+2715	timeout-cancellation	Timeout Cancellation	easy	no	skip:javascript	todo
+2716	minimize-string-length	Minimize String Length	easy	no	plain	todo
+2717	semi-ordered-permutation	Semi-Ordered Permutation	easy	no	plain	todo
+2723	add-two-promises	Add Two Promises	easy	no	skip:javascript	todo
+2724	sort-by	Sort By	easy	no	skip:javascript	todo
+2725	interval-cancellation	Interval Cancellation	easy	no	skip:javascript	todo
+2726	calculator-with-method-chaining	Calculator with Method Chaining	easy	no	skip:javascript	todo
+2727	is-object-empty	Is Object Empty	easy	no	skip:javascript	todo
+2728	count-houses-in-a-circular-street	Count Houses in a Circular Street	easy	yes	skip:premium	todo
+2729	check-if-the-number-is-fascinating	Check if The Number is Fascinating	easy	no	plain	todo
+2733	neither-minimum-nor-maximum	Neither Minimum nor Maximum	easy	no	checker	todo
+2739	total-distance-traveled	Total Distance Traveled	easy	no	plain	todo
+2744	find-maximum-number-of-string-pairs	Find Maximum Number of String Pairs	easy	no	plain	todo
+2748	number-of-beautiful-pairs	Number of Beautiful Pairs	easy	no	plain	todo
+2758	next-day	Next Day	easy	yes	skip:javascript	todo
+2760	longest-even-odd-subarray-with-threshold	Longest Even Odd Subarray With Threshold	easy	no	plain	todo
+2765	longest-alternating-subarray	Longest Alternating Subarray	easy	no	plain	todo
+2769	find-the-maximum-achievable-number	Find the Maximum Achievable Number	easy	no	plain	todo
+2774	array-upper-bound	Array Upper Bound	easy	yes	skip:javascript	todo
+2778	sum-of-squares-of-special-elements	Sum of Squares of Special Elements	easy	no	plain	todo
+2784	check-if-array-is-good	Check if Array is Good	easy	no	plain	todo
+2788	split-strings-by-separator	Split Strings by Separator	easy	no	plain	todo
+2794	create-object-from-two-arrays	Create Object from Two Arrays	easy	yes	skip:javascript	todo
+2796	repeat-string	Repeat String	easy	yes	skip:javascript	todo
+2797	partial-function-with-placeholders	Partial Function with Placeholders	easy	yes	skip:javascript	todo
+2798	number-of-employees-who-met-the-target	Number of Employees Who Met the Target	easy	no	plain	todo
+2803	factorial-generator	Factorial Generator	easy	yes	skip:javascript	todo
+2804	array-prototype-foreach	Array Prototype ForEach	easy	yes	skip:javascript	todo
+2806	account-balance-after-rounded-purchase	Account Balance After Rounded Purchase	easy	no	plain	todo
+2810	faulty-keyboard	Faulty Keyboard	easy	no	plain	todo
+2815	max-pair-sum-in-an-array	Max Pair Sum in an Array	easy	no	plain	todo
+2822	inversion-of-object	Inversion of Object	easy	yes	skip:javascript	todo
+2824	count-pairs-whose-sum-is-less-than-target	Count Pairs Whose Sum is Less than Target	easy	no	plain	todo
+2828	check-if-a-string-is-an-acronym-of-words	Check if a String Is an Acronym of Words	easy	no	plain	todo
+2833	furthest-point-from-origin	Furthest Point From Origin	easy	no	plain	todo
+2837	total-traveled-distance	Total Traveled Distance	easy	yes	skip:sql	todo
+2839	check-if-strings-can-be-made-equal-with-operations-i	Check if Strings Can be Made Equal With Operations I	easy	no	plain	todo
+2843	count-symmetric-integers	Count Symmetric Integers	easy	no	plain	todo
+2848	points-that-intersect-with-cars	Points That Intersect With Cars	easy	no	plain	todo
+2853	highest-salaries-difference	Highest Salaries Difference	easy	yes	skip:sql	todo
+2855	minimum-right-shifts-to-sort-the-array	Minimum Right Shifts to Sort the Array	easy	no	plain	todo
+2859	sum-of-values-at-indices-with-k-set-bits	Sum of Values at Indices With K Set Bits	easy	no	plain	todo
+2864	maximum-odd-binary-number	Maximum Odd Binary Number	easy	no	plain	todo
+2869	minimum-operations-to-collect-elements	Minimum Operations to Collect Elements	easy	no	plain	todo
+2873	maximum-value-of-an-ordered-triplet-i	Maximum Value of an Ordered Triplet I	easy	no	bits	todo
+2877	create-a-dataframe-from-list	Create a DataFrame from List	easy	no	skip:pandas	todo
+2878	get-the-size-of-a-dataframe	Get the Size of a DataFrame	easy	no	skip:pandas	todo
+2879	display-the-first-three-rows	Display the First Three Rows	easy	no	skip:pandas	todo
+2880	select-data	Select Data	easy	no	skip:pandas	todo
+2881	create-a-new-column	Create a New Column	easy	no	skip:pandas	todo
+2882	drop-duplicate-rows	Drop Duplicate Rows	easy	no	skip:pandas	todo
+2883	drop-missing-data	Drop Missing Data	easy	no	skip:pandas	todo
+2884	modify-columns	Modify Columns	easy	no	skip:pandas	todo
+2885	rename-columns	Rename Columns	easy	no	skip:pandas	todo
+2886	change-data-type	Change Data Type	easy	no	skip:pandas	todo
+2887	fill-missing-data	Fill Missing Data	easy	no	skip:pandas	todo
+2888	reshape-data-concatenate	Reshape Data Concatenate	easy	no	skip:pandas	todo
+2889	reshape-data-pivot	Reshape Data Pivot	easy	no	skip:pandas	todo
+2890	reshape-data-melt	Reshape Data Melt	easy	no	skip:pandas	todo
+2891	method-chaining	Method Chaining	easy	no	skip:pandas	todo
+2894	divisible-and-non-divisible-sums-difference	Divisible and Non-divisible Sums Difference	easy	no	plain	todo
+2899	last-visited-integers	Last Visited Integers	easy	no	plain	todo
+2900	longest-unequal-adjacent-groups-subsequence-i	Longest Unequal Adjacent Groups Subsequence I	easy	no	checker	todo
+2903	find-indices-with-index-and-value-difference-i	Find Indices With Index and Value Difference I	easy	no	checker	todo
+2908	minimum-sum-of-mountain-triplets-i	Minimum Sum of Mountain Triplets I	easy	no	plain	todo
+2913	subarrays-distinct-element-sum-of-squares-i	Subarrays Distinct Element Sum of Squares I	easy	no	plain	todo
+2917	find-the-k-or-of-an-array	Find the K-or of an Array	easy	no	plain	todo
+2923	find-champion-i	Find Champion I	easy	no	plain	todo
+2928	distribute-candies-among-children-i	Distribute Candies Among Children I	easy	no	plain	todo
+2932	maximum-strong-pair-xor-i	Maximum Strong Pair XOR I	easy	no	plain	todo
+2937	make-three-strings-equal	Make Three Strings Equal	easy	no	plain	todo
+2942	find-words-containing-character	Find Words Containing Character	easy	no	unordered	todo
+2946	matrix-similarity-after-cyclic-shifts	Matrix Similarity After Cyclic Shifts	easy	no	plain	todo
+2951	find-the-peaks	Find the Peaks	easy	no	unordered	todo
+2956	find-common-elements-between-two-arrays	Find Common Elements Between Two Arrays	easy	no	plain	todo
+2960	count-tested-devices-after-test-operations	Count Tested Devices After Test Operations	easy	no	plain	todo
+2965	find-missing-and-repeated-values	Find Missing and Repeated Values	easy	no	plain	todo
+2970	count-the-number-of-incremovable-subarrays-i	Count the Number of Incremovable Subarrays I	easy	no	plain	todo
+2974	minimum-number-game	Minimum Number Game	easy	no	plain	todo
+2980	check-if-bitwise-or-has-trailing-zeros	Check if Bitwise OR Has Trailing Zeros	easy	no	plain	todo
+2985	calculate-compressed-mean	Calculate Compressed Mean	easy	yes	skip:sql	todo
+2987	find-expensive-cities	Find Expensive Cities	easy	yes	skip:sql	todo
+2990	loan-types	Loan Types	easy	yes	skip:sql	todo
+2996	smallest-missing-integer-greater-than-sequential-prefix-sum	Smallest Missing Integer Greater Than Sequential Prefix Sum	easy	no	plain	todo
+3000	maximum-area-of-longest-diagonal-rectangle	Maximum Area of Longest Diagonal Rectangle	easy	no	plain	todo
+3005	count-elements-with-maximum-frequency	Count Elements With Maximum Frequency	easy	no	plain	todo
+3010	divide-an-array-into-subarrays-with-minimum-cost-i	Divide an Array Into Subarrays With Minimum Cost I	easy	no	plain	todo
+3014	minimum-number-of-pushes-to-type-word-i	Minimum Number of Pushes to Type Word I	easy	no	plain	todo
+3019	number-of-changing-keys	Number of Changing Keys	easy	no	plain	todo
+3024	type-of-triangle	Type of Triangle	easy	no	plain	todo
+3028	ant-on-the-boundary	Ant on the Boundary	easy	no	plain	todo
+3032	count-numbers-with-unique-digits-ii	Count Numbers With Unique Digits II	easy	yes	skip:premium	todo
+3033	modify-the-matrix	Modify the Matrix	easy	no	plain	todo
+3038	maximum-number-of-operations-with-the-same-score-i	Maximum Number of Operations With the Same Score I	easy	no	plain	todo
+3042	count-prefix-and-suffix-pairs-i	Count Prefix and Suffix Pairs I	easy	no	plain	todo
+3046	split-the-array	Split the Array	easy	no	plain	todo
+3051	find-candidates-for-data-scientist-position	Find Candidates for Data Scientist Position	easy	yes	skip:sql	todo
+3053	classifying-triangles-by-lengths	Classifying Triangles by Lengths	easy	yes	skip:sql	todo
+3059	find-all-unique-email-domains	Find All Unique Email Domains	easy	yes	skip:sql	todo
+3062	winner-of-the-linked-list-game	Winner of the Linked List Game	easy	yes	skip:premium	todo
+3063	linked-list-frequency	Linked List Frequency	easy	yes	skip:premium	todo
+3065	minimum-operations-to-exceed-threshold-value-i	Minimum Operations to Exceed Threshold Value I	easy	no	plain	todo
+3069	distribute-elements-into-two-arrays-i	Distribute Elements Into Two Arrays I	easy	no	plain	todo
+3074	apple-redistribution-into-boxes	Apple Redistribution into Boxes	easy	no	plain	todo
+3079	find-the-sum-of-encrypted-integers	Find the Sum of Encrypted Integers	easy	no	plain	todo
+3083	existence-of-a-substring-in-a-string-and-its-reverse	Existence of a Substring in a String and Its Reverse	easy	no	plain	todo
+3090	maximum-length-substring-with-two-occurrences	Maximum Length Substring With Two Occurrences	easy	no	plain	todo
+3095	shortest-subarray-with-or-at-least-k-i	Shortest Subarray With OR at Least K I	easy	no	plain	todo
+3099	harshad-number	Harshad Number	easy	no	plain	todo
+3105	longest-strictly-increasing-or-strictly-decreasing-subarray	Longest Strictly Increasing or Strictly Decreasing Subarray	easy	no	plain	todo
+3110	score-of-a-string	Score of a String	easy	no	plain	todo
+3114	latest-time-you-can-obtain-after-replacing-characters	Latest Time You Can Obtain After Replacing Characters	easy	no	plain	todo
+3120	count-the-number-of-special-characters-i	Count the Number of Special Characters I	easy	no	plain	todo
+3127	make-a-square-with-the-same-color	Make a Square with the Same Color	easy	no	plain	todo
+3131	find-the-integer-added-to-array-i	Find the Integer Added to Array I	easy	no	plain	todo
+3136	valid-word	Valid Word	easy	no	plain	todo
+3142	check-if-grid-satisfies-conditions	Check if Grid Satisfies Conditions	easy	no	plain	todo
+3146	permutation-difference-between-two-strings	Permutation Difference between Two Strings	easy	no	plain	todo
+3150	invalid-tweets-ii	Invalid Tweets II	easy	yes	skip:sql	todo
+3151	special-array-i	Special Array I	easy	no	plain	todo
+3158	find-the-xor-of-numbers-which-appear-twice	Find the XOR of Numbers Which Appear Twice	easy	no	plain	todo
+3162	find-the-number-of-good-pairs-i	Find the Number of Good Pairs I	easy	no	plain	todo
+3168	minimum-number-of-chairs-in-a-waiting-room	Minimum Number of Chairs in a Waiting Room	easy	no	plain	todo
+3172	second-day-verification	Second Day Verification	easy	yes	skip:sql	todo
+3173	bitwise-or-of-adjacent-elements	Bitwise OR of Adjacent Elements	easy	yes	skip:premium	todo
+3174	clear-digits	Clear Digits	easy	no	plain	todo
+3178	find-the-child-who-has-the-ball-after-k-seconds	Find the Child Who Has the Ball After K Seconds	easy	no	plain	todo
+3184	count-pairs-that-form-a-complete-day-i	Count Pairs That Form a Complete Day I	easy	no	plain	todo
+3190	find-minimum-operations-to-make-all-elements-divisible-by-three	Find Minimum Operations to Make All Elements Divisible by Three	easy	no	plain	todo
+3194	minimum-average-of-smallest-and-largest-elements	Minimum Average of Smallest and Largest Elements	easy	no	float	todo
+3198	find-cities-in-each-state	Find Cities in Each State	easy	yes	skip:sql	todo
+3199	count-triplets-with-even-xor-set-bits-i	Count Triplets with Even XOR Set Bits I	easy	yes	skip:premium	todo
+3200	maximum-height-of-a-triangle	Maximum Height of a Triangle	easy	no	plain	todo
+3206	alternating-groups-i	Alternating Groups I	easy	no	plain	todo
+3210	find-the-encrypted-string	Find the Encrypted String	easy	no	plain	todo
+3216	lexicographically-smallest-string-after-a-swap	Lexicographically Smallest String After a Swap	easy	no	plain	todo
+3222	find-the-winning-player-in-coin-game	Find the Winning Player in Coin Game	easy	no	plain	todo
+3226	number-of-bit-changes-to-make-two-integers-equal	Number of Bit Changes to Make Two Integers Equal	easy	no	plain	todo
+3232	find-if-digit-game-can-be-won	Find if Digit Game Can Be Won	easy	no	plain	todo
+3238	find-the-number-of-winning-players	Find the Number of Winning Players	easy	no	plain	todo
+3242	design-neighbor-sum-service	Design Neighbor Sum Service	easy	no	design	todo
+3246	premier-league-table-ranking	Premier League Table Ranking	easy	yes	skip:sql	todo
+3248	snake-in-matrix	Snake in Matrix	easy	no	plain	todo
+3258	count-substrings-that-satisfy-k-constraint-i	Count Substrings That Satisfy K-Constraint I	easy	no	plain	todo
+3263	convert-doubly-linked-list-to-array-i	Convert Doubly Linked List to Array I	easy	yes	skip:premium	todo
+3264	final-array-state-after-k-multiplication-operations-i	Final Array State After K Multiplication Operations I	easy	no	plain	todo
+3270	find-the-key-of-the-numbers	Find the Key of the Numbers	easy	no	plain	todo
+3274	check-if-two-chessboard-squares-have-the-same-color	Check if Two Chessboard Squares Have the Same Color	easy	no	plain	todo
+3280	convert-date-to-binary	Convert Date to Binary	easy	no	plain	todo
+3285	find-indices-of-stable-mountains	Find Indices of Stable Mountains	easy	no	unordered	todo
+3289	the-two-sneaky-numbers-of-digitville	The Two Sneaky Numbers of Digitville	easy	no	unordered	todo
+3300	minimum-element-after-replacement-with-digit-sum	Minimum Element After Replacement With Digit Sum	easy	no	plain	todo
+3304	find-the-k-th-character-in-string-game-i	Find the K-th Character in String Game I	easy	no	plain	todo
+3314	construct-the-minimum-bitwise-array-i	Construct the Minimum Bitwise Array I	easy	no	plain	todo
+3318	find-x-sum-of-all-k-long-subarrays-i	Find X-Sum of All K-Long Subarrays I	easy	no	plain	todo
+3330	find-the-original-typed-string-i	Find the Original Typed String I	easy	no	plain	todo
+3340	check-balanced-string	Check Balanced String	easy	no	plain	todo
+3345	smallest-divisible-digit-product-i	Smallest Divisible Digit Product I	easy	no	plain	todo
+3349	adjacent-increasing-subarrays-detection-i	Adjacent Increasing Subarrays Detection I	easy	no	plain	todo
+3353	minimum-total-operations	Minimum Total Operations	easy	yes	skip:premium	todo
+3354	make-array-elements-equal-to-zero	Make Array Elements Equal to Zero	easy	no	plain	todo
+3358	books-with-null-ratings	Books with NULL Ratings	easy	yes	skip:sql	todo
+3360	stone-removal-game	Stone Removal Game	easy	no	plain	todo
+3364	minimum-positive-sum-subarray	Minimum Positive Sum Subarray	easy	no	plain	todo
+3370	smallest-number-with-all-set-bits	Smallest Number With All Set Bits	easy	no	plain	todo
+3375	minimum-operations-to-make-array-values-equal-to-k	Minimum Operations to Make Array Values Equal to K	easy	no	plain	todo
+3379	transformed-array	Transformed Array	easy	no	plain	todo
+3386	button-with-longest-push-time	Button with Longest Push Time	easy	no	plain	todo
+3392	count-subarrays-of-length-three-with-a-condition	Count Subarrays of Length Three With a Condition	easy	no	plain	todo
+3396	minimum-number-of-operations-to-make-elements-in-array-distinct	Minimum Number of Operations to Make Elements in Array Distinct	easy	no	plain	todo
+3402	minimum-operations-to-make-columns-strictly-increasing	Minimum Operations to Make Columns Strictly Increasing	easy	no	plain	todo
+3407	substring-matching-pattern	Substring Matching Pattern	easy	no	plain	todo
+3411	maximum-subarray-with-equal-products	Maximum Subarray With Equal Products	easy	no	plain	todo
+3415	find-products-with-three-consecutive-digits	Find Products with Three Consecutive Digits	easy	yes	skip:sql	todo
+3417	zigzag-grid-traversal-with-skip	Zigzag Grid Traversal With Skip	easy	no	plain	todo
+3423	maximum-difference-between-adjacent-elements-in-a-circular-array	Maximum Difference Between Adjacent Elements in a Circular Array	easy	no	plain	todo
+3427	sum-of-variable-length-subarrays	Sum of Variable Length Subarrays	easy	no	plain	todo
+3432	count-partitions-with-even-sum-difference	Count Partitions with Even Sum Difference	easy	no	plain	todo
+3436	find-valid-emails	Find Valid Emails	easy	no	skip:sql	todo
+3438	find-valid-pair-of-adjacent-digits-in-string	Find Valid Pair of Adjacent Digits in String	easy	no	plain	todo
+3442	maximum-difference-between-even-and-odd-frequency-i	Maximum Difference Between Even and Odd Frequency I	easy	no	plain	todo
+3450	maximum-students-on-a-single-bench	Maximum Students on a Single Bench	easy	yes	skip:premium	todo
+3452	sum-of-good-numbers	Sum of Good Numbers	easy	no	plain	todo
+3456	find-special-substring-of-length-k	Find Special Substring of Length K	easy	no	plain	todo
+3461	check-if-digits-are-equal-in-string-after-operations-i	Check If Digits Are Equal in String After Operations I	easy	no	plain	todo
+3465	find-products-with-valid-serial-numbers	Find Products with Valid Serial Numbers	easy	no	skip:sql	todo
+3467	transform-array-by-parity	Transform Array by Parity	easy	no	plain	todo
+3471	find-the-largest-almost-missing-integer	Find the Largest Almost Missing Integer	easy	no	plain	todo
+3477	fruits-into-baskets-ii	Fruits Into Baskets II	easy	no	plain	todo
+3483	unique-3-digit-even-numbers	Unique 3-Digit Even Numbers	easy	no	plain	todo
+3487	maximum-unique-subarray-sum-after-deletion	Maximum Unique Subarray Sum After Deletion	easy	no	plain	todo
+3491	phone-number-prefix	Phone Number Prefix	easy	yes	skip:premium	todo
+3492	maximum-containers-on-a-ship	Maximum Containers on a Ship	easy	no	plain	todo
+3498	reverse-degree-of-a-string	Reverse Degree of a String	easy	no	plain	todo
+3502	minimum-cost-to-reach-every-position	Minimum Cost to Reach Every Position	easy	no	plain	todo
+3507	minimum-pair-removal-to-sort-array-i	Minimum Pair Removal to Sort Array I	easy	no	plain	todo
+3512	minimum-operations-to-make-array-sum-divisible-by-k	Minimum Operations to Make Array Sum Divisible by K	easy	no	plain	todo
+3516	find-closest-person	Find Closest Person	easy	no	plain	todo
+3536	maximum-product-of-two-digits	Maximum Product of Two Digits	easy	no	plain	todo
+3541	find-most-frequent-vowel-and-consonant	Find Most Frequent Vowel and Consonant	easy	no	plain	todo
+3545	minimum-deletions-for-at-most-k-distinct-characters	Minimum Deletions for At Most K Distinct Characters	easy	no	plain	todo
+3550	smallest-index-with-digit-sum-equal-to-index	Smallest Index With Digit Sum Equal to Index	easy	no	plain	todo
+3560	find-minimum-log-transportation-cost	Find Minimum Log Transportation Cost	easy	no	bits	todo
+3570	find-books-with-no-available-copies	Find Books with No Available Copies	easy	no	skip:sql	todo
+3571	find-the-shortest-superstring-ii	Find the Shortest Superstring II	easy	yes	skip:premium	todo
+3581	count-odd-letters-from-number	Count Odd Letters from Number	easy	yes	skip:premium	todo
+3582	generate-tag-for-video-caption	Generate Tag for Video Caption	easy	no	plain	todo
+3591	check-if-any-element-has-prime-frequency	Check if Any Element Has Prime Frequency	easy	no	plain	todo
+3602	hexadecimal-and-hexatrigesimal-conversion	Hexadecimal and Hexatrigesimal Conversion	easy	no	plain	todo
+3606	coupon-code-validator	Coupon Code Validator	easy	no	plain	todo
+3622	check-divisibility-by-digit-sum-and-product	Check Divisibility by Digit Sum and Product	easy	no	plain	todo
+3633	earliest-finish-time-for-land-and-water-rides-i	Earliest Finish Time for Land and Water Rides I	easy	no	plain	todo
+3637	trionic-array-i	Trionic Array I	easy	no	plain	todo
+3643	flip-square-submatrix-vertically	Flip Square Submatrix Vertically	easy	no	plain	todo
+3658	gcd-of-odd-and-even-sums	GCD of Odd and Even Sums	easy	no	plain	todo
+3662	filter-characters-by-frequency	Filter Characters by Frequency	easy	yes	skip:premium	todo
+3663	find-the-least-frequent-digit	Find The Least Frequent Digit	easy	no	plain	todo
+3667	sort-array-by-absolute-value	Sort Array By Absolute Value	easy	yes	skip:premium	todo
+3668	restore-finishing-order	Restore Finishing Order	easy	no	plain	todo
+3674	minimum-operations-to-equalize-array	Minimum Operations to Equalize Array	easy	no	plain	todo
+3678	smallest-absent-positive-greater-than-average	Smallest Absent Positive Greater Than Average	easy	no	plain	todo
+3683	earliest-time-to-finish-one-task	Earliest Time to Finish One Task	easy	no	plain	todo
+3684	maximize-sum-of-at-most-k-distinct-elements	Maximize Sum of At Most K Distinct Elements	easy	no	plain	todo
+3687	library-late-fee-calculator	Library Late Fee Calculator	easy	yes	skip:premium	todo
+3688	bitwise-or-of-even-numbers-in-an-array	Bitwise OR of Even Numbers in an Array	easy	no	plain	todo
+3692	majority-frequency-characters	Majority Frequency Characters	easy	no	checker	todo
+3696	maximum-distance-between-unequal-words-in-array-i	Maximum Distance Between Unequal Words in Array I	easy	yes	skip:premium	todo
+3697	compute-decimal-representation	Compute Decimal Representation	easy	no	plain	todo
+3701	compute-alternating-sum	Compute Alternating Sum	easy	no	plain	todo
+3707	equal-score-substrings	Equal Score Substrings	easy	no	plain	todo
+3712	sum-of-elements-with-frequency-divisible-by-k	Sum of Elements With Frequency Divisible by K	easy	no	plain	todo
+3718	smallest-missing-multiple-of-k	Smallest Missing Multiple of K	easy	no	plain	todo
+3726	remove-zeros-in-decimal-representation	Remove Zeros in Decimal Representation	easy	no	bits	todo
+3731	find-missing-elements	Find Missing Elements	easy	no	plain	todo
+3736	minimum-moves-to-equal-array-elements-iii	Minimum Moves to Equal Array Elements III	easy	no	plain	todo
+3740	minimum-distance-between-three-equal-elements-i	Minimum Distance Between Three Equal Elements I	easy	no	plain	todo
+3745	maximize-expression-of-three-elements	Maximize Expression of Three Elements	easy	no	plain	todo
+3750	minimum-number-of-flips-to-reverse-binary-string	Minimum Number of Flips to Reverse Binary String	easy	no	plain	todo
+3754	concatenate-non-zero-digits-and-multiply-by-sum-i	Concatenate Non-Zero Digits and Multiply by Sum I	easy	no	bits	todo
+3769	sort-integers-by-binary-reflection	Sort Integers by Binary Reflection	easy	no	plain	todo
+3774	absolute-difference-between-maximum-and-minimum-k-elements	Absolute Difference Between Maximum and Minimum K Elements	easy	no	plain	todo
+3783	mirror-distance-of-an-integer	Mirror Distance of an Integer	easy	no	plain	todo
+3793	find-users-with-high-token-usage	Find Users with High Token Usage	easy	no	skip:sql	todo
+3794	reverse-string-prefix	Reverse String Prefix	easy	no	plain	todo
+3798	largest-even-number	Largest Even Number	easy	no	plain	todo
+3803	count-residue-prefixes	Count Residue Prefixes	easy	no	plain	todo
+3813	vowel-consonant-score	Vowel-Consonant Score	easy	no	plain	todo
+3823	reverse-letters-then-special-characters-in-a-string	Reverse Letters Then Special Characters in a String	easy	no	plain	todo
+3827	count-monobit-integers	Count Monobit Integers	easy	no	plain	todo
+3833	count-dominant-indices	Count Dominant Indices	easy	no	plain	todo
+3838	weighted-word-mapping	Weighted Word Mapping	easy	no	plain	todo
+3842	toggle-light-bulbs	Toggle Light Bulbs	easy	no	plain	todo
+3852	smallest-pair-with-different-frequencies	Smallest Pair With Different Frequencies	easy	no	plain	todo
+3856	trim-trailing-vowels	Trim Trailing Vowels	easy	no	plain	todo
+3861	minimum-capacity-box	Minimum Capacity Box	easy	no	plain	todo
+3866	first-unique-even-element	First Unique Even Element	easy	no	plain	todo
+3870	count-commas-in-range	Count Commas in Range	easy	no	plain	todo
+3875	construct-uniform-parity-array-i	Construct Uniform Parity Array I	easy	no	plain	todo
+3880	minimum-absolute-difference-between-two-values	Minimum Absolute Difference Between Two Values	easy	no	plain	todo
+3884	first-matching-character-from-both-ends	First Matching Character From Both Ends	easy	no	plain	todo
+3894	traffic-signal-color	Traffic Signal Color	easy	no	plain	todo
+3898	find-the-degree-of-each-vertex	Find the Degree of Each Vertex	easy	no	plain	todo
+3903	smallest-stable-index-i	Smallest Stable Index I	easy	no	plain	todo
+3908	valid-digit-number	Valid Digit Number	easy	no	plain	todo
+3912	valid-elements-in-an-array	Valid Elements in an Array	easy	no	plain	todo
+3917	count-indices-with-opposite-parity	Count Indices With Opposite Parity	easy	no	plain	todo
+3921	score-validator	Score Validator	easy	no	plain	todo
+3925	concatenate-array-with-reverse	Concatenate Array With Reverse	easy	no	plain	todo
+3931	check-adjacent-digit-differences	Check Adjacent Digit Differences	easy	no	plain	todo
+3936	minimum-swaps-to-move-zeros-to-end	Minimum Swaps to Move Zeros to End	easy	no	plain	todo
+3940	limit-occurrences-in-sorted-array	Limit Occurrences in Sorted Array	easy	no	plain	todo
+3945	digit-frequency-score	Digit Frequency Score	easy	no	plain	todo
+3950	exactly-one-consecutive-set-bits-pair	Exactly One Consecutive Set Bits Pair	easy	no	plain	todo
+3954	sum-of-compatible-numbers-in-range-i	Sum of Compatible Numbers in Range I	easy	no	plain	todo
+3959	check-good-integer	Check Good Integer	easy	no	plain	todo
+3963	create-grid-with-exactly-one-path	Create Grid With Exactly One Path	easy	no	checker	todo
+3978	unique-middle-element	Unique Middle Element	easy	no	plain	todo
+3982	sum-of-integers-with-maximum-digit-range	Sum of Integers with Maximum Digit Range	easy	no	plain	todo
+3986	number-of-elapsed-seconds-between-two-times	Number of Elapsed Seconds Between Two Times	easy	no	plain	todo
+3992	rearrange-string-to-avoid-character-pair	Rearrange String to Avoid Character Pair	easy	no	checker	todo
+3996	even-number-of-knight-moves	Even Number of Knight Moves	easy	no	plain	todo
+4000	largest-integer-with-given-digit-sum	Largest Integer With Given Digit Sum	easy	no	plain	todo
+4006	count-valid-prefixes	Count Valid Prefixes	easy	no	plain	todo
+4010	maximize-pair-strength-using-gcd	Maximize Pair Strength Using GCD	easy	no	bits	todo
+4020	elevator-requests-i	Elevator Requests I	easy	no	plain	todo
+4024	nearest-available-drone	Nearest Available Drone	easy	no	plain	todo
+4030	check-ascii-palindromic	Check ASCII Palindromic	easy	no	plain	todo
+4038	count-integers-appearing-in-a-single-block	Count Integers Appearing in a Single Block	easy	no	plain	todo
+4043	count-rotations-with-exactly-k-equal-adjacent-pairs	Count Rotations With Exactly K Equal Adjacent Pairs	easy	no	plain	todo
+4048	count-values-with-equally-spaced-occurrences-i	Count Values With Equally Spaced Occurrences I	easy	no	plain	todo
+4052	cyclically-shift-rows-and-columns	Cyclically Shift Rows and Columns	easy	no	plain	todo
+4056	number-of-intersecting-interval-pairs-i	Number of Intersecting Interval Pairs I	easy	no	plain	todo
+4061	minimum-queen-moves-to-reach-target	Minimum Queen Moves to Reach Target	easy	no	plain	todo
+4065	rearrange-array-by-removing-distinct-values	Rearrange Array by Removing Distinct Values	easy	no	plain	todo
+4070	minimum-rotations-to-dial-a-number-i	Minimum Rotations to Dial a Number I	easy	no	plain	todo
+4074	maximum-product-pair-with-target-sum	Maximum Product Pair With Target Sum	easy	no	checker	todo
+4078	three-fibonacci-sum	Three Fibonacci Sum	easy	no	plain	todo
+4083	minimum-deletions-to-make-array-sharp	Minimum Deletions to Make Array Sharp	easy	no	plain	todo
+4088	difference-between-peaks-and-valleys	Difference Between Peaks and Valleys	easy	no	plain	todo
+4092	binary-digit-score	Binary Digit Score	easy	no	plain	todo
