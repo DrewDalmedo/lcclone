@@ -16,9 +16,10 @@
  * compiled in a directory of the cache named after the problem, the
  * language and the standard, into prog-<key>, where the key hashes
  * everything that goes into the build: that file, the flags and the
- * compiler's identity. A build whose program is already there is not
- * redone. Concurrent builds never clash: each compiles into names of its
- * own and renames the result into place.
+ * compiler's identity. Next to the program, prog-<key>.log keeps what the
+ * compiler printed, so a build whose program is already there is not
+ * redone and still has its warnings. Concurrent builds never clash: each
+ * compiles into names of its own and renames the results into place.
  */
 
 #include <dirent.h>
@@ -43,6 +44,20 @@
 #define COMPILE_OUTPUT_MAX (4 * LC_MIB)
 /* Largest solution file lc reads. */
 #define MAX_SOURCE (16 * LC_MIB)
+
+/*
+ * Apple's compilers, given -g (as --sanitize builds are), run dsymutil
+ * after linking, which writes the debug info next to the program as a
+ * directory, <program>.dSYM. atos, which turns the sanitizers' stack
+ * traces into file:line there, looks for it under the program's name, so
+ * it is renamed along with the program. Other systems keep the debug info
+ * in the program itself.
+ */
+#ifdef __APPLE__
+#define DSYM 1
+#else
+#define DSYM 0
+#endif
 
 const lc_rt_file *lc_rt_file_get(const char *name)
 {
@@ -317,11 +332,43 @@ int lc_build_init(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
     b->output = "";
     if (!b->source || !b->compiler)
         return lc_oom(ctx);
+    /* The generator has no harness, so nothing of it is called. */
+    if (req->role != LC_ROLE_GEN && req->p->sig) {
+        lc_str proto = LC_STR_INIT;
+        int rc = lc_prototype(ctx, req->p, req->lang, &proto);
+
+        if (rc == LC_OK) {
+            b->prototype = lc_arena_strndup(a, lc_str_cstr(&proto),
+                                            proto.len);
+            if (!b->prototype)
+                rc = lc_oom(ctx);
+        }
+        lc_str_free(&proto);
+        if (rc != LC_OK)
+            return rc;
+    }
     return LC_OK;
 }
 
+/* Marks a file as in use (see remove_old). */
+static void touch(const char *path)
+{
+    utimensat(AT_FDCWD, path, NULL, 0);
+}
+
+/* 1 if `name` is the program `keep` or one of the files kept with it. */
+static int kept_with(const char *name, const char *keep)
+{
+    size_t n = strlen(keep);
+
+    return strncmp(name, keep, n) == 0 &&
+           (name[n] == '\0' || strcmp(name + n, ".log") == 0 ||
+            strcmp(name + n, ".dSYM") == 0);
+}
+
 /* Removes the programs of earlier builds from `dir` that are older than
- * KEEP_OLD_SEC, and the leftovers of builds that were interrupted. */
+ * KEEP_OLD_SEC, with their .log and .dSYM, and the leftovers of builds
+ * that were interrupted. */
 static void remove_old(lc_ctx *ctx, const char *dir, const char *keep)
 {
     lc_arena a = {NULL};
@@ -336,15 +383,76 @@ static void remove_old(lc_ctx *ctx, const char *dir, const char *keep)
 
             if ((strncmp(names[i], "prog-", 5) != 0 &&
                  strncmp(names[i], "main-", 5) != 0) ||
-                strcmp(names[i], keep) == 0)
+                kept_with(names[i], keep))
                 continue;
             path = lc_path_join(&a, dir, names[i]);
-            if (path && stat(path, &st) == 0 &&
+            if (path && lstat(path, &st) == 0 &&
                 st.st_mtime < now - KEEP_OLD_SEC)
-                unlink(path);
+                lc_remove_tree(path);
         }
     }
     lc_arena_free(&a);
+}
+
+/* Most of a .log that is read back: all the compiler output kept. */
+#define LOG_MAX (2 * COMPILE_OUTPUT_MAX)
+
+/*
+ * Reuses the program of an earlier build of the same input, with the
+ * compiler output kept in its .log. LC_ERR_NOTFOUND when there is none to
+ * reuse: no program, or one without its .log (built by an older lc, or
+ * left alone after its .log was removed), which is then built again.
+ */
+static int reuse(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
+                 lc_build *b, const char *prog, const char *logfile,
+                 const char *dsym)
+{
+    lc_str out = LC_STR_INIT;
+    int rc;
+
+    if (access(prog, X_OK) != 0 || access(logfile, F_OK) != 0)
+        return LC_ERR_NOTFOUND;
+    rc = lc_read_file(ctx, logfile, LOG_MAX, &out);
+    if (rc == LC_OK) {
+        b->output = lc_arena_strndup(a, lc_str_cstr(&out), out.len);
+        b->output_len = out.len;
+        /* The same messages as the first time: the key covers the
+         * solution's path, which decides `in_solution`. */
+        if (!b->output ||
+            lc_parse_diags(a, b->output, b->output_len, req->src,
+                           (lc_diag **)&b->diags, &b->ndiags) != LC_OK)
+            rc = lc_oom(ctx);
+    } else if (rc == LC_ERR_NOMEM || ctx->err_nomem) {
+        rc = lc_oom(ctx);
+    } else {
+        rc = LC_ERR_NOTFOUND; /* unreadable: built again */
+    }
+    lc_str_free(&out);
+    if (rc != LC_OK) {
+        b->output = "";
+        b->output_len = 0;
+        b->diags = NULL;
+        b->ndiags = 0;
+        return rc;
+    }
+    touch(prog);
+    touch(logfile);
+    if (dsym)
+        touch(dsym);
+    b->ok = 1;
+    b->cached = 1;
+    return LC_OK;
+}
+
+/* Moves a new program's .dSYM to its final name, replacing one left there
+ * by an earlier build. Without it a stack trace has no file:line, but the
+ * program runs, so failing here is no error. */
+static void place_dsym(const char *from, const char *to)
+{
+    if (!lc_is_dir(from))
+        return;
+    if (lc_remove_tree(to) != 0 || rename(from, to) != 0)
+        lc_remove_tree(from);
 }
 
 /* Appends a note from lc to the compiler's output. */
@@ -370,6 +478,7 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
     const lc_rt_file *uthash;
     const char *cache, *extra, *fl[MAX_FLAGS], *args[MAX_FLAGS + 4];
     char *dir, *prog, *prog_tmp, *unit, *unit_final, *std_arg, **argv;
+    char *logfile, *dsym = NULL, *dsym_tmp = NULL;
     char key[17];
     uint64_t h = 0xcbf29ce484222325ull;
     size_t nfl, i;
@@ -422,22 +531,21 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
                           req->lang->name, req->std,
                           req->sanitize ? "-sanitize" : "");
     prog = dir ? lc_arena_printf(a, "%s/prog-%s", dir, key) : NULL;
-    if (!prog) {
+    logfile = prog ? lc_arena_printf(&tmp, "%s.log", prog) : NULL;
+    if (DSYM && logfile)
+        dsym = lc_arena_printf(&tmp, "%s.dSYM", prog);
+    if (!logfile || (DSYM && !dsym)) {
         rc = lc_oom(ctx);
         goto done;
     }
     rc = lc_mkdir_p(ctx, dir, 0777);
     if (rc != LC_OK)
         goto done;
-    if (access(prog, X_OK) == 0) {
-        /* Mark it as in use (see remove_old). */
-        utimensat(AT_FDCWD, prog, NULL, 0);
-        b->ok = 1;
-        b->cached = 1;
+    rc = reuse(ctx, req, a, b, prog, logfile, dsym);
+    if (rc == LC_OK)
         *exe = prog;
-        rc = LC_OK;
+    if (rc != LC_ERR_NOTFOUND)
         goto done;
-    }
 
     /* Names of this build's own, renamed into place at the end. */
     ctx->tmp_counter++;
@@ -446,7 +554,9 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
     unit_final = lc_arena_printf(&tmp, "%s/main.%s", dir, req->lang->ext);
     prog_tmp = lc_arena_printf(&tmp, "%s.tmp-%ld-%lu", prog, (long)getpid(),
                                ctx->tmp_counter);
-    if (!unit || !unit_final || !prog_tmp) {
+    if (DSYM && prog_tmp)
+        dsym_tmp = lc_arena_printf(&tmp, "%s.dSYM", prog_tmp);
+    if (!unit || !unit_final || !prog_tmp || (DSYM && !dsym_tmp)) {
         rc = lc_oom(ctx);
         goto done;
     }
@@ -523,9 +633,19 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
         goto cleanup;
     }
     if (b->ok) {
+        /* The .log and the .dSYM go first: a program in place has them
+         * (see reuse). */
+        rc = lc_write_file_atomic(ctx, logfile, b->output, b->output_len);
+        if (rc != LC_OK)
+            goto cleanup;
+        if (dsym_tmp)
+            place_dsym(dsym_tmp, dsym);
         if (rename(prog_tmp, prog) != 0) {
             rc = lc_set_errno(ctx, LC_ERR_IO, errno, "cannot create '%s'",
                               prog);
+            unlink(logfile);
+            if (dsym)
+                lc_remove_tree(dsym);
             goto cleanup;
         }
         remove_old(ctx, dir, prog + strlen(dir) + 1);
@@ -534,6 +654,8 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
 
 cleanup:
     unlink(prog_tmp);
+    if (dsym_tmp)
+        lc_remove_tree(dsym_tmp);
     /* Keep the last unit as main.c(pp), for looking at what was built. */
     if (rename(unit, unit_final) != 0)
         unlink(unit);

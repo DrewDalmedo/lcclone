@@ -167,6 +167,60 @@ done:
     return rc;
 }
 
+int lc_remove_tree(const char *path)
+{
+    lc_arena a = {NULL};
+    struct stat st;
+    char **names = NULL;
+    size_t n = 0, cap = 0, i;
+    DIR *d;
+    int rc = 0;
+
+    if (lstat(path, &st) != 0)
+        return errno == ENOENT ? 0 : -1;
+    if (!S_ISDIR(st.st_mode))
+        return unlink(path) == 0 || errno == ENOENT ? 0 : -1;
+    /* The whole directory is read before anything in it is removed. */
+    d = opendir(path);
+    if (!d)
+        return -1;
+    for (;;) {
+        struct dirent *e;
+        char **tmp, *child;
+
+        errno = 0;
+        e = readdir(d);
+        if (!e) {
+            if (errno)
+                rc = -1;
+            break;
+        }
+        if (strcmp(e->d_name, ".") == 0 || strcmp(e->d_name, "..") == 0)
+            continue;
+        tmp = lc_grow(names, &cap, n + 1, sizeof *names);
+        if (!tmp) {
+            rc = -1;
+            break;
+        }
+        names = tmp;
+        child = lc_path_join(&a, path, e->d_name);
+        if (!child) {
+            rc = -1;
+            break;
+        }
+        names[n++] = child;
+    }
+    closedir(d);
+    for (i = 0; i < n; i++)
+        if (lc_remove_tree(names[i]) != 0)
+            rc = -1;
+    free(names);
+    lc_arena_free(&a);
+    if (rc == 0 && rmdir(path) != 0 && errno != ENOENT)
+        rc = -1;
+    return rc;
+}
+
 int lc_is_dir(const char *path)
 {
     struct stat st;

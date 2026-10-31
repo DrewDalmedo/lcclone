@@ -117,8 +117,10 @@ static const char *difficulty_title(lc_difficulty d)
     }
 }
 
+/* The @example cases, with `lead` before the first one; nothing at all
+ * when there are none. */
 static void readme_examples(lc_str *s, const lc_problem *p,
-                            const lc_cases *cases)
+                            const lc_cases *cases, const char *lead)
 {
     size_t i, k, n = 0;
 
@@ -127,8 +129,7 @@ static void readme_examples(lc_str *s, const lc_problem *p,
 
         if (!c->example)
             continue;
-        if (n)
-            lc_str_putc(s, '\n');
+        lc_str_puts(s, n ? "\n" : lead);
         lc_str_printf(s, "**Example %lu:**\n\n```\nInput:",
                       (unsigned long)++n);
         if (c->nargs == p->narg_names) {
@@ -187,17 +188,14 @@ int lc_readme(lc_ctx *ctx, const lc_problem *p, const lc_cases *cases,
         const char *nl = memchr(at, '\n', (size_t)(st + n - at));
 
         lc_str_append(out, st, (size_t)(at - st));
-        readme_examples(out, p, cases);
+        readme_examples(out, p, cases, "");
         if (nl)
             lc_str_append(out, nl + 1, (size_t)(st + n - nl - 1));
     } else {
         lc_str_append(out, st, n);
         if (n && st[n - 1] != '\n')
             lc_str_putc(out, '\n');
-        if (cases) {
-            lc_str_putc(out, '\n');
-            readme_examples(out, p, cases);
-        }
+        readme_examples(out, p, cases, "\n");
     }
     if (out->len && out->data[out->len - 1] != '\n')
         lc_str_putc(out, '\n');
@@ -275,8 +273,12 @@ static void cases_template(lc_str *s, const lc_problem *p,
     size_t i, w = 0;
 
     lc_str_printf(s, "# Your own cases for %d. %s. 'lc test' runs them "
-                  "after the examples.\n#\n# A case is one line per input, "
-                  "in this order:\n#\n", p->id, p->title);
+                  "after the examples.\n#\n", p->id, p->title);
+    if (p->sig->nparams == 0)
+        lc_str_puts(s, "# The function has no parameters, so a case is the "
+                    "single line\n#\n#   ()\n");
+    else
+        lc_str_puts(s, "# A case is one line per input, in this order:\n#\n");
     for (i = 0; i < p->sig->nparams; i++)
         if (strlen(p->sig->params[i].name) > w)
             w = strlen(p->sig->params[i].name);
@@ -298,6 +300,8 @@ static void cases_template(lc_str *s, const lc_problem *p,
             ex = &cases->items[i];
     if (ex) {
         lc_str_puts(s, "#\n# For example:\n#\n");
+        if (ex->nargs == 0)
+            lc_str_puts(s, "# ()\n");
         for (i = 0; i < ex->nargs; i++)
             lc_str_printf(s, "# %s\n", ex->args[i]);
         lc_str_printf(s, "# => %s\n", ex->expected);

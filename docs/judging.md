@@ -46,17 +46,26 @@ pack's own sources.
 directories of their own: `ref-<lang>-<std>/`, and for `lc check`
 `brute-`, `stub-` and `generator-` ones ([authoring.md](authoring.md)). The key hashes everything that
 goes into the build: the whole source file above, the compiler flags, and
-the compiler's path, size and time stamp. A build whose program is
-already there is reused, so running the same solution again costs nothing.
-The last source file built stays there as `main.c` or `main.cpp`, for
-looking at. Each build writes files of its own and renames the program
-into place, so two `lc` processes never get in each other's way; programs
-of older builds are removed after ten minutes without use.
+the compiler's path, size and time stamp. Next to each program,
+`prog-<key>.log` keeps what the compiler printed. A build whose program
+and `.log` are already there is reused, so running the same solution
+again costs nothing (a program without its `.log`, from an older `lc`, is
+built again). On macOS a build with `-g`, as `--sanitize` builds are, also
+has `prog-<key>.dSYM`: Apple's compilers put the debug info there, and the
+sanitizers' stack traces need it for their file:line. The last source file
+built stays there as `main.c` or `main.cpp`, for looking at. Each build
+writes files of its own and renames them into place, so two `lc` processes
+never get in each other's way; programs of older builds are removed, with
+their `.log` and `.dSYM`, after ten minutes without use.
 
 **Compile Error.** When the compiler fails, nothing runs: the verdict is
 Compile Error, with the compiler's output and the messages found in it
 (file, line, column, severity, message). Warnings are shown when a build
-succeeds too, the first time.
+succeeds too, and again whenever that build is reused: a cached build
+carries the output and messages of the build that made its program, so
+`lc test` prints the same warnings every time, and an editor reading
+`--json` keeps them (only `time_ms` is 0). A warning goes away when the
+code that causes it does, not when the build is cached.
 
 ## Running a program
 

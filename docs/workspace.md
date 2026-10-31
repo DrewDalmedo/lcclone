@@ -108,7 +108,8 @@ The expected result is optional:
 6
 ```
 
-A case without `=>` ends at a blank line or at the end of the file.
+A case without `=>` ends at a blank line or at the end of the file. For
+a function without parameters, a case's only input line is `()`.
 Lines starting with `#` are comments. A case whose input breaks the
 problem's constraints may make the reference solution fail; `lc` then
 says so instead of guessing.

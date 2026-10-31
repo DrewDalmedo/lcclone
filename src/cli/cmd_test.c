@@ -342,7 +342,6 @@ static void build_line(ui *u, const lc_build *b)
  * and a hint when the errors are in lc's harness. */
 static void build_output(ui *u, const lc_build *b)
 {
-    lc_str proto = LC_STR_INIT;
     size_t i;
     int harness = 0, errors = 0;
 
@@ -360,17 +359,16 @@ static void build_output(ui *u, const lc_build *b)
         else
             errors = 1;
     }
-    if (harness && !b->ok && !b->reference &&
-        lc_prototype(u->ctx, u->t->p, u->t->lang, &proto) == LC_OK)
+    if (harness && !b->ok && !b->reference && b->prototype)
         lc_str_printf(&u->out, "lc: errors in lc_harness, the code that "
                       "calls your solution, mean your\nfunction doesn't "
-                      "match the problem's. lc calls:\n    %s\n", proto.data);
+                      "match the problem's. lc calls:\n    %s\n",
+                      b->prototype);
     else if (errors && !b->ok && !b->reference &&
              strcmp(b->lang, "cpp") == 0 && strcmp(b->std, "c++11") == 0)
         lc_str_puts(&u->out, "lc: this was built as C++11. If your code "
                     "needs a newer standard, use --std\nc++17 or --std "
                     "max, or set LC_CXXSTD.\n");
-    lc_str_free(&proto);
 }
 
 static void case_line(ui *u, const lc_case_result *r)
@@ -612,6 +610,8 @@ void cli_json_build(lc_json *j, const lc_build *b, int done)
         lc_json_end_object(j);
     }
     lc_json_end_array(j);
+    lc_json_key(j, "prototype");
+    lc_json_string(j, b->prototype);
 }
 
 static void json_case(lc_json *j, const lc_problem *p,
