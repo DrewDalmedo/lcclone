@@ -1,8 +1,9 @@
 # Solving problems: the workspace, lc test and lc submit
 
-This is how you write and judge solutions with `lc`. How a solution is
-built and run, the limits and the verdicts are in
-[judging.md](judging.md); the JSON output is in [json.md](json.md).
+This is how you write and judge solutions with `lc`, keep track of your
+progress, and set `lc` up the way you like. How a solution is built and
+run, the limits and the verdicts are in [judging.md](judging.md); the
+JSON output is in [json.md](json.md).
 
 ## The workspace
 
@@ -36,10 +37,14 @@ lc start 1 --lang c         # a C solution next to it
 lc start two-sum --no-edit  # just create the files and print the solution's path
 ```
 
-The editor is run through `/bin/sh` in the problem's directory, with the
-solution file as its argument, so `EDITOR='nvim -O'` and the like work.
-Without `--lang`, `lc start` uses the language of the solution already
-there, if there is exactly one, else C++.
+The editor is the config file's `editor`, else `$VISUAL`, else `$EDITOR`,
+else `vi` ([Configuration](#configuration)). It is run through `/bin/sh`
+in the problem's directory, with the solution file as its argument, so
+`EDITOR='nvim -O'` and the like work. With `open_statement = yes` in the
+config, `README.md` is passed too, after the solution: with
+`editor = nvim -O` the two open side by side. Without `--lang`, `lc start`
+uses the language of the solution already there, if there is exactly one,
+else the config's `lang`, else C++.
 
 ## Running a solution
 
@@ -120,12 +125,18 @@ lc test --std max                 # the newest the compiler has
 LC_CSTD=c17 lc test solution.c    # C: c99, c11, c17, c23 or max
 ```
 
+Or set `cxxstd = c++17` (and `cstd`) in the config file, for every run:
+`$LC_CXXSTD` wins over it, and `--std` over both.
+
 C++ accepts `c++11`, `c++14`, `c++17`, `c++20`, `c++23` and `max`. A
 standard the compiler doesn't have is reported as such, not as a puzzling
 compile error.
 
-The compilers are `$CC` and `$CXX`, else `cc` and `c++`. A value may
-include arguments, as in `CXX='ccache g++'`.
+The compilers are the config's `cc` and `cxx`, else `$CC` and `$CXX`,
+else `cc` and `c++`. A value may include arguments, as in
+`CXX='ccache g++'`. The config's `cflags` and `cxxflags` are added to the
+compiler command for your solutions, for example `cxxflags = -Wall
+-D_GLIBCXX_DEBUG`.
 
 **What a solution can use without `#include`:** the C prelude includes the
 usual C headers (`stdio.h`, `stdlib.h`, `string.h`, `stdbool.h`,
@@ -139,6 +150,76 @@ in `runtime/`.
 and undefined behaviour become a Runtime Error with the sanitizer's report.
 See [judging.md](judging.md#sanitizers).
 
+## Progress and history
+
+`lc submit` records every submission: your progress on the problem, and a
+copy of the solution. `lc test` records nothing.
+
+- **Status.** A problem is *solved* once a submission of it was accepted,
+  *attempted* when it was submitted but never accepted, and *todo*
+  otherwise. A later failure doesn't undo solved.
+- **Progress** is kept in `progress.tsv` in the data directory,
+  `$XDG_DATA_HOME/lcclone` (by default `~/.local/share/lcclone`): one
+  tab-separated line per problem, with its ID, status, language, best
+  time (the slowest case of the fastest accepted submission, not counting
+  runs with `--sanitize`) and when it was last submitted, in seconds since
+  1970. `lc` reads it again before each update and replaces it atomically,
+  under a lock, so two `lc` processes (or a GUI) can record at once. It
+  changes only the line of the problem it records: comments and lines of
+  your own stay.
+- **History.** Each submission is copied to
+  `submissions/NNNN/<time>-<verdict>.<ext>` in the same directory, for
+  example `submissions/0001/20261030T201503Z-accepted.cpp` (the time is
+  UTC).
+
+```sh
+lc list --status todo                # what you haven't submitted yet
+lc list --status attempted,solved    # the rest
+lc random --difficulty easy --status todo
+lc stats                             # solved and attempted, by difficulty and tag
+```
+
+`lc list` shows a Status column once you have submitted something, and
+`lc show` a Status line. `lc random` picks one problem among those that
+pass the same filters as `lc list`. `lc stats` counts what you solved and
+attempted, in all, by difficulty and by tag.
+
+## Configuration
+
+Settings that you'd otherwise put in variables or repeat on the command
+line can go in a config file, `~/.config/lcclone/config` (or
+`$XDG_CONFIG_HOME/lcclone/config`, or the file named by `$LC_CONFIG`):
+
+```
+# One "key = value" per line; '#' starts a comment line.
+cxxstd = c++17
+editor = nvim -O
+open_statement = yes
+workspace = ~/code/lc
+```
+
+| Key              | Value |
+|------------------|-------|
+| `cc`, `cxx`      | the C and C++ compilers, e.g. `ccache g++` |
+| `cstd`, `cxxstd` | the standards: `c99` ... `c23`, `c++11` ... `c++23`, or `max` |
+| `cflags`, `cxxflags` | extra compiler flags for your solutions |
+| `editor`         | the editor `lc start` runs |
+| `open_statement` | `yes` to open README.md with the solution in `lc start` |
+| `lang`           | the language `lc start` uses when there is no other hint: `c` or `cpp` |
+| `color`          | `auto`, `always` or `never`, as `--color` |
+| `workspace`      | the workspace directory: an absolute path, or one starting with `~/` |
+
+Spaces around the key and the value don't matter, and an empty value is
+the same as leaving the key out. A line `lc` can't use, such as an
+unknown key or a bad value, is skipped with a warning naming the file and
+line; the rest still applies.
+
+**Which setting wins.** The most specific: a command-line option, then an
+`lc` variable (`LC_CXXSTD`, `LC_CSTD`, `LC_WORKSPACE`), then the config
+file, then a general variable (`CC`, `CXX`, `VISUAL`, `EDITOR`,
+`NO_COLOR`), then the default. So `cxx = g++-14` in the config wins over
+a `CXX` set for other programs, and `--std` wins over everything.
+
 ## Neovim, and other editors
 
 `lc` is designed to work from Neovim in layers, each working without the
@@ -150,7 +231,7 @@ which tells clangd to read lc's prelude first and which standard to use,
 for C and C++ files separately. Completion, diagnostics and go to
 definition then work with Neovim's built-in LSP client and nothing else.
 `lc start` rewrites `.clangd` when the standard (`LC_CSTD`,
-`LC_CXXSTD`) changes. A `.clangd` that `lc` didn't write is left alone;
+`LC_CXXSTD`, or `cstd` and `cxxstd` in the config) changes. A `.clangd` that `lc` didn't write is left alone;
 to keep your own changes to lc's, delete its first line.
 
 **`:make`.** In Vim or Neovim, with no plugin:

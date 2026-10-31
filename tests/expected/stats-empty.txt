@@ -1,0 +1,21 @@
+--- stdout
+Solved 0 of 6 problems (0%).
+
+Difficulty  Solved  Attempted  Total
+Easy             0          0      3
+Medium           0          0      2
+Hard             0          0      1
+
+Tag                  Solved  Attempted  Total
+array                     0          0      2
+binary-search             0          0      1
+design                    0          0      1
+divide-and-conquer        0          0      1
+dynamic-programming       0          0      1
+hash-table                0          0      2
+linked-list               0          0      1
+math                      0          0      1
+stack                     0          0      1
+two-pointers              0          0      1
+--- stderr
+--- exit 0

@@ -1,0 +1,17 @@
+# lcclone manifest: the LeetCode problems in scope and how far each pack is.
+# Tab-separated, one row per problem, in increasing id order. See
+# docs/authoring.md for the columns. Only facts (numbers, slugs, titles,
+# difficulty) come from LeetCode; every statement and test is our own.
+#
+# id	slug	title	difficulty	premium	group	status
+1	two-sum	Two Sum	easy	no	unordered	verified
+9	palindrome-number	Palindrome Number	easy	no	plain	verified
+14	longest-common-prefix	Longest Common Prefix	easy	no	plain	verified
+20	valid-parentheses	Valid Parentheses	easy	no	plain	verified
+70	climbing-stairs	Climbing Stairs	easy	no	plain	verified
+104	maximum-depth-of-binary-tree	Maximum Depth of Binary Tree	easy	no	tree	draft
+121	best-time-to-buy-and-sell-stock	Best Time to Buy and Sell Stock	easy	no	plain	verified
+190	reverse-bits	Reverse Bits	easy	no	bits	verified
+643	maximum-average-subarray-i	Maximum Average Subarray I	easy	no	float	verified
+744	find-smallest-letter-greater-than-target	Find Smallest Letter Greater Than Target	easy	no	plain	verified
+867	transpose-matrix	Transpose Matrix	easy	no	plain	verified

@@ -95,6 +95,43 @@ static int put_rt(lc_ctx *ctx, lc_str *s, const char *name, const char *as)
     return LC_OK;
 }
 
+const char *lc_role_name(int role)
+{
+    switch (role) {
+    case LC_ROLE_REF:
+        return "reference";
+    case LC_ROLE_BRUTE:
+        return "brute";
+    case LC_ROLE_STUB:
+        return "stub";
+    case LC_ROLE_GEN:
+        return "generator";
+    default:
+        return "solution";
+    }
+}
+
+/* The generator: lc_gen.h, gen.c, then its main(). */
+static int make_gen_unit(lc_ctx *ctx, const lc_build_req *req,
+                         const lc_str *src, lc_str *tu)
+{
+    int rc;
+
+    lc_str_printf(tu, "/* Built by lc: problem %d (%s), generator. */\n",
+                  req->p->id, req->p->slug);
+    rc = put_rt(ctx, tu, "gen/lc_gen.h", "lc_gen.h");
+    if (rc != LC_OK)
+        return rc;
+    put_line(tu, req->src);
+    lc_str_append(tu, lc_str_cstr(src), src->len);
+    if (src->len > 0 && src->data[src->len - 1] != '\n')
+        lc_str_putc(tu, '\n');
+    rc = put_rt(ctx, tu, "gen/lc_gen_main.c", "lc_gen_main.c");
+    if (rc != LC_OK)
+        return rc;
+    return tu->failed ? lc_oom(ctx) : LC_OK;
+}
+
 static int make_unit(lc_ctx *ctx, const lc_build_req *req, const lc_str *src,
                      lc_str *tu)
 {
@@ -103,9 +140,12 @@ static int make_unit(lc_ctx *ctx, const lc_build_req *req, const lc_str *src,
     if (strchr(req->src, '\n'))
         return lc_set_error(ctx, LC_ERR_INVALID, "cannot build '%s': its "
                             "path has a newline in it", req->src);
+    if (req->role == LC_ROLE_GEN)
+        return make_gen_unit(ctx, req, src, tu);
     lc_str_printf(tu, "/* Built by lc: problem %d (%s), %s. */\n",
                   req->p->id, req->p->slug,
-                  req->reference ? "reference solution" : "solution");
+                  req->role == LC_ROLE_REF ? "reference solution"
+                                           : lc_role_name(req->role));
     lc_codegen_defines(req->p, tu);
     rc = put_rt(ctx, tu, c ? "c/lc_prelude.h" : "cpp/lc_prelude.hpp",
                 c ? "lc_prelude.h" : "lc_prelude.hpp");
@@ -263,7 +303,8 @@ int lc_build_init(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
                   lc_build *b)
 {
     memset(b, 0, sizeof *b);
-    b->reference = req->reference;
+    b->reference = req->role == LC_ROLE_REF;
+    b->role = lc_role_name(req->role);
     b->lang = req->lang->name;
     b->std = req->std;
     b->sanitize = req->sanitize;
@@ -322,7 +363,7 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
 {
     lc_arena tmp = {NULL};
     lc_str src = LC_STR_INIT, tu = LC_STR_INIT, out = LC_STR_INIT;
-    const char *cache, *fl[MAX_FLAGS], *args[MAX_FLAGS + 4];
+    const char *cache, *extra, *fl[MAX_FLAGS], *args[MAX_FLAGS + 4];
     char *dir, *prog, *prog_tmp, *unit, *unit_final, *std_arg, **argv;
     char key[17];
     uint64_t h = 0xcbf29ce484222325ull;
@@ -347,9 +388,13 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
         goto done;
     }
     nfl = flags(req, std_arg, fl);
+    /* The config's flags are for your solutions, not lc's own sources. */
+    extra = req->role == LC_ROLE_SOLUTION ? req->cc->flags : NULL;
     h = fnv(h, req->cc->id, strlen(req->cc->id) + 1);
     for (i = 0; i < nfl; i++)
         h = fnv(h, fl[i], strlen(fl[i]) + 1);
+    if (extra)
+        h = fnv(h, extra, strlen(extra) + 1);
     h = fnv(h, tu.data, tu.len);
     snprintf(key, sizeof key, "%016llx", (unsigned long long)h);
 
@@ -358,8 +403,13 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
         rc = ctx->err_nomem ? LC_ERR_NOMEM : LC_ERR_NOTFOUND;
         goto done;
     }
-    dir = lc_arena_printf(a, "%s/build/%04d-%s/%s%s-%s%s", cache, req->p->id,
-                          req->p->slug, req->reference ? "ref-" : "",
+    dir = lc_arena_printf(a, "%s/build/%04d-%s/%s%s%s-%s%s", cache,
+                          req->p->id, req->p->slug,
+                          req->role == LC_ROLE_SOLUTION
+                              ? ""
+                              : req->role == LC_ROLE_REF ? "ref"
+                                                         : lc_role_name(req->role),
+                          req->role == LC_ROLE_SOLUTION ? "" : "-",
                           req->lang->name, req->std,
                           req->sanitize ? "-sanitize" : "");
     prog = dir ? lc_arena_printf(a, "%s/prog-%s", dir, key) : NULL;
@@ -401,7 +451,7 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
     args[i++] = unit;
     if (req->lang->id == LC_LANG_C)
         args[i++] = "-lm";
-    argv = lc_compiler_argv(&tmp, req->cc, args, i);
+    argv = lc_compiler_argv(&tmp, req->cc, args, i, extra);
     if (!argv) {
         rc = lc_oom(ctx);
         goto done;

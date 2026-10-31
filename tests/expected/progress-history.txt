@@ -1,0 +1,3 @@
+./0001/STAMP-wrong_answer.c
+./0010/STAMP-accepted.c
+./0010/STAMP-wrong_answer.c

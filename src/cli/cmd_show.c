@@ -26,6 +26,7 @@ typedef struct render {
     int color;
     size_t width;
     int nomem;
+    lc_status status;     /* your progress on the problem */
     int any;              /* a block has been written */
     int prev_item;        /* the last block written was a list item */
     size_t item_col[MAX_DEPTH]; /* text column of the last item per depth */
@@ -314,6 +315,13 @@ static void header(render *r, const lc_problem *p)
     cli_put_styled(r->out, r->color, cli_difficulty_style(p->difficulty),
                    cli_difficulty_label(p->difficulty));
     lc_str_putc(r->out, '\n');
+    if (r->status != LC_TODO) {
+        lc_str_puts(r->out, "Status: ");
+        cli_put_styled(r->out, r->color,
+                       r->status == LC_SOLVED ? CLI_ST_GREEN : CLI_ST_YELLOW,
+                       r->status == LC_SOLVED ? "Solved" : "Attempted");
+        lc_str_putc(r->out, '\n');
+    }
 
     if (p->ntags > 0) {
         for (t = 0; t < p->ntags; t++) {
@@ -520,10 +528,11 @@ static void json_examples(lc_json *j, const lc_problem *p,
     lc_json_end_array(j);
 }
 
-static void render_json(lc_json *j, const lc_ctx *ctx, const lc_problem *p,
+static void render_json(lc_json *j, lc_ctx *ctx, const lc_problem *p,
                         const lc_md_doc *doc, const lc_cases *cases,
                         const char *cases_warning)
 {
+    lc_progress_entry e;
     size_t i;
 
     lc_json_begin_object(j);
@@ -544,6 +553,25 @@ static void render_json(lc_json *j, const lc_ctx *ctx, const lc_problem *p,
     for (i = 0; i < p->ntags; i++)
         lc_json_string(j, p->tags[i]);
     lc_json_end_array(j);
+    /* On failure (cli_progress already read it) e is an empty entry. */
+    (void)lc_progress(ctx, p->id, &e);
+    lc_json_key(j, "status");
+    lc_json_string(j, lc_status_name(e.status));
+    lc_json_key(j, "progress");
+    lc_json_begin_object(j);
+    lc_json_key(j, "lang");
+    lc_json_string(j, *e.lang ? e.lang : NULL);
+    lc_json_key(j, "best_ms");
+    if (e.best_ms >= 0)
+        lc_json_int(j, e.best_ms);
+    else
+        lc_json_null(j);
+    lc_json_key(j, "last_submitted");
+    if (e.last_ts > 0)
+        lc_json_int(j, e.last_ts);
+    else
+        lc_json_null(j);
+    lc_json_end_object(j);
     lc_json_key(j, "signature");
     lc_json_string(j, p->signature);
     lc_json_key(j, "time_limit_ms");
@@ -609,6 +637,9 @@ int cmd_show(cli *c)
         rc = cli_error(c, ctx, "out of memory");
         goto done;
     }
+    rc = cli_progress(c, ctx);
+    if (rc != CLI_EXIT_OK)
+        goto done;
 
     if (c->json) {
         lc_json_init(&j, &out);
@@ -620,6 +651,11 @@ int cmd_show(cli *c)
     r.out = &out;
     r.color = cli_color_enabled(c->color);
     r.width = cli_term_width();
+    {
+        lc_progress_entry e;
+
+        r.status = lc_progress(ctx, p->id, &e) == LC_OK ? e.status : LC_TODO;
+    }
     render_text(&r, p, doc, cases);
     if (r.nomem || out.failed)
         rc = cli_error(c, ctx, "out of memory");

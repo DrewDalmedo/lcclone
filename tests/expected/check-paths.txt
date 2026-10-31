@@ -1,0 +1,10 @@
+--- stdout
+0001-good: ok (4 cases; ref.c slowest N ms; agrees with brute.c on 30 random cases)
+tests/fixtures/check/0012-broken/problem.md: error: missing required field 'difficulty'
+0012-broken: FAILED (it does not load)
+tests/fixtures/check/0008-tree: note: nothing was built or run: problem 8 (tree): TreeNode parameters are not supported yet
+0008-tree: ok (2 cases; not judged yet)
+
+Checked 3 packs: 1 ok, 1 not judged yet, 1 failed
+--- stderr
+--- exit 1

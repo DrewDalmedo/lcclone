@@ -204,7 +204,8 @@ static void test_runtime_files(void)
 {
     static const char *const names[] = {
         "c/lc_prelude.h", "c/lc_rt.c", "common/lc_rt_core.h",
-        "cpp/lc_prelude.hpp", "cpp/lc_rt.cpp"};
+        "cpp/lc_prelude.hpp", "cpp/lc_rt.cpp", "gen/lc_gen.h",
+        "gen/lc_gen_main.c"};
     size_t i, k;
 
     CHECK_INT(lc_rt_nfiles, sizeof names / sizeof names[0]);

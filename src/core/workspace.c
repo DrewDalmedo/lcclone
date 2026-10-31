@@ -43,11 +43,14 @@ const char *lc_workspace_dir(lc_ctx *ctx)
         ctx->workspace_dir = ctx->opt_workspace_dir;
     } else if ((v = lc_getenv("LC_WORKSPACE")) != NULL) {
         ctx->workspace_dir = lc_arena_strdup(&ctx->arena, v);
+    } else if ((v = lc_config_get(ctx, "workspace")) != NULL) {
+        ctx->workspace_dir = lc_arena_strdup(&ctx->arena, v);
     } else if ((v = lc_getenv("HOME")) != NULL) {
         ctx->workspace_dir = lc_path_join(&ctx->arena, v, "lc");
     } else {
         lc_set_error(ctx, LC_ERR_NOTFOUND, "no workspace directory: set "
-                     "LC_WORKSPACE or HOME");
+                     "LC_WORKSPACE or HOME, or workspace in the config "
+                     "file");
         return NULL;
     }
     if (!ctx->workspace_dir)
@@ -324,7 +327,8 @@ static int clangd_std(lc_ctx *ctx, const lc_lang *lang, const char **std)
         return rc;
     if (rc != LC_OK) {
         *std = lang->default_std;
-        if (lc_getenv(lang->std_env))
+        if (lc_getenv(lang->std_env) ||
+            lc_config_get(ctx, lang->id == LC_LANG_C ? "cstd" : "cxxstd"))
             return lc_add_warning(ctx, ".clangd uses %s: %s", *std,
                                   lc_last_error(ctx));
     }

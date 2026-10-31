@@ -1,0 +1,5 @@
+--- stdout
+{"schema":1,"problem":{"id":650,"slug":"2-keys-keyboard","title":"2 Keys Keyboard","difficulty":"medium","tags":["math","dynamic-programming"],"status":"solved"},"candidates":1,"warnings":["@TMP@/data2/lcclone/progress.tsv:5: expected 5 tab-separated fields; line skipped"]}
+--- stderr
+lc: warning: @TMP@/data2/lcclone/progress.tsv:5: expected 5 tab-separated fields; line skipped
+--- exit 0

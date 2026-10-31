@@ -80,6 +80,9 @@ static void on_event(void *ud, const lc_event *ev)
     case LC_EV_DONE:
         ch = 'E';
         break;
+    case LC_EV_FINDING:
+        ch = 'F'; /* only lc_check sends these */
+        break;
     }
     if (n + 1 < sizeof e->log)
         e->log[n] = ch;

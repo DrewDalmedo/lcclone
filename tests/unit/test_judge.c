@@ -234,7 +234,8 @@ static void on_event(void *ud, const lc_event *ev)
         break;
     case LC_EV_BUILD_START:
     case LC_EV_BUILD_DONE:
-        e->bad = 1; /* lc_judge_exe builds nothing */
+    case LC_EV_FINDING:
+        e->bad = 1; /* lc_judge_exe builds and checks nothing */
         break;
     }
 }

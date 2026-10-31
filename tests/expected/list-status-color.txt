@@ -1,0 +1,6 @@
+--- stdout
+<ESC>[1mID<ESC>[0m  <ESC>[1mTitle<ESC>[0m                        <ESC>[1mDifficulty<ESC>[0m  <ESC>[1mStatus<ESC>[0m     <ESC>[1mTags<ESC>[0m
+ 4  Median of Two Sorted Arrays  <ESC>[31mHard<ESC>[0m        <ESC>[33mAttempted<ESC>[0m  array, binary-search, divide-and-conquer
+--- stderr
+lc: warning: @TMP@/data2/lcclone/progress.tsv:5: expected 5 tab-separated fields; line skipped
+--- exit 0

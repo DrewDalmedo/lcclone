@@ -563,12 +563,14 @@ static void json_line_end(ui *u, lc_json *j)
     lc_str_clear(&u->out);
 }
 
-static void json_build(lc_json *j, const lc_build *b, int done)
+void cli_json_build(lc_json *j, const lc_build *b, int done)
 {
     size_t i;
 
     lc_json_key(j, "reference");
     lc_json_bool(j, b->reference);
+    lc_json_key(j, "role");
+    lc_json_string(j, b->role);
     lc_json_key(j, "lang");
     lc_json_string(j, b->lang);
     lc_json_key(j, "std");
@@ -688,7 +690,7 @@ static void on_event(void *ud, const lc_event *ev)
             json_line_begin(&j, &u->out, ev->kind == LC_EV_BUILD_START
                                              ? "build_start"
                                              : "build_done");
-            json_build(&j, ev->build, ev->kind == LC_EV_BUILD_DONE);
+            cli_json_build(&j, ev->build, ev->kind == LC_EV_BUILD_DONE);
             json_line_end(u, &j);
             break;
         case LC_EV_CASE_START:
@@ -711,6 +713,7 @@ static void on_event(void *ud, const lc_event *ev)
             json_line_end(u, &j);
             break;
         case LC_EV_DONE:
+        case LC_EV_FINDING:
             break; /* written once lc_judge returns, with the warnings */
         }
         return;
@@ -733,7 +736,14 @@ static void on_event(void *ud, const lc_event *ev)
     flush(u);
 }
 
-static void json_done(ui *u, const lc_report *rep)
+/* What recording a submission did, for the done event. */
+typedef struct recorded {
+    int done;                 /* it was recorded */
+    lc_record_info info;
+    lc_str warning;           /* why it wasn't, or why there's no copy */
+} recorded;
+
+static void json_done(ui *u, const lc_report *rep, const recorded *rec)
 {
     lc_json j;
 
@@ -750,8 +760,42 @@ static void json_done(ui *u, const lc_report *rep)
     lc_json_int(&j, rep->max_time_ms);
     lc_json_key(&j, "max_memory_kb");
     lc_json_int(&j, rep->max_memory_kb);
-    cli_json_warnings(&j, u->ctx, NULL);
+    if (u->submit) {
+        lc_json_key(&j, "status");
+        lc_json_string(&j, rec->done ? lc_status_name(rec->info.after.status)
+                                     : NULL);
+        lc_json_key(&j, "first_solve");
+        lc_json_bool(&j, rec->done && rec->info.after.status == LC_SOLVED &&
+                             rec->info.before.status != LC_SOLVED);
+        lc_json_key(&j, "saved");
+        lc_json_string(&j, rec->info.saved.len ? rec->info.saved.data : NULL);
+    }
+    cli_json_warnings(&j, u->ctx, rec->warning.len ? rec->warning.data
+                                                   : NULL);
     json_line_end(u, &j);
+}
+
+/* Records a submission in your progress and history (lc submit). */
+static void record(cli *c, lc_ctx *ctx, const target *t,
+                   const lc_report *rep, recorded *rec)
+{
+    int rc;
+
+    if (rep->cancelled || rep->verdict == LC_VERDICT_NONE)
+        return;
+    rc = lc_record(ctx, t->p, t->lang, t->src.data, rep, c->sanitize,
+                   &rec->info);
+    rec->done = rec->info.recorded;
+    if (rc == LC_OK)
+        return;
+    if (rec->done)
+        lc_str_printf(&rec->warning, "the submission was recorded, but not "
+                      "saved in the history: %s", lc_last_error(ctx));
+    else
+        lc_str_printf(&rec->warning, "the submission was not recorded in "
+                      "your progress: %s", lc_last_error(ctx));
+    if (!rec->warning.failed)
+        cli_warn(rec->warning.data);
 }
 
 /* ------------------------------------------------------------------ */
@@ -821,11 +865,13 @@ static int run(cli *c, int submit)
     lc_hooks hooks;
     lc_report *rep = NULL;
     struct sigaction sa, old;
+    recorded rec;
     ui u;
     int rc;
 
     memset(&t, 0, sizeof t);
     memset(&u, 0, sizeof u);
+    memset(&rec, 0, sizeof rec);
     rc = cli_load(c, &ctx);
     if (rc != CLI_EXIT_OK)
         return rc;
@@ -867,13 +913,19 @@ static int run(cli *c, int submit)
         goto done;
     }
     if (c->json) {
-        json_done(&u, rep);
+        if (submit)
+            record(c, ctx, &t, rep, &rec);
+        json_done(&u, rep, &rec);
     } else {
         summary(&u, rep);
         flush(&u);
+        if (submit)
+            record(c, ctx, &t, rep, &rec);
     }
     rc = u.nomem ? cli_error(c, ctx, "out of memory") : exit_status(rep);
 done:
+    lc_record_info_free(&rec.info);
+    lc_str_free(&rec.warning);
     lc_report_free(rep);
     lc_cases_free(mine);
     lc_str_free(&u.out);

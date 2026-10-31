@@ -112,11 +112,22 @@ static int parse_error(lc_ctx *ctx, const char *file, int line,
     return error_status(ctx, LC_ERR_PARSE);
 }
 
+/* What is known about a case before it ends. */
+typedef struct pending {
+    int example;
+    int example_line;
+    const char *explanation;
+    const char *gen;          /* @gen arguments, in the arena */
+    int gen_line;
+    int line;                 /* first input line */
+    int last_line;            /* last input line */
+} pending;
+
 /* Copies the pending input lines into a new case at the end of *items.
- * `expected` is NULL for a case of your own without one. */
+ * `expected` is NULL for a case without one (yours, or --regen's). */
 static int end_case(lc_arena *a, lc_case **items, size_t *n, size_t *cap,
                     const span *args, size_t nargs, const span *expected,
-                    int example, int line, const char *file)
+                    int expected_line, const pending *pd, const char *file)
 {
     lc_case *tmp = lc_grow(*items, cap, *n + 1, sizeof **items);
     char **copy;
@@ -136,8 +147,12 @@ static int end_case(lc_arena *a, lc_case **items, size_t *n, size_t *cap,
     memset(&tmp[*n], 0, sizeof tmp[*n]);
     tmp[*n].args = (const char *const *)copy;
     tmp[*n].nargs = nargs;
-    tmp[*n].example = example;
-    tmp[*n].line = line;
+    tmp[*n].example = pd->example;
+    tmp[*n].explanation = pd->explanation;
+    tmp[*n].gen = pd->gen;
+    tmp[*n].line = pd->line ? pd->line : pd->gen_line;
+    tmp[*n].last_line = pd->last_line;
+    tmp[*n].expected_line = expected_line;
     tmp[*n].file = file;
     if (expected) {
         tmp[*n].expected = lc_arena_strndup(a, expected->p, expected->n);
@@ -149,22 +164,80 @@ static int end_case(lc_arena *a, lc_case **items, size_t *n, size_t *cap,
 }
 
 /*
- * Parses tests.txt, or with `user` set a file of your own cases, where
- * "=> expected" may be left out (a blank line or the end of the file then
- * ends the case) and @example is not allowed.
+ * Parses "@gen ARGS": a seed (a decimal number that fits in 64 bits),
+ * then optionally "small". Returns the arguments in the canonical form
+ * "SEED" or "SEED small", in `a`; NULL with *bad set when they are
+ * malformed, or NULL alone when out of memory.
+ */
+static const char *parse_gen(lc_arena *a, span args, int *bad)
+{
+    const char *p = args.p, *end = args.p + args.n, *s;
+    unsigned long long seed = 0;
+    int small = 0;
+
+    *bad = 0;
+    for (s = p; p < end && *p >= '0' && *p <= '9'; p++) {
+        unsigned d = (unsigned)(*p - '0');
+        if (seed > (18446744073709551615ull - d) / 10) {
+            *bad = 1;
+            return NULL;
+        }
+        seed = seed * 10 + d;
+    }
+    if (p == s || (p - s > 1 && *s == '0')) {
+        *bad = 1;
+        return NULL;
+    }
+    while (p < end && is_blank_char((unsigned char)*p))
+        p++;
+    if (p < end) {
+        if ((size_t)(end - p) != 5 || memcmp(p, "small", 5) != 0) {
+            *bad = 1;
+            return NULL;
+        }
+        small = 1;
+    }
+    return lc_arena_printf(a, "%llu%s", seed, small ? " small" : "");
+}
+
+/* What parse_cases reads. */
+enum {
+    MODE_TESTS,  /* a pack's tests.txt */
+    MODE_USER,   /* your cases: "=> expected" may be left out */
+    MODE_REGEN   /* tests.txt for --regen: "=> expected" may be left out,
+                    and a case after @gen may have no inputs yet */
+};
+
+/*
+ * Parses tests.txt or a file of cases (see the modes above). In MODE_USER
+ * and MODE_REGEN a case without "=>" ends at a blank line, a directive or
+ * the end of the file.
  */
 static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
-                       const char *filename, int user, lc_cases **out)
+                       const char *filename, int mode, lc_cases **out)
 {
     cases_box *box;
     lc_case *items = NULL, *final;
     span *args = NULL;
     size_t nitems = 0, capitems = 0, nargs = 0, capargs = 0;
     const char *p, *end;
-    const char *explanation = NULL;
-    int lineno = 0, case_line = 0, example_line = 0, example = 0;
+    pending pd;
+    int lineno = 0;
     int noinput = 0; /* the open case is "()": it has no inputs */
     int rc = LC_OK;
+
+#define OPEN (nargs || noinput)
+#define FLUSH()                                                            \
+    do {                                                                   \
+        if (end_case(&box->arena, &items, &nitems, &capitems, args, nargs, \
+                     NULL, 0, &pd, filename) != LC_OK) {                   \
+            rc = lc_oom(ctx);                                              \
+            goto fail;                                                     \
+        }                                                                  \
+        nargs = 0;                                                         \
+        noinput = 0;                                                       \
+        memset(&pd, 0, sizeof pd);                                         \
+    } while (0)
 
     if (!out)
         return error_status(ctx, lc_set_error(ctx, LC_ERR_INVALID,
@@ -183,6 +256,7 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
         free(box);
         return lc_oom(ctx);
     }
+    memset(&pd, 0, sizeof pd);
 
     p = text ? text : "";
     end = p + len;
@@ -199,18 +273,18 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
             goto fail;
         }
         if (ln.n == 0) {
-            if ((nargs || noinput) && user) {
-                rc = end_case(&box->arena, &items, &nitems, &capitems, args,
-                              nargs, NULL, 0, case_line, filename);
-                if (rc != LC_OK) {
-                    rc = lc_oom(ctx);
-                    goto fail;
-                }
-                nargs = 0;
-                noinput = 0;
-            } else if (nargs || noinput) {
+            /* An @gen must be followed right away by its case, so that a
+             * bare "@gen 7" line is a case for --regen to make. */
+            if ((OPEN && mode != MODE_TESTS) || (pd.gen && mode == MODE_REGEN))
+                FLUSH();
+            else if (OPEN) {
                 rc = parse_error(ctx, filename, lineno, "blank line inside a "
                                  "case (missing '=>'?)");
+                goto fail;
+            } else if (pd.gen) {
+                rc = parse_error(ctx, filename, pd.gen_line, "@gen is not "
+                                 "followed by a case (run 'lc check --regen' "
+                                 "to make it)");
                 goto fail;
             }
             continue;
@@ -220,36 +294,64 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
 
         if (ln.p[0] == '@') {
             size_t w = 1;
+            int is_gen;
+
             while (w < ln.n && !is_blank_char((unsigned char)ln.p[w]))
                 w++;
-            if (w != 8 || memcmp(ln.p, "@example", 8) != 0) {
+            is_gen = w == 4 && memcmp(ln.p, "@gen", 4) == 0;
+            if (!is_gen && (w != 8 || memcmp(ln.p, "@example", 8) != 0)) {
                 rc = parse_error(ctx, filename, lineno, "unknown directive "
                                  "'%.*s%s'", quote_len(ln.p, w), ln.p,
                                  w > QUOTE_MAX ? "..." : "");
                 goto fail;
             }
-            if (user) {
-                rc = parse_error(ctx, filename, lineno, "@example is only "
-                                 "for a problem's tests.txt");
+            if (mode == MODE_USER) {
+                rc = parse_error(ctx, filename, lineno, "%.*s is only for a "
+                                 "problem's tests.txt", (int)w, ln.p);
                 goto fail;
             }
-            if (nargs || noinput) {
-                rc = parse_error(ctx, filename, lineno, "@example inside a "
-                                 "case (missing '=>'?)");
+            if (mode == MODE_REGEN && (OPEN || pd.gen))
+                FLUSH();
+            if (OPEN) {
+                rc = parse_error(ctx, filename, lineno, "%.*s inside a case "
+                                 "(missing '=>'?)", (int)w, ln.p);
                 goto fail;
             }
-            if (example) {
-                rc = parse_error(ctx, filename, lineno, "two @example lines "
-                                 "in a row");
+            if ((is_gen && pd.gen) || (!is_gen && pd.example)) {
+                rc = parse_error(ctx, filename, lineno, "two %.*s lines in a "
+                                 "row", (int)w, ln.p);
                 goto fail;
             }
-            example = 1;
-            example_line = lineno;
-            explanation = NULL;
+            if (pd.gen || pd.example) {
+                rc = parse_error(ctx, filename, lineno, "a case can't be "
+                                 "both @example and @gen");
+                goto fail;
+            }
+            if (is_gen) {
+                int bad;
+
+                pd.gen = parse_gen(&box->arena, trim((span){ln.p + w,
+                                                            ln.n - w}),
+                                   &bad);
+                if (bad) {
+                    rc = parse_error(ctx, filename, lineno, "expected '@gen "
+                                     "SEED' or '@gen SEED small', where "
+                                     "SEED is a number");
+                    goto fail;
+                }
+                if (!pd.gen) {
+                    rc = lc_oom(ctx);
+                    goto fail;
+                }
+                pd.gen_line = lineno;
+                continue;
+            }
+            pd.example = 1;
+            pd.example_line = lineno;
             if (w < ln.n) {
                 span ex = trim((span){ln.p + w, ln.n - w});
-                explanation = lc_arena_strndup(&box->arena, ex.p, ex.n);
-                if (!explanation) {
+                pd.explanation = lc_arena_strndup(&box->arena, ex.p, ex.n);
+                if (!pd.explanation) {
                     rc = lc_oom(ctx);
                     goto fail;
                 }
@@ -259,38 +361,37 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
 
         if (ln.n >= 2 && ln.p[0] == '=' && ln.p[1] == '>') {
             span expected = trim((span){ln.p + 2, ln.n - 2});
-            if (!nargs && !noinput) {
+            if (!OPEN && !(mode == MODE_REGEN && pd.gen)) {
                 rc = parse_error(ctx, filename, lineno, "'=>' with no input "
                                  "lines before it");
                 goto fail;
             }
-            if (expected.n == 0) {
+            if (expected.n == 0 && mode != MODE_REGEN) {
                 rc = parse_error(ctx, filename, lineno, "nothing after '=>'");
                 goto fail;
             }
             if (end_case(&box->arena, &items, &nitems, &capitems, args, nargs,
-                         &expected, example, case_line, filename) != LC_OK) {
+                         expected.n ? &expected : NULL, lineno, &pd,
+                         filename) != LC_OK) {
                 rc = lc_oom(ctx);
                 goto fail;
             }
-            items[nitems - 1].explanation = explanation;
             nargs = 0;
             noinput = 0;
-            example = 0;
-            explanation = NULL;
+            memset(&pd, 0, sizeof pd);
             continue;
         }
 
         /* "()": a case with no inputs, for a signature without
          * parameters. It must be the case's only input line. */
         if (ln.n == 2 && ln.p[0] == '(' && ln.p[1] == ')') {
-            if (nargs || noinput) {
+            if (OPEN) {
                 rc = parse_error(ctx, filename, lineno, "'()' must be the "
                                  "only input line of its case");
                 goto fail;
             }
             noinput = 1;
-            case_line = lineno;
+            pd.line = pd.last_line = lineno;
             continue;
         }
         if (noinput) {
@@ -302,7 +403,8 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
 
         /* An input line: one literal, kept as text. */
         if (!nargs)
-            case_line = lineno;
+            pd.line = lineno;
+        pd.last_line = lineno;
         {
             span *tmp = lc_grow(args, &capargs, nargs + 1, sizeof *args);
             if (!tmp) {
@@ -313,21 +415,24 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
             args[nargs++] = ln;
         }
     }
-    if ((nargs || noinput) && user) {
-        if (end_case(&box->arena, &items, &nitems, &capitems, args, nargs,
-                     NULL, 0, case_line, filename) != LC_OK) {
-            rc = lc_oom(ctx);
-            goto fail;
-        }
-    } else if (nargs || noinput) {
-        rc = parse_error(ctx, filename, case_line, "case has no '=>' line");
+    if ((OPEN && mode != MODE_TESTS) || (mode == MODE_REGEN && pd.gen)) {
+        FLUSH();
+    } else if (OPEN) {
+        rc = parse_error(ctx, filename, pd.line, "case has no '=>' line");
         goto fail;
     }
-    if (example) {
-        rc = parse_error(ctx, filename, example_line, "@example is not "
+    if (pd.example) {
+        rc = parse_error(ctx, filename, pd.example_line, "@example is not "
                          "followed by a case");
         goto fail;
     }
+    if (pd.gen) {
+        rc = parse_error(ctx, filename, pd.gen_line, "@gen is not followed "
+                         "by a case (run 'lc check --regen' to make it)");
+        goto fail;
+    }
+#undef OPEN
+#undef FLUSH
 
     final = lc_arena_array(&box->arena, nitems ? nitems : 1, sizeof *final);
     if (!final) {
@@ -351,10 +456,22 @@ fail:
     return rc;
 }
 
+int lc_parse_regen_cases(lc_ctx *ctx, const char *text, size_t len,
+                         const char *filename, lc_cases **out)
+{
+    return parse_cases(ctx, text, len, filename, MODE_REGEN, out);
+}
+
+int lc_parse_user_cases(lc_ctx *ctx, const char *text, size_t len,
+                        const char *filename, lc_cases **out)
+{
+    return parse_cases(ctx, text, len, filename, MODE_USER, out);
+}
+
 int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
                    const char *filename, lc_cases **out)
 {
-    return parse_cases(ctx, text, len, filename, 0, out);
+    return parse_cases(ctx, text, len, filename, MODE_TESTS, out);
 }
 
 int lc_load_user_cases(lc_ctx *ctx, const char *path, lc_cases **out)
@@ -379,7 +496,7 @@ int lc_load_user_cases(lc_ctx *ctx, const char *path, lc_cases **out)
                                               path));
     rc = lc_read_file(ctx, path, LC_MAX_TESTS_TXT, &text);
     if (rc == LC_OK)
-        rc = parse_cases(ctx, text.data, text.len, path, 1, out);
+        rc = parse_cases(ctx, text.data, text.len, path, MODE_USER, out);
     else
         rc = error_status(ctx, rc);
     lc_str_free(&text);

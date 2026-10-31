@@ -97,7 +97,7 @@ typedef struct lc_options {
     const char *problems_dir;
     /*
      * Directory for your solutions, one NNNN-slug directory per problem.
-     * When NULL: $LC_WORKSPACE, else ~/lc.
+     * When NULL: $LC_WORKSPACE, else the config's workspace, else ~/lc.
      */
     const char *workspace_dir;
     /*
@@ -105,11 +105,25 @@ typedef struct lc_options {
      * $XDG_CACHE_HOME/lcclone, else ~/.cache/lcclone.
      */
     const char *cache_dir;
+    /*
+     * The config file. When NULL: $LC_CONFIG, else
+     * $XDG_CONFIG_HOME/lcclone/config, else ~/.config/lcclone/config.
+     * "" means no config file at all.
+     */
+    const char *config_file;
+    /*
+     * Directory for your progress and submission history. When NULL:
+     * $XDG_DATA_HOME/lcclone, else ~/.local/share/lcclone.
+     */
+    const char *data_dir;
 } lc_options;
 
 void lc_options_init(lc_options *opt);
 
-/* Creates a context. `opt` may be NULL. Returns NULL only when out of memory. */
+/*
+ * Creates a context and reads the config file (see "Configuration"
+ * below). `opt` may be NULL. Returns NULL only when out of memory.
+ */
 lc_ctx *lc_open(const lc_options *opt);
 void lc_close(lc_ctx *ctx);
 
@@ -132,6 +146,36 @@ const char *lc_last_error(const lc_ctx *ctx);
 /* Non-fatal problems, such as packs skipped by lc_load. */
 size_t lc_warning_count(const lc_ctx *ctx);
 const char *lc_warning_at(const lc_ctx *ctx, size_t i);
+
+/* ------------------------------------------------------------------ */
+/* Configuration (docs/workspace.md, "Configuration")                  */
+/* ------------------------------------------------------------------ */
+
+/*
+ * The config file holds `key = value` lines. The keys are cc, cxx,
+ * cstd, cxxstd, cflags, cxxflags, workspace (used by the core), and
+ * editor, lang, color and open_statement (for front-ends). lc_open reads
+ * it; a line that can't be used, such as an unknown key or a bad value,
+ * is skipped with a warning. A missing file at the default location is
+ * no config; one named by lc_options.config_file or $LC_CONFIG that
+ * can't be read gives a warning.
+ *
+ * Where a setting can come from several places, the most specific wins:
+ * a command-line option, then an lc variable ($LC_CXXSTD, $LC_WORKSPACE),
+ * then the config file, then a general variable ($CXX, $VISUAL, $EDITOR,
+ * $NO_COLOR), then the default.
+ */
+
+/* The config file lc_open looked for, or NULL when there was none to
+ * look for (no HOME, or config_file ""). It may not exist. */
+const char *lc_config_file(const lc_ctx *ctx);
+
+/* A key's value, or NULL when it is unset. A `workspace` starting with
+ * "~/" has HOME put in. */
+const char *lc_config_get(const lc_ctx *ctx, const char *key);
+
+/* 1 for yes, true, on and 1; 0 for no, false, off and 0; else -1. */
+int lc_config_bool(const char *value);
 
 /* ------------------------------------------------------------------ */
 /* Types (docs/problem-format.md, "Types")                             */
@@ -293,7 +337,13 @@ typedef struct lc_case {
     const char *expected;
     const char *explanation;  /* text after "@example", or NULL */
     int example;              /* 1 if marked with @example */
-    int line;                 /* line of the case's first input */
+    /* the arguments of its "@gen" line, such as "7" or "7 small", when the
+     * pack's gen.c made it (docs/authoring.md), or NULL */
+    const char *gen;
+    int line;                 /* line of the case's first input (of its
+                                 @gen line when it has no input yet) */
+    int last_line;            /* line of its last input; 0 when none */
+    int expected_line;        /* line of its "=>"; 0 when none */
     const char *file;         /* the file it was read from, as given */
 } lc_case;
 
@@ -523,6 +573,9 @@ typedef struct lc_build {
     /* 1 for the problem's reference solution, which is built to work out
      * the expected results of cases that don't give one */
     int reference;
+    /* what is built: "solution" (yours), "reference", and for lc check
+     * "brute", "stub" and "generator" */
+    const char *role;
     const char *lang;         /* lc_lang.name: "c" or "cpp" */
     const char *std;          /* the standard used, e.g. "c++17" */
     const char *source;       /* the source file, an absolute path */
@@ -568,8 +621,11 @@ typedef enum {
     LC_EV_CASE_DONE,          /* a case finished */
     LC_EV_DONE,               /* the run is over */
     LC_EV_BUILD_START,        /* lc_judge: a source is about to be built */
-    LC_EV_BUILD_DONE          /* lc_judge: it was built, or failed to */
+    LC_EV_BUILD_DONE,         /* lc_judge: it was built, or failed to */
+    LC_EV_FINDING             /* lc_check: something was found */
 } lc_event_kind;
+
+typedef struct lc_finding lc_finding;
 
 /*
  * What the pointers in an event point to is only valid during the
@@ -583,8 +639,9 @@ typedef struct lc_event {
     const lc_case_result *result; /* LC_EV_CASE_DONE: how it went */
     const lc_report *report;  /* LC_EV_DONE: the whole run */
     /* build events: what is built; at LC_EV_BUILD_START only `reference`,
-     * `lang`, `std`, `source`, `compiler` and `sanitize` are set */
+     * `role`, `lang`, `std`, `source`, `compiler` and `sanitize` are set */
     const lc_build *build;
+    const lc_finding *finding; /* LC_EV_FINDING */
 } lc_event;
 
 typedef struct lc_hooks {
@@ -631,14 +688,15 @@ const lc_lang *lc_lang_find(const char *name);
 const lc_lang *lc_lang_for_path(const char *path);
 
 /*
- * 1 if the language's compiler can be found: $CC or $CXX if set (its
- * first word, looked up on $PATH), else cc or c++.
+ * 1 if the language's compiler can be found: the config's cc or cxx, else
+ * $CC or $CXX if set (its first word, looked up on $PATH), else cc or c++.
  */
 int lc_lang_installed(lc_ctx *ctx, const lc_lang *lang);
 
 /*
  * The standard a build would use: `want` if not NULL (e.g. from --std),
- * else $LC_CSTD or $LC_CXXSTD, else the default (c11, c++11). "max" means
+ * else $LC_CSTD or $LC_CXXSTD, else the config's cstd or cxxstd, else the
+ * default (c11, c++11). "max" means
  * the newest standard the compiler accepts. A standard other than the
  * default is checked once against the compiler, and the answer is kept in
  * the cache directory. On LC_OK *out is the standard's name, valid until
@@ -737,6 +795,218 @@ int lc_start(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
  * examples as markdown. `cases` (may be NULL) supplies the examples. */
 int lc_readme(lc_ctx *ctx, const lc_problem *p, const lc_cases *cases,
               lc_str *out);
+
+/* ------------------------------------------------------------------ */
+/* Progress and history (docs/workspace.md, "Progress and history")    */
+/* ------------------------------------------------------------------ */
+
+typedef enum {
+    LC_TODO = 0,              /* never submitted */
+    LC_ATTEMPTED,             /* submitted, never accepted */
+    LC_SOLVED                 /* accepted at least once */
+} lc_status;
+
+/* "todo", "attempted" or "solved". */
+const char *lc_status_name(lc_status s);
+/* Parses those names; -1 for anything else. */
+int lc_status_from_name(const char *s);
+
+/* Your progress on one problem. */
+typedef struct lc_progress_entry {
+    int id;
+    lc_status status;
+    /* the language of the last accepted submission, else of the last
+     * one: "c" or "cpp"; "" when never submitted */
+    const char *lang;
+    /* the slowest case's CPU time in the best accepted submission built
+     * without sanitizers; -1 when there is none */
+    long best_ms;
+    long long last_ts;        /* last submitted, in seconds since the
+                                 epoch; 0 when never */
+} lc_progress_entry;
+
+/*
+ * Your progress on problem `id`, from progress.tsv in the data directory
+ * (lc_options.data_dir). The file is read on first use; a line that
+ * can't be used is skipped with a warning, and so is a file that can't
+ * be read (then nothing has been submitted). A problem never submitted is
+ * LC_TODO with lang "", best_ms -1 and last_ts 0. Fails only when memory
+ * runs out. Strings stay valid until lc_close.
+ */
+int lc_progress(lc_ctx *ctx, int id, lc_progress_entry *out);
+
+/* What lc_record did. Release it with lc_record_info_free. */
+typedef struct lc_record_info {
+    int recorded;             /* progress.tsv was updated */
+    lc_progress_entry before; /* the progress before this submission */
+    lc_progress_entry after;  /* and after it (set when recorded) */
+    lc_str saved;             /* the copy kept in the history; empty if
+                                 none could be made */
+} lc_record_info;
+
+void lc_record_info_free(lc_record_info *info);
+
+/*
+ * Records a submission: `src`, in `lang`, for problem `p`, judged with
+ * every case and got `report` (anything but a cancelled run). progress.tsv
+ * is read again, under a lock, so that two lc processes can record at
+ * once, updated and replaced atomically. Then the solution is copied to
+ * <data>/submissions/NNNN/<time>-<verdict>.<ext>, where <time> is UTC,
+ * e.g. 20261030T201503Z. When only that copy fails, the progress is still
+ * recorded: lc_record returns the error and info->saved is empty.
+ * `sanitize` says the solution was built with the sanitizers, whose times
+ * don't count for best_ms. info->recorded says whether progress.tsv was
+ * updated, whatever lc_record returns.
+ */
+int lc_record(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+              const char *src, const lc_report *report, int sanitize,
+              lc_record_info *info);
+
+/* How many problems there are, and how many you solved and attempted. */
+typedef struct lc_stats_row {
+    const char *name;         /* a difficulty or tag name; "all" */
+    size_t total;
+    size_t solved;
+    size_t attempted;
+} lc_stats_row;
+
+typedef struct lc_stats_summary {
+    lc_stats_row all;
+    lc_stats_row difficulty[4]; /* by lc_difficulty: [LC_EASY] and so on */
+    const lc_stats_row *tags; /* every tag of the loaded problems, by name */
+    size_t ntags;
+    void *priv_;              /* owned memory; do not touch */
+} lc_stats_summary;
+
+/* Counts the loaded problems against your progress. Release the summary
+ * with lc_stats_free. */
+int lc_stats(lc_ctx *ctx, lc_stats_summary *out);
+void lc_stats_free(lc_stats_summary *s);
+
+/* ------------------------------------------------------------------ */
+/* The manifest (docs/authoring.md, "MANIFEST.tsv")                    */
+/* ------------------------------------------------------------------ */
+
+/* One row of MANIFEST.tsv: a LeetCode problem and how far its pack is. */
+typedef struct lc_manifest_row {
+    int id;
+    const char *slug;
+    const char *title;
+    lc_difficulty difficulty;
+    int premium;              /* 1 for a premium-only problem */
+    const char *group;        /* the harness group, such as "plain" or
+                                 "tree"; "skip" when out of scope */
+    const char *skip;         /* why it is out of scope (the text after
+                                 "skip:"), or NULL */
+    const char *status;       /* "todo", "draft" or "verified" */
+    int line;                 /* its line in MANIFEST.tsv */
+} lc_manifest_row;
+
+typedef struct lc_manifest {
+    const char *path;         /* MANIFEST.tsv, an absolute path */
+    const lc_manifest_row *rows; /* by id */
+    size_t count;
+    void *priv_;              /* owned memory; do not touch */
+} lc_manifest;
+
+/*
+ * Reads MANIFEST.tsv in the problem directory (lc_load must have run).
+ * Sets *out to NULL, and returns LC_OK, when there is none. A malformed
+ * file gives LC_ERR_PARSE and "<path>:<line>: <message>".
+ */
+int lc_load_manifest(lc_ctx *ctx, lc_manifest **out);
+/* Parses MANIFEST.tsv text; `path` is used in messages. */
+int lc_parse_manifest(lc_ctx *ctx, const char *text, size_t len,
+                      const char *path, lc_manifest **out);
+void lc_manifest_free(lc_manifest *m);
+/* The row for problem `id`, or NULL. */
+const lc_manifest_row *lc_manifest_find(const lc_manifest *m, int id);
+
+/* ------------------------------------------------------------------ */
+/* Checking problem packs (docs/authoring.md, "lc check")              */
+/* ------------------------------------------------------------------ */
+
+typedef enum {
+    LC_FINDING_ERROR = 0,     /* the pack is wrong; the check fails */
+    LC_FINDING_WARNING,       /* probably wrong, or not checked */
+    LC_FINDING_NOTE           /* for information */
+} lc_finding_level;
+
+/* "error", "warning" or "note". */
+const char *lc_finding_level_name(lc_finding_level level);
+
+/* Something lc_check found. Strings are owned by the report. */
+struct lc_finding {
+    lc_finding_level level;
+    const char *file;         /* the file it is about (an absolute path),
+                                 or NULL for the pack as a whole */
+    int line;                 /* its line in `file`, or 0 */
+    const char *message;      /* one line */
+    const char *detail;       /* more, as lines ending in '\n': a case's
+                                 input and results, or a compiler's output;
+                                 NULL when there is none */
+};
+
+/* Random cases lc_check compares ref and brute on, by default. */
+#define LC_CHECK_COUNT 300
+
+typedef struct lc_check_options {
+    /* first rewrite tests.txt: make the cases marked @gen with gen.c,
+     * and the expected results with ref (keeping those that already
+     * match) */
+    int regen;
+    unsigned long count;      /* random cases for the brute cross-check;
+                                 0 means LC_CHECK_COUNT */
+    unsigned long long seed;  /* the cross-check's first seed (lc check
+                                 starts at 1); seeds wrap around at 2^64 */
+} lc_check_options;
+
+/* What lc_check found and did. Release it with lc_check_report_free. */
+typedef struct lc_check_report {
+    int ok;                   /* no errors */
+    int cancelled;            /* the cancel flag stopped it */
+    /* why the pack's solutions were neither built nor run (the problem
+     * needs something lc can't judge yet), or NULL when they were */
+    const char *skipped;
+    size_t errors;
+    size_t warnings;
+    const lc_finding *findings; /* in the order they were found */
+    size_t nfindings;
+    size_t ncases;            /* in tests.txt */
+    size_t nexamples;         /* of them, marked @example */
+    size_t ngenerated;        /* of them, marked @gen */
+    const char *ref;          /* the reference solution's file name, e.g.
+                                 "ref.c", or NULL */
+    const char *brute;        /* brute.c or brute.cpp, or NULL */
+    const char *gen;          /* "gen.c", or NULL */
+    size_t stubs;             /* languages whose stub was built */
+    size_t ref_passed;        /* cases of tests.txt the reference passed */
+    long ref_max_ms;          /* its slowest case's CPU time */
+    size_t cross;             /* random cases ref and brute agreed on */
+    size_t regen_changed;     /* --regen: expected results written */
+    size_t regen_generated;   /* --regen: cases made with gen.c */
+    int regen_written;        /* --regen: tests.txt was rewritten */
+    void *priv_;              /* owned memory; do not touch */
+} lc_check_report;
+
+/*
+ * Checks problem p's pack, for authors: it agrees with MANIFEST.tsv (`m`,
+ * may be NULL); tests.txt reads and every case fits the signature; the
+ * stubs build with lc's harness in C and C++; the reference solution
+ * passes every case; the cases marked @gen are what gen.c makes; and,
+ * with brute.c and gen.c, ref and brute agree on opts->count small random
+ * cases. With opts->regen, tests.txt is rewritten first. A problem lc
+ * can't judge yet still has its tests.txt checked.
+ *
+ * Findings arrive as LC_EV_FINDING events as they are found, with build
+ * events; the runs themselves send none. What is wrong with the pack is a
+ * finding, not a failure: lc_check fails only when out of memory or when
+ * the cache can't be written.
+ */
+int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
+             const lc_check_options *opts, const lc_hooks *hooks,
+             lc_check_report **out);
+void lc_check_report_free(lc_check_report *report);
 
 /* ------------------------------------------------------------------ */
 /* Markdown (the subset described in docs/problem-format.md)           */

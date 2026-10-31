@@ -1,0 +1,33 @@
+--- stdout
+usage: lc check [<pack>...] [--regen] [--count N] [--seed N] [--json] [--color=WHEN]
+
+Check problem packs: each <pack> is a pack directory, an ID or a
+slug; without one, every pack of the problem directory. For each
+pack, lc checks that:
+
+  - problem.md loads, and agrees with MANIFEST.tsv if there is one;
+  - tests.txt reads, and every case fits the signature;
+  - the C and C++ stubs build with lc's harness;
+  - the reference solution (ref.c or ref.cpp) passes every case,
+    using at most a third of the time limit;
+  - the cases marked @gen are what gen.c makes;
+  - ref and brute.c (or brute.cpp) give the same results on random
+    small cases from gen.c.
+
+A problem that needs something lc can't judge yet only has its
+tests.txt checked. Problems are printed as file:line: messages. The
+exit status is 0 when every pack is fine, 1 when one isn't.
+
+Options:
+  --regen            first rewrite tests.txt: make the @gen cases with
+                     gen.c, and work out every expected result with
+                     ref (results that already match are kept)
+  --count N          random cases to compare ref and brute on
+                     (default 300)
+  --seed N           the seed of the first random case (default 1)
+  --json             print JSON Lines: one object per event
+  --color=WHEN       colour the output: auto (the default), always or
+                     never
+  -h, --help         show this help
+--- stderr
+--- exit 0

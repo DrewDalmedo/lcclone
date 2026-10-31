@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: unknown status 'done' (expected todo, attempted or solved)
+Run 'lc help list'.
+--- exit 3

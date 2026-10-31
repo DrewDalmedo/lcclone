@@ -1,0 +1,22 @@
+--- stdout
+Solved 2 of 6 problems (33%); attempted 1 more.
+
+Difficulty  Solved  Attempted  Total
+Easy             1          0      3
+Medium           1          0      2
+Hard             0          1      1
+
+Tag                  Solved  Attempted  Total
+array                     1          1      2
+binary-search             0          1      1
+design                    0          0      1
+divide-and-conquer        0          1      1
+dynamic-programming       1          0      1
+hash-table                1          0      2
+linked-list               0          0      1
+math                      1          0      1
+stack                     0          0      1
+two-pointers              0          0      1
+--- stderr
+lc: warning: @TMP@/data2/lcclone/progress.tsv:5: expected 5 tab-separated fields; line skipped
+--- exit 0

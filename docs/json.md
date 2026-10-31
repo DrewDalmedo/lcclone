@@ -5,7 +5,7 @@ stdout: a single line of compact JSON followed by a newline. Editor plugins
 and GUIs run `lc` as a subprocess and read that line, so nothing ever has to
 scrape the text output. `lc test` and `lc submit` are the exception: they
 print one such line per event, as it happens ([JSON Lines](#lc-test---json-and-lc-submit---json)),
-so a front-end can show progress.
+so a front-end can show progress; so does `lc check`.
 
 ## General rules
 
@@ -55,16 +55,18 @@ after `--` is an ordinary argument.
 
 Exit statuses: 0 on success; 3 for every error. `lc test` and `lc submit`
 also exit with 1 for a verdict other than Accepted, 2 for Compile Error and
-130 when ^C stopped the run.
+130 when ^C stopped the run; `lc check` with 1 when a pack fails, and 130
+when ^C stopped it.
 
 ## `lc list --json`
 
 ```json
-{"schema":1,"problems":[{"id":1,"slug":"two-sum","title":"Two Sum","difficulty":"easy","tags":["array","hash-table"]}],"warnings":[]}
+{"schema":1,"problems":[{"id":1,"slug":"two-sum","title":"Two Sum","difficulty":"easy","tags":["array","hash-table"],"status":"solved"}],"warnings":[]}
 ```
 
-`problems` holds the problems that pass the `--difficulty` and `--tag`
-filters, in ID order. It is an empty array when nothing matches.
+`problems` holds the problems that pass the `--difficulty`, `--tag` and
+`--status` filters, in ID order. It is an empty array when nothing
+matches.
 
 | Member       | Type             | Meaning |
 |--------------|------------------|---------|
@@ -73,6 +75,49 @@ filters, in ID order. It is an empty array when nothing matches.
 | `title`      | string           | e.g. `"Two Sum"` |
 | `difficulty` | string           | `"easy"`, `"medium"` or `"hard"` |
 | `tags`       | array of strings | in the order of the pack's `tags:` line; may be empty |
+| `status`     | string           | your progress: `"todo"`, `"attempted"` or `"solved"` ([workspace.md](workspace.md#progress-and-history)) |
+
+## `lc random --json`
+
+```json
+{"schema":1,"problem":{"id":121,"slug":"best-time-to-buy-and-sell-stock","title":"Best Time to Buy and Sell Stock","difficulty":"easy","tags":["array","dynamic-programming"],"status":"todo"},"candidates":7,"warnings":[]}
+```
+
+`problem` is the problem picked, with the members of a `lc list` entry,
+and `candidates` how many passed the filters. When none does, the output
+is an error document.
+
+## `lc stats --json`
+
+```json
+{"schema":1,"total":11,"solved":3,"attempted":1,"difficulties":[{"difficulty":"easy","total":10,"solved":3,"attempted":1},...],"tags":[{"tag":"array","total":5,"solved":2,"attempted":0},...],"warnings":[]}
+```
+
+| Member         | Type    | Meaning |
+|----------------|---------|---------|
+| `total`        | integer | the problems loaded |
+| `solved`, `attempted` | integer | of them, how many you solved, and attempted without solving |
+| `difficulties` | array   | `easy`, `medium` and `hard`, in that order: `difficulty`, `total`, `solved`, `attempted` |
+| `tags`         | array   | every tag of the loaded problems, by name: `tag`, `total`, `solved`, `attempted` |
+
+## `lc stats --manifest --json`
+
+```json
+{"schema":1,"manifest":"/home/me/lcclone/problems/MANIFEST.tsv","total":11,"premium":0,"skipped":0,"todo":0,"draft":1,"verified":10,"groups":[{"group":"plain","total":7,"todo":0,"draft":0,"verified":7},...],"skips":[],"no_pack":[],"todo_with_pack":[],"unlisted":[],"warnings":[]}
+```
+
+| Member      | Type    | Meaning |
+|-------------|---------|---------|
+| `manifest`  | string  | the file |
+| `total`     | integer | its rows |
+| `premium`   | integer | of them, premium-only problems |
+| `skipped`   | integer | rows out of scope (`skip:REASON`) |
+| `todo`, `draft`, `verified` | integer | the rows in scope, by status |
+| `groups`    | array   | the rows in scope by group, in the order first seen: `group`, `total`, `todo`, `draft`, `verified` |
+| `skips`     | array   | the rows out of scope by reason: `reason` and the same counts |
+| `no_pack`   | array of integers | IDs marked draft or verified that have no pack |
+| `todo_with_pack` | array of integers | IDs marked todo that have a pack |
+| `unlisted`  | array of integers | IDs of packs that have no row |
 
 ## `lc show <problem> --json`
 
@@ -82,7 +127,8 @@ filters, in ID order. It is an empty array when nothing matches.
 
 | Member            | Type            | Meaning |
 |-------------------|-----------------|---------|
-| `id`, `slug`, `title`, `difficulty`, `tags` | | as in `lc list` |
+| `id`, `slug`, `title`, `difficulty`, `tags`, `status` | | as in `lc list` |
+| `progress`        | object          | `lang` (`"c"` or `"cpp"`: of the last accepted submission, else of the last one), `best_ms` (the slowest case of the best accepted submission) and `last_submitted` (seconds since 1970); each null when there is none |
 | `signature`       | string or null  | the raw `signature:` header value |
 | `time_limit_ms`   | integer         | default 1000 |
 | `memory_limit_mb` | integer         | default 256 |
@@ -197,6 +243,7 @@ the problem's reference solution, after it.
 | Member        | Type    | Meaning |
 |---------------|---------|---------|
 | `reference`   | boolean | this is the reference solution, not yours |
+| `role`        | string  | what is built: `"solution"` (yours) or `"reference"`; for `lc check` also `"brute"`, `"stub"` and `"generator"` |
 | `lang`        | string  | `"c"` or `"cpp"` |
 | `std`         | string  | the standard, e.g. `"c++17"` |
 | `source`      | string  | the source file |
@@ -257,6 +304,48 @@ or `"note"`), `message`, and `in_solution` (the file is your solution).
 | `max_time_ms`   | integer | the slowest case's CPU time |
 | `max_memory_kb` | integer | the largest peak memory of any case |
 | `warnings`      | array   | as in other documents |
+
+`lc submit` records the submission ([workspace.md](workspace.md#progress-and-history)),
+and its `done` event adds:
+
+| Member        | Type           | Meaning |
+|---------------|----------------|---------|
+| `status`      | string or null | the problem's status now: `"attempted"` or `"solved"`; null when nothing was recorded (a cancelled run, or progress.tsv couldn't be written, which a warning explains) |
+| `first_solve` | boolean        | this submission solved the problem for the first time |
+| `saved`       | string or null | the copy of the solution in the history |
+
+## `lc check --json`
+
+JSON Lines, like `lc test --json`: every line has `"schema":1`, an
+`"event"` and, except `done`, the `"pack"` it is about (its directory
+name, such as `"0001-two-sum"`, or null for `MANIFEST.tsv` as a whole).
+
+```
+{"schema":1,"event":"pack_start","pack":"0121-best-time-to-buy-and-sell-stock","id":121,"dir":"/home/me/lcclone/problems/0121-best-time-to-buy-and-sell-stock"}
+{"schema":1,"event":"build_start","pack":"0121-best-time-to-buy-and-sell-stock","reference":false,"role":"stub","lang":"c",...}
+{"schema":1,"event":"finding","pack":"0121-best-time-to-buy-and-sell-stock","level":"error","file":"/home/me/.../ref.c","line":null,"message":"ref.c and brute.c disagree on the random case for seed 80 (small)","detail":"Input:    prices = [7,16,13]\nref.c:    10\nbrute.c:  12\n"}
+{"schema":1,"event":"pack_done","pack":"0121-best-time-to-buy-and-sell-stock","status":"failed","errors":1,"warnings":0,"skipped":null,"cases":14,"examples":3,"generated":3,"ref":"ref.c","brute":"brute.c","gen":"gen.c","stubs":2,"ref_passed":14,"ref_max_ms":2,"cross":79,"regen":null}
+{"schema":1,"event":"done","packs":1,"ok":0,"skipped":0,"failed":1,"manifest_ok":true,"cancelled":false,"warnings":[]}
+```
+
+- **`pack_start`**: `id` and `dir`. A pack that fails to load has no
+  `pack_start`, only its findings and a `pack_done` with just `status`,
+  `errors` and `warnings`.
+- **`build_start`, `build_done`**: as for `lc test`, with `role`.
+- **`finding`**: `level` (`"error"`, `"warning"` or `"note"`), `file`
+  (absolute, or null for the pack as a whole), `line` (or null),
+  `message` (one line) and `detail` (lines such as a case's input and
+  outputs, or a compiler's output; or null).
+- **`pack_done`**: `status` is `"ok"`, `"failed"` (errors were found) or
+  `"skipped"` (its solutions were not built or run: `skipped` says why).
+  The counts: `cases`, `examples` and `generated` (`@gen`) in
+  tests.txt, `stubs` built, `ref_passed` cases and `ref_max_ms`, and
+  `cross` random cases `ref` and `brute` agreed on. `ref`, `brute` and
+  `gen` name the pack's files, or are null. With `--regen`, `regen` is
+  `written`, `changed` (expected results written) and `generated`
+  (cases made).
+- **`done`**: the counts of packs, `manifest_ok`, and whether ^C
+  `cancelled` the run.
 
 ## `lc help --json`
 

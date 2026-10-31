@@ -28,15 +28,20 @@ else on disk to build. Because it is one file, the C++ harness sees
 `class Solution`.
 
 **Compiling.** C is built with `$CC -std=c11 -O2 ... -lm` and C++ with
-`$CXX -std=c++11 -O2` (`cc` and `c++` when the variables aren't set), each
-through `/bin/sh`, so a compiler command may have arguments. The standard
-can be raised (see [workspace.md](workspace.md#languages-and-standards));
-a standard other than the default is first tried on an empty file, once
-per compiler, and the answer is kept in the cache.
+`$CXX -std=c++11 -O2` (`cc` and `c++` when the variables aren't set, and
+the config file's `cc` and `cxx` before either), each through `/bin/sh`,
+so a compiler command may have arguments. The standard can be raised
+(see [workspace.md](workspace.md#languages-and-standards)); a standard
+other than the default is first tried on an empty file, once per
+compiler, and the answer is kept in the cache. The config's `cflags` and
+`cxxflags` are added at the end of the command for your solutions only,
+never for the pack's own sources.
 
 **The build cache.** Builds go in
 `$XDG_CACHE_HOME/lcclone/build/<NNNN-slug>/<lang>-<std>/` (by default
-`~/.cache/lcclone/...`), as `prog-<key>`. The key hashes everything that
+`~/.cache/lcclone/...`), as `prog-<key>`; the pack's own sources go in
+directories of their own: `ref-<lang>-<std>/`, and for `lc check`
+`brute-`, `stub-` and `generator-` ones ([authoring.md](authoring.md)). The key hashes everything that
 goes into the build: the whole source file above, the compiler flags, and
 the compiler's path, size and time stamp. A build whose program is
 already there is reused, so running the same solution again costs nothing.
@@ -188,6 +193,8 @@ When the core builds the solution itself (`lc_judge`), two more come
 first: `build_start` and `build_done`, for the solution and, when your
 cases need it, for the reference solution. `lc test --json` and
 `lc submit --json` stream all of them as JSON Lines ([json.md](json.md)).
+`lc_check` sends build events and one more kind, `finding`, for each
+thing it finds wrong with a pack ([authoring.md](authoring.md)).
 
 The front-end can also pass a cancel flag. Setting it, from a signal
 handler or another thread, kills the program that is running within about

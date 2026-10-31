@@ -25,6 +25,16 @@ void lc_options_init(lc_options *opt)
     memset(opt, 0, sizeof *opt);
 }
 
+/* A copy of an option string in the context's arena: 0 when out of memory. */
+static int copy_opt(lc_ctx *ctx, const char *v, char **out)
+{
+    *out = NULL;
+    if (!v)
+        return 1;
+    *out = lc_arena_strdup(&ctx->arena, v);
+    return *out != NULL;
+}
+
 lc_ctx *lc_open(const lc_options *opt)
 {
     lc_ctx *ctx = calloc(1, sizeof *ctx);
@@ -32,61 +42,80 @@ lc_ctx *lc_open(const lc_options *opt)
     if (!ctx)
         return NULL;
     lc_str_init(&ctx->err);
-    if (opt && ((opt->problems_dir &&
-                 !(ctx->opt_problems_dir =
-                       lc_arena_strdup(&ctx->arena, opt->problems_dir))) ||
-                (opt->workspace_dir &&
-                 !(ctx->opt_workspace_dir =
-                       lc_arena_strdup(&ctx->arena, opt->workspace_dir))) ||
-                (opt->cache_dir &&
-                 !(ctx->opt_cache_dir =
-                       lc_arena_strdup(&ctx->arena, opt->cache_dir))))) {
+    if (opt && (!copy_opt(ctx, opt->problems_dir, &ctx->opt_problems_dir) ||
+                !copy_opt(ctx, opt->workspace_dir, &ctx->opt_workspace_dir) ||
+                !copy_opt(ctx, opt->cache_dir, &ctx->opt_cache_dir) ||
+                !copy_opt(ctx, opt->config_file, &ctx->opt_config_file) ||
+                !copy_opt(ctx, opt->data_dir, &ctx->opt_data_dir))) {
         lc_close(ctx);
         return NULL;
     }
+    if (lc_config_read(ctx) != LC_OK) {
+        lc_close(ctx);
+        return NULL;
+    }
+    /* Reading the config leaves no error behind. */
+    lc_str_clear(&ctx->err);
     return ctx;
 }
 
-const char *lc_cache_dir(lc_ctx *ctx)
+/*
+ * A directory lc keeps its own files in: the option, made absolute (a
+ * program runs with its build directory as the current one, so every
+ * path into the cache must be absolute), else $<env>/lcclone, else
+ * ~/<fallback>/lcclone. Sets *slot; NULL with an error when there's none.
+ */
+static const char *own_dir(lc_ctx *ctx, char **slot, const char *opt,
+                           const char *env, const char *fallback,
+                           const char *what)
 {
     char *base;
 
-    if (ctx->cache_dir)
-        return ctx->cache_dir;
-    if (ctx->opt_cache_dir) {
-        /* Programs run with their build directory as the current one, so
-         * every path into the cache must be absolute. */
-        if (ctx->opt_cache_dir[0] == '/') {
-            ctx->cache_dir = ctx->opt_cache_dir;
+    if (*slot)
+        return *slot;
+    if (opt) {
+        if (opt[0] == '/') {
+            *slot = (char *)opt;
         } else {
             char *cwd = getcwd(NULL, 0);
 
             if (!cwd) {
-                lc_set_errno(ctx, LC_ERR_IO, errno, "cannot use the cache "
-                             "directory '%s'", ctx->opt_cache_dir);
+                lc_set_errno(ctx, LC_ERR_IO, errno, "cannot use the %s "
+                             "directory '%s'", what, opt);
                 return NULL;
             }
-            ctx->cache_dir = lc_path_join(&ctx->arena, cwd,
-                                          ctx->opt_cache_dir);
+            *slot = lc_path_join(&ctx->arena, cwd, opt);
             free(cwd);
-            if (!ctx->cache_dir)
+            if (!*slot)
                 lc_oom(ctx);
         }
-        return ctx->cache_dir;
+        return *slot;
     }
-    base = lc_xdg_dir(&ctx->arena, "XDG_CACHE_HOME", ".cache");
+    base = lc_xdg_dir(&ctx->arena, env, fallback);
     if (!base) {
         if (lc_getenv("HOME"))
             lc_oom(ctx);
         else
-            lc_set_error(ctx, LC_ERR_NOTFOUND, "no cache directory: set "
-                         "XDG_CACHE_HOME or HOME");
+            lc_set_error(ctx, LC_ERR_NOTFOUND, "no %s directory: set %s or "
+                         "HOME", what, env);
         return NULL;
     }
-    ctx->cache_dir = lc_path_join(&ctx->arena, base, "lcclone");
-    if (!ctx->cache_dir)
+    *slot = lc_path_join(&ctx->arena, base, "lcclone");
+    if (!*slot)
         lc_oom(ctx);
-    return ctx->cache_dir;
+    return *slot;
+}
+
+const char *lc_cache_dir(lc_ctx *ctx)
+{
+    return own_dir(ctx, &ctx->cache_dir, ctx->opt_cache_dir, "XDG_CACHE_HOME",
+                   ".cache", "cache");
+}
+
+const char *lc_data_dir(lc_ctx *ctx)
+{
+    return own_dir(ctx, &ctx->data_dir, ctx->opt_data_dir, "XDG_DATA_HOME",
+                   ".local/share", "data");
 }
 
 void lc_close(lc_ctx *ctx)
@@ -95,6 +124,8 @@ void lc_close(lc_ctx *ctx)
         return;
     lc_str_free(&ctx->err);
     free(ctx->warnings);
+    free(ctx->config);
+    free(ctx->progress);
     lc_arena_free(&ctx->arena);
     free(ctx);
 }

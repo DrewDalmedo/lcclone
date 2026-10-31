@@ -910,6 +910,242 @@ for d in problems/*/; do
 done
 
 # ------------------------------------------------------------------
+# Progress: lc submit records it; list, show, stats and random read it
+# ------------------------------------------------------------------
+
+# progress_lines FILE: progress.tsv without its times, which vary.
+progress_lines() {
+    awk -F '\t' '/^#/ { print; next }
+        { if ($4 != "-") $4 = "N"; $NF = "T"; print }' OFS='\t' "$1"
+}
+
+D1=$TMP/data1
+check submit-record XDG_DATA_HOME="$D1" LC_PROBLEMS=$JFIX -- submit $J/solution.c
+check submit-record-wrong XDG_DATA_HOME="$D1" LC_PROBLEMS=$JFIX -- submit $J/wrong.c
+mkdir -p "$TMP/sub/0001-echo-int"
+printf 'int **echo(int **x, int n, int *cols, int *size, int **sizes) {\n    (void)n; *size = 0; *sizes = cols; return x;\n}\n' >"$TMP/sub/0001-echo-int/solution.c"
+run XDG_DATA_HOME="$D1" LC_PROBLEMS=$JFIX -- submit "$TMP/sub/0001-echo-int/solution.c" --json
+if [ -n "$PYTHON" ] && ! "$PYTHON" -c '
+import json, sys
+d = [json.loads(l) for l in sys.stdin.read().splitlines()][-1]
+assert d["event"] == "done" and d["status"] == "attempted", d
+assert d["first_solve"] is False, d
+assert d["saved"].endswith("-wrong_answer.c") and "/submissions/0001/" in d["saved"], d
+' <"$TMP/out"; then
+    bad "lc submit --json (wrong)" "$(cat "$TMP/out")"
+else
+    ok
+fi
+progress_lines "$D1/lcclone/progress.tsv" >"$TMP/got"
+compare progress-tsv "progress.tsv after three submissions" golden
+( cd "$D1/lcclone/submissions" && find . -type f | sed 's/[0-9]\{8\}T[0-9]\{6\}Z/STAMP/' | sort ) >"$TMP/got"
+compare progress-history "the submission history" golden
+# lc test records nothing.
+run XDG_DATA_HOME="$TMP/data-test" LC_PROBLEMS=$JFIX -- test $J/solution.c
+if [ "$st" = 0 ] && [ ! -e "$TMP/data-test/lcclone" ]; then ok; else
+    bad "lc test (progress)" "exit $st, or it recorded something"
+fi
+# A data directory that can't be written: a warning, and the verdict stands.
+run XDG_DATA_HOME=/dev/null/lc LC_PROBLEMS=$JFIX -- submit $J/solution.c
+if [ "$st" = 0 ] && grep -q "^lc: warning: the submission was not recorded in your progress: " "$TMP/err"; then
+    ok
+else
+    bad "lc submit (data directory not writable)" "exit $st: $(cat "$TMP/err")"
+fi
+
+# Listing with a progress.tsv written by hand.
+D2=$TMP/data2
+mkdir -p "$D2/lcclone"
+printf '# mine\n1\tsolved\tcpp\t12\t1700000000\n4\tattempted\tc\t-\t1700000000\n650\tsolved\tc\t3\t1700000000\nbad line\n' >"$D2/lcclone/progress.tsv"
+check list-progress XDG_DATA_HOME="$D2" -- list
+check list-progress-json XDG_DATA_HOME="$D2" -- list --json
+check list-status XDG_DATA_HOME="$D2" -- list --status solved,attempted
+check list-status-todo XDG_DATA_HOME="$D2" -- list --status todo --difficulty easy
+check list-status-color XDG_DATA_HOME="$D2" -- list --status=attempted --color=always
+check err-list-status -- list --status done
+check err-list-status-empty -- list --status solved,
+check show-progress XDG_DATA_HOME="$D2" -- show 1 --no-pager
+check show-progress-json XDG_DATA_HOME="$D2" -- show 650 --json
+check stats-empty XDG_DATA_HOME="$TMP/data-none" -- stats
+check stats XDG_DATA_HOME="$D2" -- stats
+check stats-json XDG_DATA_HOME="$D2" -- stats --json
+check stats-none XDG_DATA_HOME="$D2" LC_PROBLEMS="$TMP/empty" -- stats
+check random-one XDG_DATA_HOME="$D2" -- random --status attempted
+check random-one-json XDG_DATA_HOME="$D2" -- random --tag dynamic-programming --json
+check err-random-none XDG_DATA_HOME="$D2" -- random --status solved --difficulty hard
+check err-random-arg -- random 1
+check help-random -- help random
+check help-stats -- help stats
+# Several candidates: always one of them.
+picked=
+for i in 1 2 3 4 5 6; do
+    run XDG_DATA_HOME="$D2" -- random --status todo
+    picked="$picked $(cut -d. -f1 "$TMP/out")"
+done
+wrong=
+for p in $picked; do
+    case $p in
+    141 | 155 | 2667) ;;
+    *) wrong="$wrong $p" ;;
+    esac
+done
+if [ -z "$wrong" ]; then ok; else
+    bad "lc random --status todo" "picked:$picked"
+fi
+# A progress.tsv that can't be read: a warning, and no progress.
+mkdir -p "$TMP/data3/lcclone/progress.tsv"
+run XDG_DATA_HOME="$TMP/data3" -- list --status todo
+if [ "$st" = 0 ] && grep -q "^lc: warning: .*; your progress is not shown$" "$TMP/err" &&
+    grep -q 'Two Sum' "$TMP/out"; then
+    ok
+else
+    bad "lc list (progress.tsv unreadable)" "exit $st: $(cat "$TMP/err")"
+fi
+
+# ------------------------------------------------------------------
+# The config file
+# ------------------------------------------------------------------
+
+CFG=$TMP/cfg
+mkdir -p "$CFG"
+printf '# A comment.\nbogus = 1\nno equals here\ncolor = sometimes\nlang = rust\ncxxstd = c++99\nworkspace = rel/dir\neditor = vi\n' >"$CFG/bad"
+check config-warnings LC_CONFIG="$CFG/bad" -- list --difficulty hard
+check config-warnings-json LC_CONFIG="$CFG/bad" -- list --difficulty hard --json
+check config-missing LC_CONFIG="$CFG/nope" -- list --difficulty hard
+# ~/.config/lcclone/config is read when there is no LC_CONFIG.
+mkdir -p "$TMP/cfghome/.config/lcclone"
+printf 'color = always\n' >"$TMP/cfghome/.config/lcclone/config"
+run HOME="$TMP/cfghome" -- list --difficulty hard
+if grep -q "$ESC" "$TMP/out"; then ok; else bad "color = always" "no colour"; fi
+run HOME="$TMP/cfghome" -- list --difficulty hard --color=never
+if grep -q "$ESC" "$TMP/out"; then bad "color = always, --color=never" "colour"; else ok; fi
+run HOME="$TMP/cfghome" XDG_CONFIG_HOME="$TMP/empty" -- list --difficulty hard
+if grep -q "$ESC" "$TMP/out"; then bad "XDG_CONFIG_HOME" "read ~/.config"; else ok; fi
+
+# The standard: the config's, unless $LC_CXXSTD or --std says otherwise.
+printf 'cxxstd = c++17\n' >"$CFG/std"
+expect_run "cxxstd = c++17: lc test cxx17.cpp" 0 '(C++, c++17)$' \
+    LC_CONFIG="$CFG/std" -- test $J/cxx17.cpp
+expect_run "cxxstd = c++17, LC_CXXSTD=c++14: lc test cxx17.cpp" 2 \
+    '(C++, c++14)$' LC_CONFIG="$CFG/std" LC_CXXSTD=c++14 -- test $J/cxx17.cpp
+expect_run "cxxstd = c++17: lc test cxx17.cpp --std c++11" 2 '(C++, c++11)$' \
+    LC_CONFIG="$CFG/std" -- test $J/cxx17.cpp --std c++11
+# The compiler: the config's, before $CXX.
+printf 'cxx = no-such-compiler\n' >"$CFG/cxx"
+expect_run "cxx = no-such-compiler: lc test" 3 LC_CONFIG="$CFG/cxx" \
+    CXX="$E2E_CXX" -- test $J/solution.cpp
+if ! grep -q "^lc: the C++ compiler 'no-such-compiler' (from cxx in .*/cfg/cxx:1) was not found$" "$TMP/err"; then
+    bad "cxx = no-such-compiler" "stderr: $(cat "$TMP/err")"
+fi
+# cflags reach your solutions, but not the reference solution.
+mkdir -p "$TMP/flags/0010-add"
+printf 'int add(int a, int b) { return a + b * LC_E2E_ONE; }\n' >"$TMP/flags/0010-add/solution.c"
+printf '1\n2\n' >"$TMP/flags/0010-add/cases.txt"
+printf 'cflags = -DLC_E2E_ONE=1\n' >"$CFG/flags"
+expect_run "cflags: lc test" 0 '^Accepted: 3/3' LC_CONFIG="$CFG/flags" \
+    -- test "$TMP/flags/0010-add/solution.c"
+expect_run "no cflags: lc test" 2 '^Compile Error' \
+    -- test "$TMP/flags/0010-add/solution.c"
+# editor, lang, open_statement and workspace for lc start.
+printf 'editor = %s -y\nlang = c\nopen_statement = yes\nworkspace = ~/cfgws\n' "$TMP/ed.sh" >"$CFG/start"
+run LC_CONFIG="$CFG/start" LC_WORKSPACE= LC_PROBLEMS=problems VISUAL=no-such-editor \
+    ED_LOG="$TMP/edlog" -- start 9
+ed_check "config: lc start 9" 0 "$(mkdir -p "$TMP/home/cfgws/0009-palindrome-number" && cd "$TMP/home/cfgws/0009-palindrome-number" && pwd -P)
+-y
+solution.c
+README.md"
+run LC_CONFIG="$CFG/start" LC_WORKSPACE="$TMP/ws5" LC_PROBLEMS=problems -- start 9 --no-edit
+if [ "$st" = 0 ] && [ -f "$TMP/ws5/0009-palindrome-number/solution.c" ]; then ok; else
+    bad "LC_WORKSPACE over the config's workspace" "exit $st: $(cat "$TMP/err")"
+fi
+
+# ------------------------------------------------------------------
+# MANIFEST.tsv and lc check (for authors)
+# ------------------------------------------------------------------
+
+check stats-manifest -- stats --manifest
+check stats-manifest-json -- stats --manifest --json
+check err-stats-no-manifest LC_PROBLEMS=$CLIFIX -- stats --manifest
+mkdir -p "$TMP/badman"
+printf '1\ttwo-sum\tTwo Sum\teasy\tno\tgraph\tdraft\n' >"$TMP/badman/MANIFEST.tsv"
+check err-stats-bad-manifest LC_PROBLEMS="$TMP/badman" -- stats --manifest
+
+CFIX=tests/fixtures/check
+check check-fixtures LC_PROBLEMS=$CFIX -- check --count 30
+check check-good LC_PROBLEMS=$CFIX -- check good --count 30
+check check-paths -- check $CFIX/0001-good $CFIX/0012-broken $CFIX/0008-tree --count 30
+check check-bad-manifest LC_PROBLEMS="$TMP/badman" -- check
+check err-check-unknown LC_PROBLEMS=$CFIX -- check 999
+check err-check-not-pack -- check tests/fixtures
+check err-check-two-dirs -- check $CFIX/0001-good problems/0001-two-sum
+check err-check-count -- check --count 0
+check err-check-seed -- check --seed -1
+check help-check -- help check
+run LC_PROBLEMS=$CFIX -- check 1 2 8 --count 5 --json
+if [ -n "$PYTHON" ] && ! "$PYTHON" -c '
+import json, sys
+ev = [json.loads(l) for l in sys.stdin.read().splitlines()]
+assert all(e["schema"] == 1 for e in ev)
+kinds = [e["event"] for e in ev]
+assert kinds[0] == "pack_start" and kinds[-1] == "done", kinds
+done = [e for e in ev if e["event"] == "pack_done"]
+assert [d["status"] for d in done] == ["ok", "failed", "skipped"], done
+assert done[0]["cross"] == 5 and done[0]["ref"] == "ref.c", done[0]
+assert done[1]["errors"] == 3, done[1]
+f = [e for e in ev if e["event"] == "finding"]
+assert f[0]["pack"] == "0002-wrong-ref" and f[0]["line"] == 6, f[0]
+assert f[0]["detail"].startswith("Input:"), f[0]
+b = [e for e in ev if e["event"] == "build_done"]
+assert {e["role"] for e in b} >= {"stub", "reference", "brute", "generator"}, b
+assert ev[-1]["failed"] == 1 and ev[-1]["ok"] == 1 and ev[-1]["skipped"] == 1
+' <"$TMP/out"; then
+    bad "lc check --json" "$(head -c 600 "$TMP/out")"
+else
+    ok
+fi
+if [ -n "$VIM" ]; then
+    run LC_PROBLEMS=$CFIX -- check 2 --count 5
+    qf_check "lc check in Vim's quickfix list" "$CFIX/0002-wrong-ref/tests.txt:6 $CFIX/0002-wrong-ref/tests.txt:10 $CFIX/0002-wrong-ref/tests.txt:14 "
+fi
+
+# --regen: @gen cases made, missing and wrong results worked out, the
+# rest of the file left as it was.
+RG=$TMP/regen
+mkdir -p "$RG/0001-good"
+cp $CFIX/0001-good/problem.md $CFIX/0001-good/ref.c $CFIX/0001-good/gen.c \
+    $CFIX/0001-good/brute.c "$RG/0001-good/"
+printf '# Hand-written.\n@example Three.\n1\n2\n=> 3\n\n  # No answer yet.\n4\n5\n\n7\n8\n=> 99\n\n9\n9\n=>\n\n@gen 1 small\n\n@gen 2\n5\n5\n=> 10\n\n@gen 3 small\n1\n# Kept.\n1\n=> 2\n\n@gen 4\n=> 0\n6\n-6\n=> 00\n' >"$RG/0001-good/tests.txt"
+check check-regen LC_PROBLEMS="$RG" -- check --regen --count 10
+files_golden check-regen-files "$RG/0001-good" tests.txt
+check check-regen-again LC_PROBLEMS="$RG" -- check --regen --count 10
+check check-regen-tree LC_PROBLEMS=$CFIX -- check tree --regen
+# Line ends: the lines --regen leaves alone keep theirs; new lines end like
+# the first line.
+printf '1\r\n2\r\n=> 3\r\n\n4\n5\n' >"$RG/0001-good/tests.txt"
+printf '1\r\n2\r\n=> 3\r\n\n4\n5\n=> 9\r\n' >"$TMP/regen-crlf"
+run LC_PROBLEMS="$RG" -- check --regen --count 5
+if [ "$st" = 0 ] && cmp -s "$RG/0001-good/tests.txt" "$TMP/regen-crlf"; then
+    ok
+else
+    bad "lc check --regen (line ends)" "exit $st: $(od -c "$RG/0001-good/tests.txt" | head -n 5)"
+fi
+# A problem without parameters: gen.c's case is "()".
+mkdir -p "$RG/np/0014-no-params"
+cp $CFIX/0014-no-params/* "$RG/np/0014-no-params/"
+printf '@example\n()\n=> 42\n\n@gen 1\n5\n=> 7\n\n@gen 2\n' >"$RG/np/0014-no-params/tests.txt"
+check check-regen-no-params LC_PROBLEMS="$RG/np" -- check --regen
+files_golden check-regen-no-params-files "$RG/np/0014-no-params" tests.txt
+printf '1\n2\n=> 3\n' >"$RG/0001-good/tests.txt"
+rm "$RG/0001-good/ref.c"
+check err-check-regen-no-ref LC_PROBLEMS="$RG" -- check --regen
+
+# The repository's own packs pass lc check.
+run LC_PROBLEMS=problems -- check --count 50
+if [ "$st" = 0 ]; then ok; else
+    bad "LC_PROBLEMS=problems lc check" "$(grep -v ': ok (' "$TMP/out" | head -n 20) $(cat "$TMP/err")"
+fi
+
+# ------------------------------------------------------------------
 # Running out of memory
 # ------------------------------------------------------------------
 

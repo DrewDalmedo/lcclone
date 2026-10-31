@@ -1,0 +1,22 @@
+--- stdout
+tests/fixtures/problems/MANIFEST.tsv: 9 problems (7 easy, 1 medium, 1 hard), 1 premium
+In scope: 1 verified, 3 draft, 2 todo; out of scope: 3
+
+Group            Total  Todo  Draft  Verified
+unordered            1     0      0         1
+float                1     0      1         0
+plain                1     1      0         0
+list                 1     0      1         0
+list-builder         1     0      1         0
+design               1     1      0         0
+
+Out of scope
+skip:sql             1
+skip:premium         1
+skip:javascript      1
+
+Marked draft or verified, but there is no pack: 21
+Marked todo, but there is a pack: 155
+Packs that MANIFEST.tsv doesn't list: 650
+--- stderr
+--- exit 0

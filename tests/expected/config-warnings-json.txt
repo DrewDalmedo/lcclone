@@ -1,0 +1,10 @@
+--- stdout
+{"schema":1,"problems":[{"id":4,"slug":"median-of-two-sorted-arrays","title":"Median of Two Sorted Arrays","difficulty":"hard","tags":["array","binary-search","divide-and-conquer"],"status":"todo"}],"warnings":["@TMP@/cfg/bad:2: unknown key 'bogus'","@TMP@/cfg/bad:3: expected 'key = value', got 'no equals here'","@TMP@/cfg/bad:4: color: invalid value 'sometimes' (expected auto, always or never)","@TMP@/cfg/bad:5: lang: invalid value 'rust' (expected c or cpp)","@TMP@/cfg/bad:6: cxxstd: invalid value 'c++99' (expected c++11, c++14, c++17, c++20, c++23 or max)","@TMP@/cfg/bad:7: workspace: invalid value 'rel/dir' (expected an absolute path, or one starting with '~/')"]}
+--- stderr
+lc: warning: @TMP@/cfg/bad:2: unknown key 'bogus'
+lc: warning: @TMP@/cfg/bad:3: expected 'key = value', got 'no equals here'
+lc: warning: @TMP@/cfg/bad:4: color: invalid value 'sometimes' (expected auto, always or never)
+lc: warning: @TMP@/cfg/bad:5: lang: invalid value 'rust' (expected c or cpp)
+lc: warning: @TMP@/cfg/bad:6: cxxstd: invalid value 'c++99' (expected c++11, c++14, c++17, c++20, c++23 or max)
+lc: warning: @TMP@/cfg/bad:7: workspace: invalid value 'rel/dir' (expected an absolute path, or one starting with '~/')
+--- exit 0

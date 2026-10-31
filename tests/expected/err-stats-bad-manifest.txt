@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: @TMP@/badman/MANIFEST.tsv:1: unknown group 'graph' (expected one of plain, bits, float, inplace, unordered, list, list-builder, tree, tree-ref, nary, design, api, checker, extend, or skip:REASON)
+--- exit 3

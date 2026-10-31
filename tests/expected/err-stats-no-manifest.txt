@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: there is no MANIFEST.tsv in @ROOT@/tests/fixtures/cli
+--- exit 3

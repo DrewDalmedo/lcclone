@@ -1,14 +1,18 @@
 --- stdout
-usage: lc list [--difficulty LIST] [--tag TAG]... [--json] [--color=WHEN]
+usage: lc list [--difficulty LIST] [--tag TAG]... [--status LIST] [--json] [--color=WHEN]
 
-List problems in ID order: a table of ID, title, difficulty and tags.
-Prints nothing when no problem matches.
+List problems in ID order: a table of ID, title, difficulty and tags,
+and once you have submitted something, your status on each. Prints
+nothing when no problem matches.
 
 Options:
   --difficulty LIST  only these difficulties: a comma-separated list
                      of easy, medium and hard
   --tag TAG          only problems with this tag; repeat it to require
                      several tags
+  --status LIST      only problems with these statuses: a
+                     comma-separated list of todo (never submitted),
+                     attempted (submitted, never accepted) and solved
   --json             print JSON instead of a table
   --color=WHEN       colour the output: auto (the default: only on a
                      terminal, without NO_COLOR, when TERM is not

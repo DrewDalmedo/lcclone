@@ -1,0 +1,19 @@
+--- stdout
+usage: lc random [--difficulty LIST] [--tag TAG]... [--status LIST] [--json]
+
+Pick one problem at random among those that pass the filters, and
+print its ID, title and difficulty. For example, 'lc random
+--difficulty easy --status todo' picks an easy problem you haven't
+submitted yet. It is an error when no problem passes the filters.
+
+Options:
+  --difficulty LIST  only these difficulties: a comma-separated list
+                     of easy, medium and hard
+  --tag TAG          only problems with this tag; repeat it to require
+                     several tags
+  --status LIST      only problems with these statuses: todo,
+                     attempted, solved
+  --json             print JSON
+  -h, --help         show this help
+--- stderr
+--- exit 0

@@ -12,7 +12,7 @@ compiler.
 
 ## Status
 
-Milestones **M0** to **M3** are in. This is the first usable version.
+Milestones **M0** to **M4** are in.
 
 - **M0:** the core library (`liblc.a`), the problem pack loader, the
   statement markdown parser, and the `lc list` and `lc show` commands, both
@@ -29,10 +29,20 @@ Milestones **M0** to **M3** are in. This is the first usable version.
   cases come out as `file:line:` messages for your editor, or as JSON
   Lines. clangd and Vim's `:make` work out of the box. See
   [docs/workspace.md](docs/workspace.md).
+- **M4:** progress and content tooling. `lc submit` records your progress
+  and keeps a copy of each submission; `lc list --status`, `lc random` and
+  `lc stats` use it. A config file holds your settings (compilers,
+  standards, editor, workspace). For authors, `MANIFEST.tsv` lists the
+  problem set, and `lc check` checks a pack: its stubs build, its
+  reference solution passes every case, and it agrees with a brute-force
+  solution on random cases from the pack's generator; `lc check --regen`
+  works out the expected results. See
+  [docs/authoring.md](docs/authoring.md).
 
 Eleven problems are included: 1, 9, 14, 20, 70, 104, 121, 190, 643, 744
 and 867. All but 104 can be judged; binary trees, linked lists, design
 problems and the like come in later milestones (`docs/PLAN.md` section 9).
+`problems/MANIFEST.tsv` lists only these so far.
 
 ## Building
 
@@ -45,6 +55,7 @@ with gcc, clang, musl and bmake, and on macOS.
 ```sh
 make            # builds liblc.a and lc
 make test       # unit tests, then the end-to-end tests
+make check-packs  # lc check over every problem pack
 ```
 
 The build turns the harness runtime in `runtime/` into C arrays with a
@@ -86,18 +97,25 @@ lc submit              # every case
 ## Commands
 
 ```
-lc list [--difficulty LIST] [--tag TAG] [--json] [--color=auto|always|never]
+lc list [--difficulty LIST] [--tag TAG] [--status LIST] [--json] [--color=auto|always|never]
+lc random [--difficulty LIST] [--tag TAG] [--status LIST] [--json]
 lc show <id|slug> [--json] [--no-pager] [--color=auto|always|never]
 lc start <id|slug> [--lang c|cpp] [--no-edit] [--json]
 lc test [<solution>] [--lang c|cpp] [--std STD] [--sanitize] [--case FILE] [--json]
 lc submit [<solution>] [--lang c|cpp] [--std STD] [--sanitize] [--json]
+lc stats [--manifest] [--json]
+lc check [<pack>...] [--regen] [--count N] [--seed N] [--json]
 lc help [<command>]
 lc version
 ```
 
 - `lc list` lists the problems in ID order. `--difficulty` keeps only the
-  given difficulties (a comma-separated list such as `easy,medium`) and
-  `--tag` only problems with that tag.
+  given difficulties (a comma-separated list such as `easy,medium`),
+  `--tag` only problems with that tag, and `--status` only those with
+  these statuses (`todo`, `attempted`, `solved`). Once you have submitted
+  something, a Status column shows yours.
+- `lc random` picks one of the problems that pass the same filters, for
+  example `lc random --difficulty easy --status todo`.
 - `lc show` renders a problem's statement and examples in the terminal. A
   problem can be named by its number (`104` or `0104`) or its slug
   (`maximum-depth-of-binary-tree`). When the output is a terminal it goes
@@ -116,10 +134,37 @@ lc version
   (or the C standard from C11), and `--sanitize` builds with
   AddressSanitizer and UBSan. Details in
   [docs/workspace.md](docs/workspace.md).
+- `lc submit` records each submission: your status on the problem
+  (solved once one was accepted, else attempted), your best time, and a
+  copy of the solution. `lc stats` counts what you have solved by
+  difficulty and tag. See
+  [docs/workspace.md](docs/workspace.md#progress-and-history).
+- `lc check` is for problem authors: it checks problem packs, and with
+  `--regen` rewrites their `tests.txt`
+  ([docs/authoring.md](docs/authoring.md)). `lc stats --manifest`
+  reports how much of the problem set in `MANIFEST.tsv` is written.
 - `--json` prints machine-readable output instead. The format is versioned
   and described in [docs/json.md](docs/json.md), so editor plugins and GUIs
   can build on it.
 - `lc help` describes the commands and `lc version` prints the version.
+
+## Configuration
+
+Settings go in `~/.config/lcclone/config` (or
+`$XDG_CONFIG_HOME/lcclone/config`, or `$LC_CONFIG`), one `key = value`
+per line:
+
+```
+cxxstd = c++17
+editor = nvim -O
+open_statement = yes
+```
+
+The keys are `cc`, `cxx`, `cstd`, `cxxstd`, `cflags`, `cxxflags`,
+`editor`, `open_statement`, `lang`, `color` and `workspace`. A command-line
+option wins over an `LC_` variable, which wins over the config file, which
+wins over a general variable such as `CXX` or `EDITOR`. Details in
+[docs/workspace.md](docs/workspace.md#configuration).
 
 ## Installing
 
@@ -140,8 +185,8 @@ nothing else.
 
 Avoid `PREFIX=$HOME/.local`. It would put the bundled packs in
 `~/.local/share/lcclone`, which is your own data directory: `lc` looks for
-your own packs there (see below), and later milestones keep your progress and
-submission history there. `make install` would copy the bundled packs over
+your own packs there (see below), and keeps your progress and submission
+history there. `make install` would copy the bundled packs over
 your packs of the same name.
 
 ## Where problems are found
@@ -168,20 +213,26 @@ src/core/               liblc.a: context and errors, arena, strings, files,
                         types and signatures, values, comparison, wire format,
                         runner (processes and limits), judge (verdicts and events),
                         languages and standards, code generation, building,
-                        the workspace
+                        the workspace, the config file, progress and history,
+                        MANIFEST.tsv, lc check
 src/cli/                lc: argument handling, the commands, ANSI output, pager
-runtime/                the preludes and harness runtimes built with every solution
+runtime/                the preludes and harness runtimes built with every
+                        solution, and the generator runtime (runtime/gen/)
 tools/embed.awk         turns runtime/ into C arrays at build time
-problems/               problem packs, one NNNN-slug directory each
+problems/               problem packs, one NNNN-slug directory each, and
+                        MANIFEST.tsv
 tests/unit/             unit tests, one program per suite
 tests/fixtures/         fixture packs used by the tests: misbehaving programs for
                         the runner (run/), solutions for every verdict and type
-                        (judge/), signatures for code generation (codegen/), and
-                        C++ solutions of the shipped problems (solutions/)
+                        (judge/), signatures for code generation (codegen/),
+                        C++ solutions of the shipped problems (solutions/), and
+                        packs for lc check (check/)
 tests/expected/         golden files: the e2e tests' output, generated code
 tests/e2e.sh            end-to-end tests of the lc binary
 docs/PLAN.md            design, architecture and milestones
-docs/workspace.md       solving problems: lc start, test and submit, editors
+docs/workspace.md       solving problems: lc start, test and submit, editors,
+                        progress, the config file
+docs/authoring.md       writing packs: gen.c, brute.c, lc check, MANIFEST.tsv
 docs/problem-format.md  the problem pack format, types and test literals
 docs/wire.md            the wire format between lc and a solution's harness
 docs/judging.md         building, running, the limits, and the verdict rules

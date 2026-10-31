@@ -62,13 +62,34 @@ void *lc_grow(void *p, size_t *cap, size_t need, size_t elem);
 /* Context internals (ctx.c)                                           */
 /* ------------------------------------------------------------------ */
 
+/* One setting of the config file (config.c). */
+typedef struct lc_config_entry {
+    const char *key;        /* static */
+    const char *value;      /* in the context's arena */
+    int line;
+} lc_config_entry;
+
 struct lc_ctx {
     lc_arena arena;         /* lives until lc_close: options, problem index */
     char *opt_problems_dir; /* copy of lc_options.problems_dir, or NULL */
     char *opt_workspace_dir; /* copy of lc_options.workspace_dir, or NULL */
     char *opt_cache_dir;    /* copy of lc_options.cache_dir, or NULL */
+    char *opt_config_file;  /* copy of lc_options.config_file, or NULL */
+    char *opt_data_dir;     /* copy of lc_options.data_dir, or NULL */
     char *workspace_dir;    /* set by lc_workspace_dir, in `arena` */
     char *cache_dir;        /* set by lc_cache_dir, in `arena` */
+    char *data_dir;         /* set by lc_data_dir, in `arena` */
+
+    char *config_file;      /* the config file looked for, or NULL */
+    lc_config_entry *config; /* its settings (malloc'ed array) */
+    size_t nconfig;
+    size_t capconfig;
+
+    lc_progress_entry *progress; /* progress.tsv as last read, by id
+                                    (malloc'ed array; strings in `arena`) */
+    size_t nprogress;
+    size_t capprogress;
+    int progress_loaded;    /* progress.tsv has been read */
 
     lc_str err;             /* last error message */
     int err_nomem;          /* formatting the last error ran out of memory */
@@ -100,6 +121,17 @@ int lc_set_errno(lc_ctx *ctx, int status, int errnum, const char *fmt, ...)
 int lc_oom(lc_ctx *ctx);
 /* Records a warning. Returns LC_OK or LC_ERR_NOMEM. */
 int lc_add_warning(lc_ctx *ctx, const char *fmt, ...) LC_PRINTF(2, 3);
+
+/* ------------------------------------------------------------------ */
+/* Config file (config.c)                                              */
+/* ------------------------------------------------------------------ */
+
+/* Reads the config file into ctx->config (lc_open calls it). Problems
+ * become warnings; only running out of memory fails. */
+int lc_config_read(lc_ctx *ctx);
+
+/* The line of the config file that set `key`, or 0. */
+int lc_config_line(const lc_ctx *ctx, const char *key);
 
 /* ------------------------------------------------------------------ */
 /* Files (fs.c)                                                        */
@@ -156,6 +188,21 @@ int lc_mkdir_p(lc_ctx *ctx, const char *path, mode_t mode);
  */
 int lc_write_file_atomic(lc_ctx *ctx, const char *path,
                          const char *data, size_t len);
+
+/* ------------------------------------------------------------------ */
+/* Test cases (cases.c)                                                */
+/* ------------------------------------------------------------------ */
+
+/* Parses cases written like a cases.txt of your own ("=> expected" may
+ * be left out), from text such as a generator's output. */
+int lc_parse_user_cases(lc_ctx *ctx, const char *text, size_t len,
+                        const char *filename, lc_cases **out);
+
+/* Parses tests.txt for --regen: like lc_parse_cases, except that a case
+ * may leave out "=> expected" (or have nothing after it), and the case
+ * after an @gen line may have no inputs yet. */
+int lc_parse_regen_cases(lc_ctx *ctx, const char *text, size_t len,
+                         const char *filename, lc_cases **out);
 
 /* ------------------------------------------------------------------ */
 /* Types and signatures (types.c)                                      */
@@ -396,6 +443,12 @@ char *lc_xdg_dir(lc_arena *a, const char *env, const char *fallback);
  */
 const char *lc_cache_dir(lc_ctx *ctx);
 
+/*
+ * The data directory for progress and history (lc_options.data_dir,
+ * $XDG_DATA_HOME/lcclone or ~/.local/share/lcclone), the same way.
+ */
+const char *lc_data_dir(lc_ctx *ctx);
+
 /* ------------------------------------------------------------------ */
 /* The harness runtime (runtime/, embedded by tools/embed.awk)         */
 /* ------------------------------------------------------------------ */
@@ -420,17 +473,22 @@ typedef struct lc_compiler {
     const char *cmd;          /* the command, e.g. "c++" or "ccache g++" */
     const char *path;         /* its first word, found on $PATH */
     const char *id;           /* cmd, path, size and mtime, on one line */
+    const char *flags;        /* the config's cflags or cxxflags, or NULL:
+                                 for your solutions only */
 } lc_compiler;
 
-/* Finds the language's compiler ($CC or $CXX, else cc or c++). Strings
- * live in `a`. LC_ERR_NOTFOUND with a message when it isn't installed. */
+/* Finds the language's compiler (the config's cc or cxx, else $CC or
+ * $CXX, else cc or c++). Strings live in `a`. LC_ERR_NOTFOUND with a
+ * message when it isn't installed. */
 int lc_compiler_get(lc_ctx *ctx, const lc_lang *lang, lc_arena *a,
                     lc_compiler *out);
 
-/* A NULL-terminated argv that runs the compiler with these arguments
- * through /bin/sh, in `a`. The arguments are not copied. */
+/* A NULL-terminated argv that runs the compiler with these arguments,
+ * then `extra` (words for the shell to split; may be NULL), through
+ * /bin/sh, in `a`. The arguments are not copied. */
 char **lc_compiler_argv(lc_arena *a, const lc_compiler *cc,
-                        const char *const *args, size_t nargs);
+                        const char *const *args, size_t nargs,
+                        const char *extra);
 
 /*
  * lc_std_resolve for a known compiler: *name is the standard and *flag
@@ -464,6 +522,19 @@ void lc_codegen_defines(const lc_problem *p, lc_str *out);
 /* Name of the pseudo-file the harness's lines are reported under. */
 #define LC_HARNESS_FILE "lc_harness"
 
+/* What a build is of. */
+typedef enum {
+    LC_ROLE_SOLUTION = 0,     /* your solution: the config's flags apply */
+    LC_ROLE_REF,              /* the pack's ref.c or ref.cpp */
+    LC_ROLE_BRUTE,            /* the pack's brute.c or brute.cpp */
+    LC_ROLE_STUB,             /* the stub lc start writes (lc check) */
+    LC_ROLE_GEN               /* the pack's gen.c: lc_gen.h, gen.c and
+                                 lc_gen_main.c, not a harness */
+} lc_role;
+
+/* "solution", "reference", "brute", "stub" or "generator". */
+const char *lc_role_name(int role);
+
 typedef struct lc_build_req {
     const lc_problem *p;
     const lc_lang *lang;
@@ -472,13 +543,13 @@ typedef struct lc_build_req {
     const char *std;          /* the standard's name and -std= flag, from */
     const char *std_flag;     /* lc_std_pick */
     int sanitize;
-    int reference;            /* the pack's reference solution */
+    int role;                 /* lc_role */
     const volatile sig_atomic_t *cancel;
 } lc_build_req;
 
 /*
  * Fills in the parts of *b known before building (lang, std, source,
- * compiler, sanitize, reference), with strings in `a`.
+ * compiler, sanitize, role), with strings in `a`.
  */
 int lc_build_init(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
                   lc_build *b);
@@ -492,6 +563,38 @@ int lc_build_init(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
  */
 int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
                     lc_build *b, const char **exe, int *cancelled);
+
+/*
+ * Builds `src` in `lang` for problem `p` as `role`, with build events:
+ * finds the compiler, picks the standard (`std` as for lc_std_resolve),
+ * and builds. On LC_OK *bout is the build (in `a`) unless *cancelled is
+ * set, and *exe the program when it compiled.
+ */
+int lc_build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+                  const char *src, const char *std, int sanitize, int role,
+                  const lc_hooks *hooks, lc_arena *a, lc_build **bout,
+                  const char **exe, int *cancelled);
+
+/*
+ * Runs `exe`, a solution built with its harness, on the inputs of case
+ * `c` in `cwd`, under the problem's limits with twice its time (room for
+ * a busy machine, or a slow solution such as brute.c). When it works,
+ * *out is its result as a literal, in `a`. When the program fails, *out
+ * is NULL, *verdict says how and `why` why. *cancelled is set when the
+ * cancel flag stopped it. Fails only when it can't be run.
+ */
+int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
+                const char *cwd, const lc_case *c, const lc_hooks *hooks,
+                lc_arena *a, const char **out, lc_verdict *verdict,
+                lc_str *why, int *cancelled);
+
+/* The directory part of a path, in `a`. */
+char *lc_dir_of(lc_arena *a, const char *path);
+
+/* The pack's `base`.c or `base`.cpp ("ref", "brute") and its language, in
+ * `a`; NULL when it has neither. *both is set when it has both. */
+char *lc_pack_source(lc_arena *a, const lc_problem *p, const char *base,
+                     const lc_lang **lang, int *both);
 
 /* Finds the compiler's messages in its output (gcc and clang style). */
 int lc_parse_diags(lc_arena *a, const char *text, size_t len,

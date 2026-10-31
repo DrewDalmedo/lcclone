@@ -1,0 +1,7 @@
+--- stdout
+@TMP@/regen/np/0014-no-params/tests.txt: note: --regen: rewrote tests.txt: 2 expected results, 2 generated cases
+0014-no-params: ok (3 cases; ref.c slowest N ms)
+
+Checked 1 pack: 1 ok, 0 not judged yet, 0 failed
+--- stderr
+--- exit 0

@@ -1,0 +1,7 @@
+--- stdout
+@TMP@/regen/0001-good/tests.txt: note: --regen: tests.txt is up to date
+0001-good: ok (9 cases; ref.c slowest N ms; agrees with brute.c on 10 random cases)
+
+Checked 1 pack: 1 ok, 0 not judged yet, 0 failed
+--- stderr
+--- exit 0

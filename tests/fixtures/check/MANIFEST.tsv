@@ -1,0 +1,14 @@
+# Fixture manifest for lc check.
+1	good	Good	easy	no	plain	verified
+2	wrong-ref	Wrong Ref	easy	no	plain	draft
+3	disagree	Disagree	easy	no	plain	draft
+4	stale-gen	Stale Gen	easy	no	plain	draft
+5	no-gen	No Gen	easy	no	plain	draft
+6	two-refs	Two Refs	easy	no	plain	draft
+7	bad-case	Bad Case	easy	no	plain	draft
+8	tree	Tree	easy	no	tree	draft
+9	no-ref	No Ref	easy	no	plain	todo
+11	renamed	Old Name	easy	no	plain	draft
+12	broken	Broken	easy	no	plain	draft
+13	unused-gen	Unused Gen	easy	no	plain	draft
+14	no-params	No Params	easy	no	plain	draft
