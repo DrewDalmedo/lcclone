@@ -12,7 +12,7 @@ compiler.
 
 ## Status
 
-Milestones **M0** to **M4** are in.
+Milestones **M0** to **M5** are in.
 
 - **M0:** the core library (`liblc.a`), the problem pack loader, the
   statement markdown parser, and the `lc list` and `lc show` commands, both
@@ -38,6 +38,14 @@ Milestones **M0** to **M4** are in.
   solution on random cases from the pack's generator; `lc check --regen`
   works out the expected results. See
   [docs/authoring.md](docs/authoring.md).
+- **M5:** the Neovim plugin, [lc.nvim](https://github.com/DrewDalmedo/lc.nvim),
+  in a repository of its own. `:Lc list` picks a problem, `:Lc start`
+  opens it beside its statement, and `:Lc test` and `:Lc submit` run in
+  the background with live progress and the result in a window; compile
+  errors and sanitizer reports become diagnostics and fill the quickfix
+  list, and one key adds a failed case to `cases.txt`. It is built on
+  `lc --json`. See
+  [docs/workspace.md](docs/workspace.md#neovim-and-other-editors).
 
 Eleven problems are included: 1, 9, 14, 20, 70, 104, 121, 190, 643, 744
 and 867. All but 104 can be judged; binary trees, linked lists, design

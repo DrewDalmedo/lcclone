@@ -186,8 +186,8 @@ CompileFlags:
   `solution.cpp:1: Wrong Answer on case 3 (...)`, so they show up in quickfix
   too.
 
-**Layer 3: a Neovim plugin (`editors/nvim/`).** This is a small Lua plugin in
-this repo.
+**Layer 3: a Neovim plugin, [lc.nvim](https://github.com/DrewDalmedo/lc.nvim).**
+This is a small Lua plugin in a repository of its own.
 - **Requirements:** Neovim 0.10+ and nothing else.
 - **Pickers:** uses Telescope or fzf-lua if one is installed, and
   `vim.ui.select` otherwise.
@@ -212,9 +212,35 @@ this repo.
   your result and what you printed. One key adds that case to `cases.txt`.
 - **Key mappings:** none by default, as is usual for Neovim plugins. The help
   file (`:h lcclone`) suggests some, such as `<leader>lt` and `<leader>ls`.
-- **Install:** `make install-nvim` copies the plugin into
-  `~/.local/share/nvim/site/pack/lcclone/start/`, which Neovim loads on its
-  own. Or point lazy.nvim at `editors/nvim` with `dir =`.
+- **Install:** with lazy.nvim (`{ "DrewDalmedo/lc.nvim" }`), or by cloning
+  it into `~/.local/share/nvim/site/pack/lcclone/start/`, which Neovim
+  loads on its own.
+
+(As built in M5: lc.nvim is its own repository rather than
+`editors/nvim/` here, so it has its own history, CI and install, and `lc`
+doesn't install it. Its Lua module is `lc`, its help `:h lcclone`.
+- **Commands:** `:Lc` alone opens the picker; `:Lc cancel` stops a run,
+  as ^C does, and `:Lc result` reopens the result window. `:Lc test` and
+  `:Lc submit` take their options (`--sanitize`, `--std`, `--lang`, and
+  for `:Lc test` also `--case`).
+- **`:Lc std`** sets `LC_CXXSTD` or `LC_CSTD` for the `lc` processes the
+  plugin starts, so it wins over the config and loses to `--std`, and the
+  next `:Lc start` writes it into `.clangd`.
+- **Result buffer:** it reads like `lc test`'s output. `a` adds the case
+  under the cursor, with its expected result, to `cases.txt`; `<CR>` goes
+  to the line of the solution a compiler or sanitizer line names, or to
+  the case; `r` runs again.
+- **Quickfix:** a run replaces the list of the run before it rather than
+  adding one each time, and leaves a list of your own alone when it has
+  nothing to add. Failed cases point where `lc test` points them.
+- **Pickers:** Telescope and fzf-lua preview the statement.
+- **Also:** `:checkhealth lc`, a `status()` function for statuslines, and
+  `User` autocommands `LcRunStart` and `LcRunDone`.
+- **Tests:** headless Neovim against a build of lcclone and its shipped
+  problems, in lc.nvim's CI on Neovim 0.10 and the latest release.
+- **Jobs:** `lc` runs through `jobstart()`, not `vim.system()`, whose
+  pipes Neovim 0.10 closes when the process exits, which can lose the
+  last event.)
 
 ## 4. Architecture: core library plus front-ends
 
@@ -703,7 +729,6 @@ src/cli/               -> lc
 runtime/
   c/    lc_prelude.h  lc_rt.c  uthash.h
   cpp/  lc_prelude.hpp  lc_rt.cpp
-editors/nvim/          Neovim plugin: plugin/lcclone.lua, lua/lcclone/*.lua, doc/lcclone.txt
 problems/              MANIFEST.tsv and one directory per problem
 tests/
   unit/                core unit tests (a tiny assert macro, no framework)
@@ -712,6 +737,7 @@ tests/
 ```
 
 The core should come to roughly 6–8k lines of C, plus the two runtimes.
+The Neovim plugin is in its own repository, lc.nvim (§3.1).
 
 ## 8. Testing
 
@@ -748,7 +774,9 @@ The core should come to roughly 6–8k lines of C, plus the two runtimes.
     C and C++ solutions, which should report no errors;
   - the `file:line` output is checked against Vim's default `errorformat`;
   - the plugin is tested with `nvim --headless` scripts against fixture
-    problems. These run in CI on Ubuntu with Neovim installed.
+    problems. These run in CI on Ubuntu with Neovim installed. (As built
+    in M5: in lc.nvim's CI, against lcclone's main branch and its shipped
+    problems.)
 - **CI:** GitHub Actions on Ubuntu (gcc and clang), Alpine (musl) and macOS
   (clang and libc++). Dev builds use `-Wall -Wextra -Wpedantic -Werror`, the
   test build uses ASan and UBSan, and `lc check` runs over all packs.
@@ -762,7 +790,7 @@ The core should come to roughly 6–8k lines of C, plus the two runtimes.
 | M2 | Runner                   | fork/exec, limits, poll loop, cancel, events, verdicts; misbehaving-program tests         |
 | M3 | C and C++ end to end     | codegen for plain functions (scalars, arrays, strings, 2D, `uint32`, `double`, `char`); both runtimes; `start`, `test`, `submit`; editor basics (workspace layout, problem from path or directory, exit codes, `file:line` output, `.clangd`, JSON event stream); 10 problems (1, 9, 14, 20, 70, 121, 190, 643, 744, 867, with reference solutions). **First usable version, already works from Neovim through clangd and `:make`.** |
 | M4 | Progress and content tooling | store, `stats`, `random`, history, config; `MANIFEST.tsv`; `lc check` with `--regen` and the brute cross-check |
-| M5 | Neovim plugin            | `:Lc` commands, background runs with progress, diagnostics and quickfix, pickers, adding a failed case to `cases.txt`, help file, headless tests |
+| M5 | Neovim plugin            | `:Lc` commands, background runs with progress, diagnostics and quickfix, pickers, adding a failed case to `cases.txt`, help file, headless tests (in its own repository, lc.nvim) |
 | M6 | Plain-function easies    | author every problem in the plain-function, bits, float, in-place and any-order groups    |
 | M7 | Lists and trees          | `ListNode`, `TreeNode`, `NaryNode`, builders, hidden inputs, node references; author those groups |
 | M8 | Design, API and checkers | class/call-sequence harness, `api.c`, `checker.c`, `extend.c`; author those groups. **All free easies covered.** |
@@ -809,5 +837,5 @@ Possible later work:
   flag, including `max`. C defaults to C11.
 - **Problem IDs:** LeetCode's numbers and slugs.
 - **Editor:** Neovim gets first-class support, in three layers: a generated
-  `.clangd`, plain `:make`, and a Lua plugin built on `lc --json`. Any
-  `$EDITOR` still works.
+  `.clangd`, plain `:make`, and a Lua plugin built on `lc --json`, kept in
+  its own repository (lc.nvim). Any `$EDITOR` still works.
