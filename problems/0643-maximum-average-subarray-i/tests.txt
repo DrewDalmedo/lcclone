@@ -1,0 +1,50 @@
+# Maximum Average Subarray I. compare defaults to float 1e-5 for a double.
+
+@example The runs of 2 average 1, 2.5, 4 and 0.5; the best is 7 and 1.
+[4,-2,7,1,0]
+2
+=> 4.0
+
+@example The runs of 3 average 4/3 and 7/3.
+[0,4,0,3]
+3
+=> 2.3333333333333335
+
+@example Every average is negative; -1 and -2 give the largest.
+[-3,-1,-2]
+2
+=> -1.5
+
+# A single element.
+[5]
+1
+=> 5.0
+
+# k is the whole array.
+[1,2,3]
+3
+=> 2.0
+
+# k = 1 picks the largest element.
+[3,9,-4,9,2]
+1
+=> 9.0
+
+# Extreme values.
+[10000,10000,-10000]
+2
+=> 10000.0
+
+[-10000,-10000]
+1
+=> -10000.0
+
+# The best run is in the middle.
+[2,8,1,9,3,7]
+4
+=> 5.25
+
+# The best run is at the end.
+[1,1,2]
+2
+=> 1.5

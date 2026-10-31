@@ -1,0 +1,178 @@
+/*
+ * lc_rt.c: the C harness runtime. It follows lc_rt_core.h in every C
+ * build and gives the generated harness a reader and a writer for each
+ * type, in LeetCode's C conventions: an array comes with its size, a 2D
+ * array with its row count and an array of row sizes, and everything is
+ * malloc'ed, so a solution may modify or keep what it is given.
+ *
+ * Writers take the solution's function name, for the message when what
+ * the solution returned can't be written, such as a NULL array.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Scalars                                                             */
+/* ------------------------------------------------------------------ */
+
+LC_RT int lc_read_int(void)
+{
+    return (int)lc_rt_ll(INT_MIN, INT_MAX);
+}
+
+LC_RT long long lc_read_long(void)
+{
+    return lc_rt_ll(LLONG_MIN, LLONG_MAX);
+}
+
+LC_RT uint32_t lc_read_uint32(void)
+{
+    return (uint32_t)lc_rt_ll(0, 4294967295LL);
+}
+
+LC_RT double lc_read_double(void)
+{
+    return lc_rt_double();
+}
+
+LC_RT bool lc_read_bool(void)
+{
+    return lc_rt_bool() != 0;
+}
+
+LC_RT char lc_read_char(void)
+{
+    return (char)(unsigned char)lc_rt_ll(0, 255);
+}
+
+LC_RT char *lc_read_string(void)
+{
+    size_t len;
+
+    return lc_rt_string(&len);
+}
+
+LC_RT void lc_write_int(const char *fn, int v)
+{
+    (void)fn;
+    lc_rt_put_ll(v);
+}
+
+LC_RT void lc_write_long(const char *fn, long long v)
+{
+    (void)fn;
+    lc_rt_put_ll(v);
+}
+
+LC_RT void lc_write_uint32(const char *fn, uint32_t v)
+{
+    (void)fn;
+    lc_rt_put_ull(v);
+}
+
+LC_RT void lc_write_double(const char *fn, double v)
+{
+    (void)fn;
+    lc_rt_put_double(v);
+}
+
+LC_RT void lc_write_bool(const char *fn, bool v)
+{
+    (void)fn;
+    lc_rt_put_ll(v ? 1 : 0);
+}
+
+LC_RT void lc_write_char(const char *fn, char v)
+{
+    (void)fn;
+    lc_rt_put_ll((unsigned char)v);
+}
+
+LC_RT void lc_write_string(const char *fn, const char *s)
+{
+    if (!s)
+        lc_rt_fail("%s returned a NULL string", fn);
+    lc_rt_put_string(s, strlen(s));
+}
+
+/* ------------------------------------------------------------------ */
+/* Arrays                                                              */
+/* ------------------------------------------------------------------ */
+
+/* The size a function reported, which lc set to -1 before the call. */
+LC_RT void lc_rt_check_size(const char *fn, int n)
+{
+    if (n == -1)
+        lc_rt_fail("%s did not set *returnSize", fn);
+    if (n < 0)
+        lc_rt_fail("%s set *returnSize to %d", fn, n);
+}
+
+/*
+ * For each type N with C type T, LC_RT_ARRAYS defines
+ *   T *lc_read_N_array(int *size)
+ *   T **lc_read_N_array2(int *size, int **colSizes)
+ *   void lc_write_N_array(fn, T *a, int size)
+ *   void lc_write_N_array2(fn, T **a, int size, int *colSizes)
+ * Arrays get one zeroed element more than they hold, so a char array is
+ * also a NUL-terminated string.
+ */
+#define LC_RT_ARRAYS(N, T)                                                 \
+    LC_RT T *lc_read_##N##_array(int *size)                                \
+    {                                                                      \
+        int n = lc_rt_count(), i;                                          \
+        T *a = (T *)lc_rt_alloc((size_t)n + 1, sizeof *a);                 \
+        for (i = 0; i < n; i++)                                            \
+            a[i] = lc_read_##N();                                          \
+        *size = n;                                                         \
+        return a;                                                          \
+    }                                                                      \
+    LC_RT T **lc_read_##N##_array2(int *size, int **colSizes)              \
+    {                                                                      \
+        int n = lc_rt_count(), i;                                          \
+        T **a = (T **)lc_rt_alloc((size_t)n + 1, sizeof *a);               \
+        int *cols = (int *)lc_rt_alloc((size_t)n + 1, sizeof *cols);       \
+        for (i = 0; i < n; i++)                                            \
+            a[i] = lc_read_##N##_array(&cols[i]);                          \
+        *size = n;                                                         \
+        *colSizes = cols;                                                  \
+        return a;                                                          \
+    }                                                                      \
+    LC_RT void lc_write_##N##_array(const char *fn, T *a, int n)           \
+    {                                                                      \
+        int i;                                                             \
+        lc_rt_check_size(fn, n);                                           \
+        if (!a && n > 0)                                                   \
+            lc_rt_fail("%s returned NULL, but *returnSize is %d", fn, n);  \
+        lc_rt_put_ll(n);                                                   \
+        for (i = 0; i < n; i++)                                            \
+            lc_write_##N(fn, a[i]);                                        \
+    }                                                                      \
+    LC_RT void lc_write_##N##_array2(const char *fn, T **a, int n,         \
+                                     int *colSizes)                        \
+    {                                                                      \
+        int i, j;                                                          \
+        lc_rt_check_size(fn, n);                                           \
+        if (!a && n > 0)                                                   \
+            lc_rt_fail("%s returned NULL, but *returnSize is %d", fn, n);  \
+        if (!colSizes && n > 0)                                            \
+            lc_rt_fail("%s did not set *returnColumnSizes", fn);           \
+        lc_rt_put_ll(n);                                                   \
+        for (i = 0; i < n; i++) {                                          \
+            if (colSizes[i] < 0)                                           \
+                lc_rt_fail("%s set (*returnColumnSizes)[%d] to %d", fn, i, \
+                           colSizes[i]);                                   \
+            if (!a[i] && colSizes[i] > 0)                                  \
+                lc_rt_fail("%s returned NULL as row %d, whose size is %d", \
+                           fn, i, colSizes[i]);                            \
+            lc_rt_put_ll(colSizes[i]);                                     \
+            for (j = 0; j < colSizes[i]; j++)                              \
+                lc_write_##N(fn, a[i][j]);                                 \
+        }                                                                  \
+    }
+
+LC_RT_ARRAYS(int, int)
+LC_RT_ARRAYS(long, long long)
+LC_RT_ARRAYS(uint32, uint32_t)
+LC_RT_ARRAYS(double, double)
+LC_RT_ARRAYS(bool, bool)
+LC_RT_ARRAYS(char, char)
+LC_RT_ARRAYS(string, char *)

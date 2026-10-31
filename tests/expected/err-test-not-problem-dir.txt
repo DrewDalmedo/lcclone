@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: can't tell which problem 'tests/e2e.sh' is for: its directory should be named like 0001-two-sum
+--- exit 3

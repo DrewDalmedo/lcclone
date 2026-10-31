@@ -179,6 +179,57 @@ int lc_is_file(const char *path)
     return stat(path, &st) == 0 && S_ISREG(st.st_mode);
 }
 
+static int is_exec_file(const char *path)
+{
+    struct stat st;
+
+    return stat(path, &st) == 0 && S_ISREG(st.st_mode) &&
+           access(path, X_OK) == 0;
+}
+
+char *lc_which(lc_arena *a, const char *name)
+{
+    const char *path, *p, *e;
+
+    if (!*name)
+        return NULL;
+    if (strchr(name, '/'))
+        return is_exec_file(name) ? lc_arena_strdup(a, name) : NULL;
+    path = getenv("PATH");
+    if (!path)
+        path = "/usr/bin:/bin";
+    for (p = path;; p = e + 1) {
+        char *cand;
+
+        e = strchr(p, ':');
+        if (!e)
+            e = p + strlen(p);
+        /* An empty entry is the current directory. */
+        if (e == p)
+            cand = lc_arena_printf(a, "./%s", name);
+        else
+            cand = lc_arena_printf(a, "%.*s/%s", (int)(e - p), p, name);
+        if (cand && is_exec_file(cand))
+            return cand;
+        if (!*e)
+            return NULL;
+    }
+}
+
+char *lc_basename(lc_arena *a, const char *path)
+{
+    size_t n = strlen(path), start;
+
+    while (n > 1 && path[n - 1] == '/')
+        n--;
+    start = n;
+    while (start > 0 && path[start - 1] != '/')
+        start--;
+    if (n == 1 && path[0] == '/')
+        start = 0;
+    return lc_arena_strndup(a, path + start, n - start);
+}
+
 char *lc_path_join(lc_arena *a, const char *dir, const char *name)
 {
     size_t dl;

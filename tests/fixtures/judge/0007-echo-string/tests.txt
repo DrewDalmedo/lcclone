@@ -1,0 +1,14 @@
+# Echo string[][]: the result must be the input, exactly.
+
+@example
+[["","a b","tab\there","quote\"","back\\slash"],[]]
+=> [["","a b","tab\there","quote\"","back\\slash"],[]]
+
+[["newline\nhere","\u00fcn\u00efc\u00f6d\u00e9","\ud83d\ude00"]]
+=> [["newline\nhere","\u00fcn\u00efc\u00f6d\u00e9","\ud83d\ude00"]]
+
+[]
+=> []
+
+[[""]]
+=> [[""]]

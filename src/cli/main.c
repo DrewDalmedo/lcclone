@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "cli.h"
 
@@ -23,8 +24,9 @@ static int cmd_version(cli *c);
 static const char main_help_head[] =
     "usage: lc <command> [options] [arguments]\n"
     "\n"
-    "lc is an offline LeetCode-style practice tool. It lists problems and\n"
-    "shows their statements and examples in the terminal.\n"
+    "lc is an offline LeetCode-style practice tool. It lists problems,\n"
+    "shows their statements, sets up a directory for your solution, and\n"
+    "judges your solution against the problem's test cases.\n"
     "\n"
     "Commands:\n";
 
@@ -37,12 +39,22 @@ static const char main_help_tail[] =
     "  LC_PROBLEMS  directory of problem packs (default:\n"
     "               $XDG_DATA_HOME/lcclone/problems, else\n"
     "               ~/.local/share/lcclone/problems, then the installed ones)\n"
+    "  LC_WORKSPACE directory for your solutions (default: ~/lc)\n"
+    "  CC, CXX      the C and C++ compilers (default: cc, c++)\n"
+    "  LC_CSTD, LC_CXXSTD\n"
+    "               the C and C++ standards (default: c11, c++11)\n"
+    "  VISUAL, EDITOR\n"
+    "               editor for 'lc start' (default: vi)\n"
     "  PAGER        pager for 'lc show' (default: less, then more)\n"
     "  NO_COLOR     if set and not empty, --color=auto never uses colour\n"
     "  COLUMNS      width to wrap text at (default: the terminal's, or 80)\n"
+    "  XDG_CACHE_HOME\n"
+    "               builds go in $XDG_CACHE_HOME/lcclone (default:\n"
+    "               ~/.cache/lcclone)\n"
     "\n"
-    "Exit status: 0 on success, 3 on a usage error, an unknown problem or\n"
-    "any other failure.\n";
+    "Exit status: 0 on success or Accepted, 1 for any other verdict, 2 for\n"
+    "Compile Error, 3 on a usage error, an unknown problem or any other\n"
+    "failure, and 130 when ^C stopped a run.\n";
 
 static const cli_cmd commands[] = {
     {"list", "List problems, filtered by difficulty and tags",
@@ -78,6 +90,71 @@ static const cli_cmd commands[] = {
      "  -h, --help         show this help\n",
      CLI_OPT_COLOR | CLI_OPT_NO_PAGER, 1, 1,
      "missing problem (an ID, slug or directory name)", cmd_show},
+    {"start", "Set up a problem's directory and open your editor",
+     "lc start <problem> [--lang LANG] [--no-edit] [--json]",
+     "Set up the problem's directory in your workspace (~/lc, or\n"
+     "$LC_WORKSPACE) and open the solution file in your editor ($VISUAL,\n"
+     "$EDITOR or vi). The directory gets README.md with the statement,\n"
+     "solution.c or solution.cpp with the function to write, and cases.txt\n"
+     "for cases of your own. The solution and cases.txt are never\n"
+     "overwritten. The workspace also gets a .clangd file, so that clangd\n"
+     "understands solution files.\n"
+     "\n"
+     "Options:\n"
+     "  --lang LANG        c or cpp (default: the language of an existing\n"
+     "                     solution, else cpp)\n"
+     "  --no-edit          don't open the editor; print the solution's path\n"
+     "  --json             print what was set up as JSON (implies --no-edit)\n"
+     "  -h, --help         show this help\n",
+     CLI_OPT_LANG | CLI_OPT_NO_EDIT, 1, 1,
+     "missing problem (an ID, slug or directory name)", cmd_start},
+    {"test", "Run your solution on the examples and your own cases",
+     "lc test [<solution>] [--lang LANG] [--std STD] [--sanitize] "
+     "[--case FILE] [--json] [--color=WHEN]",
+     "Build your solution and run it on the problem's examples and on the\n"
+     "cases in cases.txt next to it. Every case runs, and the failures are\n"
+     "shown at the end. Your cases may leave out the expected result: it\n"
+     "then comes from the problem's reference solution.\n"
+     "\n"
+     "<solution> is a solution file (any .c or .cpp file in a directory\n"
+     "named like 0001-two-sum), a problem's directory, or a problem's ID or\n"
+     "slug, meaning its directory in the workspace. Without it, the current\n"
+     "directory is used. In a directory, the solution is solution.c or\n"
+     "solution.cpp.\n"
+     "\n"
+     "Compile errors and failed cases are printed as file:line: messages,\n"
+     "so editors can jump to them (in Vim: :set makeprg=lc\\ test\\ %).\n"
+     "\n"
+     "Options:\n"
+     "  --lang LANG        c or cpp, when a directory has both solutions\n"
+     "  --std STD          the standard: c++11 (default), c++14, c++17,\n"
+     "                     c++20, c++23 or max for C++; c11 (default), c99,\n"
+     "                     c17, c23 or max for C\n"
+     "  --sanitize         build with AddressSanitizer and UBSan\n"
+     "  --case FILE        run the cases in FILE instead of cases.txt\n"
+     "  --json             print JSON Lines: one object per event\n"
+     "  --color=WHEN       colour the output: auto (the default), always or\n"
+     "                     never\n"
+     "  -h, --help         show this help\n",
+     CLI_OPT_COLOR | CLI_OPT_LANG | CLI_OPT_STD | CLI_OPT_SANITIZE |
+         CLI_OPT_CASE, 0, 1, NULL, cmd_test},
+    {"submit", "Run your solution on every case of the problem",
+     "lc submit [<solution>] [--lang LANG] [--std STD] [--sanitize] "
+     "[--json] [--color=WHEN]",
+     "Build your solution and run it on every case of the problem, hidden\n"
+     "ones included, stopping at the first that fails. <solution> is as\n"
+     "for 'lc test'.\n"
+     "\n"
+     "Options:\n"
+     "  --lang LANG        c or cpp, when a directory has both solutions\n"
+     "  --std STD          the standard, as for 'lc test'\n"
+     "  --sanitize         build with AddressSanitizer and UBSan\n"
+     "  --json             print JSON Lines: one object per event\n"
+     "  --color=WHEN       colour the output: auto (the default), always or\n"
+     "                     never\n"
+     "  -h, --help         show this help\n",
+     CLI_OPT_COLOR | CLI_OPT_LANG | CLI_OPT_STD | CLI_OPT_SANITIZE, 0, 1,
+     NULL, cmd_submit},
     {"help", "Show help for lc or for one command",
      "lc help [<command>] [--json]",
      "Show help for lc, or for one command.\n"
@@ -236,6 +313,35 @@ int cli_emit_json(cli *c, lc_ctx *ctx, lc_json *j, lc_str *out)
     return cli_write(out->data, out->len);
 }
 
+const lc_lang *cli_lang_option(cli *c, int *rc)
+{
+    const lc_lang *lang;
+
+    *rc = CLI_EXIT_OK;
+    if (!c->lang)
+        return NULL;
+    lang = lc_lang_find(c->lang);
+    if (!lang)
+        *rc = cli_usage(c, "unknown language '%s' (expected c or cpp)",
+                        c->lang);
+    return lang;
+}
+
+void cli_show_path(lc_str *out, const char *path)
+{
+    char *cwd = getcwd(NULL, 0);
+    size_t n = cwd ? strlen(cwd) : 0;
+
+    if (cwd && n > 1 && strncmp(path, cwd, n) == 0 && path[n] == '/' &&
+        path[n + 1])
+        lc_str_puts(out, path + n + 1);
+    else if (cwd && n == 1 && path[0] == '/' && path[1])
+        lc_str_puts(out, path + 1);
+    else
+        lc_str_puts(out, path);
+    free(cwd);
+}
+
 /* ------------------------------------------------------------------ */
 /* help and version                                                    */
 /* ------------------------------------------------------------------ */
@@ -337,7 +443,10 @@ static int cmd_version(cli *c)
 /* Argument parsing                                                    */
 /* ------------------------------------------------------------------ */
 
-enum { O_JSON, O_HELP, O_COLOR, O_NO_PAGER, O_DIFFICULTY, O_TAG };
+enum {
+    O_JSON, O_HELP, O_COLOR, O_NO_PAGER, O_DIFFICULTY, O_TAG, O_LANG, O_STD,
+    O_SANITIZE, O_CASE, O_NO_EDIT
+};
 
 static const struct opt_def {
     const char *name;
@@ -352,6 +461,11 @@ static const struct opt_def {
     {"--no-pager", CLI_OPT_NO_PAGER, 0, O_NO_PAGER},
     {"--difficulty", CLI_OPT_DIFFICULTY, 1, O_DIFFICULTY},
     {"--tag", CLI_OPT_TAG, 1, O_TAG},
+    {"--lang", CLI_OPT_LANG, 1, O_LANG},
+    {"--std", CLI_OPT_STD, 1, O_STD},
+    {"--sanitize", CLI_OPT_SANITIZE, 0, O_SANITIZE},
+    {"--case", CLI_OPT_CASE, 1, O_CASE},
+    {"--no-edit", CLI_OPT_NO_EDIT, 0, O_NO_EDIT},
 };
 
 static void parse_error(lc_str *err, const char *fmt, ...) LC_PRINTF(2, 3);
@@ -450,6 +564,21 @@ static void apply_option(cli *c, const struct opt_def *o, const char *value,
         break;
     case O_TAG:
         c->tags[c->ntags++] = value;
+        break;
+    case O_LANG:
+        c->lang = value;
+        break;
+    case O_STD:
+        c->std = value;
+        break;
+    case O_SANITIZE:
+        c->sanitize = 1;
+        break;
+    case O_CASE:
+        c->case_file = value;
+        break;
+    case O_NO_EDIT:
+        c->no_edit = 1;
         break;
     }
 }

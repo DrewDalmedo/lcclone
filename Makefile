@@ -33,30 +33,49 @@ LC_CFLAGS = -std=c11 -D_FILE_OFFSET_BITS=64 -Iinclude -Isrc/core \
 
 CORE_OBJ = \
 	src/core/arena.o \
+	src/core/build.o \
 	src/core/cases.o \
+	src/core/codegen.o \
 	src/core/compare.o \
 	src/core/ctx.o \
 	src/core/fs.o \
 	src/core/json.o \
 	src/core/judge.o \
+	src/core/lang.o \
 	src/core/md.o \
 	src/core/problem.o \
+	src/core/rt_files.o \
 	src/core/runner.o \
 	src/core/str.o \
 	src/core/types.o \
 	src/core/value.o \
-	src/core/wire.o
+	src/core/wire.o \
+	src/core/workspace.o
+
+# The harness runtime, which tools/embed.awk turns into src/core/rt_files.c
+# so that liblc carries it.
+RUNTIME = \
+	runtime/c/lc_prelude.h \
+	runtime/c/lc_rt.c \
+	runtime/c/uthash.h \
+	runtime/common/lc_rt_core.h \
+	runtime/cpp/lc_prelude.hpp \
+	runtime/cpp/lc_rt.cpp
 
 CLI_OBJ = \
 	src/cli/ansi.o \
 	src/cli/cmd_list.o \
 	src/cli/cmd_show.o \
+	src/cli/cmd_start.o \
+	src/cli/cmd_test.o \
 	src/cli/main.o \
 	src/cli/pager.o
 
 UNIT_TESTS = \
 	tests/unit/test_arena \
+	tests/unit/test_build \
 	tests/unit/test_cases \
+	tests/unit/test_codegen \
 	tests/unit/test_compare \
 	tests/unit/test_ctx \
 	tests/unit/test_fs \
@@ -76,6 +95,10 @@ all: liblc.a lc
 	$(CC) $(LC_CFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(CORE_OBJ): include/lc.h src/core/internal.h
+
+src/core/rt_files.c: tools/embed.awk $(RUNTIME)
+	LC_ALL=C awk -f tools/embed.awk $(RUNTIME) >$@.tmp
+	mv $@.tmp $@
 $(CLI_OBJ): include/lc.h src/cli/cli.h
 
 # problem.c and test_problem.c have DATADIR compiled in. .datadir holds the
@@ -112,7 +135,8 @@ lc: $(CLI_OBJ) liblc.a
 	$(CC) $(LDFLAGS) -o $@ $(CLI_OBJ) liblc.a $(LDLIBS)
 
 # Unit tests: one program per suite, each linked against liblc.a.
-tests/unit/test_arena.o tests/unit/test_cases.o tests/unit/test_compare.o \
+tests/unit/test_arena.o tests/unit/test_build.o tests/unit/test_cases.o \
+tests/unit/test_codegen.o tests/unit/test_compare.o \
 tests/unit/test_ctx.o tests/unit/test_fs.o tests/unit/test_json.o \
 tests/unit/test_judge.o tests/unit/test_md.o tests/unit/test_problem.o \
 tests/unit/test_runner.o tests/unit/test_str.o tests/unit/test_types.o \
@@ -126,6 +150,10 @@ tests/unit/test_md.o: src/core/arena.c src/core/str.c src/core/md.c
 
 tests/unit/test_arena: tests/unit/test_arena.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_arena.o liblc.a $(LDLIBS)
+tests/unit/test_build: tests/unit/test_build.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_build.o liblc.a $(LDLIBS)
+tests/unit/test_codegen: tests/unit/test_codegen.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_codegen.o liblc.a $(LDLIBS)
 tests/unit/test_cases: tests/unit/test_cases.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_cases.o liblc.a $(LDLIBS)
 tests/unit/test_compare: tests/unit/test_compare.o liblc.a
@@ -201,6 +229,7 @@ uninstall:
 
 clean:
 	rm -f liblc.a lc $(CORE_OBJ) $(CLI_OBJ) $(UNIT_TESTS) tests/unit/*.o
+	rm -f src/core/rt_files.c src/core/rt_files.c.tmp
 	rm -f $(FIXTURE_PROGS)
 	rm -f .datadir .datadir.tmp
 	rm -rf tests/tmp

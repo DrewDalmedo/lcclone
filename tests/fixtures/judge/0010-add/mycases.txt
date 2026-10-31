@@ -1,0 +1,10 @@
+# Cases with and without an expected result.
+3
+4
+=> 7
+
+10
+20
+
+-3
+-4

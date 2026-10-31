@@ -71,6 +71,7 @@ enum { S_IN, S_OUT, S_ERR, S_RES, NSTREAMS };
 typedef struct child_setup {
     const char *path;
     char *const *argv;
+    char *const *envp;        /* NULL: the caller's environment */
     const char *cwd;
     int fd[NSTREAMS];         /* the child's ends, by stream; -1 for none */
     int status_fd;            /* write end of the exec status pipe */
@@ -191,7 +192,10 @@ static void run_child(const child_setup *cs)
 
     if (cs->cwd && chdir(cs->cwd) != 0)
         child_fail(st, STAGE_CHDIR);
-    execv(cs->path, cs->argv);
+    if (cs->envp)
+        execve(cs->path, cs->argv, cs->envp);
+    else
+        execv(cs->path, cs->argv);
     child_fail(st, STAGE_EXEC);
 }
 
@@ -589,6 +593,7 @@ int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r)
     argv0[0] = (char *)spec->path;
     argv0[1] = NULL;
     cs.argv = spec->argv ? spec->argv : argv0;
+    cs.envp = spec->envp;
     cs.cwd = spec->cwd;
 
     add_core_limit(&cs);

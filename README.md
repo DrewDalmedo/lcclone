@@ -2,40 +2,43 @@
 
 lcclone is an offline, LeetCode-style practice tool for Unix terminals. You
 browse problems and read their statements in the terminal, write solutions in
-C or C++ in your own editor and, once judging lands, run them against local
-tests to get LeetCode-style verdicts. There is no network access and no
-account. Problems keep LeetCode's numbers, slugs and function signatures, so a
-solution moves between the two unchanged, but every statement, example and
-test case in this repository is written from scratch. The tool itself is
-C11 plus POSIX.1-2008 and needs nothing beyond libc.
+C or C++ in your own editor, and run them against local tests to get
+LeetCode-style verdicts. There is no network access and no account. Problems
+keep LeetCode's numbers, slugs and function signatures, so a solution moves
+between the two unchanged, but every statement, example and test case in
+this repository is written from scratch. The tool itself is C11 plus
+POSIX.1-2008 and needs nothing beyond libc; solutions need a C or C++
+compiler.
 
 ## Status
 
-Milestones **M0**, **M1** and **M2** are in:
+Milestones **M0** to **M3** are in. This is the first usable version.
 
 - **M0:** the core library (`liblc.a`), the problem pack loader, the
   statement markdown parser, and the `lc list` and `lc show` commands, both
   with `--json` output.
-- **M1:** the value layer that judging builds on: typed signatures, test
-  literals parsed and checked against them, the comparison modes, and the
+- **M1:** typed signatures, test literals, the comparison modes, and the
   wire format used to talk to a solution's harness.
-- **M2:** the runner and the judge. They run a built program once per test
-  case under CPU, memory, stack and output limits, and turn what happened
-  into a verdict (Accepted, Wrong Answer, Runtime Error, Time, Memory or
-  Output Limit Exceeded). They report progress events and can be cancelled.
-  See [docs/judging.md](docs/judging.md).
+- **M2:** the runner and the judge: one process per test case under CPU,
+  memory, stack and output limits, LeetCode's verdicts, progress events and
+  cancelling. See [docs/judging.md](docs/judging.md).
+- **M3:** solving problems end to end in C and C++. `lc start` sets up a
+  problem's directory with the stub, `lc test` runs your solution on the
+  examples and your own cases, and `lc submit` on every case. Solutions are
+  built with a generated harness and cached; compile errors and failed
+  cases come out as `file:line:` messages for your editor, or as JSON
+  Lines. clangd and Vim's `:make` work out of the box. See
+  [docs/workspace.md](docs/workspace.md).
 
-Three problems are included: 1, 20 and 104.
-
-Writing, testing and submitting solutions (`lc start`, `lc test`,
-`lc submit`) arrive in M3, which adds building solutions on top of the M2
-judge. The design and the milestone table are in
-[docs/PLAN.md](docs/PLAN.md) (section 9 lists the milestones).
+Eleven problems are included: 1, 9, 14, 20, 70, 104, 121, 190, 643, 744
+and 867. All but 104 can be judged; binary trees, linked lists, design
+problems and the like come in later milestones (`docs/PLAN.md` section 9).
 
 ## Building
 
 You need a C11 compiler and a POSIX `make`, and for `make test` also a C++
-compiler (`CXX`, default `c++`) for one test program. The targets are Linux
+compiler (`CXX`, default `c++`): the tests build and judge solutions in
+both languages. The targets are Linux
 (glibc and musl), macOS, FreeBSD and OpenBSD; CI builds and tests on Linux
 with gcc, clang, musl and bmake, and on macOS.
 
@@ -43,6 +46,9 @@ with gcc, clang, musl and bmake, and on macOS.
 make            # builds liblc.a and lc
 make test       # unit tests, then the end-to-end tests
 ```
+
+The build turns the harness runtime in `runtime/` into C arrays with a
+short `awk` script (`tools/embed.awk`), so `lc` carries it.
 
 `CC`, `CFLAGS`, `LDFLAGS` and `PREFIX` can be overridden on the command line,
 for example `make CC=clang CFLAGS='-O0 -g'`.
@@ -66,12 +72,26 @@ export LC_PROBLEMS=$PWD/problems
 ./lc show 104 --json
 ```
 
+Then solve one:
+
+```sh
+./lc start 1           # creates ~/lc/0001-two-sum/ and opens your editor
+cd ~/lc/0001-two-sum
+lc test                # the examples and your cases in cases.txt
+lc submit              # every case
+```
+
+(with `lc` on your `PATH`, or the path to it).
+
 ## Commands
 
 ```
 lc list [--difficulty LIST] [--tag TAG] [--json] [--color=auto|always|never]
 lc show <id|slug> [--json] [--no-pager] [--color=auto|always|never]
-lc help
+lc start <id|slug> [--lang c|cpp] [--no-edit] [--json]
+lc test [<solution>] [--lang c|cpp] [--std STD] [--sanitize] [--case FILE] [--json]
+lc submit [<solution>] [--lang c|cpp] [--std STD] [--sanitize] [--json]
+lc help [<command>]
 lc version
 ```
 
@@ -83,6 +103,19 @@ lc version
   (`maximum-depth-of-binary-tree`). When the output is a terminal it goes
   through `$PAGER`; `--no-pager` prints it directly. `--color` chooses whether
   ANSI colors are used.
+- `lc start` sets up the problem's directory in your workspace (`~/lc`, or
+  `$LC_WORKSPACE`): `README.md` with the statement, the solution file with
+  the function to write, and `cases.txt` for cases of your own. Then it
+  opens your editor (`$VISUAL`, `$EDITOR` or `vi`).
+- `lc test` builds your solution and runs it on the examples and on your
+  cases; `lc submit` runs it on every case, stopping at the first failure.
+  The solution is a file, a problem's directory, a problem's ID or slug
+  (its directory in the workspace), or by default the current directory.
+  They exit with 0 for Accepted, 1 for another verdict, 2 for Compile
+  Error and 3 for an error. `--std` raises the C++ standard from C++11
+  (or the C standard from C11), and `--sanitize` builds with
+  AddressSanitizer and UBSan. Details in
+  [docs/workspace.md](docs/workspace.md).
 - `--json` prints machine-readable output instead. The format is versioned
   and described in [docs/json.md](docs/json.md), so editor plugins and GUIs
   can build on it.
@@ -126,6 +159,12 @@ statement) and `tests.txt` (the test cases). The format is specified in
 tests must be original: LeetCode's text and test data are copyrighted, so
 nothing is copied from it.
 
+## Third-party code
+
+`runtime/c/uthash.h` is [uthash](https://troydhanson.github.io/uthash/)
+2.3.0 by Troy D. Hanson, under the BSD license at the top of the file. It
+is included unchanged, so that C solutions can use it as on LeetCode.
+
 ## Repository layout
 
 ```
@@ -133,16 +172,24 @@ include/lc.h            public API of the core library
 src/core/               liblc.a: context and errors, arena, strings, files,
                         pack loader, tests.txt parser, markdown parser, JSON writer,
                         types and signatures, values, comparison, wire format,
-                        runner (processes and limits), judge (verdicts and events)
-src/cli/                lc: argument handling, list and show, ANSI output, pager
+                        runner (processes and limits), judge (verdicts and events),
+                        languages and standards, code generation, building,
+                        the workspace
+src/cli/                lc: argument handling, the commands, ANSI output, pager
+runtime/                the preludes and harness runtimes built with every solution
+tools/embed.awk         turns runtime/ into C arrays at build time
 problems/               problem packs, one NNNN-slug directory each
 tests/unit/             unit tests, one program per suite
-tests/fixtures/         fixture packs used by the tests, and programs that
-                        misbehave for the runner and judge tests (run/)
+tests/fixtures/         fixture packs used by the tests: misbehaving programs for
+                        the runner (run/), solutions for every verdict and type
+                        (judge/), signatures for code generation (codegen/), and
+                        C++ solutions of the shipped problems (solutions/)
+tests/expected/         golden files: the e2e tests' output, generated code
 tests/e2e.sh            end-to-end tests of the lc binary
 docs/PLAN.md            design, architecture and milestones
+docs/workspace.md       solving problems: lc start, test and submit, editors
 docs/problem-format.md  the problem pack format, types and test literals
 docs/wire.md            the wire format between lc and a solution's harness
-docs/judging.md         how programs are run, the limits, and the verdict rules
+docs/judging.md         building, running, the limits, and the verdict rules
 docs/json.md            the --json output format
 ```

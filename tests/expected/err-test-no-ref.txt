@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: tests/fixtures/judge/0011-reverse/cases.txt:2: this case has no expected result ('=> ...'), and problem 11 (reverse) has no reference solution to work one out
+--- exit 3

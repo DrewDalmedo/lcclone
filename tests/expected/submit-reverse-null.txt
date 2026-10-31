@@ -1,0 +1,12 @@
+--- stdout
+Building tests/fixtures/judge/0011-reverse/null.c (C, c11)
+
+tests/fixtures/judge/0011-reverse/null.c:1: Runtime Error on case 1 of 2 (exited with status 70)
+  Input:    a = [1,2,3]
+  Expected: [3,2,1]
+  Stderr:
+    lc: reverse returned NULL, but *returnSize is 3
+
+Runtime Error: 0/2 cases passed
+--- stderr
+--- exit 1

@@ -1,0 +1,52 @@
+# Longest Common Prefix.
+
+@example All three words begin with "inter", and the next letters differ.
+["interview","internal","interval"]
+=> "inter"
+
+@example The first letters already differ.
+["apple","banana","avocado"]
+=> ""
+
+@example One word is its own prefix.
+["solo"]
+=> "solo"
+
+# An empty word leaves nothing in common.
+["","abc"]
+=> ""
+
+["",""]
+=> ""
+
+[""]
+=> ""
+
+# Identical words.
+["abc","abc","abc"]
+=> "abc"
+
+# The shortest word is the prefix.
+["ab","a"]
+=> "a"
+
+["a","ab","abc"]
+=> "a"
+
+["prefix","prefixes","pre"]
+=> "pre"
+
+# The difference is in the last letter of the shortest word.
+["stream","streak","street"]
+=> "stre"
+
+# Single letters.
+["x","y"]
+=> ""
+
+["q","q"]
+=> "q"
+
+# The mismatch is in a word in the middle.
+["cartoon","car","carbon","dog","cart"]
+=> ""

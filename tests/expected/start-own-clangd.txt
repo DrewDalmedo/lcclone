@@ -1,0 +1,5 @@
+--- stdout
+@TMP@/ws2/0009-palindrome-number/solution.c
+--- stderr
+lc: warning: left @TMP@/ws2/.clangd alone: lc didn't write it, so clangd may not know about lc's preludes
+--- exit 0

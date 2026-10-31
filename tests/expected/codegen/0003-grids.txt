@@ -1,0 +1,65 @@
+== C stub
+/**
+ * Note: return an array of *returnSize arrays, and set *returnColumnSizes
+ * to an array holding the size of each one. All of them must be malloced;
+ * the caller frees them.
+ */
+char*** grids(int** a, int aSize, int* aColSize, bool** b, int bSize, int* bColSize, char** c, int cSize, int* cColSize, char*** d, int dSize, int* dColSize, int* returnSize, int** returnColumnSizes) {
+
+}
+== C prototype
+char*** grids(int** a, int aSize, int* aColSize, bool** b, int bSize, int* bColSize, char** c, int cSize, int* cColSize, char*** d, int dSize, int* dColSize, int* returnSize, int** returnColumnSizes)
+== C harness
+/* lc's harness for problem 3 (grids). */
+int main(void)
+{
+    lc_rt_read_input();
+    int aSize;
+    int* aColSize;
+    int** a = lc_read_int_array2(&aSize, &aColSize);
+    int bSize;
+    int* bColSize;
+    bool** b = lc_read_bool_array2(&bSize, &bColSize);
+    int cSize;
+    int* cColSize;
+    char** c = lc_read_char_array2(&cSize, &cColSize);
+    int dSize;
+    int* dColSize;
+    char*** d = lc_read_string_array2(&dSize, &dColSize);
+    lc_rt_end_input();
+    int lc_ret_size = -1;
+    int* lc_ret_cols = NULL;
+    char*** lc_ret = grids(a, aSize, aColSize, b, bSize, bColSize, c, cSize, cColSize, d, dSize, dColSize, &lc_ret_size, &lc_ret_cols);
+    lc_write_string_array2("grids", lc_ret, lc_ret_size, lc_ret_cols);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+class Solution {
+public:
+    vector<vector<string>> grids(vector<vector<int>>& a, vector<vector<bool>>& b, vector<vector<char>>& c, vector<vector<string>>& d) {
+
+    }
+};
+== C++ prototype
+vector<vector<string>> Solution::grids(vector<vector<int>>& a, vector<vector<bool>>& b, vector<vector<char>>& c, vector<vector<string>>& d)
+== C++ harness
+// lc's harness for problem 3 (grids).
+int main()
+{
+    lc_rt_read_input();
+    std::vector<std::vector<int>> a;
+    lc_get(a);
+    std::vector<std::vector<bool>> b;
+    lc_get(b);
+    std::vector<std::vector<char>> c;
+    lc_get(c);
+    std::vector<std::vector<std::string>> d;
+    lc_get(d);
+    lc_rt_end_input();
+    Solution *lc_sol = new Solution();
+    std::vector<std::vector<std::string>> lc_ret = lc_sol->grids(a, b, c, d);
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}

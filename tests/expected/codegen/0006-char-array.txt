@@ -1,0 +1,46 @@
+== C stub
+/**
+ * Note: return an array of *returnSize elements. It must be malloced;
+ * the caller frees it.
+ */
+char* letters(char* s, int* returnSize) {
+
+}
+== C prototype
+char* letters(char* s, int* returnSize)
+== C harness
+/* lc's harness for problem 6 (char-array). */
+int main(void)
+{
+    lc_rt_read_input();
+    char* s = lc_read_string();
+    lc_rt_end_input();
+    int lc_ret_size = -1;
+    char* lc_ret = letters(s, &lc_ret_size);
+    lc_write_char_array("letters", lc_ret, lc_ret_size);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+class Solution {
+public:
+    vector<char> letters(string s) {
+
+    }
+};
+== C++ prototype
+vector<char> Solution::letters(string s)
+== C++ harness
+// lc's harness for problem 6 (char-array).
+int main()
+{
+    lc_rt_read_input();
+    std::string s;
+    lc_get(s);
+    lc_rt_end_input();
+    Solution *lc_sol = new Solution();
+    std::vector<char> lc_ret = lc_sol->letters(s);
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}

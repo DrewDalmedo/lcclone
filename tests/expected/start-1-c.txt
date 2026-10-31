@@ -1,0 +1,4 @@
+--- stdout
+@TMP@/ws/0001-two-sum/solution.c
+--- stderr
+--- exit 0

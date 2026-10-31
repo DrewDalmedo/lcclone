@@ -1,0 +1,4 @@
+--- stdout
+{"schema":1,"problem":{"id":1,"slug":"two-sum","title":"Two Sum"},"lang":"cpp","dir":"@TMP@/ws/0001-two-sum","solution":"@TMP@/ws/0001-two-sum/solution.cpp","readme":"@TMP@/ws/0001-two-sum/README.md","cases":"@TMP@/ws/0001-two-sum/cases.txt","created_solution":false,"created_cases":false,"warnings":[]}
+--- stderr
+--- exit 0

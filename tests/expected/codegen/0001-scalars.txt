@@ -1,0 +1,59 @@
+== C stub
+long long mix(int a, long long b, uint32_t c, double d, bool e, char f, char* g) {
+
+}
+== C prototype
+long long mix(int a, long long b, uint32_t c, double d, bool e, char f, char* g)
+== C harness
+/* lc's harness for problem 1 (scalars). */
+int main(void)
+{
+    lc_rt_read_input();
+    int a = lc_read_int();
+    long long b = lc_read_long();
+    uint32_t c = lc_read_uint32();
+    double d = lc_read_double();
+    bool e = lc_read_bool();
+    char f = lc_read_char();
+    char* g = lc_read_string();
+    lc_rt_end_input();
+    long long lc_ret = mix(a, b, c, d, e, f, g);
+    lc_write_long("mix", lc_ret);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+class Solution {
+public:
+    long long mix(int a, long long b, uint32_t c, double d, bool e, char f, string g) {
+
+    }
+};
+== C++ prototype
+long long Solution::mix(int a, long long b, uint32_t c, double d, bool e, char f, string g)
+== C++ harness
+// lc's harness for problem 1 (scalars).
+int main()
+{
+    lc_rt_read_input();
+    int a{};
+    lc_get(a);
+    long long b{};
+    lc_get(b);
+    uint32_t c{};
+    lc_get(c);
+    double d{};
+    lc_get(d);
+    bool e{};
+    lc_get(e);
+    char f{};
+    lc_get(f);
+    std::string g;
+    lc_get(g);
+    lc_rt_end_input();
+    Solution *lc_sol = new Solution();
+    long long lc_ret = lc_sol->mix(a, b, c, d, e, f, g);
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}

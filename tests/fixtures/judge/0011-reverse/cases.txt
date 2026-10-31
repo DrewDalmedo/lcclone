@@ -1,0 +1,2 @@
+# A case with no expected result, and no ref.c to work it out.
+[4,5]

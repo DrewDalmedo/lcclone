@@ -1,0 +1,19 @@
+== C stub
+bool hasCycle(int* head, int headSize) {
+
+}
+== C prototype
+bool hasCycle(int* head, int headSize)
+== C harness
+error: problem 9 (hidden): hidden inputs are not supported yet
+== C++ stub
+class Solution {
+public:
+    bool hasCycle(vector<int>& head) {
+
+    }
+};
+== C++ prototype
+bool Solution::hasCycle(vector<int>& head)
+== C++ harness
+error: problem 9 (hidden): hidden inputs are not supported yet

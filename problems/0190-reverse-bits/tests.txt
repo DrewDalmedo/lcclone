@@ -1,0 +1,44 @@
+# Reverse Bits. Values are unsigned 32-bit integers in decimal.
+
+@example 6 is 29 zero bits followed by 110. Reversed, that is 011 followed by 29 zeros, which is 2^30 + 2^29.
+6
+=> 1610612736
+
+@example Only the lowest bit is set, so only the highest is set afterwards: 2^31.
+1
+=> 2147483648
+
+@example The low 16 bits are set; reversed, the high 16 bits are.
+65535
+=> 4294901760
+
+# Nothing to move.
+0
+=> 0
+
+4294967295
+=> 4294967295
+
+# The highest bit comes back down.
+2147483648
+=> 1
+
+2
+=> 1073741824
+
+7
+=> 3758096384
+
+4026531840
+=> 15
+
+# 0x12345678 becomes 0x1E6A2C48.
+305419896
+=> 510274632
+
+# Alternating bits: 1010...10 becomes 0101...01.
+2863311530
+=> 1431655765
+
+1431655765
+=> 2863311530

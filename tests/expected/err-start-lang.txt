@@ -1,0 +1,5 @@
+--- stdout
+--- stderr
+lc: unknown language 'rust' (expected c or cpp)
+Run 'lc help start'.
+--- exit 3

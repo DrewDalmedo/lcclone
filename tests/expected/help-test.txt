@@ -1,0 +1,30 @@
+--- stdout
+usage: lc test [<solution>] [--lang LANG] [--std STD] [--sanitize] [--case FILE] [--json] [--color=WHEN]
+
+Build your solution and run it on the problem's examples and on the
+cases in cases.txt next to it. Every case runs, and the failures are
+shown at the end. Your cases may leave out the expected result: it
+then comes from the problem's reference solution.
+
+<solution> is a solution file (any .c or .cpp file in a directory
+named like 0001-two-sum), a problem's directory, or a problem's ID or
+slug, meaning its directory in the workspace. Without it, the current
+directory is used. In a directory, the solution is solution.c or
+solution.cpp.
+
+Compile errors and failed cases are printed as file:line: messages,
+so editors can jump to them (in Vim: :set makeprg=lc\ test\ %).
+
+Options:
+  --lang LANG        c or cpp, when a directory has both solutions
+  --std STD          the standard: c++11 (default), c++14, c++17,
+                     c++20, c++23 or max for C++; c11 (default), c99,
+                     c17, c23 or max for C
+  --sanitize         build with AddressSanitizer and UBSan
+  --case FILE        run the cases in FILE instead of cases.txt
+  --json             print JSON Lines: one object per event
+  --color=WHEN       colour the output: auto (the default), always or
+                     never
+  -h, --help         show this help
+--- stderr
+--- exit 0

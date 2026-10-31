@@ -1,0 +1,10 @@
+--- stdout
+Building tests/fixtures/judge/0010-add/exit1.c (C, c11)
+
+tests/fixtures/judge/0010-add/exit1.c:1: Runtime Error on case 3 of 5 (exited with status 1)
+  Input:    a = 100, b = 23
+  Expected: 123
+
+Runtime Error: 2/5 cases passed
+--- stderr
+--- exit 1

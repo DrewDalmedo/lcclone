@@ -1,0 +1,8 @@
+# Echo bool[][]: the result must be the input, exactly.
+
+@example
+[[true,false],[],[false]]
+=> [[true,false],[],[false]]
+
+[]
+=> []

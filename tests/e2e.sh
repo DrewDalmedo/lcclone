@@ -73,10 +73,19 @@ ROOT_RE=$(re_escape "$ROOT")
 TMP_RE=$(re_escape "$TMP")
 TMP_P_RE=$(re_escape "$TMP_P")
 
+# The root is replaced only where a path into it, or the root itself, is
+# (so a root of /w doesn't turn @TMP@/ws into @TMP@@ROOT@s). Times and
+# sizes of runs differ from one run to the next.
 normalize() {
     sed -e "s/$TMP_P_RE/@TMP@/g" -e "s/$TMP_RE/@TMP@/g" \
-        -e "s/$ROOT_RE/@ROOT@/g" -e "s/$ESC/<ESC>/g"
+        -e "s/$ROOT_RE\\([/\"']\\)/@ROOT@\\1/g" -e "s/$ROOT_RE\$/@ROOT@/" \
+        -e "s/$ESC/<ESC>/g" \
+        -e 's/[0-9][0-9]* ms/N ms/g' -e 's/[0-9][0-9.]* MB/N MB/g'
 }
+
+# The compilers lc uses for solutions: the ones make was given, if any.
+E2E_CC=${CC:-cc}
+E2E_CXX=${CXX:-c++}
 
 # The LC_E2E_WRAP program as an absolute path, because some tests give lc a
 # PATH of their own, and env may look the program up in that.
@@ -114,6 +123,7 @@ lc_env() {
     done
     set -- env -i PATH="$PATH" HOME="$TMP/home" \
         XDG_DATA_HOME="$TMP/home/.local/share" \
+        XDG_CACHE_HOME="$TMP/cache" CC="$E2E_CC" CXX="$E2E_CXX" \
         TERM=xterm LC_ALL=C COLUMNS=80 LC_PROBLEMS="$FIX" \
         ASAN_OPTIONS="${ASAN_OPTIONS-}" UBSAN_OPTIONS="${UBSAN_OPTIONS-}" \
         "$@"
@@ -509,6 +519,412 @@ if [ -d problems ]; then
 fi
 
 # ------------------------------------------------------------------
+# lc start: setting up a problem's directory
+# ------------------------------------------------------------------
+
+WS=$TMP/ws
+JFIX=tests/fixtures/judge
+J=$JFIX/0010-add
+
+# files_golden NAME DIR FILE...: the files, one after another, must match
+# tests/expected/NAME.txt.
+files_golden() {
+    fg_name=$1
+    fg_dir=$2
+    shift 2
+    for f do
+        echo "--- $f"
+        if [ -f "$fg_dir/$f" ]; then
+            normalize <"$fg_dir/$f"
+        else
+            echo "(missing)"
+        fi
+    done >"$TMP/got"
+    compare "$fg_name" "files of $fg_dir" golden
+}
+
+check start-1 LC_WORKSPACE="$WS" LC_PROBLEMS=problems -- start 1 --no-edit
+files_golden start-1-files "$WS" 0001-two-sum/README.md \
+    0001-two-sum/solution.cpp 0001-two-sum/cases.txt .clangd
+if cmp -s "$WS/.lcclone/lc_prelude.hpp" runtime/cpp/lc_prelude.hpp &&
+    cmp -s "$WS/.lcclone/lc_prelude.h" runtime/c/lc_prelude.h &&
+    cmp -s "$WS/.lcclone/uthash.h" runtime/c/uthash.h; then
+    ok
+else
+    bad "lc start 1" "the preludes in .lcclone are not the runtime's"
+fi
+check start-1-c LC_WORKSPACE="$WS" LC_PROBLEMS=problems -- start 1 --lang c --no-edit
+files_golden start-1-c-files "$WS" 0001-two-sum/solution.c
+check start-867 LC_WORKSPACE="$WS" LC_PROBLEMS=problems -- start transpose-matrix --lang=c --no-edit
+files_golden start-867-files "$WS" 0867-transpose-matrix/README.md \
+    0867-transpose-matrix/solution.c 0867-transpose-matrix/cases.txt
+check start-104 LC_WORKSPACE="$WS" LC_PROBLEMS=problems -- start 104 --no-edit --json
+files_golden start-104-files "$WS" 0104-maximum-depth-of-binary-tree/solution.cpp
+
+# Your files are never overwritten; README.md is rewritten.
+echo '// mine' >"$WS/0001-two-sum/solution.cpp"
+echo '# mine' >"$WS/0001-two-sum/cases.txt"
+echo 'stale' >"$WS/0001-two-sum/README.md"
+check start-1-again-json LC_WORKSPACE="$WS" LC_PROBLEMS=problems -- start 1 --no-edit --json
+if [ "$(cat "$WS/0001-two-sum/solution.cpp")" = '// mine' ] &&
+    [ "$(cat "$WS/0001-two-sum/cases.txt")" = '# mine' ] &&
+    ! grep -q stale "$WS/0001-two-sum/README.md"; then
+    ok
+else
+    bad "lc start 1 (again)" "overwrote a file of yours, or not README.md"
+fi
+# With both solutions there, the default is C++; with only a C one, C.
+mkdir -p "$TMP/ws2/0009-palindrome-number"
+echo 'bool isPalindrome(int x) { return x == 0; }' \
+    >"$TMP/ws2/0009-palindrome-number/solution.c"
+check start-existing-c LC_WORKSPACE="$TMP/ws2" LC_PROBLEMS=problems -- start 9 --no-edit
+
+# A .clangd that lc didn't write is left alone.
+printf 'CompileFlags:\n  Add: [-Wall]\n' >"$TMP/ws2/.clangd"
+check start-own-clangd LC_WORKSPACE="$TMP/ws2" LC_PROBLEMS=problems -- start 9 --no-edit
+if [ "$(head -n 1 "$TMP/ws2/.clangd")" = 'CompileFlags:' ]; then
+    ok
+else
+    bad "lc start 9 (own .clangd)" ".clangd was overwritten"
+fi
+# $LC_CXXSTD reaches .clangd.
+check start-cxxstd LC_WORKSPACE="$TMP/ws3" LC_CXXSTD=c++17 LC_PROBLEMS=problems -- start 20 --no-edit
+files_golden start-cxxstd-files "$TMP/ws3" .clangd
+
+check err-start-missing -- start
+check err-start-lang -- start 1 --lang rust
+check err-start-no-signature LC_WORKSPACE="$WS" LC_PROBLEMS=$CLIFIX -- start 3 --no-edit
+check err-start-unknown -- start 999 --no-edit
+check err-start-no-home LC_WORKSPACE= HOME= -- start 1 --no-edit --json
+check help-start -- help start
+
+# The editor: $VISUAL, else $EDITOR (with arguments), run in the problem's
+# directory on the solution file.
+cat >"$TMP/ed.sh" <<'EOF'
+#!/bin/sh
+{ pwd; printf '%s\n' "$@"; } >"$ED_LOG"
+exit ${ED_STATUS:-0}
+EOF
+chmod +x "$TMP/ed.sh"
+ed_check() {  # ed_check DESC STATUS EXPECTED-LOG: the last run's outcome
+    if [ "$st" != "$2" ]; then
+        bad "$1" "exit status $st, expected $2: $(cat "$TMP/err")"
+    elif [ "$(cat "$TMP/edlog" 2>/dev/null)" != "$3" ]; then
+        bad "$1" "the editor got: $(cat "$TMP/edlog" 2>/dev/null)"
+    else
+        ok
+    fi
+    rm -f "$TMP/edlog"
+}
+run LC_WORKSPACE="$WS" LC_PROBLEMS=problems VISUAL="$TMP/ed.sh -x" \
+    EDITOR=no-such-editor ED_LOG="$TMP/edlog" -- start 1
+ed_check "VISUAL=ed.sh lc start 1" 0 "$(cd "$WS/0001-two-sum" && pwd -P)
+-x
+solution.cpp"
+run LC_WORKSPACE="$WS" LC_PROBLEMS=problems EDITOR="$TMP/ed.sh" \
+    ED_LOG="$TMP/edlog" -- start 1 --lang c
+ed_check "EDITOR=ed.sh lc start 1 --lang c" 0 "$(cd "$WS/0001-two-sum" && pwd -P)
+solution.c"
+run LC_WORKSPACE="$WS" LC_PROBLEMS=problems EDITOR="$TMP/ed.sh" \
+    ED_LOG="$TMP/edlog" ED_STATUS=4 -- start 1
+ed_check "lc start 1 (the editor fails)" 0 "$(cd "$WS/0001-two-sum" && pwd -P)
+solution.cpp"
+if ! grep -q "^lc: warning: the editor '.*ed.sh' exited with status 4" "$TMP/err"; then
+    bad "lc start 1 (the editor fails)" "no warning: $(cat "$TMP/err")"
+fi
+run LC_WORKSPACE="$WS" LC_PROBLEMS=problems VISUAL=no-such-editor -- start 1
+ed_check "VISUAL=no-such-editor lc start 1" 3 ""
+
+# ------------------------------------------------------------------
+# lc test and lc submit
+# ------------------------------------------------------------------
+
+check test-add LC_PROBLEMS=$JFIX -- test $J/solution.c
+check submit-add-cpp LC_PROBLEMS=$JFIX -- submit $J/solution.cpp
+check test-add-wrong LC_PROBLEMS=$JFIX -- test $J/wrong.c
+check test-add-chatty LC_PROBLEMS=$JFIX -- test $J/chatty.c
+check submit-add-crash LC_PROBLEMS=$JFIX -- submit $J/crash.c
+check submit-add-exit1 LC_PROBLEMS=$JFIX -- submit $J/exit1.c
+check submit-add-flood LC_PROBLEMS=$JFIX -- submit $J/flood.c
+check test-add-mycases LC_PROBLEMS=$JFIX -- test $J/wrong.c --case $J/mycases.txt
+check submit-reverse-unset LC_PROBLEMS=$JFIX -- submit $JFIX/0011-reverse/unset.c
+check submit-reverse-null LC_PROBLEMS=$JFIX -- submit $JFIX/0011-reverse/null.c
+check err-test-badcase LC_PROBLEMS=$JFIX -- test $J/solution.c --case $J/badcase.txt
+check err-test-no-ref LC_PROBLEMS=$JFIX -- test $JFIX/0011-reverse/solution.c
+check err-test-bad-ref LC_PROBLEMS=$JFIX -- test $JFIX/0012-bad-ref/solution.c
+check err-test-tree LC_PROBLEMS=$JFIX -- test $JFIX/0013-tree/problem.md --lang c
+check err-test-std LC_PROBLEMS=$JFIX -- test $J/solution.c --std c++17
+check err-test-std-env LC_CXXSTD=gnu++17 LC_PROBLEMS=$JFIX -- test $J/solution.cpp
+check err-test-case-missing LC_PROBLEMS=$JFIX -- test $J/solution.c --case $J/nope.txt
+check help-test -- help test
+check help-submit -- help submit
+
+# expect_run DESC STATUS PATTERN... [VAR=value...] -- ARGS: lc exits with
+# STATUS, and its stdout has a line matching each grep PATTERN (for output
+# that differs between compilers).
+expect_run() {
+    er_desc=$1
+    er_st=$2
+    shift 2
+    er_pats=
+    while [ $# -gt 0 ] && [ "$1" != -- ] && [ "${1#*=}" = "$1" ]; do
+        er_pats="$er_pats
+$1"
+        shift
+    done
+    run LC_PROBLEMS=$JFIX "$@"
+    if [ "$st" != "$er_st" ]; then
+        bad "$er_desc" "exit status $st, expected $er_st: $(head -n 5 "$TMP/err") $(head -n 5 "$TMP/out")"
+        return
+    fi
+    echo "$er_pats" | while IFS= read -r pat; do
+        [ -z "$pat" ] && continue
+        grep -q -e "$pat" "$TMP/out" || echo "$pat"
+    done >"$TMP/missing"
+    if [ -s "$TMP/missing" ]; then
+        bad "$er_desc" "no line matches '$(head -n 1 "$TMP/missing")' in: $(head -n 12 "$TMP/out")"
+    else
+        ok
+    fi
+}
+
+D=tests/fixtures/judge/0010-add
+expect_run "lc submit spin.c" 1 '^Time Limit Exceeded: 2/5 cases passed$' \
+    'spin.c:1: Time Limit Exceeded on case 3 of 5' -- submit $J/spin.c
+expect_run "lc submit alloc.c" 1 '^Memory Limit Exceeded: 2/5 cases passed$' \
+    -- submit $J/alloc.c
+expect_run "lc submit throw.cpp" 1 \
+    'throw.cpp:1: Runtime Error on case 3 of 5 (killed by SIGABRT)' \
+    'no hundreds' -- submit $J/throw.cpp
+expect_run "lc test ce.c" 2 '^Building .*ce.c (C, c11)$' \
+    "^$D/ce.c:2:[0-9]*: error: " '^Compile Error$' -- test $J/ce.c
+# clang points at the line missing its ';', g++ at the next one.
+expect_run "lc test ce.cpp" 2 "^$D/ce.cpp:[45]:[0-9]*: error: " \
+    '^lc: this was built as C++11' -- test $J/ce.cpp
+expect_run "lc test sig.c" 2 '^lc_harness:[0-9]*:[0-9]*: error: ' \
+    '^lc: errors in lc_harness' '^    int add(int a, int b)$' \
+    -- test $J/sig.c
+expect_run "lc test sig.cpp" 2 '^    int Solution::add(int a, int b)$' \
+    -- test $J/sig.cpp
+expect_run "lc test warn.c" 0 "^$D/warn.c:4:[0-9]*: warning: " \
+    '^Accepted: 2/2 cases passed' -- test $J/warn.c
+expect_run "lc test cxx14.cpp" 2 '^lc: this was built as C++11' \
+    -- test $J/cxx14.cpp
+expect_run "lc test cxx14.cpp --std c++14" 0 '(C++, c++14)$' \
+    -- test $J/cxx14.cpp --std c++14
+expect_run "lc test cxx17.cpp --std=max" 0 '^Accepted' \
+    -- test $J/cxx17.cpp --std=max
+expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp" 0 '(C++, c++17)$' \
+    LC_CXXSTD=c++17 -- test $J/cxx17.cpp
+expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp --std c++14" 2 \
+    '(C++, c++14)$' LC_CXXSTD=c++17 -- test $J/cxx17.cpp --std c++14
+expect_run "LC_CSTD=c17 lc test solution.c" 0 '(C, c17)$' \
+    LC_CSTD=c17 -- test $J/solution.c
+expect_run "CXX=no-such-compiler lc test" 3 CXX=no-such-compiler \
+    -- test $J/solution.cpp
+if ! grep -q "^lc: the C++ compiler 'no-such-compiler' (from \$CXX) was not found$" "$TMP/err"; then
+    bad "CXX=no-such-compiler lc test" "stderr: $(cat "$TMP/err")"
+fi
+
+# Which solution: a file, a directory, a problem, or the current directory.
+expect_run "lc test DIR with two solutions" 3 -- test $J
+grep -q "^lc: $J has both a C and a C++ solution; choose one with --lang c or --lang cpp$" "$TMP/err" ||
+    bad "lc test DIR with two solutions" "stderr: $(cat "$TMP/err")"
+expect_run "lc test DIR --lang cpp" 0 "^Building $D/solution.cpp " -- test $J --lang cpp
+# in_dir DIR [VAR=value...] -- ARGS: run in DIR.
+in_dir() {
+    id_dir=$1
+    shift
+    (cd "$id_dir" && lc_env "$@") >"$TMP/out" 2>"$TMP/err" </dev/null
+    st=$?
+}
+in_dir "$J" LC_PROBLEMS="$ROOT/$JFIX" -- test --lang c
+if [ "$st" = 0 ] && grep -q '^Building solution.c (C, c11)$' "$TMP/out"; then
+    ok
+else
+    bad "lc test --lang c (in the problem's directory)" "exit $st: $(cat "$TMP/out" "$TMP/err")"
+fi
+in_dir "$TMP" LC_PROBLEMS="$ROOT/$JFIX" -- test
+if [ "$st" = 3 ] && grep -q "^lc: no problem given, and the current directory is not a problem directory" "$TMP/err"; then
+    ok
+else
+    bad "lc test (outside a problem directory)" "exit $st: $(cat "$TMP/err")"
+fi
+check err-test-not-found LC_PROBLEMS=$JFIX -- test nosuch.c
+check err-test-not-problem-dir LC_PROBLEMS=$JFIX -- test tests/e2e.sh --lang c
+check err-test-extension LC_PROBLEMS=$JFIX -- test $J/problem.md
+check err-test-no-workspace-dir LC_WORKSPACE="$TMP/ws9" LC_PROBLEMS=$JFIX -- test add
+# The workspace: lc start, then lc test and submit by ID or slug.
+run LC_WORKSPACE="$TMP/ws4" LC_PROBLEMS=$JFIX -- start 10 --lang c --no-edit
+cp $J/solution.c "$TMP/ws4/0010-add/solution.c"
+check test-workspace LC_WORKSPACE="$TMP/ws4" LC_PROBLEMS=$JFIX -- test 10
+check submit-workspace LC_WORKSPACE="$TMP/ws4" LC_PROBLEMS=$JFIX -- submit add
+# cases.txt next to the solution is run too (its width depends on $TMP, so
+# no golden file).
+printf '7\n8\n' >>"$TMP/ws4/0010-add/cases.txt"
+expect_run "lc test 10 (with cases.txt)" 0 '^Building the reference solution' \
+    '/ws4/0010-add/cases.txt:18  *Accepted' '^Accepted: 3/3 cases passed' \
+    LC_WORKSPACE="$TMP/ws4" -- test 10
+check err-test-no-solution LC_WORKSPACE="$TMP/ws4" LC_PROBLEMS=$JFIX -- test 10 --lang cpp
+
+# JSON Lines: every line is an object with "schema" and "event", in order.
+json_events() {  # json_events DESC STATUS EVENTS: the last run's events
+    if [ "$st" != "$2" ]; then
+        bad "$1" "exit status $st, expected $2: $(cat "$TMP/err")"
+        return
+    fi
+    [ -n "$PYTHON" ] || { ok; return; }
+    if got=$("$PYTHON" -c '
+import json, sys
+evs = []
+for line in sys.stdin.buffer.read().decode("utf-8").splitlines():
+    d = json.loads(line)
+    assert d["schema"] == 1, line
+    if "error" in d:
+        evs.append("error")
+        continue
+    e = d["event"]
+    if e in ("build_start", "build_done"):
+        e += "(ref)" if d["reference"] else ""
+        if e.startswith("build_done") and not d["ok"]:
+            assert d["diagnostics"], line
+            e += "!"
+    if e == "case_done":
+        e += ":" + d["verdict"]
+    if e == "done":
+        e += ":%s:%d/%d" % (d["verdict"], d["passed"], d["total"])
+        assert isinstance(d["warnings"], list)
+    evs.append(e)
+print(" ".join(evs))' <"$TMP/out" 2>&1) && [ "$got" = "$3" ]; then
+        ok
+    else
+        bad "$1" "events: $got"
+    fi
+}
+run LC_PROBLEMS=$JFIX -- test $J/wrong.c --case $J/mycases.txt --json
+json_events "lc test wrong.c --case mycases.txt --json" 1 "build_start build_done build_start(ref) build_done(ref) case_start case_done:accepted case_start case_done:wrong_answer case_start case_done:accepted case_start case_done:accepted case_start case_done:wrong_answer done:wrong_answer:3/5"
+run LC_PROBLEMS=$JFIX -- submit $J/crash.c --json
+json_events "lc submit crash.c --json" 1 "build_start build_done case_start case_done:accepted case_start case_done:accepted case_start case_done:runtime_error done:runtime_error:2/5"
+run LC_PROBLEMS=$JFIX -- submit $J/ce.c --json
+json_events "lc submit ce.c --json" 2 "build_start build_done! done:compile_error:0/5"
+run LC_PROBLEMS=$JFIX -- submit $J/solution.c --std c++17 --json
+json_events "lc submit --std c++17 --json" 3 "error"
+run LC_PROBLEMS=$JFIX -- test $J/chatty.c --json
+check_json_lines() {
+    [ -n "$PYTHON" ] || return 0
+    if "$PYTHON" -c '
+import json, sys
+for line in sys.stdin.buffer.read().decode("utf-8").splitlines():
+    d = json.loads(line)
+    if d.get("event") == "case_done":
+        assert d["stdout"] == "a=1\n" or d["stdout"].startswith("a="), d
+        assert d["stderr"].startswith("b="), d
+        assert d["inputs"][0]["name"] == "a", d
+        assert d["exit_code"] == 0 and d["signal"] is None, d
+        assert d["file"].endswith("/tests.txt"), d
+' <"$TMP/out"; then
+        ok
+    else
+        bad "lc test chatty.c --json" "unexpected case_done"
+    fi
+}
+check_json_lines
+
+# Vim's default 'errorformat' finds the failed cases and compile errors.
+VIM=$(command -v vim 2>/dev/null || command -v nvim 2>/dev/null)
+qf_check() {  # qf_check DESC EXPECTED: the valid quickfix entries of $TMP/out
+    "$VIM" -es -u NONE -i NONE -N -c 'set efm&' -c "cgetfile $TMP/out" \
+        -c "redir! > $TMP/qf" \
+        -c 'for e in getqflist() | if e.valid | echo bufname(e.bufnr) . ":" . e.lnum | endif | endfor' \
+        -c 'redir END' -c 'qa!' </dev/null >/dev/null 2>&1
+    got=$(grep . "$TMP/qf" 2>/dev/null | tr '\n' ' ')
+    if [ "$got" = "$2" ]; then
+        ok
+    else
+        bad "$1" "quickfix entries: '$got', expected '$2'"
+    fi
+}
+if [ -n "$VIM" ]; then
+    run LC_PROBLEMS=$JFIX -- test $J/wrong.c --case $J/mycases.txt
+    qf_check "lc test wrong.c in Vim's quickfix list" "$D/wrong.c:1 $D/mycases.txt:9 "
+    run LC_PROBLEMS=$JFIX -- test $J/ce.c
+    qf_check "lc test ce.c in Vim's quickfix list" "$D/ce.c:2 "
+else
+    echo "note: skipped the quickfix tests (no vim or nvim)"
+fi
+
+# --sanitize, where the C compiler has the sanitizers (musl's gcc doesn't).
+printf 'int main(void) { return 0; }\n' >"$TMP/san.c"
+# shellcheck disable=SC2086 # CC may be several words
+if $E2E_CC -fsanitize=address,undefined -o "$TMP/san" "$TMP/san.c" >/dev/null 2>&1 &&
+    "$TMP/san"; then
+    expect_run "lc submit overflow.c --sanitize" 1 \
+        '(C, c11, sanitizers)$' 'overflow.c:1: Runtime Error on case 3 of 5' \
+        -- submit $J/overflow.c --sanitize
+    expect_run "lc submit overflow.c" 0 '^Accepted' -- submit $J/overflow.c
+else
+    echo "note: skipped the --sanitize tests ($E2E_CC has no sanitizers)"
+fi
+
+# uthash comes with the C prelude, as on LeetCode; a solution may also
+# include it itself, either way.
+for inc in '"uthash.h"' '<uthash.h>'; do
+    mkdir -p "$TMP/uthash/0001-two-sum"
+    { printf '#include %s\n' "$inc"
+      cat tests/fixtures/solutions/0001-two-sum.c; } \
+        >"$TMP/uthash/0001-two-sum/solution.c"
+    run LC_PROBLEMS=problems -- submit "$TMP/uthash/0001-two-sum/solution.c"
+    if [ "$st" = 0 ]; then ok; else
+        bad "lc submit (uthash solution with #include $inc)" "$(tail -n 8 "$TMP/out") $(cat "$TMP/err")"
+    fi
+done
+
+# ^C stops a run: lc kills the program and exits with status 130.
+if [ -z "$WRAP_PROG" ]; then
+    env -i PATH="$PATH" HOME="$TMP/home" XDG_CACHE_HOME="$TMP/cache" \
+        CC="$E2E_CC" CXX="$E2E_CXX" LC_ALL=C LC_PROBLEMS=$JFIX \
+        ASAN_OPTIONS="${ASAN_OPTIONS-}" "$LC" submit $J/spin.c \
+        >"$TMP/out" 2>"$TMP/err" </dev/null &
+    pid=$!
+    # Long enough to be past the build (cached by now) and into case 3.
+    sleep 1
+    kill -INT "$pid" 2>/dev/null
+    wait "$pid"
+    st=$?
+    if [ "$st" = 130 ] && grep -q '^Cancelled after 2 of 5 cases$' "$TMP/out"; then
+        ok
+    else
+        bad "^C during lc submit spin.c" "exit $st: $(cat "$TMP/out" "$TMP/err")"
+    fi
+fi
+
+# Every shipped problem: its reference solution in C, any C solution in
+# tests/fixtures/solutions, and the C++ one there at c++11 and at the
+# newest standard, pass every case.
+for d in problems/*/; do
+    b=$(basename "$d")
+    for c in "$d/ref.c" "tests/fixtures/solutions/$b.c"; do
+        [ -f "$c" ] || continue
+        mkdir -p "$TMP/shipped/$b"
+        cp "$c" "$TMP/shipped/$b/solution.c"
+        run LC_PROBLEMS=problems -- submit "$TMP/shipped/$b/solution.c"
+        if [ "$st" = 0 ]; then ok; else
+            bad "lc submit (problem $b, $c)" "$(tail -n 5 "$TMP/out") $(cat "$TMP/err")"
+        fi
+    done
+    if [ -f "tests/fixtures/solutions/$b.cpp" ]; then
+        mkdir -p "$TMP/shipped/$b"
+        cp "tests/fixtures/solutions/$b.cpp" "$TMP/shipped/$b/solution.cpp"
+        for std in c++11 max; do
+            run LC_PROBLEMS=problems -- submit "$TMP/shipped/$b/solution.cpp" --std $std
+            if [ "$st" = 0 ]; then ok; else
+                bad "lc submit (problem $b, C++, $std)" "$(tail -n 5 "$TMP/out") $(cat "$TMP/err")"
+            fi
+        done
+    fi
+done
+
+# ------------------------------------------------------------------
 # Running out of memory
 # ------------------------------------------------------------------
 
@@ -791,6 +1207,10 @@ else
     oom_sweep -- bogus --json
     oom_sweep -- help --json
     oom_sweep -- version --json
+    oom_sweep LC_WORKSPACE="$TMP/oomws" LC_PROBLEMS=problems -- start 1 --no-edit --json
+    oom_sweep LC_WORKSPACE="$TMP/oomws" LC_PROBLEMS=problems -- start 1 --no-edit
+    oom_sweep LC_PROBLEMS=$JFIX -- test $J/solution.c --std bogus --json
+    oom_sweep LC_PROBLEMS=$JFIX -- test $J/solution.c --case $J/badcase.txt
     oom_report
 fi
 

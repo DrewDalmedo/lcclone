@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: tests/fixtures/judge/0010-add/badcase.txt:1: b: column 1: expected int, got a string
+--- exit 3

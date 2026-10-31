@@ -95,6 +95,16 @@ typedef struct lc_options {
      * ~/.local/share/lcclone/problems), then $(PREFIX)/share/lcclone/problems.
      */
     const char *problems_dir;
+    /*
+     * Directory for your solutions, one NNNN-slug directory per problem.
+     * When NULL: $LC_WORKSPACE, else ~/lc.
+     */
+    const char *workspace_dir;
+    /*
+     * Directory for builds and other things lc can recreate. When NULL:
+     * $XDG_CACHE_HOME/lcclone, else ~/.cache/lcclone.
+     */
+    const char *cache_dir;
 } lc_options;
 
 void lc_options_init(lc_options *opt);
@@ -278,10 +288,13 @@ int lc_problem_has_tag(const lc_problem *p, const char *tag);
 typedef struct lc_case {
     const char *const *args;  /* one literal per input line; none for "()" */
     size_t nargs;
-    const char *expected;     /* literal after "=>" */
+    /* literal after "=>"; NULL for a case of your own without one, whose
+     * expected result comes from the reference solution */
+    const char *expected;
     const char *explanation;  /* text after "@example", or NULL */
     int example;              /* 1 if marked with @example */
     int line;                 /* line of the case's first input */
+    const char *file;         /* the file it was read from, as given */
 } lc_case;
 
 typedef struct lc_cases {
@@ -299,6 +312,15 @@ int lc_load_cases(lc_ctx *ctx, const lc_problem *p, lc_cases **out);
 /* Parses tests.txt text. `filename` is used in error messages. */
 int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
                    const char *filename, lc_cases **out);
+
+/*
+ * Reads a file of your own cases, such as a workspace's cases.txt. It is
+ * written like tests.txt, except that the "=> expected" line may be left
+ * out: a blank line or the end of the file then ends the case, and its
+ * expected result comes from the problem's reference solution. @example
+ * is not allowed. A missing file is an error.
+ */
+int lc_load_user_cases(lc_ctx *ctx, const char *path, lc_cases **out);
 
 void lc_cases_free(lc_cases *cases);
 
@@ -452,7 +474,9 @@ const char *lc_signal_name(int sig);
  */
 typedef struct lc_case_result {
     size_t index;             /* position in the list of cases that was run */
-    int line;                 /* line of the case in tests.txt */
+    int line;                 /* line of the case in its file */
+    const char *file;         /* that file: the pack's tests.txt, or yours */
+    int custom;               /* 1 for a case of your own */
     int example;              /* 1 for an @example case */
     lc_verdict verdict;
     /*
@@ -484,12 +508,45 @@ typedef struct lc_case_result {
     int signal;               /* the signal that ended it, or 0 */
 } lc_case_result;
 
+/* One message of the compiler, such as an error or a warning. */
+typedef struct lc_diag {
+    const char *file;         /* as the compiler printed it */
+    int line;                 /* 0 when the compiler gave none */
+    int column;               /* 0 when the compiler gave none */
+    const char *severity;     /* "error", "warning" or "note" */
+    const char *message;
+    int in_solution;          /* 1 if `file` is the source being built */
+} lc_diag;
+
+/* How a source file was built. Strings are owned by what holds it. */
+typedef struct lc_build {
+    /* 1 for the problem's reference solution, which is built to work out
+     * the expected results of cases that don't give one */
+    int reference;
+    const char *lang;         /* lc_lang.name: "c" or "cpp" */
+    const char *std;          /* the standard used, e.g. "c++17" */
+    const char *source;       /* the source file, an absolute path */
+    const char *compiler;     /* the compiler command, e.g. "c++" */
+    int sanitize;             /* built with the sanitizers */
+    int ok;                   /* it compiled */
+    int cached;               /* an earlier build of the same input was used */
+    long time_ms;             /* how long compiling took; 0 when cached */
+    /*
+     * What the compiler printed, stdout then stderr (empty when cached).
+     * Paths in it are absolute.
+     */
+    const char *output;
+    size_t output_len;
+    const lc_diag *diags;     /* the messages found in `output` */
+    size_t ndiags;
+} lc_build;
+
 /* The outcome of a judging run. Release it with lc_report_free. */
 typedef struct lc_report {
     /*
      * The verdict of the first case that failed; Accepted when every case
-     * ran and passed; LC_VERDICT_NONE when the run was cancelled before
-     * any case failed.
+     * ran and passed; Compile Error when the solution didn't compile;
+     * LC_VERDICT_NONE when the run was cancelled before any case failed.
      */
     lc_verdict verdict;
     int cancelled;            /* the cancel flag stopped the run */
@@ -499,6 +556,7 @@ typedef struct lc_report {
     size_t nresults;
     long max_time_ms;         /* the largest time_ms of any case */
     long max_memory_kb;       /* the largest memory_kb of any case */
+    const lc_build *build;    /* lc_judge: how the solution was built */
     void *priv_;              /* owned memory; do not touch */
 } lc_report;
 
@@ -508,7 +566,9 @@ void lc_report_free(lc_report *report);
 typedef enum {
     LC_EV_CASE_START,         /* a case is about to run */
     LC_EV_CASE_DONE,          /* a case finished */
-    LC_EV_DONE                /* the run is over */
+    LC_EV_DONE,               /* the run is over */
+    LC_EV_BUILD_START,        /* lc_judge: a source is about to be built */
+    LC_EV_BUILD_DONE          /* lc_judge: it was built, or failed to */
 } lc_event_kind;
 
 /*
@@ -522,6 +582,9 @@ typedef struct lc_event {
     const lc_case *test_case; /* LC_EV_CASE_START: the case */
     const lc_case_result *result; /* LC_EV_CASE_DONE: how it went */
     const lc_report *report;  /* LC_EV_DONE: the whole run */
+    /* build events: what is built; at LC_EV_BUILD_START only `reference`,
+     * `lang`, `std`, `source`, `compiler` and `sanitize` are set */
+    const lc_build *build;
 } lc_event;
 
 typedef struct lc_hooks {
@@ -538,6 +601,142 @@ typedef struct lc_hooks {
      */
     const volatile sig_atomic_t *cancel;
 } lc_hooks;
+
+/* ------------------------------------------------------------------ */
+/* Languages                                                           */
+/* ------------------------------------------------------------------ */
+
+typedef enum { LC_LANG_C = 0, LC_LANG_CPP } lc_lang_id;
+
+/* A solution language. The table is fixed; pointers stay valid. */
+typedef struct lc_lang {
+    lc_lang_id id;
+    const char *name;         /* "c", "cpp": for --lang and JSON */
+    const char *title;        /* "C", "C++" */
+    const char *ext;          /* extension of a solution file: "c", "cpp" */
+    const char *compiler_env; /* variable naming the compiler: "CC", "CXX" */
+    const char *compiler;     /* the compiler without it: "cc", "c++" */
+    const char *std_env;      /* variable naming the standard: "LC_CSTD",
+                                 "LC_CXXSTD" */
+    const char *default_std;  /* "c11", "c++11" */
+    const char *const *stds;  /* the standards it accepts, oldest first,
+                                 NULL-terminated; "max" is accepted too */
+} lc_lang;
+
+size_t lc_lang_count(void);
+const lc_lang *lc_lang_at(size_t i);
+/* By name: "c", "cpp", or "c++" and "cxx" for C++. NULL if unknown. */
+const lc_lang *lc_lang_find(const char *name);
+/* By a file's extension: .c is C; .cpp, .cc and .cxx are C++. */
+const lc_lang *lc_lang_for_path(const char *path);
+
+/*
+ * 1 if the language's compiler can be found: $CC or $CXX if set (its
+ * first word, looked up on $PATH), else cc or c++.
+ */
+int lc_lang_installed(lc_ctx *ctx, const lc_lang *lang);
+
+/*
+ * The standard a build would use: `want` if not NULL (e.g. from --std),
+ * else $LC_CSTD or $LC_CXXSTD, else the default (c11, c++11). "max" means
+ * the newest standard the compiler accepts. A standard other than the
+ * default is checked once against the compiler, and the answer is kept in
+ * the cache directory. On LC_OK *out is the standard's name, valid until
+ * lc_close.
+ */
+int lc_std_resolve(lc_ctx *ctx, const lc_lang *lang, const char *want,
+                   const char **out);
+
+/*
+ * Appends the code a solution starts from, in LeetCode's style for the
+ * language: a function in C, a Solution class in C++.
+ */
+int lc_stub(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+            lc_str *out);
+
+/*
+ * Appends the solution's declaration as lc's harness calls it, e.g.
+ * "int* twoSum(int* nums, int numsSize, int target, int* returnSize)" in C
+ * or "vector<int> Solution::twoSum(vector<int>& nums, int target)" in C++.
+ */
+int lc_prototype(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+                 lc_str *out);
+
+/* ------------------------------------------------------------------ */
+/* Judging a solution                                                  */
+/* ------------------------------------------------------------------ */
+
+typedef struct lc_judge_options {
+    const char *std;          /* the standard, as for lc_std_resolve */
+    int sanitize;             /* build with AddressSanitizer and UBSan */
+    int examples;             /* run the pack's @example cases */
+    int all;                  /* run every case of the pack (overrides
+                                 `examples`) */
+    const lc_cases *cases;    /* cases of your own to run after those, or
+                                 NULL; see lc_load_user_cases */
+    int stop_on_failure;      /* stop after the first case not accepted */
+} lc_judge_options;
+
+/*
+ * Builds the solution in `src` (an existing file) for problem `p` in
+ * `lang`, then runs it against the cases `opts` asks for and returns the
+ * report. Events report the build and each case. Your cases without an
+ * expected result get it from the pack's reference solution (ref.c or
+ * ref.cpp), which is built first.
+ *
+ * A solution that doesn't compile is not a failure of lc_judge: it returns
+ * LC_OK and a report whose verdict is Compile Error, with no results.
+ * lc_judge fails for a problem lc can't judge yet, a case that doesn't fit
+ * the signature, a compiler that can't be run, an unknown or unsupported
+ * standard, and a reference solution that is missing, doesn't compile or
+ * fails on a case.
+ */
+int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+             const char *src, const lc_judge_options *opts,
+             const lc_hooks *hooks, lc_report **out);
+
+/* ------------------------------------------------------------------ */
+/* Workspace (docs/workspace.md)                                       */
+/* ------------------------------------------------------------------ */
+
+/* The workspace directory (see lc_options.workspace_dir), or NULL with an
+ * error when there is no HOME to put it in. Valid until lc_close. */
+const char *lc_workspace_dir(lc_ctx *ctx);
+
+/* <workspace>/NNNN-slug, the problem's directory there. */
+int lc_problem_workspace(lc_ctx *ctx, const lc_problem *p, lc_str *out);
+
+/* <workspace>/NNNN-slug/solution.<ext>. */
+int lc_solution_path(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+                     lc_str *out);
+
+/* What lc_start did. Release it with lc_start_info_free. */
+typedef struct lc_start_info {
+    lc_str dir;               /* the problem's directory */
+    lc_str solution;          /* the solution file */
+    lc_str readme;            /* README.md */
+    lc_str cases;             /* cases.txt */
+    int created_solution;     /* 1 if the solution file is new */
+    int created_cases;        /* 1 if cases.txt is new */
+} lc_start_info;
+
+void lc_start_info_free(lc_start_info *info);
+
+/*
+ * Sets up the problem's directory in the workspace: README.md with the
+ * statement and examples (rewritten every time), the solution file with
+ * the stub and cases.txt (both only if missing: they are yours), and at
+ * the top of the workspace a .clangd file and copies of the preludes it
+ * points at, so that clangd understands solution files. A .clangd that lc
+ * didn't write is left alone, with a warning.
+ */
+int lc_start(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
+             lc_start_info *out);
+
+/* Appends the README.md text of a problem: its title, statement and
+ * examples as markdown. `cases` (may be NULL) supplies the examples. */
+int lc_readme(lc_ctx *ctx, const lc_problem *p, const lc_cases *cases,
+              lc_str *out);
 
 /* ------------------------------------------------------------------ */
 /* Markdown (the subset described in docs/problem-format.md)           */

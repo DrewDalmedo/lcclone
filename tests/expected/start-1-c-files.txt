@@ -1,0 +1,8 @@
+--- 0001-two-sum/solution.c
+/**
+ * Note: return an array of *returnSize elements. It must be malloced;
+ * the caller frees it.
+ */
+int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
+
+}

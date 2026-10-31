@@ -1,0 +1,23 @@
+== C stub
+/**
+ * Note: return an array of *returnSize elements. It must be malloced;
+ * the caller frees it.
+ */
+int* anyOrder(int n, int* returnSize) {
+
+}
+== C prototype
+int* anyOrder(int n, int* returnSize)
+== C harness
+error: problem 10 (checker): compare: checker is not supported yet
+== C++ stub
+class Solution {
+public:
+    vector<int> anyOrder(int n) {
+
+    }
+};
+== C++ prototype
+vector<int> Solution::anyOrder(int n)
+== C++ harness
+error: problem 10 (checker): compare: checker is not supported yet

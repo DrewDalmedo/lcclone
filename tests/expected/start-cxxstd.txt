@@ -1,0 +1,4 @@
+--- stdout
+@TMP@/ws3/0020-valid-parentheses/solution.cpp
+--- stderr
+--- exit 0

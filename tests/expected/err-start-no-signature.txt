@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: problem 3 (no-signature) has no signature, so there is nothing to start from
+--- exit 3

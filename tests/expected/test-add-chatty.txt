@@ -1,0 +1,26 @@
+--- stdout
+Building tests/fixtures/judge/0010-add/chatty.c (C, c11)
+  Example 1  Wrong Answer              N ms
+  Example 2  Wrong Answer              N ms
+
+tests/fixtures/judge/0010-add/chatty.c:1: Wrong Answer on example 1
+  Input:    a = 1, b = 2
+  Output:   -1
+  Expected: 3
+  Stdout:
+    a=1
+  Stderr:
+    b=2
+
+tests/fixtures/judge/0010-add/chatty.c:1: Wrong Answer on example 2
+  Input:    a = -5, b = 5
+  Output:   -10
+  Expected: 0
+  Stdout:
+    a=-5
+  Stderr:
+    b=5
+
+Wrong Answer: 0/2 cases passed
+--- stderr
+--- exit 1

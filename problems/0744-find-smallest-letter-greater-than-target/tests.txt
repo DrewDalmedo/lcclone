@@ -1,0 +1,48 @@
+# Find Smallest Letter Greater Than Target.
+
+@example "d" itself doesn't count; the next letter after it is "h".
+["b","d","h"]
+"d"
+=> "h"
+
+@example Every letter comes after "a", and "b" is the smallest of them.
+["b","d","h"]
+"a"
+=> "b"
+
+@example Nothing comes after "h", so the answer is the first letter.
+["b","d","h"]
+"h"
+=> "b"
+
+# Repeated letters.
+["a","a","c","c"]
+"a"
+=> "c"
+
+["m","n","n","p"]
+"n"
+=> "p"
+
+["a","a","b","b","b"]
+"b"
+=> "a"
+
+# A target past every letter.
+["e","f"]
+"z"
+=> "e"
+
+# A target that isn't in the list.
+["a","z"]
+"y"
+=> "z"
+
+["c","g","k","o"]
+"h"
+=> "k"
+
+# The first and last letters of the alphabet.
+["a","z"]
+"a"
+=> "z"

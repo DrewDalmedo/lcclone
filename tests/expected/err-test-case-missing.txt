@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: cannot open 'tests/fixtures/judge/0010-add/nope.txt': No such file or directory
+--- exit 3

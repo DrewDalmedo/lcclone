@@ -1,0 +1,23 @@
+# Add: a + b. Small limits keep the slow fixtures quick.
+
+@example One and two make three.
+1
+2
+=> 3
+
+@example
+-5
+5
+=> 0
+
+100
+23
+=> 123
+
+-1000
+-1
+=> -1001
+
+2147483646
+1
+=> 2147483647

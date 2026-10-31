@@ -1,0 +1,4 @@
+--- stdout
+@TMP@/ws/0867-transpose-matrix/solution.c
+--- stderr
+--- exit 0

@@ -1,0 +1,13 @@
+--- stdout
+Building tests/fixtures/judge/0010-add/wrong.c (C, c11)
+  Example 1  Accepted                  N ms
+  Example 2  Wrong Answer              N ms
+
+tests/fixtures/judge/0010-add/wrong.c:1: Wrong Answer on example 2
+  Input:    a = -5, b = 5
+  Output:   -10
+  Expected: 0
+
+Wrong Answer: 1/2 cases passed
+--- stderr
+--- exit 1

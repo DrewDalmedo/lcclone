@@ -112,9 +112,11 @@ static int parse_error(lc_ctx *ctx, const char *file, int line,
     return error_status(ctx, LC_ERR_PARSE);
 }
 
-/* Copies the pending input lines into a new case at the end of *items. */
-static int add_case(lc_arena *a, lc_case **items, size_t *n, size_t *cap,
-                    const span *args, size_t nargs, span expected)
+/* Copies the pending input lines into a new case at the end of *items.
+ * `expected` is NULL for a case of your own without one. */
+static int end_case(lc_arena *a, lc_case **items, size_t *n, size_t *cap,
+                    const span *args, size_t nargs, const span *expected,
+                    int example, int line, const char *file)
 {
     lc_case *tmp = lc_grow(*items, cap, *n + 1, sizeof **items);
     char **copy;
@@ -134,15 +136,25 @@ static int add_case(lc_arena *a, lc_case **items, size_t *n, size_t *cap,
     memset(&tmp[*n], 0, sizeof tmp[*n]);
     tmp[*n].args = (const char *const *)copy;
     tmp[*n].nargs = nargs;
-    tmp[*n].expected = lc_arena_strndup(a, expected.p, expected.n);
-    if (!tmp[*n].expected)
-        return LC_ERR_NOMEM;
+    tmp[*n].example = example;
+    tmp[*n].line = line;
+    tmp[*n].file = file;
+    if (expected) {
+        tmp[*n].expected = lc_arena_strndup(a, expected->p, expected->n);
+        if (!tmp[*n].expected)
+            return LC_ERR_NOMEM;
+    }
     (*n)++;
     return LC_OK;
 }
 
-int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
-                   const char *filename, lc_cases **out)
+/*
+ * Parses tests.txt, or with `user` set a file of your own cases, where
+ * "=> expected" may be left out (a blank line or the end of the file then
+ * ends the case) and @example is not allowed.
+ */
+static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
+                       const char *filename, int user, lc_cases **out)
 {
     cases_box *box;
     lc_case *items = NULL, *final;
@@ -166,6 +178,11 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
     box = calloc(1, sizeof *box);
     if (!box)
         return lc_oom(ctx);
+    filename = lc_arena_strdup(&box->arena, filename);
+    if (!filename) {
+        free(box);
+        return lc_oom(ctx);
+    }
 
     p = text ? text : "";
     end = p + len;
@@ -182,7 +199,16 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
             goto fail;
         }
         if (ln.n == 0) {
-            if (nargs || noinput) {
+            if ((nargs || noinput) && user) {
+                rc = end_case(&box->arena, &items, &nitems, &capitems, args,
+                              nargs, NULL, 0, case_line, filename);
+                if (rc != LC_OK) {
+                    rc = lc_oom(ctx);
+                    goto fail;
+                }
+                nargs = 0;
+                noinput = 0;
+            } else if (nargs || noinput) {
                 rc = parse_error(ctx, filename, lineno, "blank line inside a "
                                  "case (missing '=>'?)");
                 goto fail;
@@ -200,6 +226,11 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
                 rc = parse_error(ctx, filename, lineno, "unknown directive "
                                  "'%.*s%s'", quote_len(ln.p, w), ln.p,
                                  w > QUOTE_MAX ? "..." : "");
+                goto fail;
+            }
+            if (user) {
+                rc = parse_error(ctx, filename, lineno, "@example is only "
+                                 "for a problem's tests.txt");
                 goto fail;
             }
             if (nargs || noinput) {
@@ -237,14 +268,12 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
                 rc = parse_error(ctx, filename, lineno, "nothing after '=>'");
                 goto fail;
             }
-            if (add_case(&box->arena, &items, &nitems, &capitems, args, nargs,
-                         expected) != LC_OK) {
+            if (end_case(&box->arena, &items, &nitems, &capitems, args, nargs,
+                         &expected, example, case_line, filename) != LC_OK) {
                 rc = lc_oom(ctx);
                 goto fail;
             }
             items[nitems - 1].explanation = explanation;
-            items[nitems - 1].example = example;
-            items[nitems - 1].line = case_line;
             nargs = 0;
             noinput = 0;
             example = 0;
@@ -284,7 +313,13 @@ int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
             args[nargs++] = ln;
         }
     }
-    if (nargs || noinput) {
+    if ((nargs || noinput) && user) {
+        if (end_case(&box->arena, &items, &nitems, &capitems, args, nargs,
+                     NULL, 0, case_line, filename) != LC_OK) {
+            rc = lc_oom(ctx);
+            goto fail;
+        }
+    } else if (nargs || noinput) {
         rc = parse_error(ctx, filename, case_line, "case has no '=>' line");
         goto fail;
     }
@@ -313,6 +348,41 @@ fail:
     free(args);
     lc_arena_free(&box->arena);
     free(box);
+    return rc;
+}
+
+int lc_parse_cases(lc_ctx *ctx, const char *text, size_t len,
+                   const char *filename, lc_cases **out)
+{
+    return parse_cases(ctx, text, len, filename, 0, out);
+}
+
+int lc_load_user_cases(lc_ctx *ctx, const char *path, lc_cases **out)
+{
+    lc_str text = LC_STR_INIT;
+    struct stat st;
+    int rc;
+
+    if (!out)
+        return error_status(ctx, lc_set_error(ctx, LC_ERR_INVALID,
+                                              "lc_load_user_cases: no "
+                                              "output"));
+    *out = NULL;
+    if (!path)
+        return error_status(ctx, lc_set_error(ctx, LC_ERR_INVALID,
+                                              "lc_load_user_cases: no "
+                                              "path"));
+    /* Only a regular file, as for tests.txt. */
+    if (stat(path, &st) == 0 && !S_ISREG(st.st_mode))
+        return error_status(ctx, lc_set_error(ctx, LC_ERR_IO, "cannot read "
+                                              "'%s': not a regular file",
+                                              path));
+    rc = lc_read_file(ctx, path, LC_MAX_TESTS_TXT, &text);
+    if (rc == LC_OK)
+        rc = parse_cases(ctx, text.data, text.len, path, 1, out);
+    else
+        rc = error_status(ctx, rc);
+    lc_str_free(&text);
     return rc;
 }
 
@@ -378,6 +448,10 @@ static int case_error(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
 {
     if (rc != LC_ERR_PARSE)
         return rc;
+    if (c->file)
+        return error_status(ctx, lc_set_error(ctx, rc, "%s:%d: %s: %s",
+                                              c->file, c->line, what,
+                                              lc_last_error(ctx)));
     return error_status(ctx, lc_set_error(ctx, rc, "%s/tests.txt:%d: %s: %s",
                                           p->dir, c->line, what,
                                           lc_last_error(ctx)));
@@ -411,11 +485,20 @@ int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
             lc_str_free(&names);
             return lc_oom(ctx);
         }
-        rc = lc_set_error(ctx, LC_ERR_PARSE, "%s/tests.txt:%d: case has %lu "
-                          "input%s, expected %lu%s%s%s", p->dir, c->line,
-                          (unsigned long)c->nargs, c->nargs == 1 ? "" : "s",
-                          (unsigned long)want, want ? " (" : "",
-                          lc_str_cstr(&names), want ? ")" : "");
+        if (c->file)
+            rc = lc_set_error(ctx, LC_ERR_PARSE, "%s:%d: case has %lu "
+                              "input%s, expected %lu%s%s%s", c->file, c->line,
+                              (unsigned long)c->nargs,
+                              c->nargs == 1 ? "" : "s", (unsigned long)want,
+                              want ? " (" : "", lc_str_cstr(&names),
+                              want ? ")" : "");
+        else
+            rc = lc_set_error(ctx, LC_ERR_PARSE, "%s/tests.txt:%d: case has "
+                              "%lu input%s, expected %lu%s%s%s", p->dir,
+                              c->line, (unsigned long)c->nargs,
+                              c->nargs == 1 ? "" : "s", (unsigned long)want,
+                              want ? " (" : "", lc_str_cstr(&names),
+                              want ? ")" : "");
         lc_str_free(&names);
         return error_status(ctx, rc);
     }
@@ -439,11 +522,14 @@ int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
         }
         vals[i] = *v;
     }
-    rc = lc_value_parse(ctx, pool,
-                        sig && sig->ret.kind != LC_T_VOID ? &sig->ret : NULL,
-                        c->expected, strlen(c->expected), expected);
-    if (rc != LC_OK)
-        return case_error(ctx, p, c, "expected output", rc);
+    if (c->expected) {
+        rc = lc_value_parse(ctx, pool,
+                            sig && sig->ret.kind != LC_T_VOID ? &sig->ret
+                                                              : NULL,
+                            c->expected, strlen(c->expected), expected);
+        if (rc != LC_OK)
+            return case_error(ctx, p, c, "expected output", rc);
+    }
     *args = vals;
     return LC_OK;
 }

@@ -9,3 +9,5 @@
 /tests/fixtures/run/twosum
 /.datadir
 /.datadir.tmp
+/src/core/rt_files.c
+/src/core/rt_files.c.tmp

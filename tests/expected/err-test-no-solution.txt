@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: no C++ solution in @TMP@/ws4/0010-add (run 'lc start 10 --lang cpp' to create one)
+--- exit 3

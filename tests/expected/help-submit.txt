@@ -1,0 +1,17 @@
+--- stdout
+usage: lc submit [<solution>] [--lang LANG] [--std STD] [--sanitize] [--json] [--color=WHEN]
+
+Build your solution and run it on every case of the problem, hidden
+ones included, stopping at the first that fails. <solution> is as
+for 'lc test'.
+
+Options:
+  --lang LANG        c or cpp, when a directory has both solutions
+  --std STD          the standard, as for 'lc test'
+  --sanitize         build with AddressSanitizer and UBSan
+  --json             print JSON Lines: one object per event
+  --color=WHEN       colour the output: auto (the default), always or
+                     never
+  -h, --help         show this help
+--- stderr
+--- exit 0

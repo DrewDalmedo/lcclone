@@ -1,0 +1,38 @@
+== C stub
+char* hello() {
+
+}
+== C prototype
+char* hello()
+== C harness
+/* lc's harness for problem 4 (no-params). */
+int main(void)
+{
+    lc_rt_read_input();
+    lc_rt_end_input();
+    char* lc_ret = hello();
+    lc_write_string("hello", lc_ret);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+class Solution {
+public:
+    string hello() {
+
+    }
+};
+== C++ prototype
+string Solution::hello()
+== C++ harness
+// lc's harness for problem 4 (no-params).
+int main()
+{
+    lc_rt_read_input();
+    lc_rt_end_input();
+    Solution *lc_sol = new Solution();
+    std::string lc_ret = lc_sol->hello();
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}

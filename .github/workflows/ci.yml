@@ -158,6 +158,13 @@ jobs:
           "$lc" show 1 | grep 'Two Sum'
           "$lc" list --json | grep '"two-sum"'
           "$lc" show 104 --json | grep '"maximum-depth-of-binary-tree"'
+          # Solve a problem with the installed lc: the harness runtime is
+          # built into lc, and the packs' reference solutions are installed.
+          "$lc" start 1 --lang c --no-edit
+          cp "$RUNNER_TEMP/inst/share/lcclone/problems/0001-two-sum/ref.c" \
+            "$HOME/lc/0001-two-sum/solution.c"
+          "$lc" submit 1
+          (cd "$HOME/lc/0001-two-sum" && "$lc" test)
       - name: Staged install with DESTDIR
         run: |
           # PREFIX is compiled into lc. No "make clean" here: changing PREFIX

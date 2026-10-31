@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: unknown C standard 'c++17' (expected c99, c11, c17, c23 or max)
+--- exit 3

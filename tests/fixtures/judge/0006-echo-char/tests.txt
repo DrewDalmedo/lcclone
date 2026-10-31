@@ -1,0 +1,8 @@
+# Echo char[][]: the result must be the input, exactly.
+
+@example
+[["a"," ","\"","\\","~"],["0"]]
+=> [["a"," ","\"","\\","~"],["0"]]
+
+[["\t","\n"]]
+=> [["\t","\n"]]

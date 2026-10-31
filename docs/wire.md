@@ -4,8 +4,9 @@
 "Literals"). What it hands a solution's harness, and what the harness hands
 back, is a simpler format that takes a few lines of C to read and write: the
 wire format. `lc_wire_encode` and `lc_wire_decode` in `include/lc.h`
-implement it on the `lc` side; the harness runtimes (`lc_rt.c`,
-`lc_rt.cpp`, milestone M3) implement the other side.
+implement it on the `lc` side; the harness runtimes in `runtime/`
+(`common/lc_rt_core.h` with `c/lc_rt.c` or `cpp/lc_rt.cpp`) implement the
+other side.
 
 ## Shape
 

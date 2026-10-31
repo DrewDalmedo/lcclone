@@ -1,0 +1,39 @@
+# Climbing Stairs.
+
+@example The five sequences are 1+1+1+1, 1+1+2, 1+2+1, 2+1+1 and 2+2.
+4
+=> 5
+
+@example The only way is a single one-step move.
+1
+=> 1
+
+@example 1+1, or a single two-step move.
+2
+=> 2
+
+3
+=> 3
+
+5
+=> 8
+
+6
+=> 13
+
+10
+=> 89
+
+20
+=> 10946
+
+30
+=> 1346269
+
+# Large enough that a plain recursion without memoization is far too slow.
+44
+=> 1134903170
+
+# The largest n; the answer still fits in a 32-bit int.
+45
+=> 1836311903
