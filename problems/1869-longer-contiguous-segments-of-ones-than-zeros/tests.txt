@@ -1,0 +1,103 @@
+# Longer Contiguous Segments of Ones than Zeros.
+
+@example The longest block of 1s, 111, is longer than the longest block of 0s, 00.
+"0011101"
+=> true
+
+@example s holds six 1s and five 0s, but its longest block of 0s (000) beats every block of 1s (11).
+"11011011000"
+=> false
+
+@example Both longest blocks have length 2, and a tie gives false.
+"001011"
+=> false
+
+# A single character.
+"1"
+=> true
+
+"0"
+=> false
+
+# No 0 at all, so zeros is 0; no 1 at all, so ones is 0.
+"1111"
+=> true
+
+"000"
+=> false
+
+# Every block has length 1: a tie.
+"0101010101"
+=> false
+
+# A tie at length 3; the second block of 1s must not add on to the first.
+"1110001"
+=> false
+
+# The longest block of all ends s.
+"1101000"
+=> false
+
+# The longest block of 1s ends s and beats the 0s by one: the last
+# character must count.
+"0100110001111"
+=> true
+
+# Fewer 1s than 0s in all, but the longest block is of 1s.
+"0100111010010"
+=> true
+
+# Four blocks of 1s against three of 0s: lengths count, not blocks.
+"1010100001"
+=> false
+
+# The longest block of 1s is neither the first nor the last of them.
+"1001110010"
+=> true
+
+# 100 characters: one 0, then 99 1s up to the end.
+"0111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+=> true
+
+# 100 characters: 99 0s, then one 1.
+"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"0110111"
+=> true
+
+@gen 2 small
+"00000"
+=> false
+
+@gen 3 small
+"00011001"
+=> false
+
+@gen 7 small
+"110011"
+=> false
+
+@gen 5 small
+"110100"
+=> false
+
+@gen 6 small
+"00"
+=> false
+
+# Full-size cases, 100 characters: one long block, two longest blocks of
+# nearly equal length, and one character mostly in short blocks.
+@gen 2
+"0101011100011000110000111100000000000000000000000000000000000000000000000000010001100010011011000010"
+=> false
+
+@gen 3
+"0001110011001111111111111111111111111111011100011100011010001001000111000000000000000000000000000001"
+=> false
+
+@gen 6
+"1101110110111011110101101111010111101110110111101011110111010101101101010000000010111101110111101111"
+=> false

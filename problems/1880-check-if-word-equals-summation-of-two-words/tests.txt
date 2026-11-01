@@ -1,0 +1,161 @@
+# Check if Word Equals Summation of Two Words.
+
+@example bcd is 123 and eff is 455; their sum, 578, is what fhi encodes.
+"bcd"
+"eff"
+"fhi"
+=> true
+
+@example 99 + 1 = 100, but baaa encodes 1000.
+"jj"
+"b"
+"baaa"
+=> false
+
+@example The a's in front are zeros that change nothing: 3 + 4 = 7, and aaaah encodes 7 as well.
+"aad"
+"ae"
+"aaaah"
+=> true
+
+# The shortest words: 0 + 0 = 0.
+"a"
+"a"
+"a"
+=> true
+
+# Words of only a's encode 0, whatever their lengths.
+"aaaa"
+"aa"
+"aaaaaaaa"
+=> true
+
+"aa"
+"aaaaa"
+"aaad"
+=> false
+
+# a is 0, not 1: 1 + 1 = 2.
+"b"
+"b"
+"c"
+=> true
+
+# j is 9.
+"a"
+"j"
+"j"
+=> true
+
+# A carry runs through all seven places, and the sum needs an eighth.
+"jjjjjjj"
+"b"
+"baaaaaaa"
+=> true
+
+# The sum, 100000000, has nine digits, more than a target of 8 letters holds.
+"jjjjjjjj"
+"b"
+"baaaaaaa"
+=> false
+
+# The largest sum, 199999998.
+"jjjjjjjj"
+"jjjjjjjj"
+"jjjjjjjj"
+=> false
+
+# The largest sum against its last eight digits: the carry out of the
+# top place counts.
+"jjjjjjjj"
+"jjjjjjjj"
+"jjjjjjji"
+=> false
+
+# 99999999 + 1 is 100000000, not 0.
+"jjjjjjjj"
+"b"
+"a"
+=> false
+
+# 31000 + 37000 = 68000, not 2464, though the two differ by exactly 65536
+# (16-bit values would wrap them together).
+"dbaaa"
+"dhaaa"
+"cege"
+=> false
+
+# The digits add up to 3 on both sides, but 12 + 0 is not 21.
+"bc"
+"a"
+"cb"
+=> false
+
+# A word longer than the target: 12 + 3 = 15.
+"aaaaaabc"
+"ad"
+"bf"
+=> true
+
+# Words of different lengths line up at their last letters: 123 + 1 = 124.
+"bcd"
+"b"
+"bce"
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"hjc"
+"g"
+"ijh"
+=> false
+
+@gen 2 small
+"aa"
+"gac"
+"agbc"
+=> false
+
+@gen 3 small
+"aaj"
+"jg"
+"abaf"
+=> true
+
+@gen 4 small
+"je"
+"ha"
+"abgd"
+=> false
+
+@gen 5 small
+"a"
+"jb"
+"jb"
+=> true
+
+@gen 6 small
+"g"
+"a"
+"ag"
+=> true
+
+# Full-size cases, words of up to 8 letters: a sum of nine digits, words of
+# random lengths, and a carry across every place of a word of j's.
+@gen 1
+"jhjcjjjj"
+"jjjjjjjf"
+"a"
+=> false
+
+@gen 6
+"ga"
+"aa"
+"aga"
+=> true
+
+@gen 7
+"jjjjjj"
+"jaa"
+"abaaaijj"
+=> true

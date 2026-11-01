@@ -1,0 +1,98 @@
+# Count Square Sum Triples.
+
+@example (3, 4, 5), (6, 8, 10) and (5, 12, 13), each with its first two numbers in either order.
+13
+=> 6
+
+@example No triple fits: the smallest possible c is 5.
+4
+=> 0
+
+@example Eight right triangles fit, two of them with c = 25: 7, 24, 25 and 15, 20, 25.
+25
+=> 16
+
+# The smallest n.
+1
+=> 0
+
+# One below 25: the two triangles with c = 25 drop out.
+24
+=> 12
+
+# 65 is the longest side of four triangles (16, 63), (25, 60), (33, 56)
+# and (39, 52), so going from 64 to 65 adds 8 triples.
+64
+=> 54
+
+65
+=> 62
+
+# Scaled triangles count too: (60, 80, 100), (28, 96, 100).
+100
+=> 104
+
+# 125 is the longest side of three triangles.
+125
+=> 142
+
+200
+=> 254
+
+# Near the top: c = 247 adds one triangle (95, 228), while no triangle
+# has c = 248 or c = 249.
+246
+=> 322
+
+247
+=> 324
+
+249
+=> 324
+
+# n = 250, the most allowed. c = 250 adds three triangles. Legs up to 250
+# with c above 250 must not count: they would make 392.
+250
+=> 330
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+9
+=> 2
+
+@gen 2 small
+17
+=> 10
+
+@gen 3 small
+6
+=> 2
+
+@gen 4 small
+14
+=> 6
+
+@gen 6 small
+22
+=> 12
+
+@gen 8 small
+27
+=> 18
+
+@gen 13 small
+15
+=> 8
+
+# Full-size cases from gen.c: n from 200 to 250.
+@gen 5
+231
+=> 302
+
+@gen 8
+221
+=> 290
+
+@gen 19
+214
+=> 274

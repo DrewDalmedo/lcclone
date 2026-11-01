@@ -1,0 +1,100 @@
+# Sum of All Subset XOR Totals.
+
+@example The four picks give 0 (nothing), 2, 4 and 2 ^ 4 = 6.
+[2,4]
+=> 12
+
+@example Each copy of 7 alone gives 7, and both together give 7 ^ 7 = 0.
+[7,7]
+=> 14
+
+@example The eight XOR totals are 0, 6, 3, 9, 6 ^ 3 = 5, 6 ^ 9 = 15, 3 ^ 9 = 10 and 6 ^ 3 ^ 9 = 12.
+[6,3,9]
+=> 60
+
+# A single number: the picks give 0 and the number.
+[1]
+=> 1
+
+[20]
+=> 20
+
+# 9 ^ 5 is 12; with OR (13), AND (1) or + (14) in its place the sum would
+# be 27, 15 or 28.
+[9,5]
+=> 26
+
+# All equal: only the picks with an odd number of copies count, 4 of them.
+[5,5,5]
+=> 20
+
+# Copies are not merged: the set of values {10, 4} alone would give 28.
+[10,10,4]
+=> 56
+
+# The pick of every position counts too (1 ^ 2 ^ 8 = 11); without it the
+# sum would be 33.
+[1,2,8]
+=> 44
+
+# Twelve ones: 2048 of the 4096 picks have an odd number of them.
+[1,1,1,1,1,1,1,1,1,1,1,1]
+=> 2048
+
+# Twelve copies of 20: the sum is past the largest 16-bit signed integer.
+[20,20,20,20,20,20,20,20,20,20,20,20]
+=> 40960
+
+# The largest sum: 12 numbers whose OR is 31 (16 and 15 among them).
+[16,15,3,9,12,1,20,7,11,2,18,5]
+=> 63488
+
+# Twelve numbers, each of 2, 4 and 8 four times.
+[2,4,8,2,4,8,2,4,8,2,4,8]
+=> 28672
+
+# Numbers with no bits in common: every XOR total is a plain sum.
+[1,2,4,8,16]
+=> 496
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[1,20,20,20,4,13,18]
+=> 1984
+
+@gen 2 small
+[1,1,1,2,3]
+=> 48
+
+@gen 3 small
+[4,10,2,11,3,17,5,18]
+=> 3968
+
+@gen 4 small
+[2,15,9,3]
+=> 120
+
+@gen 5 small
+[20,15,14,12,15,12]
+=> 992
+
+@gen 6 small
+[8,13]
+=> 26
+
+@gen 8 small
+[13,6,5,12,2,8,20]
+=> 1984
+
+# Full size: 12 numbers; two values, any values, and one value repeated.
+@gen 1
+[13,7,13,13,13,13,13,7,13,7,7,7]
+=> 30720
+
+@gen 2
+[9,17,5,17,19,11,18,3,18,20,20,16]
+=> 63488
+
+@gen 3
+[11,11,11,11,11,11,11,11,11,11,11,11]
+=> 22528

@@ -470,34 +470,34 @@
 1800	maximum-ascending-subarray-sum	Maximum Ascending Subarray Sum	easy	no	plain	todo
 1805	number-of-different-integers-in-a-string	Number of Different Integers in a String	easy	no	plain	todo
 1809	ad-free-sessions	Ad-Free Sessions	easy	yes	skip:sql	todo
-1812	determine-color-of-a-chessboard-square	Determine Color of a Chessboard Square	easy	no	plain	todo
-1816	truncate-sentence	Truncate Sentence	easy	no	plain	todo
+1812	determine-color-of-a-chessboard-square	Determine Color of a Chessboard Square	easy	no	plain	draft
+1816	truncate-sentence	Truncate Sentence	easy	no	plain	draft
 1821	find-customers-with-positive-revenue-this-year	Find Customers With Positive Revenue this Year	easy	yes	skip:sql	todo
-1822	sign-of-the-product-of-an-array	Sign of the Product of an Array	easy	no	plain	todo
+1822	sign-of-the-product-of-an-array	Sign of the Product of an Array	easy	no	plain	draft
 1826	faulty-sensor	Faulty Sensor	easy	yes	skip:premium	todo
-1827	minimum-operations-to-make-the-array-increasing	Minimum Operations to Make the Array Increasing	easy	no	plain	todo
-1832	check-if-the-sentence-is-pangram	Check if the Sentence Is Pangram	easy	no	plain	todo
-1837	sum-of-digits-in-base-k	Sum of Digits in Base K	easy	no	plain	todo
-1844	replace-all-digits-with-characters	Replace All Digits with Characters	easy	no	plain	todo
-1848	minimum-distance-to-the-target-element	Minimum Distance to the Target Element	easy	no	plain	todo
+1827	minimum-operations-to-make-the-array-increasing	Minimum Operations to Make the Array Increasing	easy	no	plain	draft
+1832	check-if-the-sentence-is-pangram	Check if the Sentence Is Pangram	easy	no	plain	draft
+1837	sum-of-digits-in-base-k	Sum of Digits in Base K	easy	no	plain	draft
+1844	replace-all-digits-with-characters	Replace All Digits with Characters	easy	no	plain	draft
+1848	minimum-distance-to-the-target-element	Minimum Distance to the Target Element	easy	no	plain	draft
 1853	convert-date-format	Convert Date Format	easy	yes	skip:sql	todo
-1854	maximum-population-year	Maximum Population Year	easy	no	plain	todo
-1859	sorting-the-sentence	Sorting the Sentence	easy	no	plain	todo
-1863	sum-of-all-subset-xor-totals	Sum of All Subset XOR Totals	easy	no	plain	todo
-1869	longer-contiguous-segments-of-ones-than-zeros	Longer Contiguous Segments of Ones than Zeros	easy	no	plain	todo
+1854	maximum-population-year	Maximum Population Year	easy	no	plain	draft
+1859	sorting-the-sentence	Sorting the Sentence	easy	no	plain	draft
+1863	sum-of-all-subset-xor-totals	Sum of All Subset XOR Totals	easy	no	plain	draft
+1869	longer-contiguous-segments-of-ones-than-zeros	Longer Contiguous Segments of Ones than Zeros	easy	no	plain	draft
 1873	calculate-special-bonus	Calculate Special Bonus	easy	no	skip:sql	todo
-1876	substrings-of-size-three-with-distinct-characters	Substrings of Size Three with Distinct Characters	easy	no	plain	todo
-1880	check-if-word-equals-summation-of-two-words	Check if Word Equals Summation of Two Words	easy	no	plain	todo
-1886	determine-whether-matrix-can-be-obtained-by-rotation	Determine Whether Matrix Can Be Obtained By Rotation	easy	no	plain	todo
+1876	substrings-of-size-three-with-distinct-characters	Substrings of Size Three with Distinct Characters	easy	no	plain	draft
+1880	check-if-word-equals-summation-of-two-words	Check if Word Equals Summation of Two Words	easy	no	plain	draft
+1886	determine-whether-matrix-can-be-obtained-by-rotation	Determine Whether Matrix Can Be Obtained By Rotation	easy	no	plain	draft
 1890	the-latest-login-in-2020	The Latest Login in 2020	easy	no	skip:sql	todo
-1893	check-if-all-the-integers-in-a-range-are-covered	Check if All the Integers in a Range Are Covered	easy	no	plain	todo
-1897	redistribute-characters-to-make-all-strings-equal	Redistribute Characters to Make All Strings Equal	easy	no	plain	todo
-1903	largest-odd-number-in-string	Largest Odd Number in String	easy	no	plain	todo
-1909	remove-one-element-to-make-the-array-strictly-increasing	Remove One Element to Make the Array Strictly Increasing	easy	no	plain	todo
-1913	maximum-product-difference-between-two-pairs	Maximum Product Difference Between Two Pairs	easy	no	plain	todo
-1920	build-array-from-permutation	Build Array from Permutation	easy	no	plain	todo
-1925	count-square-sum-triples	Count Square Sum Triples	easy	no	plain	todo
-1929	concatenation-of-array	Concatenation of Array	easy	no	plain	todo
+1893	check-if-all-the-integers-in-a-range-are-covered	Check if All the Integers in a Range Are Covered	easy	no	plain	draft
+1897	redistribute-characters-to-make-all-strings-equal	Redistribute Characters to Make All Strings Equal	easy	no	plain	draft
+1903	largest-odd-number-in-string	Largest Odd Number in String	easy	no	plain	draft
+1909	remove-one-element-to-make-the-array-strictly-increasing	Remove One Element to Make the Array Strictly Increasing	easy	no	plain	draft
+1913	maximum-product-difference-between-two-pairs	Maximum Product Difference Between Two Pairs	easy	no	plain	draft
+1920	build-array-from-permutation	Build Array from Permutation	easy	no	plain	draft
+1925	count-square-sum-triples	Count Square Sum Triples	easy	no	plain	draft
+1929	concatenation-of-array	Concatenation of Array	easy	no	plain	draft
 1933	check-if-string-is-decomposable-into-value-equal-substrings	Check if String Is Decomposable Into Value-Equal Substrings	easy	yes	skip:premium	todo
 1935	maximum-number-of-words-you-can-type	Maximum Number of Words You Can Type	easy	no	plain	todo
 1939	users-that-actively-request-confirmation-messages	Users That Actively Request Confirmation Messages	easy	yes	skip:sql	todo

@@ -1,0 +1,98 @@
+# Sorting the Sentence.
+
+@example The digits say Zoe comes first and cat last. Sorting the words alphabetically would give another order.
+"cat4 the3 Zoe1 fed2"
+=> "Zoe fed the cat"
+
+@example A single word only loses its digit.
+"Stop1"
+=> "Stop"
+
+@example A word can occur more than once; each copy goes back to its own place.
+"no3 Oh1 no2"
+=> "Oh no no"
+
+# The shortest input.
+"a1"
+=> "a"
+
+# Nine words of one letter, in reverse order.
+"i9 h8 g7 f6 e5 d4 c3 b2 a1"
+=> "a b c d e f g h i"
+
+# Already in order.
+"We1 are2 home3"
+=> "We are home"
+
+# Alphabetical order (Fig banana pear), order ignoring case (banana Fig
+# pear) and order of length (Fig pear banana) are all wrong.
+"banana3 pear1 Fig2"
+=> "pear Fig banana"
+
+# Upper and lower case anywhere in a word stay as they are.
+"sTaY3 mUsT2 yOu1"
+=> "yOu mUsT sTaY"
+
+# The same word three times, at different places.
+"la4 Tra1 la2 la3"
+=> "Tra la la la"
+
+# Two words that differ only in case.
+"Ab2 aB1"
+=> "aB Ab"
+
+# Digit 9 first and digit 1 last, with words of several lengths.
+"gone9 It1 was2 here3 a4 minute5 ago6 and7 now8"
+=> "It was here a minute ago and now gone"
+
+# One word of 199 letters: s has the largest length.
+"ahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnuBIPWdkryFMTahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnuBIPWdkryFMTahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnuBIPWdkryFMTahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnuBI1"
+=> "ahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnuBIPWdkryFMTahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnuBIPWdkryFMTahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnuBIPWdkryFMTahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnuBI"
+
+# Nine words of 17 to 25 letters, shuffled: s has 200 characters.
+"SYgjovxBHPSXegkqyBGN5 KQYbgnptzHKPWYciqt9 agorwDFJPXafmosyGJOVXbhps1 ouCFKRTXdlotACGMU7 wCKNSZbfltwBIKOUcfkrt3 zFNQVceiowzELNRXfinuwAG8 lrzCHOQUailqxzDJRU2 djruzGIMSadiprvBJMRYae6 HNVYdkmqwEHMTVZfnqv4"
+=> "agorwDFJPXafmosyGJOVXbhps lrzCHOQUailqxzDJRU wCKNSZbfltwBIKOUcfkrt HNVYdkmqwEHMTVZfnqv SYgjovxBHPSXegkqyBGN djruzGIMSadiprvBJMRYae ouCFKRTXdlotACGMU zFNQVceiowzELNRXfinuwAG KQYbgnptzHKPWYciqt"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"BB2 baB1"
+=> "baB BB"
+
+@gen 2 small
+"aaa1"
+=> "aaa"
+
+@gen 3 small
+"aBb1"
+=> "aBb"
+
+@gen 4 small
+"aaA3 aA2 Ab1"
+=> "Ab aA aaA"
+
+@gen 5 small
+"bB2 BB1"
+=> "BB bB"
+
+@gen 6 small
+"AB1 bBa2 AbB3 BA4 a5"
+=> "AB bBa AbB BA a"
+
+@gen 7 small
+"AaA3 aB5 aBB4 aAb2 AA1"
+=> "AA aAb AaA aBB aB"
+
+# Full size: s has 200 characters; shuffled, every word the same, and
+# reversed.
+@gen 2
+"DbqzRHNkaznjVcsddxKwXIzXX3 QVsdeKPsgxtnwYyhJVf6 bBfIzmFEIOeBqjsJewW2 HHDwNOnEAHNBgtJkOmhUTpZgLvRTsSdsG1 rtHqgSHSGgoZEuxCUhkhcldjrjA4 KrkcwLuIvEVXMAcjmTTA8 IWTMawkzsofRhsVngrACI5 uzKXqrEcpvVwQsndFSSsP7"
+=> "HHDwNOnEAHNBgtJkOmhUTpZgLvRTsSdsG bBfIzmFEIOeBqjsJewW DbqzRHNkaznjVcsddxKwXIzXX rtHqgSHSGgoZEuxCUhkhcldjrjA IWTMawkzsofRhsVngrACI QVsdeKPsgxtnwYyhJVf uzKXqrEcpvVwQsndFSSsP KrkcwLuIvEVXMAcjmTTA"
+
+@gen 8
+"VEveHitrxRFNZtkITJucyhwYjtJKfTcliAWyxAedJDqJnPpLrfeoHpohvqwBuWvQC1 VEveHitrxRFNZtkITJucyhwYjtJKfTcliAWyxAedJDqJnPpLrfeoHpohvqwBuWvQC3 VEveHitrxRFNZtkITJucyhwYjtJKfTcliAWyxAedJDqJnPpLrfeoHpohvqwBuWvQC2"
+=> "VEveHitrxRFNZtkITJucyhwYjtJKfTcliAWyxAedJDqJnPpLrfeoHpohvqwBuWvQC VEveHitrxRFNZtkITJucyhwYjtJKfTcliAWyxAedJDqJnPpLrfeoHpohvqwBuWvQC VEveHitrxRFNZtkITJucyhwYjtJKfTcliAWyxAedJDqJnPpLrfeoHpohvqwBuWvQC"
+
+@gen 9
+"ZZcQlqwoMRbCOIFfCduRMnaD8 KompdPKyrnhzKRetyewR7 peLqfTFZGxLKVXwyPqb6 CkXPatOwdWEgUJxeRNvVJd5 AnsXdcyXfkUyiHjwixClEHdUKipIvBikU4 YqoMLDVDMwMZYkIpqedVG3 fcjGjUpgCpwQkJqYmAKtwpOuM2 LZFSXbbUAkPEDtOwVOYzD1"
+=> "LZFSXbbUAkPEDtOwVOYzD fcjGjUpgCpwQkJqYmAKtwpOuM YqoMLDVDMwMZYkIpqedVG AnsXdcyXfkUyiHjwixClEHdUKipIvBikU CkXPatOwdWEgUJxeRNvVJd peLqfTFZGxLKVXwyPqb KompdPKyrnhzKRetyewR ZZcQlqwoMRbCOIFfCduRMnaD"
+
