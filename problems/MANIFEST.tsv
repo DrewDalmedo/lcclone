@@ -829,37 +829,37 @@
 3238	find-the-number-of-winning-players	Find the Number of Winning Players	easy	no	plain	todo
 3242	design-neighbor-sum-service	Design Neighbor Sum Service	easy	no	design	todo
 3246	premier-league-table-ranking	Premier League Table Ranking	easy	yes	skip:sql	todo
-3248	snake-in-matrix	Snake in Matrix	easy	no	plain	todo
-3258	count-substrings-that-satisfy-k-constraint-i	Count Substrings That Satisfy K-Constraint I	easy	no	plain	todo
+3248	snake-in-matrix	Snake in Matrix	easy	no	plain	draft
+3258	count-substrings-that-satisfy-k-constraint-i	Count Substrings That Satisfy K-Constraint I	easy	no	plain	draft
 3263	convert-doubly-linked-list-to-array-i	Convert Doubly Linked List to Array I	easy	yes	skip:premium	todo
-3264	final-array-state-after-k-multiplication-operations-i	Final Array State After K Multiplication Operations I	easy	no	plain	todo
-3270	find-the-key-of-the-numbers	Find the Key of the Numbers	easy	no	plain	todo
-3274	check-if-two-chessboard-squares-have-the-same-color	Check if Two Chessboard Squares Have the Same Color	easy	no	plain	todo
-3280	convert-date-to-binary	Convert Date to Binary	easy	no	plain	todo
+3264	final-array-state-after-k-multiplication-operations-i	Final Array State After K Multiplication Operations I	easy	no	plain	draft
+3270	find-the-key-of-the-numbers	Find the Key of the Numbers	easy	no	plain	draft
+3274	check-if-two-chessboard-squares-have-the-same-color	Check if Two Chessboard Squares Have the Same Color	easy	no	plain	draft
+3280	convert-date-to-binary	Convert Date to Binary	easy	no	plain	draft
 3285	find-indices-of-stable-mountains	Find Indices of Stable Mountains	easy	no	unordered	draft
 3289	the-two-sneaky-numbers-of-digitville	The Two Sneaky Numbers of Digitville	easy	no	unordered	draft
-3300	minimum-element-after-replacement-with-digit-sum	Minimum Element After Replacement With Digit Sum	easy	no	plain	todo
-3304	find-the-k-th-character-in-string-game-i	Find the K-th Character in String Game I	easy	no	plain	todo
-3314	construct-the-minimum-bitwise-array-i	Construct the Minimum Bitwise Array I	easy	no	plain	todo
-3318	find-x-sum-of-all-k-long-subarrays-i	Find X-Sum of All K-Long Subarrays I	easy	no	plain	todo
-3330	find-the-original-typed-string-i	Find the Original Typed String I	easy	no	plain	todo
-3340	check-balanced-string	Check Balanced String	easy	no	plain	todo
-3345	smallest-divisible-digit-product-i	Smallest Divisible Digit Product I	easy	no	plain	todo
-3349	adjacent-increasing-subarrays-detection-i	Adjacent Increasing Subarrays Detection I	easy	no	plain	todo
+3300	minimum-element-after-replacement-with-digit-sum	Minimum Element After Replacement With Digit Sum	easy	no	plain	draft
+3304	find-the-k-th-character-in-string-game-i	Find the K-th Character in String Game I	easy	no	plain	draft
+3314	construct-the-minimum-bitwise-array-i	Construct the Minimum Bitwise Array I	easy	no	plain	draft
+3318	find-x-sum-of-all-k-long-subarrays-i	Find X-Sum of All K-Long Subarrays I	easy	no	plain	draft
+3330	find-the-original-typed-string-i	Find the Original Typed String I	easy	no	plain	draft
+3340	check-balanced-string	Check Balanced String	easy	no	plain	draft
+3345	smallest-divisible-digit-product-i	Smallest Divisible Digit Product I	easy	no	plain	draft
+3349	adjacent-increasing-subarrays-detection-i	Adjacent Increasing Subarrays Detection I	easy	no	plain	draft
 3353	minimum-total-operations	Minimum Total Operations	easy	yes	skip:premium	todo
-3354	make-array-elements-equal-to-zero	Make Array Elements Equal to Zero	easy	no	plain	todo
+3354	make-array-elements-equal-to-zero	Make Array Elements Equal to Zero	easy	no	plain	draft
 3358	books-with-null-ratings	Books with NULL Ratings	easy	yes	skip:sql	todo
-3360	stone-removal-game	Stone Removal Game	easy	no	plain	todo
-3364	minimum-positive-sum-subarray	Minimum Positive Sum Subarray	easy	no	plain	todo
-3370	smallest-number-with-all-set-bits	Smallest Number With All Set Bits	easy	no	plain	todo
-3375	minimum-operations-to-make-array-values-equal-to-k	Minimum Operations to Make Array Values Equal to K	easy	no	plain	todo
-3379	transformed-array	Transformed Array	easy	no	plain	todo
-3386	button-with-longest-push-time	Button with Longest Push Time	easy	no	plain	todo
-3392	count-subarrays-of-length-three-with-a-condition	Count Subarrays of Length Three With a Condition	easy	no	plain	todo
-3396	minimum-number-of-operations-to-make-elements-in-array-distinct	Minimum Number of Operations to Make Elements in Array Distinct	easy	no	plain	todo
-3402	minimum-operations-to-make-columns-strictly-increasing	Minimum Operations to Make Columns Strictly Increasing	easy	no	plain	todo
-3407	substring-matching-pattern	Substring Matching Pattern	easy	no	plain	todo
-3411	maximum-subarray-with-equal-products	Maximum Subarray With Equal Products	easy	no	plain	todo
+3360	stone-removal-game	Stone Removal Game	easy	no	plain	draft
+3364	minimum-positive-sum-subarray	Minimum Positive Sum Subarray	easy	no	plain	draft
+3370	smallest-number-with-all-set-bits	Smallest Number With All Set Bits	easy	no	plain	draft
+3375	minimum-operations-to-make-array-values-equal-to-k	Minimum Operations to Make Array Values Equal to K	easy	no	plain	draft
+3379	transformed-array	Transformed Array	easy	no	plain	draft
+3386	button-with-longest-push-time	Button with Longest Push Time	easy	no	plain	draft
+3392	count-subarrays-of-length-three-with-a-condition	Count Subarrays of Length Three With a Condition	easy	no	plain	draft
+3396	minimum-number-of-operations-to-make-elements-in-array-distinct	Minimum Number of Operations to Make Elements in Array Distinct	easy	no	plain	draft
+3402	minimum-operations-to-make-columns-strictly-increasing	Minimum Operations to Make Columns Strictly Increasing	easy	no	plain	draft
+3407	substring-matching-pattern	Substring Matching Pattern	easy	no	plain	draft
+3411	maximum-subarray-with-equal-products	Maximum Subarray With Equal Products	easy	no	plain	draft
 3415	find-products-with-three-consecutive-digits	Find Products with Three Consecutive Digits	easy	yes	skip:sql	todo
 3417	zigzag-grid-traversal-with-skip	Zigzag Grid Traversal With Skip	easy	no	plain	todo
 3423	maximum-difference-between-adjacent-elements-in-a-circular-array	Maximum Difference Between Adjacent Elements in a Circular Array	easy	no	plain	todo

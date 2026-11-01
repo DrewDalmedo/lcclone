@@ -1,0 +1,162 @@
+# Find X-Sum of All K-Long Subarrays I.
+
+@example First window: 9 and 4 appear twice, 1 once, so 9 + 9 + 4 + 4 = 26. Last window: 9 twice, and of 4, 1 and 6 (once each) 6 ranks next: 9 + 9 + 6 = 24.
+[4,9,4,1,9,9,6]
+5
+2
+=> [26,31,24]
+
+@example In [1,5,2] each value appears once, so the two largest, 5 and 2, are kept and the 1 is dropped. The other two windows hold only two distinct values, so all of each counts.
+[5,1,5,2,5]
+3
+2
+=> [11,7,12]
+
+@example 1 appears three times and 50 twice, so only the 1s are kept, though 50 is larger.
+[1,1,1,50,50]
+5
+1
+=> [3]
+
+# The smallest input.
+[7]
+1
+1
+=> [7]
+
+# x == k: no window can have more than x distinct values, so each x-sum
+# is the plain sum of its window.
+[5,1,5,2]
+2
+2
+=> [6,6,7]
+
+# k = 1: each window is one element, so the answer is nums itself.
+[50,1,25,1]
+1
+1
+=> [50,1,25,1]
+
+# One window of distinct values with x = 1: only the largest counts.
+[3,10,6,2]
+4
+1
+=> [10]
+
+# All distinct: each window keeps its x largest values.
+[5,1,4,2,3]
+3
+2
+=> [9,6,7]
+
+# Equal counts: the larger value wins, whether it comes first or last in
+# the window.
+[15,15,40,40,15,15]
+4
+1
+=> [80,80,80]
+
+# Three values tie for two places: the two larger ones are kept.
+[1,2,3,3,2,1]
+6
+2
+=> [10]
+
+# x counts distinct values: the three 6s all count, and the tie for second
+# place between 2 and 9 goes to 9.
+[6,6,6,2,9]
+5
+2
+=> [27]
+
+# Count before value: 4 beats 9 in the middle window.
+[9,4,4,9,7,7]
+4
+1
+=> [18,8,14]
+
+# Fewer distinct values than x: the whole window counts.
+[4,4,7,4]
+4
+3
+=> [19]
+
+# The values 1 and 50, at the bounds.
+[50,1,50,1,1]
+3
+1
+=> [100,2,2]
+
+# The element leaving the window must stop counting.
+[3,3,3,1,1,1]
+3
+1
+=> [9,6,2,3]
+
+# The largest possible x-sum: 50 copies of 50 in one window.
+[50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50]
+50
+1
+=> [2500]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[2,2,1,4,4,4,4]
+5
+3
+=> [13,15,17]
+
+@gen 2 small
+[50,50,50,50,50]
+1
+1
+=> [50,50,50,50,50]
+
+@gen 3 small
+[48,50,47,49,49,48,48,50]
+5
+1
+=> [98,98,98,98]
+
+@gen 4 small
+[1,3,2,3]
+1
+1
+=> [1,3,2,3]
+
+@gen 5 small
+[49,50,50,49,50,50]
+5
+2
+=> [248,249]
+
+@gen 6 small
+[2,3]
+2
+2
+=> [5]
+
+@gen 7 small
+[49,48,48,48,50,48]
+6
+3
+=> [291]
+
+# Full size: 50 elements.
+@gen 3
+[10,20,30,40,50,20,10,30,20,50,30,20,30,10,40,50,10,30,40,30,50,20,50,40,40,50,10,30,40,50,20,10,20,40,30,30,10,20,30,30,50,40,50,10,50,40,50,50,20,20]
+50
+3
+=> [1130]
+
+@gen 15
+[12,19,15,42,10,7,5,10,28,3,9,12,34,18,38,42,44,27,25,40,42,33,3,26,4,39,29,26,21,5,2,11,11,2,44,40,41,25,34,50,17,9,48,21,1,28,44,24,33,33]
+8
+2
+=> [62,62,62,62,48,62,62,72,80,86,86,86,86,128,128,128,86,82,82,82,94,91,91,91,68,61,26,26,26,26,26,66,94,94,94,98,98,98,98,98,92,92,114]
+
+@gen 16
+[35,5,45,10,5,35,20,40,45,45,15,50,20,40,50,25,10,40,45,15,35,30,30,10,10,35,5,35,45,45,45,15,20,40,35,25,25,15,25,50,25,45,45,5,40,45,5,20,50,10]
+32
+2
+=> [490,455,475,445,445,445,430,430,410,350,350,395,395,395,440,440,455,455,455]

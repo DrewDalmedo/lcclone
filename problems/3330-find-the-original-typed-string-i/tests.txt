@@ -1,0 +1,99 @@
+# Find the Original Typed String I.
+
+@example s was "zoomm" itself, or "zomm" with its o echoed, or "zoom" with its m echoed.
+"zoomm"
+=> 3
+
+@example No letter sits next to a copy of itself, so nothing was echoed: only "kayak" works.
+"kayak"
+=> 1
+
+@example s began with 1, 2, 3, 4 or 5 b's, followed by the x.
+"bbbbbx"
+=> 5
+
+# A single letter.
+"q"
+=> 1
+
+# Two equal letters: "zz", or "z" echoed once.
+"zz"
+=> 2
+
+# Two different letters.
+"az"
+=> 1
+
+# The same letter in several places, never side by side.
+"abacada"
+=> 1
+
+# Two blocks of the same letter: "aabaa", "abaa" or "aaba".
+"aabaa"
+=> 3
+
+# The echo lengthened one block only, so the blocks' choices add up
+# (1 + 1 + 1 + 1), they don't multiply.
+"ccddee"
+=> 4
+
+"pppqqqrrr"
+=> 7
+
+# A block at the very end.
+"xyzzzz"
+=> 4
+
+# Blocks at both ends, and t in two of them: 1 + 1 + 3 + 1 + 1.
+"tteeeesstt"
+=> 7
+
+# The longest word, one letter throughout: s has 1 to 100 w's.
+"wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+=> 100
+
+# The longest word with no two neighbours equal.
+"abababababababababababababababababababababababababababababababababababababababababababababababababab"
+=> 1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abbabbb"
+=> 4
+
+@gen 2 small
+"aaaaa"
+=> 5
+
+@gen 3 small
+"aaabbbaa"
+=> 6
+
+@gen 4 small
+"baab"
+=> 2
+
+@gen 5 small
+"bbaaba"
+=> 3
+
+@gen 6 small
+"bb"
+=> 2
+
+@gen 7 small
+"bbaaaa"
+=> 5
+
+# Full size: 100 letters.
+@gen 1
+"woxlsnrlojisguzpmcgildbabjrfadeolbylciuejeyjstdapkpzvevzkyljlahwvuyslcqosevzfhbtszvdgdqmegsqxbgbsbuw"
+=> 1
+
+@gen 2
+"aaaaaaababbbbaaaaabaabaaaabbbabaabaaabaabbabbabbababbbbabaababaaaaaababababaabaabbaabaabbabaaaabaaba"
+=> 46
+
+@gen 3
+"zzzzzzzzzzzyyyyyyyyyyyyyyyyyyyyyyyyyyyzzzzzzzzzzzzzzyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxxxxxxxxxxxxx"
+=> 96

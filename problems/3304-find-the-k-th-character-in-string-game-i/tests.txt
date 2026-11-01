@@ -1,0 +1,94 @@
+# Find the K-th Character in String Game I.
+
+@example Position 1 holds the starting letter; no round is needed.
+1
+=> "a"
+
+@example Three rounds make 8 letters. Position 7 is in the copy the third round added, so it holds the letter after the one at 7 - 4 = 3; in turn, position 3 holds the letter after the one at 3 - 2 = 1, which is "a". So "a" becomes "b", then "c".
+7
+=> "c"
+
+@example Position 16 ends the copy added by the fourth round. It copies position 8, which copies 4, then 2, then 1, moving one letter on each time: four steps on from "a" is "e".
+16
+=> "e"
+
+# The copy made by the first two rounds.
+2
+=> "b"
+
+3
+=> "b"
+
+4
+=> "c"
+
+# A power of two ends a round's copy; the position after it starts the
+# next copy, which always begins with "b".
+8
+=> "d"
+
+9
+=> "b"
+
+129
+=> "b"
+
+# Inside a copy.
+100
+=> "e"
+
+# The last letter, "i", first appears at position 256.
+256
+=> "i"
+
+257
+=> "b"
+
+# Positions from 257 on need the word to reach 512 letters.
+384
+=> "i"
+
+496
+=> "i"
+
+# The largest k.
+500
+=> "h"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+47
+=> "e"
+
+@gen 2 small
+13
+=> "c"
+
+@gen 3 small
+51
+=> "d"
+
+@gen 4 small
+35
+=> "c"
+
+@gen 5 small
+2
+=> "b"
+
+@gen 6 small
+8
+=> "d"
+
+# Full-size cases.
+@gen 7
+32
+=> "f"
+
+@gen 8
+72
+=> "e"
+
+@gen 9
+414
+=> "g"

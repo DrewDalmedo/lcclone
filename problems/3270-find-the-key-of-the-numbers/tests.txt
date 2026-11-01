@@ -1,0 +1,153 @@
+# Find the Key of the Numbers.
+
+@example Thousands: 4 is the smallest of 5, 4 and 6. Hundreds: 1 of 3, 1 and 8. Tens: 0 of 0, 9 and 2. Units: 2 of 7, 2 and 5.
+5307
+4192
+6825
+=> 4102
+
+@example Padded, the numbers are 0083, 9120 and 0456. The columns give 0, 0, 2 and 0, so the key is 0020.
+83
+9120
+456
+=> 20
+
+@example Padded: 0009, 9999 and 0099. Only the units column has no 0.
+9
+9999
+99
+=> 9
+
+# The smallest inputs.
+1
+1
+1
+=> 1
+
+# The largest.
+9999
+9999
+9999
+=> 9999
+
+# Three equal numbers: the key is that number.
+4321
+4321
+4321
+=> 4321
+
+# Different lengths, lined up on the right: 0005, 0047 and 8123 (lining up
+# the digits on the left would be wrong).
+5
+47
+8123
+=> 3
+
+# All three below 1000: the thousands digit of the key is 0.
+352
+614
+283
+=> 212
+
+# A 0 in the tens column only.
+5361
+7408
+6529
+=> 5301
+
+# A 0 in the units column only.
+3459
+4560
+5678
+=> 3450
+
+# Each column takes its smallest digit from a different number, so the key
+# is below all three.
+1999
+9199
+9919
+=> 1119
+
+# Every column has a 0 somewhere: the key is 0.
+10
+200
+3
+=> 0
+
+9090
+909
+9009
+=> 0
+
+# One small number pulls the key down.
+9999
+9999
+1
+=> 1
+
+9999
+1000
+9999
+=> 1000
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+8
+391
+91
+=> 1
+
+@gen 2 small
+3199
+7
+701
+=> 1
+
+@gen 3 small
+2991
+3010
+11
+=> 10
+
+@gen 4 small
+8010
+5019
+9990
+=> 5010
+
+@gen 5 small
+21
+1100
+7919
+=> 0
+
+@gen 6 small
+1119
+6000
+1
+=> 0
+
+@gen 7 small
+6111
+899
+3999
+=> 111
+
+# Full size: any digits.
+@gen 11
+7813
+8903
+924
+=> 803
+
+@gen 12
+4602
+4
+67
+=> 2
+
+@gen 13
+3909
+6455
+695
+=> 405

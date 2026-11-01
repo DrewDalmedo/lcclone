@@ -1,0 +1,141 @@
+# Substring Matching Pattern.
+
+@example Filling the star with "lig" gives "onlight", which starts at index 2.
+"moonlight"
+"on*ht"
+=> true
+
+@example The only "g" of "garden" comes before "den".
+"garden"
+"den*g"
+=> false
+
+@example With an empty star the word is "ttle", the end of "kettle".
+"kettle"
+"tt*le"
+=> true
+
+# A pattern that is only the star matches any text.
+"q"
+"*"
+=> true
+
+# Star first: "n" and "t" are both in "stone", but not as the block "nt".
+"stone"
+"*nt"
+=> false
+
+# Star last.
+"stone"
+"sto*"
+=> true
+
+# A part's letters must be adjacent: "ab" is not a block of "axb".
+"axb"
+"ab*"
+=> false
+
+# The parts may touch, with nothing for the star.
+"ab"
+"a*b"
+=> true
+
+# But they may not overlap: "rot" ends at index 3, and the only "tor"
+# starts at index 2.
+"rotor"
+"rot*tor"
+=> false
+
+# The left part occurs twice; the first copy, at 0, has the "c" after it,
+# the second, at 4, has not.
+"xaycxa"
+"xa*c"
+=> true
+
+# The first "c" comes before the "a", but a later one after it.
+"cbabc"
+"a*c"
+=> true
+
+# Both parts are "ab", and "aba" holds only one copy.
+"aba"
+"ab*ab"
+=> false
+
+# The left part may end the text: "cil" is the last three letters, and the
+# star and the right part are both empty.
+"pencil"
+"cil*"
+=> true
+
+# The left part is the whole text, leaving no room for the "o".
+"hello"
+"hello*o"
+=> false
+
+# A pattern of 50 characters against a text of one letter.
+"a"
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*"
+=> false
+
+# 24 + 25 letters fit in 50, with one letter for the star.
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+"zzzzzzzzzzzzzzzzzzzzzzzz*zzzzzzzzzzzzzzzzzzzzzzzzz"
+=> true
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abbabbb"
+"bba*"
+=> true
+
+@gen 2 small
+"bccaa"
+"aa*aa"
+=> false
+
+@gen 3 small
+"aaa"
+"aaa*a"
+=> false
+
+@gen 4 small
+"baa"
+"a*ba"
+=> false
+
+@gen 5 small
+"ba"
+"abb*aba"
+=> false
+
+@gen 6 small
+"ab"
+"ab*bab"
+=> false
+
+@gen 7 small
+"bbaaaaa"
+"a*"
+=> true
+
+@gen 8 small
+"baba"
+"b*"
+=> true
+
+# Full size.
+@gen 1
+"woxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstda"
+"zvevvzkyljl*hwvuyslcqo"
+=> false
+
+@gen 2
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaba"
+"*aaaaaaaaaaab"
+=> true
+
+@gen 3
+"a"
+"abbbaaaabbbbaabaaaaababaaa*aaaaaaaaaabaaaaaabbabbb"
+=> false

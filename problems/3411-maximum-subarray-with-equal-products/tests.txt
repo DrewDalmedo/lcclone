@@ -1,0 +1,117 @@
+# Maximum Subarray With Equal Products.
+
+@example [6,1,5,7] has product 210, gcd 1 and lcm 210; taking in the 4 or the 8 as well breaks it.
+[4,6,1,5,7,8]
+=> 4
+
+@example Two neighbours are always fair (4 and 8: product 32, gcd 4, lcm 8), but no three in a row are.
+[4,8,2,4]
+=> 2
+
+@example The first five have product 3, gcd 1 and lcm 3. With the 9 the product is 27, but gcd * lcm is 9.
+[1,1,3,1,1,9]
+=> 5
+
+# The shortest array; two equal values are fair.
+[7,7]
+=> 2
+
+# A hundred 1s: the whole array is fair.
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+=> 100
+
+# A gcd of 1 is not enough: 8 and 2 share a factor, though 3 sits between
+# them (product 48, gcd * lcm 24).
+[8,3,2]
+=> 2
+
+# 6 is 2 * 3, so it clashes with the 9 (a 3) and with the 4 (a 2): the
+# longest fair run is 1, 6, 1, 7. A prime table that gives 6 only one of
+# its primes finds 5.
+[9,1,6,1,7,4]
+=> 4
+
+# 10 is 2 * 5, so it clashes with the 5 and with the 8: the longest fair
+# run is 1, 10, 1, 3. Giving 10 only one of its primes finds 5.
+[5,1,10,1,3,8]
+=> 4
+
+# The same value twice spoils a run, even with a 1 between the two.
+[5,1,5]
+=> 2
+
+# The longest run is at the start: 7, 1, 3, 1, 1, 10.
+[7,1,3,1,1,10,4,6]
+=> 6
+
+# The longest run is at the end: 8, 1, 1, 3, 1, 7, 1.
+[6,4,10,8,1,1,3,1,7,1]
+=> 7
+
+# The whole array.
+[1,2,1,3,1,5,1,7,1]
+=> 9
+
+# The largest fair product: 8 * 9 * 5 * 7 = 2520, which is also the lcm.
+[1,8,9,5,7,1]
+=> 6
+
+# A hundred 10s: no three are fair. Multiplying the whole array gives
+# 10^100, far past 64 bits.
+[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
+=> 2
+
+# Thirty 2s and thirty 8s (product 2^120), then 1, 3, 5, 7: the last 8
+# starts a fair run of 5.
+[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,1,3,5,7]
+=> 5
+
+# 10 and 1 taking turns: 1, 10, 1 is fair, 10, 1, 10 is not.
+[10,1,10,1,10,1,10,1,10,1,10,1]
+=> 3
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[4,6,10,4,1,1,1,9]
+=> 5
+
+@gen 2 small
+[10,4,8,2,6]
+=> 2
+
+@gen 3 small
+[1,5,8,6,6,2,5]
+=> 3
+
+@gen 4 small
+[6,6,5]
+=> 2
+
+@gen 5 small
+[1,8,1,1,1,1]
+=> 6
+
+@gen 12 small
+[5,2,1,1,6,1,4]
+=> 4
+
+@gen 15 small
+[1,6,1,9,1]
+=> 3
+
+@gen 20 small
+[9,10,5]
+=> 2
+
+# Full size.
+@gen 1
+[8,6,2,10,10,10,8,6,6,4,4,8,4,4,10,10,2,10,8,4,4,4,4,10,8,6,10,2,10,4,6,4,2,10,6,2,4,2,6,2,6,4,6,6,4,8,10,8,4,6,8,4,8,2,2,2,4,4,10,4,10,4,6,4,10,2,8,4,8,2,6,4,4,4,8,6,2,8,1,1,1,1,1,1,9,1,7,1,7,7,9,1,1,1,1,3,1,9,1,1]
+=> 11
+
+@gen 2
+[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+=> 2
+
+@gen 3
+[1,1,1,1,1,1,1,6,6,2,1,1,4,3,1,1,1,1,1,1,1,8,1,5,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,10,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,6,1,1,8,1,1,1,1,9,8,1,1,2,1,1,1,1,4,1,1,1,7,10,10,1,1,1,1,1,2,1]
+=> 27

@@ -1,0 +1,88 @@
+# Stone Removal Game. The turns remove 10, 9, 8, ... stones, so after each
+# turn 10, 19, 27, 34, 40, 45, 49 stones are gone in all.
+
+@example Alice takes 10, Bob 9 and Alice 8, which leaves 6. Bob's quota is 7, more than the heap holds, so he loses.
+33
+=> true
+
+@example Alice takes 10 and Bob takes the remaining 9. Alice's quota is now 8 and the heap is empty, so she loses.
+19
+=> false
+
+@example The heap is one stone short of Alice's first quota.
+9
+=> false
+
+# The smallest heap.
+1
+=> false
+
+# Alice empties the heap on her first turn.
+10
+=> true
+
+# Two turns are taken, and Alice can't take her 8 from the 7 left.
+26
+=> false
+
+# Each side of every other point where the winner changes.
+27
+=> true
+
+34
+=> false
+
+39
+=> false
+
+40
+=> true
+
+44
+=> true
+
+45
+=> false
+
+48
+=> false
+
+49
+=> true
+
+# The largest heap: seven turns are taken and Bob can't take 3 from 1.
+50
+=> true
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 2 small
+37
+=> false
+
+@gen 3 small
+16
+=> true
+
+@gen 4 small
+24
+=> false
+
+@gen 5 small
+20
+=> false
+
+@gen 6 small
+2
+=> false
+
+@gen 7 small
+22
+=> false
+
+@gen 8 small
+17
+=> true
+
+@gen 24
+18
+=> true
