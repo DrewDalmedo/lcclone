@@ -1,0 +1,93 @@
+# Find Winner on a Tic Tac Toe Game.
+
+@example A owns [0,2], [2,2] and [1,2], all of column 2; B owns only [1,1] and [0,0].
+[[0,2],[1,1],[2,2],[0,0],[1,2]]
+=> "A"
+
+@example B completes row 2 with the sixth move of the game; A's three squares share no line.
+[[1,1],[2,0],[0,0],[2,2],[0,2],[2,1]]
+=> "B"
+
+@example Eight squares are claimed and nobody has a line. The free square [1,2] can't complete one either, but the game isn't over yet.
+[[1,1],[0,1],[0,0],[2,2],[0,2],[2,0],[2,1],[1,0]]
+=> "Pending"
+
+# A single move.
+[[1,1]]
+=> "Pending"
+
+# Four moves: A has two squares of the top row, but no line yet.
+[[0,0],[2,2],[0,1],[1,1]]
+=> "Pending"
+
+# Seven moves, no line yet, and some can still be completed.
+[[0,0],[1,1],[2,2],[0,2],[2,0],[1,0],[1,2]]
+=> "Pending"
+
+# All nine squares claimed and no line.
+[[0,2],[1,1],[1,2],[2,2],[0,0],[0,1],[2,1],[2,0],[1,0]]
+=> "Draw"
+
+# The ninth move completes A's main diagonal: a win, not a draw.
+[[1,1],[0,1],[0,0],[2,0],[0,2],[1,0],[2,1],[1,2],[2,2]]
+=> "A"
+
+# The ninth move completes two lines at once, row 0 and the other
+# diagonal.
+[[2,0],[2,2],[0,1],[1,0],[1,1],[2,1],[0,0],[1,2],[0,2]]
+=> "A"
+
+# A completes the diagonal [0,2], [1,1], [2,0] with the centre, on the
+# seventh move.
+[[2,0],[0,0],[0,1],[2,2],[0,2],[2,1],[1,1]]
+=> "A"
+
+# B completes the same diagonal with a corner.
+[[1,0],[2,0],[0,0],[1,1],[2,2],[0,2]]
+=> "B"
+
+# B completes the main diagonal with the centre.
+[[0,1],[2,2],[1,0],[0,0],[2,1],[1,1]]
+=> "B"
+
+# A completes row 1 on the seventh move.
+[[1,2],[0,0],[2,1],[0,1],[1,0],[2,2],[1,1]]
+=> "A"
+
+# B completes column 0 on the eighth move.
+[[1,1],[2,2],[0,2],[0,0],[2,1],[2,0],[1,2],[1,0]]
+=> "B"
+
+# Random cases from gen.c (lc check --regen makes them). A game has at
+# most 9 moves, so there are no larger cases.
+@gen 1 small
+[[2,1],[0,1],[1,1],[1,0],[2,2],[2,0],[0,0]]
+=> "A"
+
+@gen 2 small
+[[0,1],[0,0],[0,2],[1,0],[2,0],[1,1],[1,2],[2,2]]
+=> "B"
+
+@gen 3 small
+[[1,2],[1,1],[2,1],[2,2],[0,0],[0,2],[2,0],[1,0],[0,1]]
+=> "Draw"
+
+@gen 4 small
+[[2,1],[2,0],[1,2],[1,1],[1,0],[0,2]]
+=> "B"
+
+@gen 5 small
+[[0,1],[1,1]]
+=> "Pending"
+
+@gen 6 small
+[[2,1],[0,2],[1,2],[1,0],[0,1],[2,2],[0,0],[2,0]]
+=> "Pending"
+
+@gen 7 small
+[[2,1],[2,0],[1,0],[0,2],[1,1],[1,2],[2,2],[0,0]]
+=> "Pending"
+
+@gen 8 small
+[[2,2]]
+=> "Pending"

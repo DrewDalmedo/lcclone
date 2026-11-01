@@ -1,0 +1,89 @@
+# Subtract the Product and Sum of Digits of an Integer.
+
+@example The digits 3, 5 and 7 multiply to 105 and add up to 15.
+357
+=> 90
+
+@example The 0 makes the product 0; the digits add up to 6.
+1203
+=> -6
+
+@example A single digit is both the product and the sum.
+6
+=> 0
+
+# The smallest n.
+1
+=> 0
+
+# A trailing zero.
+10
+=> -1
+
+# Only ones: the product stays 1 while the sum grows.
+11
+=> -1
+
+11111
+=> -4
+
+# The product equals the sum.
+123
+=> 0
+
+# A product of 729, too big for a char.
+999
+=> 702
+
+# Products above 32767, too big for a 16-bit short; 99999 gives the
+# largest answer.
+99998
+=> 52444
+
+99999
+=> 59004
+
+# Several inner zeros.
+90909
+=> -27
+
+# The smallest answer: a zero and the largest digit sum.
+99990
+=> -36
+
+# The upper bound, the only n with six digits.
+100000
+=> -1
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+97
+=> 47
+
+@gen 4 small
+189
+=> 54
+
+@gen 6 small
+11991
+=> 60
+
+@gen 7 small
+90069
+=> -24
+
+@gen 10 small
+120
+=> -3
+
+@gen 12 small
+10910
+=> -11
+
+@gen 7
+82175
+=> 537
+
+@gen 8
+51931
+=> 116

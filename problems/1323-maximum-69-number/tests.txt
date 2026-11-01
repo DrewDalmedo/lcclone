@@ -1,0 +1,136 @@
+# Maximum 69 Number. There are only 30 valid inputs; the examples and the
+# hand-written cases below cover every one of them.
+
+@example Turning the first card gives 9696; turning any other card gives at most 6996.
+6696
+=> 9696
+
+@example Turning the 6 gives 99.
+96
+=> 99
+
+@example Every card already shows a 9, and turning one would only make the number smaller, so leave them all.
+999
+=> 999
+
+# Single digits.
+6
+=> 9
+
+9
+=> 9
+
+# All 9s: nothing to gain, so the number stays as it is.
+99
+=> 99
+
+9999
+=> 9999
+
+# A single 6, at the front.
+69
+=> 99
+
+699
+=> 999
+
+6999
+=> 9999
+
+# A single 6, at the end.
+996
+=> 999
+
+9996
+=> 9999
+
+# A single 6, in the middle.
+969
+=> 999
+
+9699
+=> 9999
+
+9969
+=> 9999
+
+# Several 6s, the first of them at the front: only that one turns.
+66
+=> 96
+
+666
+=> 966
+
+669
+=> 969
+
+696
+=> 996
+
+6666
+=> 9666
+
+6669
+=> 9669
+
+6699
+=> 9699
+
+6966
+=> 9966
+
+6969
+=> 9969
+
+6996
+=> 9996
+
+# Several 6s after one or two leading 9s: the first 6 turns, not the last.
+966
+=> 996
+
+9666
+=> 9966
+
+9669
+=> 9969
+
+9696
+=> 9996
+
+9966
+=> 9996
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+669
+=> 969
+
+@gen 2 small
+9
+=> 9
+
+@gen 4 small
+9969
+=> 9999
+
+@gen 5 small
+99
+=> 99
+
+@gen 6 small
+66
+=> 96
+
+@gen 9 small
+696
+=> 996
+
+# Full size.
+@gen 4
+6996
+=> 9996
+
+@gen 9
+9696
+=> 9996

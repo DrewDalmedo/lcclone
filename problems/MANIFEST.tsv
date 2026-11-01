@@ -317,47 +317,47 @@
 1241	number-of-comments-per-post	Number of Comments per Post	easy	yes	skip:sql	todo
 1243	array-transformation	Array Transformation	easy	yes	skip:premium	todo
 1251	average-selling-price	Average Selling Price	easy	no	skip:sql	todo
-1252	cells-with-odd-values-in-a-matrix	Cells with Odd Values in a Matrix	easy	no	plain	todo
-1260	shift-2d-grid	Shift 2D Grid	easy	no	plain	todo
-1266	minimum-time-visiting-all-points	Minimum Time Visiting All Points	easy	no	plain	todo
+1252	cells-with-odd-values-in-a-matrix	Cells with Odd Values in a Matrix	easy	no	plain	draft
+1260	shift-2d-grid	Shift 2D Grid	easy	no	plain	draft
+1266	minimum-time-visiting-all-points	Minimum Time Visiting All Points	easy	no	plain	draft
 1271	hexspeak	Hexspeak	easy	yes	skip:premium	todo
-1275	find-winner-on-a-tic-tac-toe-game	Find Winner on a Tic Tac Toe Game	easy	no	plain	todo
+1275	find-winner-on-a-tic-tac-toe-game	Find Winner on a Tic Tac Toe Game	easy	no	plain	draft
 1279	traffic-light-controlled-intersection	Traffic Light Controlled Intersection	easy	yes	skip:concurrency	todo
 1280	students-and-examinations	Students and Examinations	easy	no	skip:sql	todo
-1281	subtract-the-product-and-sum-of-digits-of-an-integer	Subtract the Product and Sum of Digits of an Integer	easy	no	plain	todo
-1287	element-appearing-more-than-25-in-sorted-array	Element Appearing More Than 25% In Sorted Array	easy	no	plain	todo
+1281	subtract-the-product-and-sum-of-digits-of-an-integer	Subtract the Product and Sum of Digits of an Integer	easy	no	plain	draft
+1287	element-appearing-more-than-25-in-sorted-array	Element Appearing More Than 25% In Sorted Array	easy	no	plain	draft
 1290	convert-binary-number-in-a-linked-list-to-integer	Convert Binary Number in a Linked List to Integer	easy	no	list	todo
 1294	weather-type-in-each-country	Weather Type in Each Country	easy	yes	skip:sql	todo
-1295	find-numbers-with-even-number-of-digits	Find Numbers with Even Number of Digits	easy	no	plain	todo
-1299	replace-elements-with-greatest-element-on-right-side	Replace Elements with Greatest Element on Right Side	easy	no	plain	todo
+1295	find-numbers-with-even-number-of-digits	Find Numbers with Even Number of Digits	easy	no	plain	draft
+1299	replace-elements-with-greatest-element-on-right-side	Replace Elements with Greatest Element on Right Side	easy	no	plain	draft
 1303	find-the-team-size	Find the Team Size	easy	yes	skip:sql	todo
 1304	find-n-unique-integers-sum-up-to-zero	Find N Unique Integers Sum up to Zero	easy	no	checker	todo
-1309	decrypt-string-from-alphabet-to-integer-mapping	Decrypt String from Alphabet to Integer Mapping	easy	no	plain	todo
-1313	decompress-run-length-encoded-list	Decompress Run-Length Encoded List	easy	no	plain	todo
+1309	decrypt-string-from-alphabet-to-integer-mapping	Decrypt String from Alphabet to Integer Mapping	easy	no	plain	draft
+1313	decompress-run-length-encoded-list	Decompress Run-Length Encoded List	easy	no	plain	draft
 1317	convert-integer-to-the-sum-of-two-no-zero-integers	Convert Integer to the Sum of Two No-Zero Integers	easy	no	checker	todo
 1322	ads-performance	Ads Performance	easy	yes	skip:sql	todo
-1323	maximum-69-number	Maximum 69 Number	easy	no	plain	todo
+1323	maximum-69-number	Maximum 69 Number	easy	no	plain	draft
 1327	list-the-products-ordered-in-a-period	List the Products Ordered in a Period	easy	no	skip:sql	todo
-1331	rank-transform-of-an-array	Rank Transform of an Array	easy	no	plain	todo
-1332	remove-palindromic-subsequences	Remove Palindromic Subsequences	easy	no	plain	todo
-1337	the-k-weakest-rows-in-a-matrix	The K Weakest Rows in a Matrix	easy	no	plain	todo
-1342	number-of-steps-to-reduce-a-number-to-zero	Number of Steps to Reduce a Number to Zero	easy	no	plain	todo
-1346	check-if-n-and-its-double-exist	Check If N and Its Double Exist	easy	no	plain	todo
+1331	rank-transform-of-an-array	Rank Transform of an Array	easy	no	plain	draft
+1332	remove-palindromic-subsequences	Remove Palindromic Subsequences	easy	no	plain	draft
+1337	the-k-weakest-rows-in-a-matrix	The K Weakest Rows in a Matrix	easy	no	plain	draft
+1342	number-of-steps-to-reduce-a-number-to-zero	Number of Steps to Reduce a Number to Zero	easy	no	plain	draft
+1346	check-if-n-and-its-double-exist	Check If N and Its Double Exist	easy	no	plain	draft
 1350	students-with-invalid-departments	Students With Invalid Departments	easy	yes	skip:sql	todo
-1351	count-negative-numbers-in-a-sorted-matrix	Count Negative Numbers in a Sorted Matrix	easy	no	plain	todo
-1356	sort-integers-by-the-number-of-1-bits	Sort Integers by The Number of 1 Bits	easy	no	plain	todo
-1360	number-of-days-between-two-dates	Number of Days Between Two Dates	easy	no	plain	todo
-1365	how-many-numbers-are-smaller-than-the-current-number	How Many Numbers Are Smaller Than the Current Number	easy	no	plain	todo
-1370	increasing-decreasing-string	Increasing Decreasing String	easy	no	plain	todo
+1351	count-negative-numbers-in-a-sorted-matrix	Count Negative Numbers in a Sorted Matrix	easy	no	plain	draft
+1356	sort-integers-by-the-number-of-1-bits	Sort Integers by The Number of 1 Bits	easy	no	plain	draft
+1360	number-of-days-between-two-dates	Number of Days Between Two Dates	easy	no	plain	draft
+1365	how-many-numbers-are-smaller-than-the-current-number	How Many Numbers Are Smaller Than the Current Number	easy	no	plain	draft
+1370	increasing-decreasing-string	Increasing Decreasing String	easy	no	plain	draft
 1374	generate-a-string-with-characters-that-have-odd-counts	Generate a String With Characters That Have Odd Counts	easy	no	checker	todo
 1378	replace-employee-id-with-the-unique-identifier	Replace Employee ID With The Unique Identifier	easy	no	skip:sql	todo
 1379	find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree	Find a Corresponding Node of a Binary Tree in a Clone of That Tree	easy	no	tree-ref	todo
 1380	lucky-numbers-in-a-matrix	Lucky Numbers in a Matrix	easy	no	unordered	draft
-1385	find-the-distance-value-between-two-arrays	Find the Distance Value Between Two Arrays	easy	no	plain	todo
-1389	create-target-array-in-the-given-order	Create Target Array in the Given Order	easy	no	plain	todo
-1394	find-lucky-integer-in-an-array	Find Lucky Integer in an Array	easy	no	plain	todo
-1399	count-largest-group	Count Largest Group	easy	no	plain	todo
-1403	minimum-subsequence-in-non-increasing-order	Minimum Subsequence in Non-Increasing Order	easy	no	plain	todo
+1385	find-the-distance-value-between-two-arrays	Find the Distance Value Between Two Arrays	easy	no	plain	draft
+1389	create-target-array-in-the-given-order	Create Target Array in the Given Order	easy	no	plain	draft
+1394	find-lucky-integer-in-an-array	Find Lucky Integer in an Array	easy	no	plain	draft
+1399	count-largest-group	Count Largest Group	easy	no	plain	draft
+1403	minimum-subsequence-in-non-increasing-order	Minimum Subsequence in Non-Increasing Order	easy	no	plain	draft
 1407	top-travellers	Top Travellers	easy	no	skip:sql	todo
 1408	string-matching-in-an-array	String Matching in an Array	easy	no	unordered	draft
 1413	minimum-value-to-get-positive-step-by-step-sum	Minimum Value to Get Positive Step by Step Sum	easy	no	plain	todo

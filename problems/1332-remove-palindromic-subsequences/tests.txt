@@ -1,0 +1,100 @@
+# Remove Palindromic Subsequences.
+
+@example abaaba is the same reversed, so a single move marks and erases all of it.
+"abaaba"
+=> 1
+
+@example aabab reversed is babaa, so one move can't take everything; erasing aaa and then bb takes two.
+"aabab"
+=> 2
+
+@example The five b's are not side by side, but marking them all is one move; the a left over is the second.
+"bbbbab"
+=> 2
+
+# A single letter is a palindrome.
+"a"
+=> 1
+
+# Two letters, equal and different.
+"bb"
+=> 1
+
+"ab"
+=> 2
+
+# Alternating letters: many runs of equal letters, still at most two moves.
+"ababababab"
+=> 2
+
+"bababab"
+=> 1
+
+# The only mismatched pair is the innermost one, at even and odd length.
+"baaabaab"
+=> 2
+
+"abaabba"
+=> 2
+
+# The only mismatched pair is the first letter with the last.
+"ababbabb"
+=> 2
+
+# A single b among a's: in the middle, and one place off the middle.
+"aaaabaaaa"
+=> 1
+
+"aaaaabaaa"
+=> 2
+
+# Longest strings: one letter throughout, and the same with the last
+# letter changed.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> 1
+
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bbb"
+=> 1
+
+@gen 3 small
+"aaabaa"
+=> 2
+
+@gen 8 small
+"bba"
+=> 2
+
+@gen 9 small
+"babbbaaa"
+=> 2
+
+@gen 13 small
+"ababba"
+=> 2
+
+@gen 16 small
+"aabaa"
+=> 1
+
+@gen 17 small
+"bbaba"
+=> 2
+
+@gen 22 small
+"bbbbabbbb"
+=> 1
+
+# Full size: a palindrome of 999 letters, and 1000 letters whose only
+# mismatched pair is the innermost one.
+@gen 1
+"bbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbababaabababbababbbbaababbbaaaaabbaabbabababababaaabbaabaaabbabaabbbbbbbbbabaabbaaaabbaaabbaaabbbaaabbbaaabbbbaabaababbbbabbbaaaabbaabbabaabaabbabababbabbbbbaaabbaabbbbabaaaaaaabbbabaaabababaabbaabbababbaaaabaaabaaabbaabbaaaaaaaaaabbbbbbaabbbaaababbaabbabbbbabbabbababbaaabaabbabaaabbaaaaaaaabaabbbabbaabbabaabbbbbbaabaabaaabbbbbbaababaaabaaababaabbbbbbabbbaabaaaaabaabaabaaaababaaaabbbbaaaabaabaaaabbababababbaaaabaabaaaabbbbaaaababaaaabaabaabaaaaabaabbbabbbbbbaababaaabaaababaabbbbbbaaabaabaabbbbbbaababbaabbabbbaabaaaaaaaabbaaababbaabaaabbababbabbabbbbabbaabbabaaabbbaabbbbbbaaaaaaaaaabbaabbaaabaaabaaaabbababbaabbaabababaaababbbaaaaaaababbbbaabbaaabbbbbabbabababbaabaababbaabbaaaabbbabbbbabaabaabbbbaaabbbaaabbbaaabbaaabbaaaabbaababbbbbbbbbaababbaaabaabbaaababababababbaabbaaaaabbbabaabbbbababbababaabababbaaaaaababbbabbbbbbbaaaaabaaabababbbaabbbabbbababbabaabaaaababbaaababbbbabbbaaaabbaaaababbbbabb"
+=> 1
+
+@gen 3
+"aabbbaaaabbbbaabaaaaababaaaaaaaaaaaaabaaaaaabbabbbaabbababaaaabbaabaabaaaaaaabababbabbbabaabbbbaababbaababaaabaaaabbbaaaabbaaaabbbbaabbabaabababbbbabbaabaaabababbbbbaaaababbbbaabbbabbbbbababaababbbbaaabaaabbabbabbaaaabbbbababaaaaababaababbabababaaabbbbbbaaaaabbbbabaaaaabbbbabbaaabbbbbbbbbbaabbbbbaabaabababaabbabbababbbbbaabbbabaaaaaaaaaabbbaabababaaababbbaaaaabababbabbbbbaabbbbabababbaabaaaabaaababbbabbbbbbaaaaaabaaaaaabbabaaaaabaaabbabbababbabbaabaabbabaabbaaaaabbbaaabbbabaaabaabaababbbbbbbabbbabbabbbbbbbabaabaabaaababbbaaabbbaaaaabbaababbaabaabbabbababbabbaaabaaaaababbaaaaaabaaaaaabbbbbbabbbabaaabaaaabaabbabababbbbaabbbbbabbababaaaaabbbabaaabababaabbbaaaaaaaaaababbbaabbbbbababbabbaabababaabaabbbbbaabbbbbbbbbbaaabbabbbbaaaaababbbbaaaaabbbbbbaaababababbabaababaaaaabababbbbaaaabbabbabbaaabaaabbbbabaabababbbbbabbbaabbbbabaaaabbbbbababaaabaabbabbbbababaababbaabbbbaaaabbaaaabbbaaaabaaababaabbabaabbbbaababbbabbababaaaaaaabaabaabbaaaabababbaabbbabbaaaaaabaaaaaaaaaaaaababaaaaabaabbbbaaaabbbaa"
+=> 2
