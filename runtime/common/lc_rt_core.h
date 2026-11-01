@@ -11,6 +11,12 @@
  * The input comes from lc, so a malformed one is a bug in lc; the harness
  * then stops with LC_RT_FAIL. It also stops that way when the solution
  * hands back something that can't be written, such as a NULL array.
+ *
+ * It does its I/O with stdio only, and includes no POSIX header such as
+ * <unistd.h>: as on LeetCode, a solution may name its own functions read,
+ * write, sleep or nice. Nor does it call any of those names, which would
+ * then be the solution's functions. Its one POSIX function, fdopen, is in
+ * <stdio.h>, which the preludes include anyway.
  */
 #include <errno.h>
 #include <limits.h>
@@ -20,7 +26,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #if defined(__GNUC__) || defined(__clang__)
 #define LC_RT static __attribute__((unused))
@@ -78,9 +83,8 @@ LC_RT void lc_rt_read_input(void)
     /* What the solution prints shows up even if it then crashes. */
     setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
     lc_rt_in = (char *)lc_rt_alloc(cap, 1);
-    for (;;) {
-        ssize_t n;
-
+    /* fread fills the buffer unless the input ends or can't be read. */
+    while (!feof(stdin)) {
         if (cap - lc_rt_in_len < 2) {
             char *p = (char *)realloc(lc_rt_in, cap * 2);
             if (!p)
@@ -88,15 +92,15 @@ LC_RT void lc_rt_read_input(void)
             lc_rt_in = p;
             cap *= 2;
         }
-        n = read(0, lc_rt_in + lc_rt_in_len, cap - lc_rt_in_len - 1);
-        if (n < 0) {
-            if (errno == EINTR)
+        lc_rt_in_len += fread(lc_rt_in + lc_rt_in_len, 1,
+                              cap - lc_rt_in_len - 1, stdin);
+        if (ferror(stdin)) {
+            if (errno == EINTR) {
+                clearerr(stdin);
                 continue;
+            }
             lc_rt_fail("cannot read the input: %s", strerror(errno));
         }
-        if (n == 0)
-            break;
-        lc_rt_in_len += (size_t)n;
     }
     lc_rt_in[lc_rt_in_len] = '\0';
 }
@@ -306,18 +310,12 @@ LC_RT void lc_rt_check_prefix(const char *fn, const char *param, long long k,
 /* Writes the result on fd 3. Called last thing in main(). */
 LC_RT void lc_rt_flush(void)
 {
-    size_t done = 0;
+    FILE *f;
 
     lc_rt_put("\n", 1);
-    while (done < lc_rt_out_len) {
-        ssize_t n = write(LC_RT_RESULT_FD, lc_rt_out + done,
-                          lc_rt_out_len - done);
-        if (n < 0) {
-            if (errno == EINTR)
-                continue;
-            lc_rt_fail("cannot write the result on fd %d: %s",
-                       LC_RT_RESULT_FD, strerror(errno));
-        }
-        done += (size_t)n;
-    }
+    f = fdopen(LC_RT_RESULT_FD, "w");
+    if (!f || fwrite(lc_rt_out, 1, lc_rt_out_len, f) != lc_rt_out_len ||
+        fclose(f) != 0)
+        lc_rt_fail("cannot write the result on fd %d: %s", LC_RT_RESULT_FD,
+                   strerror(errno));
 }
