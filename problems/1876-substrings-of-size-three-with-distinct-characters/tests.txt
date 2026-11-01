@@ -1,0 +1,97 @@
+# Substrings of Size Three with Distinct Characters.
+
+@example The triples are kay, aya and yak; aya holds a twice, so 2 of them are good.
+"kayak"
+=> 2
+
+@example Of the nine triples only mis and sip are good; each of the other seven (iss and ssi twice, sis, ipp, ppi) repeats a letter.
+"mississippi"
+=> 2
+
+@example dog, ogd, gdo and dog again are all good; dog counts once for each of its two starts.
+"dogdog"
+=> 4
+
+# Too short to hold a triple: one and two characters.
+"a"
+=> 0
+
+"ab"
+=> 0
+
+# Exactly one triple.
+"fox"
+=> 1
+
+# Only the two ends are equal; the neighbours differ.
+"pop"
+=> 0
+
+# The first two equal, the last two equal, and all three equal.
+"eel"
+=> 0
+
+"see"
+=> 0
+
+"ccc"
+=> 0
+
+# Only the last triple is good.
+"zzzzxy"
+=> 1
+
+# Neighbours always differ, but every triple has the same letter at its ends.
+"abababab"
+=> 0
+
+# The whole alphabet: all 24 triples are good.
+"abcdefghijklmnopqrstuvwxyz"
+=> 24
+
+# 100 letters cycling through p, q and r: all 98 triples are good.
+"pqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrpqrp"
+=> 98
+
+# 100 copies of one letter.
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+=> 0
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abbaddd"
+=> 1
+
+@gen 2 small
+"aaaaa"
+=> 0
+
+@gen 3 small
+"acadbbcc"
+=> 2
+
+@gen 4 small
+"bacb"
+=> 2
+
+@gen 5 small
+"bbaaba"
+=> 0
+
+@gen 6 small
+"bb"
+=> 0
+
+# Full-size cases, 100 letters: random over all 26, random over 3, and
+# random over 4 with no two neighbours equal.
+@gen 6
+"pvovwduhjwzafhkrqoazbgqwsxdcvflbxlcxlwnkhizxstlkdmqodlfxmzinupgixwqepmtfxxpwjhemjhkxytjffhnquiixosho"
+=> 91
+
+@gen 1
+"opqqqqpppqpqqqooppopqoqqopoqqpppoqpoooqopooqopoqoppppqopppqpoqqppqqpooppqqqqpqpqqpoqqpooqpqpqoqqoqop"
+=> 23
+
+@gen 5
+"wxyxwyxyxwxwxvxvxvwyxyvwvwyxyxyvxwxvwxvxyvxywyvxywyxwvyvyvwvyvxwvywxwxvyvxvyxvwvxywyvxwxvxvxwvxwywyv"
+=> 61

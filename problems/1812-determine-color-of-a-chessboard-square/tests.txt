@@ -1,0 +1,88 @@
+# Determine Color of a Chessboard Square. true means a light square.
+
+@example From the light corner h1, e4 is 3 files to the left and 3 ranks up: 6 one-square moves, an even number, so it is light too.
+"e4"
+=> true
+
+@example b2 is 6 files left of h1 and 1 rank up: 7 moves, an odd number, so it is dark.
+"b2"
+=> false
+
+@example c5 is 5 files left of h1 and 4 ranks up: 9 moves, so it is dark.
+"c5"
+=> false
+
+# The four corners: h1 and a8 are light, a1 and h8 dark.
+"h1"
+=> true
+
+"a1"
+=> false
+
+"a8"
+=> true
+
+"h8"
+=> false
+
+# Two squares of the same file with different colours.
+"d1"
+=> true
+
+"d2"
+=> false
+
+# Two squares of the same rank with different colours.
+"f6"
+=> false
+
+"g6"
+=> true
+
+# The diagonal from a1 to h8 is all dark.
+"g7"
+=> false
+
+"d4"
+=> false
+
+# The diagonal from a8 to h1 is all light.
+"c6"
+=> true
+
+"f3"
+=> true
+
+# Random squares from gen.c (lc check --regen makes them); seeds that
+# repeat a square above are skipped.
+@gen 2 small
+"e5"
+=> false
+
+@gen 4 small
+"d3"
+=> true
+
+@gen 5 small
+"f2"
+=> false
+
+@gen 7 small
+"f7"
+=> true
+
+@gen 8 small
+"g4"
+=> true
+
+@gen 14 small
+"e8"
+=> true
+
+@gen 15 small
+"h6"
+=> false
+
+@gen 17 small
+"a6"
+=> true

@@ -1,0 +1,121 @@
+# Sum of Digits in Base K.
+
+@example 23 = 16 + 4 + 3 is 113 in base 4: one bead on each of rods 2 and 1, and three on rod 0.
+23
+4
+=> 5
+
+@example 45 = 32 + 8 + 4 + 1 is 101101 in base 2.
+45
+2
+=> 4
+
+@example 8 is below 9, so it is a single digit in base 9.
+8
+9
+=> 8
+
+# The smallest n.
+1
+2
+=> 1
+
+# n equal to k is written 10 in base k.
+7
+7
+=> 1
+
+# Powers of k need a single bead: 64 is 1000 in base 4, 81 is 10000 in
+# base 3.
+64
+4
+=> 1
+
+81
+3
+=> 1
+
+# In base 10 it is the ordinary digit sum; 99 has the largest of all.
+99
+10
+=> 18
+
+# n = 100 is 1100100 in base 2, 244 in base 6 and 100 in base 10.
+100
+2
+=> 3
+
+100
+6
+=> 10
+
+100
+10
+=> 1
+
+# The largest digit sums in bases 2 and 3: 63 is 111111, 80 is 2222.
+63
+2
+=> 6
+
+80
+3
+=> 8
+
+# Digit sums of k or more are returned as they are, not rewritten in base
+# k: 97 is 166 in base 7, and 80 is 88 in base 9.
+97
+7
+=> 13
+
+80
+9
+=> 16
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+1
+4
+=> 1
+
+@gen 2 small
+13
+9
+=> 5
+
+@gen 3 small
+1
+7
+=> 1
+
+@gen 4 small
+50
+3
+=> 6
+
+@gen 5 small
+22
+5
+=> 6
+
+@gen 6 small
+4
+5
+=> 4
+
+# Full size: n at or near 100, or with the largest digit sum in base k.
+@gen 1
+100
+4
+=> 4
+
+@gen 2
+99
+9
+=> 3
+
+@gen 5
+99
+5
+=> 11
+

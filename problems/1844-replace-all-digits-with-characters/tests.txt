@@ -1,0 +1,85 @@
+# Replace All Digits with Characters.
+
+@example The 0 repeats m, the 3 counts on from o to r, and the 1 from w to x.
+"m0o3w1"
+=> "mmorwx"
+
+@example The last character is a letter, so it stays as it is.
+"c4t2z"
+=> "cgtvz"
+
+@example Nine places on from q is z, the farthest a digit can reach.
+"q9"
+=> "qz"
+
+# A single letter: nothing to replace.
+"a"
+=> "a"
+
+# After z only a 0 is possible.
+"z0"
+=> "zz"
+
+# Each digit counts on from its own letter, not from what the digit
+# before it became.
+"a2a2a2a"
+=> "acacaca"
+
+# Different letters and digits that all land on j.
+"a9b8c7d6e5"
+=> "ajbjcjdjej"
+
+# A digit counts on from the letter before it, not the one after it.
+"x1a1"
+=> "xyab"
+
+# Every digit 0: each letter of the alphabet doubled.
+"a0b0c0d0e0f0g0h0i0j0k0l0m0n0o0p0q0r0s0t0u0v0w0x0y0z0"
+=> "aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz"
+
+# Every digit from 0 to 9 after the same letter.
+"f0f1f2f3f4f5f6f7f8f9"
+=> "fffgfhfifjfkflfmfnfo"
+
+# The longest string, 100 characters, ending in a digit.
+"p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9p9"
+=> "pypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypypy"
+
+# 99 characters, ending in a letter.
+"y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y1y"
+=> "yzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzyzy"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"a7n9o6a"
+=> "ahnwoua"
+
+@gen 2 small
+"a9e9m"
+=> "ajenm"
+
+@gen 3 small
+"c0q9a9q8"
+=> "ccqzajqy"
+
+@gen 4 small
+"l9y0"
+=> "luyy"
+
+@gen 5 small
+"v0y1z0"
+=> "vvyzzz"
+
+@gen 6 small
+"o6"
+=> "ou"
+
+# Full size: 99 or 100 characters.
+@gen 1
+"w0x2s3n9l2j6s0u3p4c4i1d1a9j7f0d6o6l9y1c0u0j6y1s1d8p2p1v0v0z0y1j1a1w1u0s7c6o6e7z0h3b3s7v3g1q4e2s2x2g"
+=> "wwxzsvnwlnjpssuxptcgijdeajjqffdjouluyzccuujpyzstdlprpqvvvvzzyzjkabwxuuszciouelzzhkbeszvyghquegsuxzg"
+
+@gen 2
+"e2q6s0k0l2z0z0w0c6y1i0d2w2q5z0s7w0z0e8d2w1h4t6i3z0x1r5h9q3q8r1j0w0i8i7k7w1q3y0d0q7r1o9i4h9w3o6m0b2u"
+=> "egqwsskklnzzzzwwciyziidfwyqvzzszwwzzemdfwxhltzilzzxyrwhqqtqyrsjjwwiqipkrwxqtyyddqxrsoximhqwzoummbdu"
+

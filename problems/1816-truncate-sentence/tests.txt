@@ -1,0 +1,98 @@
+# Truncate Sentence.
+
+@example The first four words; everything from the fourth space on is cut.
+"Meet me by the Old Mill tonight"
+4
+=> "Meet me by the"
+
+@example k is the number of words, so the whole sentence is the preview.
+"Bring Snacks"
+2
+=> "Bring Snacks"
+
+@example One word, kept as it is.
+"ZEBRA"
+1
+=> "ZEBRA"
+
+# A single one-letter word.
+"a"
+1
+=> "a"
+
+# k = 1 keeps only the first word.
+"Alpha beta Gamma"
+1
+=> "Alpha"
+
+# Every word but the last: the cut is at the last space.
+"one two three four"
+3
+=> "one two three"
+
+# A word repeated: the cut depends on positions, not on the words.
+"la la la la la"
+3
+=> "la la la"
+
+# Upper-case words stay upper case.
+"THE CREW SENT A PROBE"
+4
+=> "THE CREW SENT A"
+
+# Capitals inside and at the start of words.
+"camelCase wOrDs StaY MixeD"
+2
+=> "camelCase wOrDs"
+
+# A single word of 500 letters, the longest s.
+"aBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJ"
+1
+=> "aBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJaBcDeFgHiJ"
+
+# A first word of 260 letters, so the spaces are past position 255.
+"QrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyz tail end"
+2
+=> "QrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyzQrstuvwxyz tail"
+
+# 250 one-letter words, the most s can hold; k is above 127.
+"a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p"
+200
+=> "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r"
+
+# 250 words in mixed case and k = 250: all of s.
+"a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B"
+250
+=> "a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B i P w D k R y F m T a H o V c J q X e L s Z g N u B"
+
+# Random small cases from gen.c (lc check --regen makes them);
+# seed 1 repeats the first case above, so it is skipped.
+@gen 2 small
+"a B a"
+1
+=> "a"
+
+@gen 3 small
+"XY cab a XY aB"
+5
+=> "XY cab a XY aB"
+
+@gen 4 small
+"cab a ab XY aB"
+3
+=> "cab a ab"
+
+@gen 5 small
+"B XY"
+2
+=> "B XY"
+
+@gen 6 small
+"aB aB a aB"
+4
+=> "aB aB a aB"
+
+@gen 7 small
+"cab a cab"
+3
+=> "cab a cab"
