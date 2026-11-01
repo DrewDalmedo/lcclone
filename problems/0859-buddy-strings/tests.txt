@@ -1,0 +1,129 @@
+# Buddy Strings.
+
+@example Trading the first and third letters of "lemon" gives "melon".
+"lemon"
+"melon"
+=> true
+
+@example The words are already equal, but the letters of "cat" are all different, so every swap changes it.
+"cat"
+"cat"
+=> false
+
+@example Trading the two r's (or the two a's) leaves "radar" as it is.
+"radar"
+"radar"
+=> true
+
+# Different lengths: goal is s without its last letter, and s repeats a letter.
+"noon"
+"noo"
+=> false
+
+# Different lengths the other way round.
+"zz"
+"zzz"
+=> false
+
+# A single letter has nothing to trade places with.
+"z"
+"z"
+=> false
+
+# Exactly one position differs.
+"plant"
+"plane"
+=> false
+
+# Two positions differ, s[3] == goal[0] but s[0] != goal[3].
+"trap"
+"prax"
+=> false
+
+# Two positions differ, s[0] == goal[3] but s[3] != goal[0].
+"trap"
+"xrat"
+=> false
+
+# Same letters, but three positions differ.
+"abc"
+"bca"
+=> false
+
+# Four positions differ, as two crossed pairs: one swap fixes only one pair.
+"lime"
+"ilem"
+=> false
+
+# Two positions differ and the letter codes add up the same ('m' + 'd' == 'n' + 'c'), but they don't cross.
+"made"
+"nace"
+=> false
+
+# The two differences are at the first and last positions.
+"spot"
+"tpos"
+=> true
+
+# Equal words whose only repeated letter is at both ends.
+"abcdefghia"
+"abcdefghia"
+=> true
+
+# Equal words holding all 26 letters once each.
+"qwertyuiopasdfghjklzxcvbnm"
+"qwertyuiopasdfghjklzxcvbnm"
+=> false
+
+# Equal words with 256 a's: a count kept in a byte wraps to 0.
+"bcdefghijklmnopqrstuvwxyzaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+"bcdefghijklmnopqrstuvwxyzaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> true
+
+# The differences are at positions 10 and 290: an index kept in a byte wraps.
+"aaaaaaaaaabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacaaaaaaaaa"
+"aaaaaaaaaacaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabaaaaaaaaa"
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bbedddd"
+"bbddedd"
+=> true
+
+@gen 2 small
+"ccaaa"
+"accaa"
+=> true
+
+@gen 3 small
+"ged"
+"deg"
+=> true
+
+@gen 4 small
+"baa"
+"baa"
+=> true
+
+
+@gen 7 small
+"baaaaab"
+"b"
+=> false
+
+@gen 9 small
+"bcabbb"
+"bcabbb"
+=> true
+
+@gen 11 small
+"aacbc"
+"acacc"
+=> false
+
+@gen 20 small
+"babbaaab"
+"baabbbaa"
+=> false
+

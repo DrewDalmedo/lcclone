@@ -1,0 +1,111 @@
+# Unique Email Addresses.
+
+@example The first two both reach the mailbox kimlee@mail.com, and the third reaches leekim@mail.com.
+["kim.lee+news@mail.com","kimlee@mail.com","lee.kim@mail.com"]
+=> 2
+
+@example The first two share n@v.com; n@w.com has another domain and m@v.com another user.
+["n+1@v.com","n+2@v.com","n.+3@w.com","m@v.com"]
+=> 3
+
+@example Cutting at the first + leaves q every time.
+["q+r.s@zz.com","q+@zz.com","q@zz.com"]
+=> 1
+
+# A single address.
+["a@b.com"]
+=> 1
+
+# The same address three times.
+["mo@x.com","mo@x.com","mo@x.com"]
+=> 1
+
+# Dots in the domain stay: ab.c.com and abc.com are two domains.
+["x@ab.c.com","x@abc.com","x.@abc.com"]
+=> 2
+
+# The @ is part of the mailbox: without it both would read abc.com.
+["ab@c.com","a@bc.com"]
+=> 2
+
+# The same user at two domains, and another user at the first domain.
+["pat@one.com","pat@two.com","p.a.t@one.com","pam@one.com"]
+=> 3
+
+# Several + signs: the cut is at the first, and dots after it don't matter.
+["ann+a+b@q.com","ann+.x.@q.com","a.n.n@q.com"]
+=> 1
+
+# Dots first, last, before the +, and in runs.
+[".jo@k.com","jo.@k.com","j..o.+z@k.com","jo@k.com","j.o.e@k.com"]
+=> 2
+
+# A + in the domain stays where it is.
+["ed@mail+x.com","ed@mail+y.com","e.d@mail+x.com"]
+=> 2
+
+["ed+1@m+x.com","ed+2@m+x.com"]
+=> 1
+
+# User parts that become empty.
+["..@z.com",".+abc@z.com","a@z.com"]
+=> 2
+
+# Users made of the same letters are still different users.
+["listen@x.com","silent@x.com","enlist@x.com"]
+=> 3
+
+# Addresses of 100 characters: 94 a's, and two that both become 93 a's.
+["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@b.com","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@b.com","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa+@b.com"]
+=> 2
+
+# 100 addresses, all different.
+["aa@d.com","ab@d.com","ac@d.com","ad@d.com","ae@d.com","af@d.com","ag@d.com","ah@d.com","ai@d.com","aj@d.com","ak@d.com","al@d.com","am@d.com","an@d.com","ao@d.com","ap@d.com","aq@d.com","ar@d.com","as@d.com","at@d.com","au@d.com","av@d.com","aw@d.com","ax@d.com","ay@d.com","az@d.com","ba@d.com","bb@d.com","bc@d.com","bd@d.com","be@d.com","bf@d.com","bg@d.com","bh@d.com","bi@d.com","bj@d.com","bk@d.com","bl@d.com","bm@d.com","bn@d.com","bo@d.com","bp@d.com","bq@d.com","br@d.com","bs@d.com","bt@d.com","bu@d.com","bv@d.com","bw@d.com","bx@d.com","by@d.com","bz@d.com","ca@d.com","cb@d.com","cc@d.com","cd@d.com","ce@d.com","cf@d.com","cg@d.com","ch@d.com","ci@d.com","cj@d.com","ck@d.com","cl@d.com","cm@d.com","cn@d.com","co@d.com","cp@d.com","cq@d.com","cr@d.com","cs@d.com","ct@d.com","cu@d.com","cv@d.com","cw@d.com","cx@d.com","cy@d.com","cz@d.com","da@d.com","db@d.com","dc@d.com","dd@d.com","de@d.com","df@d.com","dg@d.com","dh@d.com","di@d.com","dj@d.com","dk@d.com","dl@d.com","dm@d.com","dn@d.com","do@d.com","dp@d.com","dq@d.com","dr@d.com","ds@d.com","dt@d.com","du@d.com","dv@d.com"]
+=> 100
+
+# 100 addresses, all for the mailbox z@y.com.
+["z@y.com",".z.+k.@y.com","..z..+kk@y.com","z...@y.com",".z+kkkk@y.com","..z.+.@y.com","z..@y.com",".z...+kk.@y.com","..z+kkk@y.com","z.@y.com",".z..+@y.com","..z...+k.@y.com","z@y.com",".z.+kkk.@y.com","..z..+kkkk@y.com","z...@y.com",".z+k@y.com","..z.+kk.@y.com","z..@y.com",".z...+kkkk.@y.com","..z+@y.com","z.@y.com",".z..+kk@y.com","..z...+kkk.@y.com","z@y.com",".z.+.@y.com","..z..+k@y.com","z...@y.com",".z+kkk@y.com","..z.+kkkk.@y.com","z..@y.com",".z...+k.@y.com","..z+kk@y.com","z.@y.com",".z..+kkkk@y.com","..z...+.@y.com","z@y.com",".z.+kk.@y.com","..z..+kkk@y.com","z...@y.com",".z+@y.com","..z.+k.@y.com","z..@y.com",".z...+kkk.@y.com","..z+kkkk@y.com","z.@y.com",".z..+k@y.com","..z...+kk.@y.com","z@y.com",".z.+kkkk.@y.com","..z..+@y.com","z...@y.com",".z+kk@y.com","..z.+kkk.@y.com","z..@y.com",".z...+.@y.com","..z+k@y.com","z.@y.com",".z..+kkk@y.com","..z...+kkkk.@y.com","z@y.com",".z.+k.@y.com","..z..+kk@y.com","z...@y.com",".z+kkkk@y.com","..z.+.@y.com","z..@y.com",".z...+kk.@y.com","..z+kkk@y.com","z.@y.com",".z..+@y.com","..z...+k.@y.com","z@y.com",".z.+kkk.@y.com","..z..+kkkk@y.com","z...@y.com",".z+k@y.com","..z.+kk.@y.com","z..@y.com",".z...+kkkk.@y.com","..z+@y.com","z.@y.com",".z..+kk@y.com","..z...+kkk.@y.com","z@y.com",".z.+.@y.com","..z..+k@y.com","z...@y.com",".z+kkk@y.com","..z.+kkkk.@y.com","z..@y.com",".z...+k.@y.com","..z+kk@y.com","z.@y.com",".z..+kkkk@y.com","..z...+.@y.com","z@y.com",".z.+kk.@y.com","..z..+kkk@y.com","z...@y.com"]
+=> 1
+
+# Domains of 98 characters: the second differs from the first only in its
+# last letter, the third has no dot after the q's, the fourth repeats the first.
+["k@qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq.rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.com","k@qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq.rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrs.com","k@qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.com","k@qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq.rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.com"]
+=> 3
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["b...bb@a.b.com",".a@a.b.com",".bbb.@a.b.com"]
+=> 2
+
+@gen 2 small
+[".ab.@a.b.com",".@b+a.com","a..b@a.b.com",".@a.b.com",".+@b+a.com"]
+=> 3
+
+@gen 3 small
+["bba@ab.com","bba+c.@b.com","..b@b.com",".bb...a+@b.com","b.@ab.com","b+@ab.com"]
+=> 4
+
+@gen 4 small
+["a+a+@a.com","a..@a.com"]
+=> 1
+
+@gen 5 small
+["ba@b+a.com","...abb.@ab.com",".a..bb@ab.com","ba++@b+a.com"]
+=> 2
+
+@gen 6 small
+["b+.@b.com","ba@b.com","ba..@b.com","b@b.com"]
+=> 2
+
+@gen 7 small
+["aa.+c@b+a.com",".aa...@b+a.com","a@a.com","a.a+ac@a.com"]
+=> 3
+
+# Full-size cases: a few users at a few domains, and 30 users at many.
+@gen 13
+["ccdccacccd.bbbdeedaecdebb.a.cac.++c+b.c+a.@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com",".ccdccacccd.bbbdee..da.ecdebbaca.c++aaabb.+.@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbc.c.edcde@bbazx.com","dccadbccedcde++bcb+b.a....ba.aa.aaacccbacb.+baa@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccad.bccedcde@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbccedcd.e@bbazx.com",".ccdccacccdbbbdeedaec.debbacac+.+.aaa+.baac++cacbcbc+a..+cbc.a...+b...bb+.a+..c.++bbcc+bc@bbazx.com","dccadbccedcde@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdccacc.cdbbb.deeda.ecdebbacac+c+ca.a.baabb+a+cb+++bb@bbazx.com","dccadbccedcd.e@bbazx.com","dccadbccedcd.e.@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbccedcde+cb+@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","d.ccad..bcc.edc...de+a.++.ba+cbc.a.c.a..+aa.b@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbccedcde@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dcca.dbcc.edcd..e+cc+.@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dccadbccedcd..e+a@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdccacccdb.bbdeedaecdebbacac@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","ccdcca.cccdbbbdeedaecdebbacac+aacba.c+.+..+.@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdccacccdb.b.bdeedaecdebbacac+baacc+.a.+b+.c...@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbccedcde.+bcc.ca...+.b++.cc+babc+ac@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdc.cacccdbbbdeedaecdebbaca.c@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdc.cac.ccd.bbbdeeda.ecdebbacac+ac@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","ccdccacccdbbbdeedaecd.ebb.acac+aacabbc++.++bb.c.++.a@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbcc.edcde+bc.cc.c.c+aa+.cc+c..@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccd...cc.acccdbbbdeedaecdebbacac@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com",".dccadbccedcd.e@bbazx.com","dccadbccedcde+abba.a+bbcc+.c@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccd.cc.accc.dbbbdee.daecdeb.bacac@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbcc.ed.cde@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dc..cadbcce.dcd.e@bbazx.com","dccadbccedcde++.cbabaa.+a@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdccacccdbbbdeedaecdebbacac+b.+++bbba+a@bbazx.com","ccdccacccdb.b.bdeedaecde.bbacac.@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdc.cacccdb.bbdeeda.e.cd..e..bbacac@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dccadbccedcde@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbcce.dcde@bbazx.com","dccadbccedcde@bbazx.com","dccadbccedcde@bbazx.com","dccadbcc.edc.de@bbazx.com","ccdcca.c.ccdbbbdeedaecdebbaca.c..@bbazx.com","ccdccacccdbbbdeedaecdebbacac@bbazx.com","ccdccacc.cdbbbdeedaecde..bbacac+bb++bcab..b.b+c++c.acb+@bbazx.com","ccdccacccdbbbdeedaecdebbacac@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbccedc..de+.+aaca+a@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dcc.adbc.c..e.d.cde@bbazx.com","ccdccacccdbb.bdeedaecd.ebbacac+bab+bb.+b+bcba.aa+abcbaba.c.@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","cc.dccac.c...cdbbbdeedaec.debbacac@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","ccdc.cacccdbb.bdeeda.ecd.ebbacac@bbazx.com","ccdc.cacccdb.bbdeedaecdebb.acac@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccad.bccedcde+b+ab+aabbc.@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","ccdccacccdbbbdeedaecdebbacac@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dccadbcc.e.d..cde@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com",".dccadbccedcde++b+.acc+c@bbazx.com","ccdccacccdbbbdeedaecdebbac.ac+.cc.+cc.c+b.c+.a@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dccadbc.c.edcde@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbcced..cde+aa+.ac+..ba.c+c.bacc.ba.+cbcbcacac.c@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","d.cca.dbc.cedcde@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dcc.adbccedcde@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdccacccdb.bbdeed.aecd.ebbacac@bbazx.com",".dccadbc.cedc.de@bbazx.com","ccdccacccdbbbdeedaecdebbaca.c@bbazx.com","dccadb..c.c.e.dcde@bbazx.com","dccadb.cc.edcde.+c+acb.a+baac.a.cab.ac+a@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","ccdcc.acccdbbbde.eda.ecdebbac.ac++c++b+++b...bba+@bbazx.com","ccdccacccdbbbdeed.aecdeb.baca.c@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdccacccdbbbdee.daecd.eb.bacac+@bbazx.com","ccdcc.acccdbbbdee.daec..de..bbacac@bbazx.com",".ccdc..cacccdbbb.deedaecdebb.acac@bbazx.com","dccadbccedcde+.ac+.a@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","d.ccadbccedcde+ca+.bca.a+bbaa..c+.+.ccbabaaac+a.b@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccad.bccedcde.@bbazx.com","dccad.bccedcde@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","ccdccacccd.bbbdeedaecdebb.acac+abcaa.b+a.accc.+.caac.a.+c.a+@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbccedcde@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdccacccdb.bbd.eedaecdebbacac@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdc..cacccdbbbdeedaecdebbacac@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadb.ccedcde@bbazx.com","dccadbccedc.de+acaab.caabb+b.+ac.ab+ac+a@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdccac.cc..dbbbdeedae..cdebbac.ac.@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbccedcde+.cb.b++ac+abc.bbacc.aac@bbazx.com","ccdcc.acc.cdbbbdeedaecdebbacac+cc+a+.++c.c+.++..ab+.cb+c..ccca.c..cb+bbb+a@bbazx.com","dccad.bccedcde@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dccadbcced.cd.e+.a++ababa.ab.a+bc.@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccad.bccedcde@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbccedcde@bbazx.com","dccadbccedc.de+cb.bcaba@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdcc.acccdbbbdeedaecd.ebbacac+b.cc.a+bbab..ab.c.bb+.ccacb+cbab.+.ba+@bbazx.com","c.cdcca..c.ccdbbbdeed..a.e..cdebbaca.c@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdcc.acccdbbbd.eedaec.de.bbaca..c@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","dccadbccedcde+.baa@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com",".dccadbccedcde+ca+ca+b+aa++.a+caa.+cacc+bba+ccbc.bccb+c+acab+cb@bbazx.com","ccd.cca.cccdbbbdeedaecdebbacac@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dccadbccedcde+.bbaa.a+b++a@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","ccd.ccac.ccdbbbdeedaecd..ebbacac@bc..yz.yyxxbb.zabzaaxzzyaca.ca.com","ccdcc.acc.cdbbbdeedaecdebbacac+.c+ccc@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","ccdccacccdbbbdeedaecdebbacac@bbazx.com","dccadbccedcde+b.ba@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dccadbccedcde+b.b+aa..b+cc.aabaa.a@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dccadb.cced.cde@zbzxyby.xbbzcbyyaz.yaz....xab.bazaaxx...b.xz...c.com","dccadbccedcde+acb.a+c.a+b.c+bbcaabbc.+.ab+a.bb+..ab+.bbc+c.bcbbc+.b..+.@bbazx.com"]
+=> 6
+
+@gen 11
+["eecc.aecb.dcbeebbcaeea+aa.bc@y.com","eeccaecbdcbeeb.bcaeea@bzbxb.yczyyzyacaxcxzc.cbcb.abxzcybzzya..ycz.com","bacacbcdbaedacdcecebbdcbebab@a+x.com",".cbb.ac.da.bacacdbabdeccd.caeae.c@a+x.com","aeaaceaedcdbaebde.adeabbabdcde.@y.com",".ddeeda@za.com","d.ececbed..aabbdeaedbeddbdabaabb+.+cab..b+cc+cb@zbzccz.a.com",".+ca.bcbc.ba.c.++aaab+bcab.+cbbc..a.cabcbbababacabaa+c+ca@x.baaz.azaz.com","de.cecbeda.abbdea.e.dbed.dbd.abaab.b+.b+acbbcaaa+.+bb.b.c+a.+bac..bababb..+..cabbccb@ac.com",".eecbde.cca+b+ca+acc++b.b++cc++bcbba+@bzbxb.yczyyzyacaxcxzc.cbcb.abxzcybzzya..ycz.com","eaddeb.cdacbebeabe.cbccededcccce++a.@a+x.com","bbbcaedbd@ycc.zzx.bc.a.com","debdedcdacbb.bc.acabbbdabecadcca+cb+c.baa.+@bzbxb.yczyyzyacaxcxzc.cbcb.abxzcybzzya..ycz.com",".cbbacdabacacdbabd.eccdcaeaec@zbzccz.a.com","aacbba.cdddacdbcbdceb..a.ddeeec.db@cz.com","cd.dacdbaadcdeca.ddeacbedddcdde+a..@zbzccz.a.com","cadaebccd.abeaac.dc.beeebe.cdb+bc.caa..ca+b+b++bbccc.cbbba......cccbb+ba+a+@ac.com","eec.caecbdcbeebbcaeea++...abbca++abab+.cc+.a+..+.c.+c@cbbaabza.com","bacacbcdbaedacd.cece.bbdcbeba.b@a+x.com","aeaa.ce..aedcdba.ebdeadeabb.abdcde@cz.com","aeaac.e.aedcdbaebd.eade.abbabdcde+b@a+x.com","aeeacbdc+a+.cb.+.ac+cb@y.com","cdec++a+bccc..+.b+c+caac.+abc++.cacc@cbbaabza.com","ae.eacbdc@a+x.com","eabbeabdbb@cbbaabza.com","bded.dbdcdaede.adbcb@ac.com","caedbaaaababbcdbdcdc.cbdabad.bbb+c..a.+bacbc.cacca+cb@y.com",".caedb..aaaababb.cdbdcdccbdabadbb.b@y.com","ddccba.bbedabedecdacdd+a+.+bc.+abbb+aaaa.bac.cb+bccbba....c.b+ccb@zbzccz.a.com","ddc+bb.c+babc+b+++b+.+++baa.b+cc..c.+aa.bb++cca+cbaa+ab+a++@x.baaz.azaz.com","bbb.ca.ed.bd@bcxx.c.com","ce..eaebbaeeebabbebdde@bcxx.c.com",".+c.ca.a+c..ac+++ba....a+cb.baba+.bb.+cc.aba..aaabcabc+ca.+.+a+...cbc+++bca@x.baaz.azaz.com","bcc++++.bb.+..+bc@za.com","cada..ebccdabeaacdcbeeebecdb@xax..bc.yaa.com","bacacbcdbaedacd.cecebbdcbeb.a.b@cbbaabza.com","cada..ebc.cdabeaacd.cbeeebecdb@zbzccz.a.com","aacbbacdddacdbcbdceb.addeeecdb+.+b.bc+cac.a.ac+bac++c.++a@y.com","bbbcae.dbd@za.com","cbb.acdabacac..dbabdecc.dcaeaec@a+x.com","aac..bbacdddacdbc.bdce.baddeeecdb@x.baaz.azaz.com","dbceacaaacaebededcadd++.ccbbc+bc.+...cabbba++cccbc.++ab+bac@x.baaz.azaz.com","d.dc.+++cab@x.baaz.azaz.com","ddc@cz.com","eeccae.cb..dcbeebbcaeea+caaaac.+c@cz.com","c.eeaebba.eeebabbebdde+.cca.ab+c+a++abc.b..a+cc...cab+bb.+bbabb.b.b+.+c.+c+.c.cba+aaa...@ac.com","bacacbcdbaedacdceceb..b.dcbebab@a+x.com","aeeacbdc++b++bcb.+cbacbcb+.a..+b.bacbbaa.cb.cb+ac.ccabc.+bbb+.b.ca.b.@cz.com","bbbcae.dbd@bcxx.c.com","baca.cbcdb.aedacdcece.bbdcbebab@ycc.zzx.bc.a.com","aebaaedebce@cbbaabza.com","bacacbcdbaedacdcec.ebbdcbe.bab@bcxx.c.com","dcedbceeedbabba.bbaddbabdbd@xax..bc.yaa.com","ae.eacbdc++c.cbb.c+bcb++.a@bzbxb.yczyyzyacaxcxzc.cbcb.abxzcybzzya..ycz.com","aeaaceae.dcdbaebdeadeabb.abdcde@xax..bc.yaa.com","c@y.com",".bdeddbdcda.edeadbcb+a+b.b..+.c+ca.aa@a+x.com","a.acbbac.dd.dac.dbcbdcebad.de.eecdb@ac.com","eaddebcdacbebea.becbc.cededc.ccce@y.com","eaddebcdac.bebeabe.cbccededcccce+abcb+.ac+++.c..+bb@ac.com","eabbeab.dbb.+..b+cbbb...b+cb+caacba+c..aaaca+abbac+.c++a@bcxx.c.com","c.abcbbbdeddcebbcccdbddadd@zbzccz.a.com","cb.bacdabac.acdbab.decc.dcaeaec@a+x.com","bdeddbdcdaed.eadbcb+bab+acbbbaba.+babab+bc+c+..+.cb+.bb+ab+bc+a@za.com","bdeddbdcdaedeadbcb+a+ab.a+.aaaaccab..b.b.cbbabc.ac+.b.bcba++c@za.com","ddc+cbc+bc+b+caa+b..b+b++ba@xax..bc.yaa.com","dbce.a.caaacaebededcadd+c..+cbc+@a+x.com","bbbc.ae.db.d+.aac.+a+acaab++c.cba@ac.com","eabb.ea.bdbb@ac.com","caedbaaaababbcdbdc.dccbdaba.dbbb@cz.com","eecca.ecbdcbeebbcaeea@cbbaabza.com","bbedbcbebd..a.dcbbe.ceaddccbcee+a+++c..a.aa+aaa+a.aa+cc++b+aa@x.baaz.azaz.com","c.abcbbbdeddcebbcccdbdd..add+++.ca+cbb+..ba+.+b.aaabcbccaa.+ab++a.+bca.bab@zbzccz.a.com","eaddebcdacbebeabecbc.cededcccce+cbb.c@bzbxb.yczyyzyacaxcxzc.cbcb.abxzcybzzya..ycz.com","c.aaeaabddae.b.@bcxx.c.com","aeaac.eaed.cdbae.bdeadeabbabdcde@ycc.zzx.bc.a.com","ddc@bzbxb.yczyyzyacaxcxzc.cbcb.abxzcybzzya..ycz.com","cad.aebccdab.eaacdcbe.eebecdb+accaac.a+ca.+c+ac.aaac+a+@bcxx.c.com","e.addebcdacbebe.abecbc.c.ededc.ccce@zbzccz.a.com","dbceacaaacaeb.ededc.add+abbccacb+c+..ca..acaa..a.c+ba++.b.+b..+b+++accc+c.b..a+@bcxx.c.com","b..acac.bcdba.edacd.cecebbdcbebab@y.com","c.bba.cdabacacdba..bdeccdcaeaec++cccac+++cbca++cbc+ccc.ccc+a.cbc.cc+bb++caa++..+ccab.++c...a+@y.com","eeccaecbdcbeeb..bcaeea@bcxx.c.com","bd..eddbdcdae.deadbcb+..cababb..++aa+a@za.com","aebaae.debce+bb.c+++ac.bc+@xax..bc.yaa.com","bbedbcb.e.b.dadcbb..eceaddccbcee@ac.com","cddacdb.a.adcdecadd..eacbedddcdde@bcxx.c.com","ea.ddebc.dacbebeabecbccededcccce.+.ba.caa.a.+..bbac.+..bbbba.@ac.com","dbce.acaaacaebed.edcadd@za.com","ddccbabbe.dabedecdac.dd.+c@cz.com",".++a.+.a+ca.+bbca+b+@bcxx.c.com","cdec+c.a+aa..c.bcbabac..ca.+cbccab.a+b+ab+cc+.aba@xax..bc.yaa.com","bc.c@y.com","debdedcd.acb.bbcacabbbdab..ecadcca+abca++ab++aac@bcxx.c.com","b.b.edbcbebd.adcbbeceadd.ccbc.ee.@x.baaz.azaz.com","cddacd.baa.d.cdecadde.a.cbed.ddc.dde@xax..bc.yaa.com","caedbaaaa.ba.bbcdbdcdccbdabadb..bb+ca.cb.aac+caac.+bcaabbacab...b..cc+aaabb+ac.c+b+bbb++@cz.com","ddc.+.@ac.com","bdeddbdcd.aedeadbcb.+.c.ab.baabb+bcbbc+c.ba.a@ycc.zzx.bc.a.com","cbbacdaba.cacdbabdeccdcaea...ec+.c+acc.+a+ba.ccacb+b.bca.a@bcxx.c.com"]
+=> 85

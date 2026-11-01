@@ -1,0 +1,114 @@
+# Reverse Only Letters.
+
+@example The letters G, o, i, t come back as t, i, o, G on the same four indices; the uppercase G moves to index 4, and 4 and ! stay put.
+"Go4it!"
+=> "ti4oG!"
+
+@example [, ], _ and ^ are not letters, so only a, b, C, d trade places.
+"[ab]_C^d"
+=> "[dC]_b^a"
+
+@example There is no letter at all, so nothing moves.
+"2+2=4"
+=> "2+2=4"
+
+# A single letter, alone and between non-letters.
+"q"
+=> "q"
+
+"1&x&2"
+=> "1&x&2"
+
+# A single non-letter.
+"#"
+=> "#"
+
+# Only letters: the whole string reverses, each letter keeping its case.
+"abcDE"
+=> "EDcba"
+
+# No letters, but the characters between Z and a, and @ just before A.
+"[]^_`@"
+=> "[]^_`@"
+
+# Letters next to @ [ ` ] ^ _.
+"@Z[`a]^_"
+=> "@a[`Z]^_"
+
+# Digits between the letters.
+"a1b2c3d"
+=> "d1c2b3a"
+
+# Long runs of non-letters on both sides of the letters.
+"!!!??abc??!!!"
+=> "!!!??cba??!!!"
+
+# Letters only at the two ends.
+"M%%%%%%n"
+=> "n%%%%%%M"
+
+# An odd number of letters: the middle one stays where it is.
+"pq.r.st"
+=> "ts.r.qp"
+
+# Alternating, starting and ending with a non-letter.
+".a.B.c.D."
+=> ".D.c.B.a."
+
+# Repeated letters.
+"aab"
+=> "baa"
+
+"x=x=y"
+=> "y=x=x"
+
+# The longest string: 50 letters, then 50 digits.
+"abcdefghijklmnopqrstuvwxyABCDEFGHIJKLMNOPQRSTUVWXY01234567890123456789012345678901234567890123456789"
+=> "YXWVUTSRQPONMLKJIHGFEDCBAyxwvutsrqponmlkjihgfedcba01234567890123456789012345678901234567890123456789"
+
+# 100 letters and nothing else: every one of them moves (a stack or buffer
+# for the letters needs room for all 100).
+"dkryFMTahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnuBIPWdkryFMTahovCJQXelszGNUbipwDKRYfmtAHOVcjqxELSZgnu"
+=> "ungZSLExqjcVOHAtmfYRKDwpibUNGzsleXQJCvohaTMFyrkdWPIBungZSLExqjcVOHAtmfYRKDwpibUNGzsleXQJCvohaTMFyrkd"
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"[_^^A1b"
+=> "[_^^b1A"
+
+@gen 2 small
+"@_]`["
+=> "@_]`["
+
+@gen 4 small
+"a`B`"
+=> "B`a`"
+
+@gen 5 small
+"A!`1Z`"
+=> "Z!`1A`"
+
+@gen 6 small
+"bA"
+=> "Ab"
+
+@gen 7 small
+"aZAaAZ"
+=> "ZAaAZa"
+
+@gen 8 small
+"Z_@[^^b"
+=> "b_@[^^Z"
+
+# Full-size cases: letters only at both ends, only in the middle, and mixed.
+@gen 2
+"GeG]]!!(83(+[[%<>$]*164^!:,.5'+01:&'6$8+(*^?]#[!9`]#&-9`167*.#,/2@]_*$[.'4#>#86#4!%9>:540#).-:*.&Buu"
+=> "uuB]]!!(83(+[[%<>$]*164^!:,.5'+01:&'6$8+(*^?]#[!9`]#&-9`167*.#,/2@]_*$[.'4#>#86#4!%9>:540#).-:*.&GeG"
+
+@gen 3
+"9,*0&5?78(>&+[7+4.^60,@>^$30*>:(].,@6$,!BEssGoaTDiZvxmAxLmdA^!6$&99@$+]>-0(_82>&;@9&9)0^'9:1(_9^;`_4"
+=> "9,*0&5?78(>&+[7+4.^60,@>^$30*>:(].,@6$,!AdmLxAmxvZiDTaoGssEB^!6$&99@$+]>-0(_82>&;@9&9)0^'9:1(_9^;`_4"
+
+@gen 5
+";kB^EgX^S.GF`l!&ij*5U[N6;I:;GZQFN$F[h3)Vi&*&fpMv^yh,5aK=)]+6a8OL;G>b3OkJ+,B*3ABNa:H;+O7k3f<v1'/WtOp="
+=> ";pO^tWv^f.kO`H!&aN*5B[A6;B:;JkObG$L[O3)aK&*&ahyv^Mp,5fi=)]+6V8hF;N>F3QZG+,I*3NUji:l;+F7G3S<X1'/gEBk="

@@ -1,0 +1,86 @@
+# Delete Columns to Make Sorted.
+
+@example Column 0 reads b, c, c and column 2 reads a, k, z: both are ordered, a repeat included. Column 1 reads o, i, x and falls from o to i.
+["boa","cik","cxz"]
+=> 1
+
+@example Column 0 falls from q to a, and column 1 from s to b.
+["qr","as","mb"]
+=> 2
+
+@example With one string there is nothing to compare.
+["zebra"]
+=> 0
+
+# The smallest input.
+["a"]
+=> 0
+
+# A single column: repeated letters keep it; one fall removes it.
+["a","a","b"]
+=> 0
+
+["b","a"]
+=> 1
+
+# Identical strings: every column is constant, so ordered.
+["xyz","xyz","xyz"]
+=> 0
+
+# Column 2 reads c, d, e, a: the only fall is between the last two strings.
+["abc","abd","abe","bba"]
+=> 1
+
+# Column 1 reads a, c, b, d: the first pair and the ends are in order, the middle falls.
+["ka","kc","kb","kd"]
+=> 1
+
+# Column 0 falls twice but is removed once; column 1 is constant.
+["az","bz","az","bz","az"]
+=> 1
+
+# Columns 1, 3 and 4 (the last) are out of order; 0 and 2 are kept.
+["abcde","badcb"]
+=> 3
+
+# 100 strings: column 0 climbs through a to y, column 1 does too but falls at the very end.
+["aa","aa","aa","aa","bb","bb","bb","bb","cc","cc","cc","cc","dd","dd","dd","dd","ee","ee","ee","ee","ff","ff","ff","ff","gg","gg","gg","gg","hh","hh","hh","hh","ii","ii","ii","ii","jj","jj","jj","jj","kk","kk","kk","kk","ll","ll","ll","ll","mm","mm","mm","mm","nn","nn","nn","nn","oo","oo","oo","oo","pp","pp","pp","pp","qq","qq","qq","qq","rr","rr","rr","rr","ss","ss","ss","ss","tt","tt","tt","tt","uu","uu","uu","uu","vv","vv","vv","vv","ww","ww","ww","ww","xx","xx","xx","xx","yy","yy","yy","ya"]
+=> 1
+
+# 1000 columns, all out of order: more than a byte-sized count can hold.
+["bcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyzbcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxy"]
+=> 1000
+
+# 256 of the 300 columns are out of order: an unsigned char count wraps to 0.
+["akkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkakkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk","bcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccacccccbcccccaccccccccccccccccccccccccccccccccccccccccc"]
+=> 256
+
+# One string of the longest length.
+["zyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqpo"]
+=> 0
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["a","b","b"]
+=> 0
+
+@gen 2 small
+["aaa","aba","aba","aba","aba"]
+=> 0
+
+@gen 3 small
+["cyrde","cloke","cnsme","cpuoe","cjgue","cukwe"]
+=> 2
+
+@gen 4 small
+["aaacb","aaccb"]
+=> 0
+
+@gen 5 small
+["ba","ba","bb","ba"]
+=> 1
+
+@gen 6 small
+["aaba","aaaa","bbaa","baab"]
+=> 2
+

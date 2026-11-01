@@ -1,0 +1,99 @@
+# Partition Array Into Three Parts With Equal Sum.
+
+@example [4,-1], [1,2] and [6,-4,1] each add up to 3.
+[4,-1,1,2,6,-4,1]
+=> true
+
+@example The total, 13, is not a multiple of 3, so three equal sums are impossible.
+[2,7,3,1]
+=> false
+
+@example The total is 0. Only the front [1,-1] sums to 0, and the rest, [5,-5], can't be cut into a middle and a back that both sum to 0.
+[1,-1,5,-5]
+=> false
+
+# The shortest arrays: three equal elements, at the lower bound.
+[-10000,-10000,-10000]
+=> true
+
+# Three elements with a total of -15, but they differ.
+[-4,-5,-6]
+=> false
+
+# Upper bound: the prefix sums reach 60000, past a 16-bit integer.
+[10000,10000,10000,10000,10000,10000]
+=> true
+
+# The total, 4, is not a multiple of 3, though four pieces of 1 can be cut.
+[1,1,1,1]
+=> false
+
+# A negative total that is not a multiple of 3: in C, -4 % 3 is -1.
+[-1,-1,-2]
+=> false
+
+# Total 0: the prefix sums return to 0 only at index 1 and at the last
+# index, which would leave the back empty.
+[5,-5,0]
+=> false
+
+# All zeros: any two cuts work.
+[0,0,0,0,0]
+=> true
+
+# Total 0, with blocks that each sum to 0.
+[3,-3,-2,2,4,-4,1,-1]
+=> true
+
+# Four prefixes sum to 2 (the third), more than three.
+[2,2,2,2,-2]
+=> true
+
+# The running sum starts above the third and comes back down; the back is a
+# single element.
+[5,-3,4,-2,2]
+=> true
+
+# The last prefix that sums to the third is too late: only the first works.
+[2,2,-2,-2,6]
+=> true
+
+# The prefix sums reach two thirds (4) before a third (2), which doesn't
+# count.
+[4,-2,4]
+=> false
+
+# A negative total that is not a multiple of 3: -10 / 3 truncates to -3
+# and -10 % 3 is -1 in C, and three pieces of -3 come before a last -1.
+[-3,-2,-1,-3,-1]
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[0,2,-2]
+=> false
+
+@gen 2 small
+[-3,-2,-3,-1,2,-2,-3]
+=> false
+
+@gen 3 small
+[0,3,-3,2,1,-3,-2,-1,3]
+=> true
+
+@gen 4 small
+[0,-3,3]
+=> false
+
+@gen 5 small
+[1,1,1]
+=> true
+
+@gen 6 small
+[0,1,-3,1,-3,3,0,0]
+=> false
+
+@gen 8 small
+[0,1,-1,0,-1,1,0,1,1]
+=> false
+

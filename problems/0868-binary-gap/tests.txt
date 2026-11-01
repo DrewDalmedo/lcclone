@@ -1,0 +1,98 @@
+# Binary Gap. n is written in decimal.
+
+@example 41 is 101001: its 1s are at places 0, 3 and 5, so the distances are 3 and 2.
+41
+=> 3
+
+@example 12 is 1100: its two 1s sit side by side at places 2 and 3; the zeros below them don't count.
+12
+=> 1
+
+@example 64 is 1000000, with a single 1.
+64
+=> 0
+
+# The smallest n.
+1
+=> 0
+
+# The largest power of two in range, 2^29.
+536870912
+=> 0
+
+# 11: two 1s side by side.
+3
+=> 1
+
+# 10101: each distance is 2; the first and last 1s are 4 apart, but not neighbours.
+21
+=> 2
+
+# 100100000: 1s at places 5 and 8; the five zeros below don't count.
+288
+=> 3
+
+# 100000101: the widest distance, 6, is at the top.
+261
+=> 6
+
+# 1100001100: the widest distance, 5, is in the middle.
+780
+=> 5
+
+# 10^9 is 111011100110101100101 followed by nine zeros.
+1000000000
+=> 3
+
+# 2^29 - 1: twenty-nine 1s in a row.
+536870911
+=> 1
+
+# 2^29 + 1: the largest answer possible.
+536870913
+=> 29
+
+# 2^29 + 2 and 2^28 + 1.
+536870914
+=> 28
+
+268435457
+=> 28
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+140
+=> 4
+
+@gen 2 small
+501
+=> 2
+
+@gen 5 small
+482
+=> 4
+
+@gen 6 small
+370
+=> 3
+
+@gen 7 small
+375
+=> 2
+
+@gen 8 small
+660
+=> 3
+
+@gen 4
+916274124
+=> 3
+
+@gen 5
+4194306
+=> 21
+
+@gen 7
+134217729
+=> 27
+
