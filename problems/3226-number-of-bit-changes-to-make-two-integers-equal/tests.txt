@@ -1,0 +1,134 @@
+# Number of Bit Changes to Make Two Integers Equal. Inputs are written in
+# decimal; -1 means k can't be reached.
+
+@example 29 = 16 + 8 + 4 + 1 and 9 = 8 + 1: take away 16 and 4.
+29
+9
+=> 2
+
+@example 18 = 16 + 2, but 2 is not a part of 28 = 16 + 8 + 4, and no move adds it, though 28 has more parts.
+28
+18
+=> -1
+
+@example 8 is not a part of 7 = 4 + 2 + 1; moves only make n smaller.
+7
+8
+=> -1
+
+# The smallest inputs, already equal.
+1
+1
+=> 0
+
+# Both at the upper bound.
+1000000
+1000000
+=> 0
+
+# k = 1 with n odd: every part but 1 goes. 999999 has 12 parts.
+999999
+1
+=> 11
+
+# k = 1 with n even: n never had the part 1.
+1000000
+1
+=> -1
+
+# The most moves: 2^19 - 1 has 19 parts, and k keeps one of them.
+524287
+262144
+=> 18
+
+# k > n, though k's low parts 4 and 1 are parts of n; a loop that stops
+# when n runs out of bits must still notice k's part 8.
+5
+13
+=> -1
+
+# The same with k's extra part at bit 19.
+3
+524291
+=> -1
+
+# n > k, but k has parts n lacks; n has fewer parts than k.
+16
+7
+=> -1
+
+# The same number of parts, in different places.
+12
+10
+=> -1
+
+# n is all ones, so every smaller k is reachable: 682 = 1010101010.
+1023
+682
+=> 5
+
+# 10^6 has parts 2^19, 2^18, 2^17, 2^16, 2^14, 2^9 and 2^6; keep 2^19 and 2^6.
+1000000
+524352
+=> 5
+
+# Both above 2^19, sharing the top part, but 1 is not a part of n.
+1000000
+524289
+=> -1
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+16
+32
+=> -1
+
+@gen 2 small
+29
+8
+=> 3
+
+@gen 3 small
+60
+44
+=> 1
+
+@gen 4 small
+61
+32
+=> 4
+
+@gen 5 small
+3
+2
+=> 1
+
+@gen 6 small
+31
+15
+=> 1
+
+@gen 7 small
+3
+17
+=> -1
+
+@gen 8 small
+8
+8
+=> 0
+
+@gen 1
+4096
+65536
+=> -1
+
+@gen 2
+764913
+557856
+=> 8
+
+@gen 3
+992466
+262274
+=> 7

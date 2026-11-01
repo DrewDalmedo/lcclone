@@ -1,0 +1,108 @@
+# Alternating Groups I.
+
+@example Bead 3 (a 0 between two 1s) and bead 4 (a 1 between two 0s) differ from both neighbours; every other bead matches one of its neighbours.
+[0,1,1,0,1,0]
+=> 2
+
+@example Around the loop, bead 0 sits between bead 4 and bead 1, both 1s, so the triple centred on bead 0 counts. No other triple does.
+[0,1,1,1,1]
+=> 1
+
+@example The colors alternate all the way round, so all six triples count.
+[1,0,1,0,1,0]
+=> 6
+
+# The smallest loop, all one color.
+[0,0,0]
+=> 0
+
+# The smallest loop: bead 1 stands out, but beads 0 and 2 are neighbours
+# with the same color.
+[0,1,0]
+=> 1
+
+# The smallest loop: only the triple centred on bead 0 counts.
+[0,1,1]
+=> 1
+
+# The smallest loop: only the triple centred on the last bead counts.
+[1,1,0]
+=> 1
+
+# Only the two triples across the seam count: beads 5 and 0. Reading the
+# beads as a line finds none.
+[0,1,1,0,0,1]
+=> 2
+
+# Neither triple across the seam counts; two inside do.
+[0,0,1,0,1,1]
+=> 2
+
+# Of the two triples across the seam, only the one centred on bead 0
+# counts.
+[1,0,0,1,0,0]
+=> 2
+
+# Of the two triples across the seam, only the one centred on the last
+# bead counts.
+[1,1,0,1,0]
+=> 3
+
+# The shortest loop that alternates all the way round.
+[0,1,0,1]
+=> 4
+
+# The longest loop, alternating: every triple counts.
+[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1]
+=> 100
+
+# An odd loop can't alternate all the way round: beads 98 and 0 are both
+# 1, so the triples centred on them fail and the other 97 count.
+[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1]
+=> 97
+
+# The longest loop, all one color.
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+=> 0
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[1,0,1,1,1]
+=> 1
+
+@gen 2 small
+[1,0,1,0,0,0,0]
+=> 3
+
+@gen 3 small
+[0,1,0,0,1,1,0,1]
+=> 4
+
+@gen 4 small
+[1,0,0,0]
+=> 1
+
+@gen 5 small
+[1,0,1,1,1,0]
+=> 3
+
+@gen 6 small
+[0,1,0,1,1,0]
+=> 2
+
+@gen 7 small
+[1,1,1,1,0,1]
+=> 1
+
+# Random full-size cases.
+@gen 8
+[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1]
+=> 84
+
+@gen 9
+[0,1,1,1,0,0,0,0,0,0,1,0,1,0,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,0,0,0,1,0,1,0,1,0,1,0,1,0,0,1,0,0,0,1,1,0,1,0,0,1,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,1,1,0,0,1,0,1,1,0,1,1,0,1,0,1,1,1,0,1]
+=> 31
+
+@gen 10
+[0,0,1,1,1,0,1,1,0,1,1,0,1,1,1,0,1,0,0,0,1,0,0,0,1,0,0,1,0,0,0,0,1,1,0,0,1,1,0,0,1,0,0,1,1,1,0,0,0,1,0,1,1,1,0,1,0,0,1,0,1,1,1,1,1,0,1,1,0,0,1,1,0,0,1,0,1,1,1,1,0,1,0,1,1,0,0,0,0,1,1,1,1,1,0,1]
+=> 23

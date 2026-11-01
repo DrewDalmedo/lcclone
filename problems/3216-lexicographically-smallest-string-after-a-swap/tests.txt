@@ -1,0 +1,101 @@
+# Lexicographically Smallest String After a Swap.
+
+@example 5 and 1 are neighbours and both odd, so swapping them brings the 1 forward; 3 and 8, or 8 and 5, differ in parity.
+"38512"
+=> "38152"
+
+@example Every exchange allowed here would put a bigger digit first, so making none is best.
+"2468"
+=> "2468"
+
+@example Only one exchange: swapping 5 and 3 gives 351, which is smaller than 513 from swapping 3 and 1.
+"531"
+=> "351"
+
+# Two digits: one exchange, and two equal digits.
+"86"
+=> "68"
+
+"55"
+=> "55"
+
+# Strictly decreasing, but every pair of neighbours differs in parity, so
+# nothing may move. The last digit is even.
+"9876543210"
+=> "9876543210"
+
+# Drops between digits of different parity are skipped; the odd pair after
+# them is swapped.
+"7431"
+=> "7413"
+
+# Equal neighbours of the same parity don't use up the exchange.
+"22660"
+=> "22606"
+
+# The leftmost useful pair wins, though 8 and 0 later drop further.
+"3180"
+=> "1380"
+
+# Three decreasing digits of one parity in a row: only the first two trade
+# places, once.
+"8642"
+=> "6842"
+
+# Zero is even: it moves forward past a bigger even digit, and the answer
+# keeps its leading zero.
+"40"
+=> "04"
+
+# A zero in front never moves; the next even pair does.
+"0846"
+=> "0486"
+
+# The only useful pair is the last one.
+"1234553"
+=> "1234535"
+
+# 100 digits alternating 1 and 0: nothing may move, and the last digit is
+# even.
+"1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010"
+=> "1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010"
+
+# 100 digits, far too many for an integer type: 98 zeros, then 3 and 1,
+# which are swapped.
+"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000031"
+=> "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000013"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"22"
+=> "22"
+
+@gen 2 small
+"638340"
+=> "638304"
+
+@gen 3 small
+"25692143"
+=> "25692143"
+
+@gen 4 small
+"16"
+=> "16"
+
+@gen 5 small
+"58"
+=> "58"
+
+@gen 6 small
+"3571371"
+=> "3517371"
+
+# Full size.
+@gen 1
+"50989654327238909632329658183430941214143452787256361"
+=> "50989654327238909632329658183430941214143452787256361"
+
+@gen 2
+"6383614549812363256105052167454727478521890127494121096727074169878525854723216547490969854381450920"
+=> "6383614549812363256105052167454727478521890127494121096727074169878525854723216547490969854381450902"
+

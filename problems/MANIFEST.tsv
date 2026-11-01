@@ -798,35 +798,35 @@
 3099	harshad-number	Harshad Number	easy	no	plain	draft
 3105	longest-strictly-increasing-or-strictly-decreasing-subarray	Longest Strictly Increasing or Strictly Decreasing Subarray	easy	no	plain	draft
 3110	score-of-a-string	Score of a String	easy	no	plain	todo
-3114	latest-time-you-can-obtain-after-replacing-characters	Latest Time You Can Obtain After Replacing Characters	easy	no	plain	todo
-3120	count-the-number-of-special-characters-i	Count the Number of Special Characters I	easy	no	plain	todo
-3127	make-a-square-with-the-same-color	Make a Square with the Same Color	easy	no	plain	todo
-3131	find-the-integer-added-to-array-i	Find the Integer Added to Array I	easy	no	plain	todo
-3136	valid-word	Valid Word	easy	no	plain	todo
-3142	check-if-grid-satisfies-conditions	Check if Grid Satisfies Conditions	easy	no	plain	todo
-3146	permutation-difference-between-two-strings	Permutation Difference between Two Strings	easy	no	plain	todo
+3114	latest-time-you-can-obtain-after-replacing-characters	Latest Time You Can Obtain After Replacing Characters	easy	no	plain	draft
+3120	count-the-number-of-special-characters-i	Count the Number of Special Characters I	easy	no	plain	draft
+3127	make-a-square-with-the-same-color	Make a Square with the Same Color	easy	no	plain	draft
+3131	find-the-integer-added-to-array-i	Find the Integer Added to Array I	easy	no	plain	draft
+3136	valid-word	Valid Word	easy	no	plain	draft
+3142	check-if-grid-satisfies-conditions	Check if Grid Satisfies Conditions	easy	no	plain	draft
+3146	permutation-difference-between-two-strings	Permutation Difference between Two Strings	easy	no	plain	draft
 3150	invalid-tweets-ii	Invalid Tweets II	easy	yes	skip:sql	todo
-3151	special-array-i	Special Array I	easy	no	plain	todo
-3158	find-the-xor-of-numbers-which-appear-twice	Find the XOR of Numbers Which Appear Twice	easy	no	plain	todo
-3162	find-the-number-of-good-pairs-i	Find the Number of Good Pairs I	easy	no	plain	todo
-3168	minimum-number-of-chairs-in-a-waiting-room	Minimum Number of Chairs in a Waiting Room	easy	no	plain	todo
+3151	special-array-i	Special Array I	easy	no	plain	draft
+3158	find-the-xor-of-numbers-which-appear-twice	Find the XOR of Numbers Which Appear Twice	easy	no	plain	draft
+3162	find-the-number-of-good-pairs-i	Find the Number of Good Pairs I	easy	no	plain	draft
+3168	minimum-number-of-chairs-in-a-waiting-room	Minimum Number of Chairs in a Waiting Room	easy	no	plain	draft
 3172	second-day-verification	Second Day Verification	easy	yes	skip:sql	todo
 3173	bitwise-or-of-adjacent-elements	Bitwise OR of Adjacent Elements	easy	yes	skip:premium	todo
-3174	clear-digits	Clear Digits	easy	no	plain	todo
-3178	find-the-child-who-has-the-ball-after-k-seconds	Find the Child Who Has the Ball After K Seconds	easy	no	plain	todo
-3184	count-pairs-that-form-a-complete-day-i	Count Pairs That Form a Complete Day I	easy	no	plain	todo
-3190	find-minimum-operations-to-make-all-elements-divisible-by-three	Find Minimum Operations to Make All Elements Divisible by Three	easy	no	plain	todo
+3174	clear-digits	Clear Digits	easy	no	plain	draft
+3178	find-the-child-who-has-the-ball-after-k-seconds	Find the Child Who Has the Ball After K Seconds	easy	no	plain	draft
+3184	count-pairs-that-form-a-complete-day-i	Count Pairs That Form a Complete Day I	easy	no	plain	draft
+3190	find-minimum-operations-to-make-all-elements-divisible-by-three	Find Minimum Operations to Make All Elements Divisible by Three	easy	no	plain	draft
 3194	minimum-average-of-smallest-and-largest-elements	Minimum Average of Smallest and Largest Elements	easy	no	float	draft
 3198	find-cities-in-each-state	Find Cities in Each State	easy	yes	skip:sql	todo
 3199	count-triplets-with-even-xor-set-bits-i	Count Triplets with Even XOR Set Bits I	easy	yes	skip:premium	todo
-3200	maximum-height-of-a-triangle	Maximum Height of a Triangle	easy	no	plain	todo
-3206	alternating-groups-i	Alternating Groups I	easy	no	plain	todo
-3210	find-the-encrypted-string	Find the Encrypted String	easy	no	plain	todo
-3216	lexicographically-smallest-string-after-a-swap	Lexicographically Smallest String After a Swap	easy	no	plain	todo
-3222	find-the-winning-player-in-coin-game	Find the Winning Player in Coin Game	easy	no	plain	todo
-3226	number-of-bit-changes-to-make-two-integers-equal	Number of Bit Changes to Make Two Integers Equal	easy	no	plain	todo
-3232	find-if-digit-game-can-be-won	Find if Digit Game Can Be Won	easy	no	plain	todo
-3238	find-the-number-of-winning-players	Find the Number of Winning Players	easy	no	plain	todo
+3200	maximum-height-of-a-triangle	Maximum Height of a Triangle	easy	no	plain	draft
+3206	alternating-groups-i	Alternating Groups I	easy	no	plain	draft
+3210	find-the-encrypted-string	Find the Encrypted String	easy	no	plain	draft
+3216	lexicographically-smallest-string-after-a-swap	Lexicographically Smallest String After a Swap	easy	no	plain	draft
+3222	find-the-winning-player-in-coin-game	Find the Winning Player in Coin Game	easy	no	plain	draft
+3226	number-of-bit-changes-to-make-two-integers-equal	Number of Bit Changes to Make Two Integers Equal	easy	no	plain	draft
+3232	find-if-digit-game-can-be-won	Find if Digit Game Can Be Won	easy	no	plain	draft
+3238	find-the-number-of-winning-players	Find the Number of Winning Players	easy	no	plain	draft
 3242	design-neighbor-sum-service	Design Neighbor Sum Service	easy	no	design	todo
 3246	premier-league-table-ranking	Premier League Table Ranking	easy	yes	skip:sql	todo
 3248	snake-in-matrix	Snake in Matrix	easy	no	plain	todo

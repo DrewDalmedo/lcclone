@@ -1,0 +1,96 @@
+# Latest Time You Can Obtain After Replacing Characters. Hours run from 00
+# to 11, so the latest possible answer is "11:59".
+
+@example 13 is past the last hour, so the blank before the 3 must be 0; the last minute digit can go up to 9.
+"?3:1?"
+=> "03:19"
+
+@example Both hour digits are blank, and 11 is the largest hour there is; the blank after the 2 becomes 9.
+"??:2?"
+=> "11:29"
+
+@example With 0 as its second digit the hour can be 10; the first minute digit is at most 5.
+"?0:?8"
+=> "10:58"
+
+# No blank: the time comes back as it is.
+"07:45"
+=> "07:45"
+
+# Every digit blank.
+"??:??"
+=> "11:59"
+
+# A blank first hour digit before a 1 can be 1...
+"?1:07"
+=> "11:07"
+
+# ...but before a 2 only 0, since 12 is not an hour here.
+"?2:3?"
+=> "02:39"
+
+# The same before a 9.
+"?9:4?"
+=> "09:49"
+
+# After a 1, a blank second hour digit is at most 1.
+"1?:30"
+=> "11:30"
+
+# After a 0 it can be 9.
+"0?:1?"
+=> "09:19"
+
+# Only the first minute digit blank: 5, whatever digit follows it.
+"04:?9"
+=> "04:59"
+
+# Only the last digit blank; the readable 0 before it stays.
+"10:0?"
+=> "10:09"
+
+# Both hour digits blank: 11, not 19, 09 or 23. Filling the second one
+# first, as 9, would leave only 0 for the first.
+"??:00"
+=> "11:00"
+
+# The hour 00 is allowed; both minute digits blank.
+"00:??"
+=> "00:59"
+
+# Three blanks.
+"??:?3"
+=> "11:53"
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"0?:52"
+=> "09:52"
+
+@gen 2 small
+"?2:5?"
+=> "02:59"
+
+@gen 4 small
+"?0:??"
+=> "10:59"
+
+@gen 5 small
+"??:?1"
+=> "11:51"
+
+@gen 6 small
+"09:??"
+=> "09:59"
+
+@gen 7 small
+"?2:0?"
+=> "02:09"
+
+@gen 8 small
+"?7:2?"
+=> "07:29"
+
+@gen 9 small
+"?9:0?"
+=> "09:09"

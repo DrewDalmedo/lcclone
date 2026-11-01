@@ -1,0 +1,113 @@
+# Find if Digit Game Can Be Won.
+
+@example The short cards add up to 6 + 8 + 2 + 7 = 23. Claiming the long card scores 31 against 23.
+[6,31,8,2,7]
+=> true
+
+@example The long cards add up to 13 + 19 = 32 and the short ones to 8 + 9 + 7 + 8 = 32, so either claim ties.
+[13,8,9,19,7,8]
+=> false
+
+@example There are no short cards. Claiming the long ones takes everything, 59 against 0.
+[12,47]
+=> true
+
+# One card, the smallest number.
+[1]
+=> true
+
+# One card, the largest number.
+[99]
+=> true
+
+# Only short cards; equal numbers are separate cards.
+[4,4,4]
+=> true
+
+# 9 is short and 10 is long: 10 against 9 + 1 ties. Counting 9 as long,
+# or 10 as short, would break the tie.
+[10,9,1]
+=> false
+
+# 99 is long: it ties with eleven 9s.
+[99,9,9,9,9,9,9,9,9,9,9,9]
+=> false
+
+# A tie with many cards on each side: 11 + 12 + 13 + 14 + 15 = 65 against
+# twelve short cards that also add up to 65.
+[11,9,12,8,13,7,14,6,15,5,4,3,2,1,9,8,3]
+=> false
+
+# More short cards than long ones, but equal totals.
+[10,5,5]
+=> false
+
+# As many short cards as long ones, but the long ones add up to more.
+[10,20,9,1]
+=> true
+
+# The short cards win, 7 + 9 + 8 + 9 = 33 against 30.
+[30,7,9,8,9]
+=> true
+
+# Totals 1 apart: 49 against 50.
+[50,9,9,9,9,9,4]
+=> true
+
+# Totals 256 apart: 99 + 98 + 87 = 284 against 7 + 8 + 9 + 4 = 28.
+# Totals kept in a byte would look equal.
+[99,7,98,8,87,9,4]
+=> true
+
+# 100 cards that tie: ninety 5s against ten 45s, 450 each.
+[5,5,5,5,5,5,5,5,5,45,5,5,5,5,5,5,5,5,5,45,5,5,5,5,5,5,5,5,5,45,5,5,5,5,5,5,5,5,5,45,5,5,5,5,5,5,5,5,5,45,5,5,5,5,5,5,5,5,5,45,5,5,5,5,5,5,5,5,5,45,5,5,5,5,5,5,5,5,5,45,5,5,5,5,5,5,5,5,5,45,5,5,5,5,5,5,5,5,5,45]
+=> false
+
+# 100 cards of 99, the largest total.
+[99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99,99]
+=> true
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[9,5,14,11,5,3,2]
+=> true
+
+@gen 2 small
+[11,7,6,15,1]
+=> true
+
+@gen 5 small
+[9,9,8,17,9,18]
+=> false
+
+@gen 6 small
+[17,12]
+=> true
+
+@gen 7 small
+[14,10,7,9,6,3]
+=> true
+
+@gen 9 small
+[7,10,10,9,11,7,8]
+=> false
+
+@gen 12 small
+[4,13,5,4]
+=> false
+
+@gen 14 small
+[6,1,8,2,3]
+=> true
+
+@gen 1
+[5,8,5,5,8,3,24,4,5,3,4,4,3,6,21,4,2,3,5,6,5,5,6,8,28,21,6,7,6,9,4,9,2,33,9,4,3,9,5,5,7,4,2,1,6,5,22,6,19,25,6,27,6,6,5,9,3,4,23,3,5,23,6,6,2,4,5,5,5,8,8,3,6,1,4,18,3,18,21,23,4,5,4,3,5,6,3,22,4,4,4,18,2,16,4,6,7,5,4,2]
+=> true
+
+@gen 2
+[47,9,95,6,6,79,36,7,68,13,24,46,5,66,5,75,1,46,77,8,36,86,6,96,1,2,7,5,5,10,29,2,28,64,81,4,95,2,94,17,59,67,62,8,3,1,6,58,38,7,59,7,71,6,5,73,5,30,3,89,12,8,7,93,88,3,6,24,2,65,25,85,5,96,75,2,9,25,9,52,47,3,79,2,3,96,33,11,77,6,62,7,49,4,7,3,5,5,8,6]
+=> true
+
+@gen 5
+[11,12,3,3,5,12,10,13,11,8,10,9,14,7,7,9,6,13,11,5,9,6,4,13,16,2,3,11,3,12,8,14,12,3,4,4,6,2,3,9,2,4,4,4,3,2,8,15,13,5,3,5,6,5,4,6,7,6,10,5,15,2,7,5,5,5,11,10,4,14,6,13,4,6,6,5,6,5,8,3,5,12,5,13,5,3,3,15,6,4,7,3,8,6,14,2,9,6,5,11]
+=> false

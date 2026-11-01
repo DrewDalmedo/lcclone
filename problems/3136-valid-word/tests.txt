@@ -1,0 +1,103 @@
+# Valid Word.
+
+@example Five characters, the vowel u, the consonants Q, l and t, and a digit, which is allowed.
+"Qu1lt"
+=> true
+
+@example It has a vowel and a consonant, but # is a symbol.
+"ok#9"
+=> false
+
+@example Digits are not consonants, so the only letter, E, leaves it without one.
+"E205"
+=> false
+
+# Too short: one character, and two characters with a vowel and a
+# consonant.
+"a"
+=> false
+
+"Ba"
+=> false
+
+# Exactly 3 characters: a digit, a vowel and a capital consonant.
+"7oP"
+=> true
+
+# y and Y are consonants: the only consonant here is y, the only vowel A.
+"Ay7"
+=> true
+
+# Z, the last capital, is the only consonant: a letter range that stops
+# at Y would reject it.
+"uZ8"
+=> true
+
+# No vowel at all, only consonants (y among them).
+"rhythm"
+=> false
+
+# A symbol first, in the middle, and last after everything else passes.
+"$cat"
+=> false
+
+"do@g9"
+=> false
+
+"Pq7Rs8Tu9Vw0Xy1Za2b$"
+=> false
+
+# A consonant and digits only.
+"x99"
+=> false
+
+# Twenty digits.
+"12345678901234567890"
+=> false
+
+# Twenty characters whose only vowel, a capital, is the last one.
+"bcdfg1234hjklm5678nI"
+=> true
+
+# Twenty characters whose only consonant is the last one.
+"aeiou01234567AEIOU9z"
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"UfIEES"
+=> true
+
+@gen 2 small
+"@#@"
+=> false
+
+@gen 3 small
+"UdYIG"
+=> true
+
+@gen 4 small
+"4"
+=> false
+
+@gen 5 small
+"ueyy"
+=> true
+
+@gen 6 small
+"2Q4"
+=> false
+
+# Full size: twenty characters, the deciding one last: a symbol, the
+# only vowel, the only consonant.
+@gen 3
+"aM4uj9OD4uN2or0ER7u$"
+=> false
+
+@gen 5
+"2Fd90k15b79V00y1R7ke"
+=> true
+
+@gen 9
+"IOU40Uo93996iuaU63Oy"
+=> true

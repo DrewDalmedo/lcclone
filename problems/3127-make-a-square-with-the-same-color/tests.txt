@@ -1,0 +1,95 @@
+# Make a Square with the Same Color.
+
+@example The top-left block has three white tiles; repainting its black tile, at row 1 and column 1, makes it all white.
+[["W","W","B"],["W","B","B"],["B","W","B"]]
+=> true
+
+@example Each of the four blocks has two black and two white tiles, so making any of them one color takes two repaints.
+[["B","B","W"],["W","W","B"],["B","B","W"]]
+=> false
+
+@example The top-right block is already all white, so nothing needs repainting.
+[["B","W","W"],["B","W","W"],["W","B","B"]]
+=> true
+
+# The whole board one color.
+[["B","B","B"],["B","B","B"],["B","B","B"]]
+=> true
+
+[["W","W","W"],["W","W","W"],["W","W","W"]]
+=> true
+
+# Only one block works, and the other three are split two and two: the
+# top-left one, with three white tiles...
+[["W","B","W"],["W","W","B"],["B","B","W"]]
+=> true
+
+# ...the top-right one, with three black tiles...
+[["W","B","B"],["W","B","W"],["W","B","W"]]
+=> true
+
+# ...the bottom-left one, already all white (a test for an exact 3-to-1
+# split misses it)...
+[["B","B","W"],["W","W","B"],["W","W","B"]]
+=> true
+
+# ...and the bottom-right one, already all black.
+[["B","W","W"],["W","B","B"],["W","B","B"]]
+=> true
+
+# Rows of alternating colors.
+[["W","W","W"],["B","B","B"],["W","W","W"]]
+=> false
+
+# Columns of alternating colors.
+[["W","B","W"],["W","B","W"],["W","B","W"]]
+=> false
+
+# A checkerboard.
+[["W","B","W"],["B","W","B"],["W","B","W"]]
+=> false
+
+# Other boards where every block is split two and two.
+[["B","W","W"],["W","B","B"],["B","W","W"]]
+=> false
+
+[["W","B","B"],["B","W","W"],["W","B","B"]]
+=> false
+
+# Five black tiles, as in the second example, but the top-left block has
+# three of them.
+[["B","W","B"],["B","B","W"],["W","W","B"]]
+=> true
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[["W","B","W"],["W","W","W"],["W","B","W"]]
+=> true
+
+@gen 2 small
+[["B","W","W"],["B","B","W"],["W","B","B"]]
+=> true
+
+@gen 5 small
+[["B","B","B"],["B","W","W"],["B","B","B"]]
+=> true
+
+@gen 6 small
+[["W","B","W"],["W","B","W"],["B","W","B"]]
+=> false
+
+@gen 7 small
+[["W","W","B"],["B","B","W"],["W","W","B"]]
+=> false
+
+@gen 8 small
+[["B","B","W"],["W","B","W"],["W","B","B"]]
+=> true
+
+@gen 9 small
+[["B","W","B"],["B","W","B"],["W","B","W"]]
+=> false
+
+@gen 11 small
+[["W","W","B"],["B","W","W"],["B","W","W"]]
+=> true

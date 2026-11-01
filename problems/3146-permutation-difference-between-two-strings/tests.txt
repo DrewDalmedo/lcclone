@@ -1,0 +1,108 @@
+# Permutation Difference between Two Strings.
+
+@example m and q move one place each, and z moves two: 1 + 1 + 2.
+"mqz"
+"zmq"
+=> 4
+
+@example Nobody changes place.
+"dog"
+"dog"
+=> 0
+
+@example The order is reversed: w and e move 3 places each, a and k 1 each.
+"wake"
+"ekaw"
+=> 8
+
+# A single runner.
+"x"
+"x"
+=> 0
+
+# Two neighbours swap places.
+"ponder"
+"opnder"
+=> 2
+
+# Two runners 3 places apart swap: 3 each.
+"hcfbj"
+"hjfbc"
+=> 6
+
+# Everyone moves one place forward but the first, who drops to last.
+"vwxyz"
+"wxyzv"
+=> 8
+
+# Three swaps of neighbours.
+"lumber"
+"ulbmre"
+=> 6
+
+# Reversal of an odd length: 6 + 4 + 2 + 0 + 2 + 4 + 6.
+"jumping"
+"gnipmuj"
+=> 24
+
+# All 26 letters, not in alphabetical order, reversed: the largest total.
+"qwertyuiopasdfghjklzxcvbnm"
+"mnbvcxzlkjhgfdsapoiuytrewq"
+=> 338
+
+# All 26 letters, each moving exactly 13 places, which also gives 338.
+"abcdefghijklmnopqrstuvwxyz"
+"nopqrstuvwxyzabcdefghijklm"
+=> 338
+
+# Rotated by 3: 23 letters move 3 places left, 3 letters 23 places right.
+"abcdefghijklmnopqrstuvwxyz"
+"defghijklmnopqrstuvwxyzabc"
+=> 138
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"kmsjdew"
+"dewkmsj"
+=> 24
+
+@gen 2 small
+"wrni"
+"inrw"
+=> 8
+
+@gen 3 small
+"qngo"
+"nqog"
+=> 4
+
+@gen 4 small
+"d"
+"d"
+=> 0
+
+@gen 5 small
+"jwl"
+"jlw"
+=> 2
+
+@gen 6 small
+"oifvsbn"
+"nbsvfio"
+=> 24
+
+# Full size: all 26 letters, reversed, shuffled, and rotated by two places.
+@gen 2
+"wrniflhytzksoumvpedxjcbqag"
+"gaqbcjxdepvmuoskztyhlfinrw"
+=> 338
+
+@gen 3
+"qngofckbdzhwpsrvmeljtyuiax"
+"bcojfeklzswgxyhrnpvqdaimtu"
+=> 164
+
+@gen 8
+"tduziombykcqanerhxjfslgpvw"
+"vwtduziombykcqanerhxjfslgp"
+=> 96

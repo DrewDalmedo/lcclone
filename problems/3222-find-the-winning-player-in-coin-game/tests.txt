@@ -1,0 +1,122 @@
+# Find the Winning Player in Coin Game.
+
+@example Each turn needs one 75 and four 10s; the three 75s last three turns (Alice, Bob, Alice), and then Bob can't move.
+3
+26
+=> "Alice"
+
+@example After two turns only two 10s are left, too few to make 115, so Alice is stuck on the third turn.
+9
+10
+=> "Bob"
+
+@example No mix of 75s and at most three 10s adds up to 115, so Alice can't make even the first move.
+6
+3
+=> "Bob"
+
+# Smallest inputs: no move at all.
+1
+1
+=> "Bob"
+
+# Exactly one 75 and four 10s: one turn.
+1
+4
+=> "Alice"
+
+# Plenty of 75s, but only four 10s.
+100
+4
+=> "Alice"
+
+# Leftover 10s are no use: 7 tens allow one turn, not two.
+5
+7
+=> "Alice"
+
+# x equal to y / 4: six turns.
+6
+24
+=> "Bob"
+
+# The 75s run out first, after an even number of turns.
+8
+100
+=> "Bob"
+
+# The 10s run out first: 39 tens allow 9 turns, 40 allow 10.
+100
+39
+=> "Alice"
+
+100
+40
+=> "Bob"
+
+# Swapping x and y changes the answer: one 75 and a hundred 10s give one
+# turn, a hundred 75s and one 10 give none.
+1
+100
+=> "Alice"
+
+100
+1
+=> "Bob"
+
+# The longest game, 25 turns, and one of 24 turns near the top.
+100
+100
+=> "Alice"
+
+25
+99
+=> "Bob"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+7
+7
+=> "Alice"
+
+@gen 2 small
+5
+21
+=> "Alice"
+
+@gen 3 small
+8
+11
+=> "Bob"
+
+@gen 4 small
+4
+35
+=> "Bob"
+
+@gen 5 small
+6
+26
+=> "Bob"
+
+@gen 6 small
+2
+10
+=> "Bob"
+
+# Full size.
+@gen 1
+11
+46
+=> "Alice"
+
+@gen 2
+31
+85
+=> "Alice"
+
+@gen 3
+5
+20
+=> "Alice"
+
