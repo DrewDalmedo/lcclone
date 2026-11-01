@@ -229,7 +229,10 @@ compare: unordered 0
   a NUL-terminated string), and a solution that changes it gets a Runtime
   Error, `duplicateZeros wrote past the end of arr (arr[8])`, as LeetCode
   reports a heap buffer overflow. This holds for every one-dimensional
-  array parameter, not only the checked one.
+  array parameter, not only the checked one. Built with AddressSanitizer
+  (`--sanitize`, and `lc submit`'s sanitizer check), arrays other than
+  `char[]` have no spare element, and ASan reports a write or a read past
+  the end itself.
 - **A `void` function without `check:`** has nothing to judge: `lc test`
   and `lc submit` say so, and `lc check` reports it as an error, not as a
   problem it can't judge yet.

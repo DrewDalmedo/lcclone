@@ -283,8 +283,8 @@ static int build(checker *ck, const lc_lang *lang, const char *src,
     int rc, stopped = 0;
 
     *exe = NULL;
-    rc = lc_build_step(ck->ctx, ck->p, lang, src, lang->default_std, 0, role,
-                       ck->hooks, &ck->tmp, &b, exe, &stopped);
+    rc = lc_build_step(ck->ctx, ck->p, lang, src, lang->default_std, 0, 0,
+                       role, ck->hooks, &ck->tmp, &b, exe, &stopped);
     if (rc == LC_ERR_NOMEM || ck->ctx->err_nomem)
         return LC_ERR_NOMEM;
     if (rc != LC_OK)

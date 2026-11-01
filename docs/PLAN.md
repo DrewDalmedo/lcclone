@@ -305,7 +305,8 @@ typedef struct {
     void *ud;
     const volatile sig_atomic_t *cancel;              /* set non-zero to stop */
 } lc_hooks;
-/* lc_judge_options: std, sanitize, examples / all, your cases, stop_on_failure */
+/* lc_judge_options: std, sanitize, examples / all, your cases, stop_on_failure,
+ * sanitizer_check */
 int lc_judge(lc_ctx *, const lc_problem *, const lc_lang *, const char *src_path,
              const lc_judge_options *, const lc_hooks *, lc_report **out);
 void lc_report_free(lc_report *);
@@ -585,7 +586,24 @@ everything that went into it, compiler included.)
   hardening flag, so out-of-range `vector` access is caught;
 - turns off the `RLIMIT_AS` limit, which conflicts with ASan, and with it the
   memory verdict; triples the time limit; and turns off leak detection,
-  since LeetCode-style solutions don't free.
+  since LeetCode-style solutions don't free;
+- under ASan, the C harness gives arrays no spare zeroed element (which
+  otherwise catches a write past the end), so ASan reports a read one past
+  the end as LeetCode's does.
+
+**The sanitizer check (`lc submit`):** LeetCode builds C and C++ with ASan
+and UBSan, so a solution with a signed overflow that `-O2` folds away, a
+buffer one byte short or a read past the end fails there and passes a
+plain build. So an accepted submission is built again with the sanitizers
+and runs the same cases; a case that fails there, except by running out
+of time, fails the submission. Time and memory come from the first run,
+which keeps the memory verdict and the real time limit. Where the
+compiler has no sanitizers (musl) or their programs don't run, a probe
+finds out once per compiler and the check is skipped with a note.
+Measured cost (M4 Mac, Apple clang 21; Linux gcc 16 in a VM on it): the
+second build adds 20-50 ms in C and 80-270 ms in C++, and rerunning
+25 small cases adds about 0.2 s on macOS, where each ASan process takes
+about 8 ms to start, and 30 ms on Linux. `lc test` has no check.
 
 **Cache:** builds go in `$XDG_CACHE_HOME/lcclone/build/<slug>/<lang>-<std>/`,
 and a build is redone only when an input changes.

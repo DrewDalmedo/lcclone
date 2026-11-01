@@ -456,8 +456,9 @@ static void c_harness(lc_str *s, const lc_problem *p)
     if (sig->ret.dims == 2)
         lc_str_puts(s, ", &lc_ret_cols");
     lc_str_puts(s, ");\n");
-    /* Arrays come with a spare zeroed element (lc_rt.c); a solution that
-     * changed it wrote past the end of the array. */
+    /* Arrays come with a spare zeroed element (lc_rt.c), except under
+     * AddressSanitizer; a solution that changed it wrote past the end of
+     * the array. */
     for (i = 0; i < sig->nparams; i++)
         if (sig->params[i].type.dims == 1)
             lc_str_printf(s, "    lc_check_%s_end(\"%s\", \"%s\", %s, "

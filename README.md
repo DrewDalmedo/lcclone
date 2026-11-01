@@ -143,7 +143,9 @@ lc version
   the function to write, and `cases.txt` for cases of your own. Then it
   opens your editor (`$VISUAL`, `$EDITOR` or `vi`).
 - `lc test` builds your solution and runs it on the examples and on your
-  cases; `lc submit` runs it on every case, stopping at the first failure.
+  cases; `lc submit` runs it on every case, stopping at the first failure,
+  and then checks an accepted solution with AddressSanitizer and UBSan,
+  which LeetCode builds with.
   The solution is a file, a problem's directory, a problem's ID or slug
   (its directory in the workspace), or by default the current directory.
   They exit with 0 for Accepted, 1 for another verdict, 2 for Compile

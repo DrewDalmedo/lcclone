@@ -586,6 +586,9 @@ typedef struct lc_case_result {
     long memory_kb;           /* peak resident memory */
     int exit_code;            /* its exit status, or -1 if a signal ended it */
     int signal;               /* the signal that ended it, or 0 */
+    /* 1 when this result comes from the sanitizer check (see lc_judge),
+     * not from the run that judged the time and memory */
+    int sanitizer_check;
 } lc_case_result;
 
 /* One message of the compiler, such as an error or a warning. */
@@ -628,7 +631,23 @@ typedef struct lc_build {
      * harness. Set from LC_EV_BUILD_START on.
      */
     const char *prototype;
+    /* 1 for the build of lc_judge's sanitizer check: your solution again,
+     * with the sanitizers */
+    int sanitizer_check;
 } lc_build;
+
+/* How lc_judge's sanitizer check went (lc_judge_options.sanitizer_check). */
+typedef enum {
+    LC_SANCHECK_NONE = 0,     /* not asked for, or not reached: the run
+                                 wasn't accepted, or was built with the
+                                 sanitizers already */
+    LC_SANCHECK_PASSED,       /* the cases passed again with the sanitizers */
+    LC_SANCHECK_FAILED,       /* a case failed there, and the verdict is
+                                 its */
+    LC_SANCHECK_SKIPPED,      /* not possible here: see sanitizer_check_note */
+    LC_SANCHECK_CANCELLED     /* the cancel flag stopped it; the run is
+                                 cancelled */
+} lc_sancheck;
 
 /* The outcome of a judging run. Release it with lc_report_free. */
 typedef struct lc_report {
@@ -646,6 +665,11 @@ typedef struct lc_report {
     long max_time_ms;         /* the largest time_ms of any case */
     long max_memory_kb;       /* the largest memory_kb of any case */
     const lc_build *build;    /* lc_judge: how the solution was built */
+    lc_sancheck sanitizer_check; /* lc_judge: how the sanitizer check went */
+    /* LC_SANCHECK_SKIPPED: why, e.g. "cc has none"; else NULL */
+    const char *sanitizer_check_note;
+    /* the sanitizer check's build, once it was built; else NULL */
+    const lc_build *check_build;
     void *priv_;              /* owned memory; do not touch */
 } lc_report;
 
@@ -679,6 +703,9 @@ typedef struct lc_event {
      * `prototype` are set */
     const lc_build *build;
     const lc_finding *finding; /* LC_EV_FINDING */
+    /* case and build events: 1 when they belong to lc_judge's sanitizer
+     * check */
+    int sanitizer_check;
 } lc_event;
 
 typedef struct lc_hooks {
@@ -770,6 +797,12 @@ typedef struct lc_judge_options {
     const lc_cases *cases;    /* cases of your own to run after those, or
                                  NULL; see lc_load_user_cases */
     int stop_on_failure;      /* stop after the first case not accepted */
+    /*
+     * When the run is accepted, check it with the sanitizers (unless
+     * `sanitize` built it with them already): build the solution again
+     * with them and run the same cases. See lc_judge.
+     */
+    int sanitizer_check;
 } lc_judge_options;
 
 /*
@@ -778,6 +811,17 @@ typedef struct lc_judge_options {
  * report. Events report the build and each case. Your cases without an
  * expected result get it from the pack's reference solution (ref.c or
  * ref.cpp), which is built first.
+ *
+ * With `sanitizer_check`, an accepted run is then checked: the solution is
+ * built again with the sanitizers (build events with sanitizer_check set)
+ * and runs the same cases, as `sanitize` runs them. A case that fails
+ * there, except by running out of time, takes the place of its result in
+ * the report, which then has that verdict; results from the check have
+ * sanitizer_check set. The time and memory in the report stay those of
+ * the first run. The check is skipped, with report->sanitizer_check_note
+ * saying why, when the compiler has no sanitizers, their programs don't
+ * run here, or the solution doesn't build with them. LC_EV_DONE comes
+ * once, at the end.
  *
  * A solution that doesn't compile is not a failure of lc_judge: it returns
  * LC_OK and a report whose verdict is Compile Error, with no results.

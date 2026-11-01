@@ -228,18 +228,19 @@ last line is either a `done` event or an error document (as above, for
 errors before or during the run). For example:
 
 ```
-{"schema":1,"event":"build_start","reference":false,"lang":"cpp","std":"c++11","source":"/home/me/lc/0001-two-sum/solution.cpp","compiler":"c++","sanitize":false}
-{"schema":1,"event":"build_done","reference":false,"lang":"cpp","std":"c++11","source":"...","compiler":"c++","sanitize":false,"ok":true,"cached":false,"time_ms":412,"output":"","diagnostics":[],"prototype":"vector<int> Solution::twoSum(vector<int>& nums, int target)"}
-{"schema":1,"event":"case_start","index":0,"total":3,"file":"/home/me/lcclone/problems/0001-two-sum/tests.txt","line":5}
-{"schema":1,"event":"case_done","total":3,"index":0,"file":"...","line":5,"example":true,"custom":false,"verdict":"accepted","message":null,"inputs":[{"name":"nums","value":"[5,2,7,9]"},{"name":"target","value":"11"}],"expected":"[1,3]","output":"[1,3]","stdout":"","stdout_truncated":false,"stderr":"","stderr_truncated":false,"time_ms":2,"wall_ms":3,"memory_kb":1360,"exit_code":0,"signal":null}
-{"schema":1,"event":"done","verdict":"accepted","passed":3,"total":3,"cancelled":false,"max_time_ms":2,"max_memory_kb":1360,"warnings":[]}
+{"schema":1,"event":"build_start","reference":false,"lang":"cpp","std":"c++11","source":"/home/me/lc/0001-two-sum/solution.cpp","compiler":"c++","sanitize":false,"sanitizer_check":false}
+{"schema":1,"event":"build_done","reference":false,"lang":"cpp","std":"c++11","source":"...","compiler":"c++","sanitize":false,"sanitizer_check":false,"ok":true,"cached":false,"time_ms":412,"output":"","diagnostics":[],"prototype":"vector<int> Solution::twoSum(vector<int>& nums, int target)"}
+{"schema":1,"event":"case_start","index":0,"total":3,"file":"/home/me/lcclone/problems/0001-two-sum/tests.txt","line":5,"sanitizer_check":false}
+{"schema":1,"event":"case_done","total":3,"index":0,"file":"...","line":5,"example":true,"custom":false,"verdict":"accepted","message":null,"inputs":[{"name":"nums","value":"[5,2,7,9]"},{"name":"target","value":"11"}],"expected":"[1,3]","output":"[1,3]","stdout":"","stdout_truncated":false,"stderr":"","stderr_truncated":false,"time_ms":2,"wall_ms":3,"memory_kb":1360,"exit_code":0,"signal":null,"sanitizer_check":false}
+{"schema":1,"event":"done","verdict":"accepted","passed":3,"total":3,"cancelled":false,"max_time_ms":2,"max_memory_kb":1360,"sanitizer_check":null,"sanitizer_check_note":null,"warnings":[]}
 ```
 
 ### `build_start`, `build_done`
 
 A source file is about to be built, or was. There is one pair for your
 solution and, when your cases need expected results worked out, one for
-the problem's reference solution, after it.
+the problem's reference solution, after it. `lc submit` may add one more
+for your solution, after its cases: the [sanitizer check](#the-sanitizer-check)'s.
 
 | Member        | Type    | Meaning |
 |---------------|---------|---------|
@@ -250,6 +251,7 @@ the problem's reference solution, after it.
 | `source`      | string  | the source file |
 | `compiler`    | string  | the compiler command, e.g. `"c++"` |
 | `sanitize`    | boolean | built with the sanitizers |
+| `sanitizer_check` | boolean | the build of the sanitizer check |
 
 `build_done` adds:
 
@@ -274,6 +276,7 @@ or `"note"`), `message`, and `in_solution` (the file is your solution).
 | `index`        | integer         | the case's position in the run, from 0 |
 | `total`        | integer         | how many cases the run has |
 | `file`, `line` | string, integer | where the case is: the pack's `tests.txt`, or your cases file |
+| `sanitizer_check` | boolean | the case runs again, in the sanitizer check |
 
 `case_done` adds:
 
@@ -295,6 +298,35 @@ or `"note"`), `message`, and `in_solution` (the file is your solution).
 | `exit_code` | integer or null | its exit status; null when a signal ended it |
 | `signal`    | string or null  | the signal that ended it, e.g. `"SIGSEGV"` (a number if it has no name) |
 
+### The sanitizer check
+
+When every case of `lc submit` passes, it checks the solution with the
+sanitizers ([judging.md](judging.md#the-sanitizer-check)), and the events
+go on before `done`: a `build_start` and `build_done` for your solution
+built with them (`sanitize` and `sanitizer_check` true), then
+`case_start` and `case_done` for the cases again, with `sanitizer_check`
+true and the same `index` and `total`. The check stops at the first case
+that fails there; that `case_done` is the one the verdict comes from. A
+case of the check that is `"time_limit_exceeded"` doesn't count, and the
+check goes on. A front-end that lists the cases should show the check's
+apart, or only the one that failed:
+
+```
+{"schema":1,"event":"case_done","total":5,"index":4,...,"verdict":"accepted",...,"sanitizer_check":false}
+{"schema":1,"event":"build_start",...,"sanitize":true,"sanitizer_check":true}
+{"schema":1,"event":"build_done",...,"sanitize":true,"sanitizer_check":true,"ok":true,...}
+{"schema":1,"event":"case_start","index":0,"total":5,...,"sanitizer_check":true}
+{"schema":1,"event":"case_done","total":5,"index":0,...,"verdict":"accepted",...,"sanitizer_check":true}
+{"schema":1,"event":"case_start","index":1,"total":5,...,"sanitizer_check":true}
+{"schema":1,"event":"case_done","total":5,"index":1,...,"verdict":"runtime_error","message":"killed by SIGABRT",...,"stderr":"==7==ERROR: AddressSanitizer: heap-buffer-overflow ...",...,"sanitizer_check":true}
+{"schema":1,"event":"done","verdict":"runtime_error","passed":1,"total":5,...,"sanitizer_check":"failed","sanitizer_check_note":null,...}
+```
+
+Where the check can't run, `done` has `"sanitizer_check":"skipped"` and
+the reason in `sanitizer_check_note`. There are no events for it then,
+except when your solution doesn't build with the sanitizers: its
+`build_done` for the check has `"ok":false`.
+
 ### `done`
 
 | Member          | Type    | Meaning |
@@ -305,6 +337,8 @@ or `"note"`), `message`, and `in_solution` (the file is your solution).
 | `cancelled`     | boolean | ^C stopped it |
 | `max_time_ms`   | integer | the slowest case's CPU time |
 | `max_memory_kb` | integer | the largest peak memory of any case |
+| `sanitizer_check` | string or null | how the sanitizer check went: `"passed"`, `"failed"` (the verdict is that of a case of the check), `"skipped"`, or `"cancelled"`; null when there was none (`lc test`, `--sanitize`, or a run that wasn't accepted) |
+| `sanitizer_check_note` | string or null | why it was skipped, e.g. `"cc has none"` |
 | `warnings`      | array   | as in other documents |
 
 `lc submit` records the submission ([workspace.md](workspace.md#progress-and-history)),

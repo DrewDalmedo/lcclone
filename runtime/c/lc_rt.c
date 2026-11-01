@@ -113,23 +113,49 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
 }
 
 /*
+ * Whether this build has AddressSanitizer: gcc says so with
+ * __SANITIZE_ADDRESS__, clang with __has_feature.
+ */
+#if defined(__SANITIZE_ADDRESS__)
+#define LC_RT_ASAN 1
+#elif defined(__has_feature)
+#if __has_feature(address_sanitizer)
+#define LC_RT_ASAN 1
+#endif
+#endif
+
+/*
+ * The spare zeroed elements an array gets after the ones it holds. A
+ * solution that changes the spare one wrote past the end of the array,
+ * which LeetCode reports as a heap buffer overflow, and lc_check_N_end
+ * says so. Under AddressSanitizer there is no spare element: ASan itself
+ * then reports a write past the end, and a read too, as LeetCode's does.
+ * A char array always has one, so that it is also a NUL-terminated
+ * string.
+ */
+#ifdef LC_RT_ASAN
+#define LC_RT_SPARE 0
+#else
+#define LC_RT_SPARE 1
+#endif
+
+/*
  * For each type N with C type T, LC_RT_ARRAYS defines
  *   T *lc_read_N_array(int *size)
  *   T **lc_read_N_array2(int *size, int **colSizes)
  *   void lc_write_N_array(fn, T *a, int size)
  *   void lc_write_N_array2(fn, T **a, int size, int *colSizes)
  *   void lc_check_N_end(fn, param, T *a, int size)
- * Arrays get one zeroed element more than they hold, so a char array is
- * also a NUL-terminated string. lc_check_N_end, called after the solution
- * returns, fails when that element is no longer all zero bits: the
- * solution wrote past the end of the array, which LeetCode reports as a
- * heap buffer overflow.
+ * An array of N gets SPARE spare elements; the row and column-size arrays
+ * of a 2D array get LC_RT_SPARE. lc_check_N_end, called after the
+ * solution returns, fails when the spare element is no longer all zero
+ * bits, and does nothing when there is none.
  */
-#define LC_RT_ARRAYS(N, T)                                                 \
+#define LC_RT_ARRAYS(N, T, SPARE)                                          \
     LC_RT T *lc_read_##N##_array(int *size)                                \
     {                                                                      \
         int n = lc_rt_count(), i;                                          \
-        T *a = (T *)lc_rt_alloc((size_t)n + 1, sizeof *a);                 \
+        T *a = (T *)lc_rt_alloc((size_t)n + (SPARE), sizeof *a);           \
         for (i = 0; i < n; i++)                                            \
             a[i] = lc_read_##N();                                          \
         *size = n;                                                         \
@@ -138,8 +164,9 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
     LC_RT T **lc_read_##N##_array2(int *size, int **colSizes)              \
     {                                                                      \
         int n = lc_rt_count(), i;                                          \
-        T **a = (T **)lc_rt_alloc((size_t)n + 1, sizeof *a);               \
-        int *cols = (int *)lc_rt_alloc((size_t)n + 1, sizeof *cols);       \
+        T **a = (T **)lc_rt_alloc((size_t)n + LC_RT_SPARE, sizeof *a);     \
+        int *cols =                                                        \
+            (int *)lc_rt_alloc((size_t)n + LC_RT_SPARE, sizeof *cols);     \
         for (i = 0; i < n; i++)                                            \
             a[i] = lc_read_##N##_array(&cols[i]);                          \
         *size = n;                                                         \
@@ -189,15 +216,15 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
     {                                                                      \
         T zero;                                                            \
         memset(&zero, 0, sizeof zero);                                     \
-        if (memcmp(&a[n], &zero, sizeof zero) != 0)                        \
+        if ((SPARE) > 0 && memcmp(&a[n], &zero, sizeof zero) != 0)         \
             lc_rt_fail("%s wrote past the end of %s (%s[%d])", fn, param,  \
                        param, n);                                          \
     }
 
-LC_RT_ARRAYS(int, int)
-LC_RT_ARRAYS(long, long long)
-LC_RT_ARRAYS(uint32, uint32_t)
-LC_RT_ARRAYS(double, double)
-LC_RT_ARRAYS(bool, bool)
-LC_RT_ARRAYS(char, char)
-LC_RT_ARRAYS(string, char *)
+LC_RT_ARRAYS(int, int, LC_RT_SPARE)
+LC_RT_ARRAYS(long, long long, LC_RT_SPARE)
+LC_RT_ARRAYS(uint32, uint32_t, LC_RT_SPARE)
+LC_RT_ARRAYS(double, double, LC_RT_SPARE)
+LC_RT_ARRAYS(bool, bool, LC_RT_SPARE)
+LC_RT_ARRAYS(char, char, 1)
+LC_RT_ARRAYS(string, char *, LC_RT_SPARE)

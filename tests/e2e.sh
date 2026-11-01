@@ -75,9 +75,13 @@ TMP_P_RE=$(re_escape "$TMP_P")
 
 # The root is replaced only where a path into it, or the root itself, is
 # (so a root of /w doesn't turn @TMP@/ws into @TMP@@ROOT@s). Times and
-# sizes of runs differ from one run to the next.
+# sizes of runs differ from one run to the next. Whether lc submit checks
+# a solution with the sanitizers depends on the compiler, so the lines
+# that say it are left out; tests further down look at them.
 normalize() {
-    sed -e "s/$TMP_P_RE/@TMP@/g" -e "s/$TMP_RE/@TMP@/g" \
+    sed -e '/^Checking .* with the sanitizers$/d' \
+        -e '/^lc: note: not checked with the sanitizers: /d' \
+        -e "s/$TMP_P_RE/@TMP@/g" -e "s/$TMP_RE/@TMP@/g" \
         -e "s/$ROOT_RE\\([/\"']\\)/@ROOT@\\1/g" -e "s/$ROOT_RE\$/@ROOT@/" \
         -e "s/$ESC/<ESC>/g" \
         -e 's/[0-9][0-9]* ms/N ms/g' -e 's/[0-9][0-9.]* MB/N MB/g'
@@ -525,6 +529,17 @@ fi
 WS=$TMP/ws
 JFIX=tests/fixtures/judge
 J=$JFIX/0010-add
+MISS=$JFIX/0019-missing
+
+# Whether the C compiler's sanitizers work here (musl's gcc has none): lc
+# submit then checks accepted solutions with them, and --sanitize works.
+printf 'int main(void) { return 0; }\n' >"$TMP/san.c"
+SAN=
+# shellcheck disable=SC2086 # CC may be several words
+if $E2E_CC -fsanitize=address,undefined -o "$TMP/san" "$TMP/san.c" >/dev/null 2>&1 &&
+    "$TMP/san"; then
+    SAN=1
+fi
 
 # files_golden NAME DIR FILE...: the files, one after another, must match
 # tests/expected/NAME.txt.
@@ -832,8 +847,12 @@ for line in sys.stdin.buffer.read().decode("utf-8").splitlines():
             e += "!"
     if e == "case_done":
         e += ":" + d["verdict"]
+    if d.get("sanitizer_check") is True:
+        e = e.replace(":", "+:", 1) if ":" in e else e + "+"
     if e == "done":
         e += ":%s:%d/%d" % (d["verdict"], d["passed"], d["total"])
+        if d["sanitizer_check"]:
+            e += ":" + d["sanitizer_check"]
         assert isinstance(d["warnings"], list)
     evs.append(e)
 print(" ".join(evs))' <"$TMP/out" 2>&1) && [ "$got" = "$3" ]; then
@@ -844,8 +863,15 @@ print(" ".join(evs))' <"$TMP/out" 2>&1) && [ "$got" = "$3" ]; then
 }
 run LC_PROBLEMS=$JFIX -- test $J/wrong.c --case $J/mycases.txt --json
 json_events "lc test wrong.c --case mycases.txt --json" 1 "build_start build_done build_start(ref) build_done(ref) case_start case_done:accepted case_start case_done:wrong_answer case_start case_done:accepted case_start case_done:accepted case_start case_done:wrong_answer done:wrong_answer:3/5"
+# An accepted submission is checked with the sanitizers: its build and
+# cases again, marked + here, where there are sanitizers.
+if [ -n "$SAN" ]; then
+    checked=" build_start+ build_done+ case_start+ case_done+:accepted case_start+ case_done+:accepted case_start+ case_done+:accepted done:accepted:3/3:passed"
+else
+    checked=" done:accepted:3/3:skipped"
+fi
 run LC_PROBLEMS=$JFIX -- submit $JFIX/0017-drop/solution.c --json
-json_events "lc submit drop/solution.c --json (check: prefix, unordered)" 0 "build_start build_done case_start case_done:accepted case_start case_done:accepted case_start case_done:accepted done:accepted:3/3"
+json_events "lc submit drop/solution.c --json (check: prefix, unordered)" 0 "build_start build_done case_start case_done:accepted case_start case_done:accepted case_start case_done:accepted$checked"
 run LC_PROBLEMS=$JFIX -- submit $J/crash.c --json
 json_events "lc submit crash.c --json" 1 "build_start build_done case_start case_done:accepted case_start case_done:accepted case_start case_done:runtime_error done:runtime_error:2/5"
 run LC_PROBLEMS=$JFIX -- submit $J/ce.c --json
@@ -927,15 +953,37 @@ else
     echo "note: skipped the quickfix tests (no vim or nvim)"
 fi
 
-# --sanitize, where the C compiler has the sanitizers (musl's gcc doesn't).
-printf 'int main(void) { return 0; }\n' >"$TMP/san.c"
-# shellcheck disable=SC2086 # CC may be several words
-if $E2E_CC -fsanitize=address,undefined -o "$TMP/san" "$TMP/san.c" >/dev/null 2>&1 &&
-    "$TMP/san"; then
+# --sanitize and lc submit's sanitizer check, where the C compiler has the
+# sanitizers (musl's gcc doesn't).
+if [ -n "$SAN" ]; then
     expect_run "lc submit overflow.c --sanitize" 1 \
-        '(C, c11, sanitizers)$' 'overflow.c:1: Runtime Error on case 3 of 5' \
+        '(C, c11, sanitizers)$' 'overflow.c:1: Runtime Error on case 3 of 5 (' \
         -- submit $J/overflow.c --sanitize
-    expect_run "lc submit overflow.c" 0 '^Accepted' -- submit $J/overflow.c
+    expect_run "lc test overflow.c" 0 '^Accepted' -- test $J/overflow.c
+    expect_run "lc submit overflow.c (sanitizer check)" 1 \
+        '^Checking .*overflow\.c with the sanitizers$' \
+        'overflow.c:1: Runtime Error on case 3 of 5 with the sanitizers (' \
+        '^Runtime Error: 2/5 cases passed$' -- submit $J/overflow.c
+    # A read one past the end of an array: under the sanitizers, arrays
+    # have no spare element, so ASan sees it, as on LeetCode.
+    expect_run "lc submit missing/solution.c (sanitizer check)" 0 \
+        '^Checking .*solution\.c with the sanitizers$' \
+        '^Accepted: 5/5 cases passed' -- submit $MISS/solution.c
+    expect_run "lc submit missing/past.c" 1 \
+        'past.c:1: Runtime Error on case 2 of 5 with the sanitizers (' \
+        'heap-buffer-overflow' '^Runtime Error: 1/5 cases passed$' \
+        -- submit $MISS/past.c
+    expect_run "lc submit missing/past.cpp" 1 \
+        'past.cpp:1: Runtime Error on case 2 of 5 with the sanitizers (' \
+        '^Runtime Error: 1/5 cases passed$' -- submit $MISS/past.cpp
+    expect_run "lc submit missing/past.c --sanitize" 1 \
+        'past.c:1: Runtime Error on case 2 of 5 (' 'heap-buffer-overflow' \
+        -- submit $MISS/past.c --sanitize
+    # Running out of time with the sanitizers doesn't count.
+    expect_run "lc submit missing/slowsan.c" 0 '^Accepted: 5/5 cases passed' \
+        -- submit $MISS/slowsan.c
+    run LC_PROBLEMS=$JFIX -- submit $MISS/past.c --json
+    json_events "lc submit missing/past.c --json" 1 "build_start build_done case_start case_done:accepted case_start case_done:accepted case_start case_done:accepted case_start case_done:accepted case_start case_done:accepted build_start+ build_done+ case_start+ case_done+:accepted case_start+ case_done+:runtime_error done:runtime_error:1/5:failed"
     # On macOS the stack trace's file:line come from the .dSYM next to the
     # program, which must be under the program's own name on the first
     # run already, and no copy may be left under the name it was built as.
@@ -952,7 +1000,35 @@ if $E2E_CC -fsanitize=address,undefined -o "$TMP/san" "$TMP/san.c" >/dev/null 2>
     fi
 else
     echo "note: skipped the --sanitize tests ($E2E_CC has no sanitizers)"
+    run LC_PROBLEMS=$JFIX -- submit $MISS/solution.c
+    if [ "$st" = 0 ] &&
+        grep -q '^lc: note: not checked with the sanitizers: ' "$TMP/err"; then
+        ok
+    else
+        bad "lc submit without sanitizers" "exit $st: $(cat "$TMP/err")"
+    fi
 fi
+
+# A compiler without sanitizers, everywhere: lc submit says it couldn't
+# check the solution with them, and the solution is accepted.
+cat >"$TMP/nosan-cc" <<EOF
+#!/bin/sh
+for a do
+    case \$a in -fsanitize=*) echo 'no sanitizers here' >&2; exit 1;; esac
+done
+exec $E2E_CC "\$@"
+EOF
+chmod +x "$TMP/nosan-cc"
+run CC="$TMP/nosan-cc" LC_PROBLEMS=$JFIX -- submit $MISS/past.c
+if [ "$st" = 0 ] && grep -q '^Accepted: 5/5' "$TMP/out" &&
+    ! grep -q '^Checking' "$TMP/out" &&
+    grep -q -F "lc: note: not checked with the sanitizers: $TMP/nosan-cc has none" "$TMP/err"; then
+    ok
+else
+    bad "lc submit with a compiler without sanitizers" "exit $st: $(cat "$TMP/out" "$TMP/err")"
+fi
+run CC="$TMP/nosan-cc" LC_PROBLEMS=$JFIX -- submit $MISS/past.c --json
+json_events "lc submit --json with a compiler without sanitizers" 0 "build_start build_done case_start case_done:accepted case_start case_done:accepted case_start case_done:accepted case_start case_done:accepted case_start case_done:accepted done:accepted:5/5:skipped"
 
 # uthash comes with the C prelude, as on LeetCode; a solution may also
 # include it itself, either way.
