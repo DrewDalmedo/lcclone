@@ -1,0 +1,108 @@
+# Construct the Rectangle. Results are [L, W], the longer side first.
+
+@example 18 is 18 * 1, 9 * 2 or 6 * 3, and 6 and 3 differ the least.
+18
+=> [6,3]
+
+@example 29 is prime, so the only rectangle is a strip of 29 by 1.
+29
+=> [29,1]
+
+@example 225 = 15 * 15 is a square: its sides differ by 0.
+225
+=> [15,15]
+
+# The smallest area, a single square.
+1
+=> [1,1]
+
+# The smallest area with no square: a strip.
+2
+=> [2,1]
+
+# 3 * 4: the floor of the root, 3, divides 12, but the longer side comes
+# first, so [3,4] is wrong.
+12
+=> [4,3]
+
+# 3000 * 3001, the same shape at full size.
+9003000
+=> [3001,3000]
+
+# The largest prime in range: the search must go all the way down to
+# W = 1, and L does not fit in 16 bits.
+9999991
+=> [9999991,1]
+
+# 3162 * 3162, the largest square in range; W does not fit in 8 bits.
+9998244
+=> [3162,3162]
+
+# The top of the range, 2^7 * 5^7.
+10000000
+=> [3200,3125]
+
+# Two primes close to the root of their product.
+9922331
+=> [3163,3137]
+
+9734399
+=> [3121,3119]
+
+# A small prime times a large one.
+9999993
+=> [3333331,3]
+
+# Many divisors: 720720 = 2^4 * 3^2 * 5 * 7 * 11 * 13.
+720720
+=> [858,840]
+
+# 2^23 is no square, so the sides are 2^12 and 2^11.
+8388608
+=> [4096,2048]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+81
+=> [9,9]
+
+@gen 2 small
+156
+=> [13,12]
+
+@gen 3 small
+51
+=> [17,3]
+
+@gen 5 small
+196
+=> [14,14]
+
+@gen 6 small
+10
+=> [5,2]
+
+@gen 8 small
+172
+=> [43,4]
+
+@gen 11 small
+132
+=> [12,11]
+
+@gen 13 small
+77
+=> [11,7]
+
+# Random full-size cases.
+@gen 1
+5368489
+=> [2317,2317]
+
+@gen 2
+2313360
+=> [1530,1512]
+
+@gen 3
+6084851
+=> [148411,41]

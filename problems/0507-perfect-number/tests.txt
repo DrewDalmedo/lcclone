@@ -1,0 +1,107 @@
+# Perfect Number.
+
+@example 1 + 2 + 4 + 8 + 16 + 31 + 62 + 124 + 248 = 496.
+496
+=> true
+
+@example 1 + 2 + 4 + 5 + 10 = 22, which overshoots 20.
+20
+=> false
+
+@example No positive whole number is smaller than 1, so there is nothing to add: the total is 0.
+1
+=> false
+
+# The other four perfect numbers in range, the largest included. There
+# are no others up to 10^8.
+6
+=> true
+
+28
+=> true
+
+8128
+=> true
+
+33550336
+=> true
+
+# The smallest prime: the total is just 1.
+2
+=> false
+
+# The largest prime in range. Testing every smaller number takes 10^8
+# steps here.
+99999989
+=> false
+
+# A power of two, 2^26, falls short by exactly 1.
+67108864
+=> false
+
+# 2^10 * (2^11 - 1) has the form of the perfect numbers, but 2^11 - 1 =
+# 2047 = 23 * 89 is not prime.
+2096128
+=> false
+
+# The neighbours of the largest perfect number; 33550337 is prime.
+33550335
+=> false
+
+33550337
+=> false
+
+# 73513440 has 768 divisors, as many as any number in range; their total
+# is 292269600.
+73513440
+=> false
+
+# The top of the range.
+100000000
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+21
+=> false
+
+@gen 3 small
+4851
+=> false
+
+@gen 5 small
+29
+=> false
+
+@gen 6 small
+5770
+=> false
+
+@gen 7 small
+497
+=> false
+
+@gen 9 small
+5134
+=> false
+
+@gen 10 small
+3153
+=> false
+
+@gen 13 small
+2477
+=> false
+
+# Random full-size cases.
+@gen 2
+92972880
+=> false
+
+@gen 3
+6084851
+=> false
+
+@gen 6
+99519246
+=> false

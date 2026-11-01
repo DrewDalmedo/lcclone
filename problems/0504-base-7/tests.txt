@@ -1,0 +1,104 @@
+# Base 7.
+
+@example 52 = 1 * 49 + 0 * 7 + 3: a one in the 49s place, no sevens, and three ones.
+52
+=> "103"
+
+@example 20 = 2 * 7 + 6, and the minus sign goes in front.
+-20
+=> "-26"
+
+@example Zero has no nonzero digit, so it is written as a single 0.
+0
+=> "0"
+
+# The largest digit, then the first number with two digits.
+6
+=> "6"
+
+7
+=> "10"
+
+# The smallest negative magnitude.
+-1
+=> "-1"
+
+# A negative number ending in zeros: 49 = 7^2.
+-49
+=> "-100"
+
+# 7^2 - 1, every digit a 6.
+48
+=> "66"
+
+# Zeros inside and at the end of the digits: 7^4 + 1, and 3 * 7^4.
+2402
+=> "10001"
+
+7203
+=> "30000"
+
+# 7^8 - 1, the largest number with 8 digits, and 7^8, the smallest with 9.
+5764800
+=> "66666666"
+
+5764801
+=> "100000000"
+
+# The top of the range.
+10000000
+=> "150666343"
+
+# The bottom of the range, and -7^8: ten characters with the sign, so a
+# buffer of 10 bytes has no room for the NUL.
+-10000000
+=> "-150666343"
+
+-5764801
+=> "-100000000"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+339
+=> "663"
+
+@gen 3 small
+-276
+=> "-543"
+
+@gen 4 small
+49
+=> "100"
+
+@gen 8 small
+-2260
+=> "-6406"
+
+@gen 9 small
+35
+=> "50"
+
+@gen 11 small
+56
+=> "110"
+
+@gen 12 small
+-43
+=> "-61"
+
+@gen 14 small
+637
+=> "1600"
+
+# Random full-size cases.
+@gen 1
+815402
+=> "6634160"
+
+@gen 3
+-1034820
+=> "-11536653"
+
+@gen 5
+-9999504
+=> "-150665034"

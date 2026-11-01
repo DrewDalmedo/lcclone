@@ -1,0 +1,97 @@
+# Keyboard Row. The kept words come in the order of words, spelled as given.
+
+@example Typewriter uses only top-row keys, flask only middle-row ones and bmx only bottom-row ones; Zinc mixes i, from the top row, with z, n and c, from the bottom one.
+["Typewriter","flask","Zinc","bmx"]
+=> ["Typewriter","flask","bmx"]
+
+@example Each word has letters from more than one row, so none is kept.
+["Quiz","jump","Box"]
+=> []
+
+@example A capital is on the row of its lowercase letter, and a kept word keeps its capitals; ZOO and ban each use two rows.
+["ZOO","Halls","Upper","ban"]
+=> ["Halls","Upper"]
+
+# A single word on one row.
+["Rotor"]
+=> ["Rotor"]
+
+# A single word spoiled by a middle letter: y is on the top row.
+["Kayak"]
+=> []
+
+# Every letter of each row, in mixed case; the end letters of the rows,
+# paired within a row and across rows.
+["poiuytrewq","LKJHGFDSA","MnBvCxZ","qP","aL","Zm","qa","lz","mp"]
+=> ["poiuytrewq","LKJHGFDSA","MnBvCxZ","qP","aL","Zm"]
+
+# Words in capitals only.
+["QWERTY","ASDF","ZXCV","QAZ"]
+=> ["QWERTY","ASDF","ZXCV"]
+
+# A capital first letter, on the row of the other letters or not.
+["Pass","Lass","Vow","Tower","Nab"]
+=> ["Lass","Tower"]
+
+# One letter from another row: in the middle, at the end, at the start.
+["salsa","salqsa","salsap","psalsa","sals"]
+=> ["salsa","sals"]
+
+# A word repeated, and in other cases: each occurrence is kept.
+["flag","FLAG","flag","Flag","flog"]
+=> ["flag","FLAG","flag","Flag"]
+
+# Kept words from different rows, interleaved: the order stays that of words.
+["wet","glad","bcn","pit","hash","mvz"]
+=> ["wet","glad","bcn","pit","hash","mvz"]
+
+# 20 words, each on one row, single letters of either case among them.
+["w","E","rr","Tt","yu","II","op","AS","df","Gh","jk","L","zx","CV","bn","M","Trip","Hall","Bmx","PoP"]
+=> ["w","E","rr","Tt","yu","II","op","AS","df","Gh","jk","L","zx","CV","bn","M","Trip","Hall","Bmx","PoP"]
+
+# 20 words, each spanning two rows.
+["ax","Bo","ce","Dz","em","Fy","gn","Hp","ib","Jo","kv","Lu","mo","Nq","ox","Pa","qz","Rs","sx","Tg"]
+=> []
+
+# The longest words, 100 letters: one on the middle row, and one spoiled
+# only by its last letter.
+["asdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklL","pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppz"]
+=> ["asdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklLasdfghjklL"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["LD","gdddj","owwwu"]
+=> ["LD","gdddj","owwwu"]
+
+@gen 2 small
+["h","h","vuo","H","Ieow"]
+=> ["h","h","H","Ieow"]
+
+@gen 3 small
+["G","GF","oetuv","quoe","Np","vb"]
+=> ["G","GF","quoe","vb"]
+
+@gen 4 small
+["owt","qyn"]
+=> ["owt"]
+
+@gen 5 small
+["Ja","Ld","vcvxx","vcVXX"]
+=> ["Ja","Ld","vcvxx","vcVXX"]
+
+@gen 6 small
+["HHHWF","uspt","Uspt","O"]
+=> ["O"]
+
+@gen 7 small
+["KSHZH","C","YptoN","ksHZh"]
+=> ["C"]
+
+# Full size: 20 words, half of them 100 letters long.
+@gen 1
+["LDDKGKLGDDDJFKKJKHFDLAGAHDKGSJHKFFAHJSFAZJGALAG","Xxzxccmxncznczzxxbcxnmmcxznnccbxzbzcbbmxvzzmvnmnzvnxmvcb","cbccccvbzbvxxzvzmzmvxczbbcvzcvnznnzzvvmvxmvxnzznvcnzxnnnvzzxznxcnmvvcxvxnmnnvzccbzccmcbbcnmvmnzmxzxz","LHAGKGLLHDSDAGASLKKFHJHHDFASGDJHLDLKHDFHHLJDDFLKHKFSFGHJJJAGHJF","LDDKGKLGDDDJFKKJKHFDLAGAHDKGSJHKFFAHJSFAZJGALAG","LDdkgkLgDdDJFKKJKhfdLAgahdKgSJhKFfAhJsFazjgalag","XZnNMCCBmccbbZXCNzZMxZNNvBvcBXbMmCccXnzNXmbXbNnMNMZNcNVZCBMzvmXMBNVZxBZcbxVXcBxmMccnBvNbZ","nvcxxcvnncmznmzvxzvvxmbcxvbvcnzvnzbznmzbxnbzxvnbnxnzzzczbcvzmcncmvcxxxnvmmnzzvvmnzxnbxmbmznvznvmnzxc","XCCVZBVBZZMMBZVNMXBVNZVNMZNZBMXVZVBVNXMMVXVMMNCVNVCNZMCXXCZZBCMMMBNCZ","WWIRYWTIIUIUWOPRQIRQQOUTWYWEOPTUPOIPUUYOPYEOUETPPUYYYREOUPUPTPPPEUWWTYYITOTPYRYQIQUROUEPRQEEPRPYPIYM","Epoopruupqyyqeeereeyyrpqriiqieppreeuwtprqueurytqpwqtroiowpurqyoqrirypyuqqyeutyupetpqqwtewyeueoiuwyti","Dhhjsjdshfgagjlakkasdfdhkglfhlgakhfjdjlkjllafkhaaffgafgaaahfdgllldgdkdkjslshljghhkhlfhjflgjagljskgjg","XzEMBzVxbxcBNVXmZmCZBmxb","DJsSfLjGhlLjkLkJlShJjsdaadgKSggGafGSlfKSjfFFGgFDfJJsDgLSDAfKajaHjFldas","afkjkslsadkdjjlgkksu","nvnBNznMxXnCBcNbVBcZmNxmnmZCZZBmVNbzNcvCbXvBZMXXvVnmzMZbcZCnMNVNbZmmMfNCCNZbXcXXNCcvVVnvvCnmvCMzCbmM","nVNBNZNmxxnCBCNbVBczmnxMNmzczZBMvnBznCvCBxVBzMxXVvnmZMzbczCnmnvNBzmMmFNCCNZbxcXxNCcVvVnvVcnMVcMzCBMm","PwoPtPObyqpeiieuP","KJGSKKHKA","WVQIWPWPRRQWYIPEQOTEWPYOPOWRQTUW"]
+=> ["Xxzxccmxncznczzxxbcxnmmcxznnccbxzbzcbbmxvzzmvnmnzvnxmvcb","cbccccvbzbvxxzvzmzmvxczbbcvzcvnznnzzvvmvxmvxnzznvcnzxnnnvzzxznxcnmvvcxvxnmnnvzccbzccmcbbcnmvmnzmxzxz","LHAGKGLLHDSDAGASLKKFHJHHDFASGDJHLDLKHDFHHLJDDFLKHKFSFGHJJJAGHJF","XZnNMCCBmccbbZXCNzZMxZNNvBvcBXbMmCccXnzNXmbXbNnMNMZNcNVZCBMzvmXMBNVZxBZcbxVXcBxmMccnBvNbZ","nvcxxcvnncmznmzvxzvvxmbcxvbvcnzvnzbznmzbxnbzxvnbnxnzzzczbcvzmcncmvcxxxnvmmnzzvvmnzxnbxmbmznvznvmnzxc","XCCVZBVBZZMMBZVNMXBVNZVNMZNZBMXVZVBVNXMMVXVMMNCVNVCNZMCXXCZZBCMMMBNCZ","Epoopruupqyyqeeereeyyrpqriiqieppreeuwtprqueurytqpwqtroiowpurqyoqrirypyuqqyeutyupetpqqwtewyeueoiuwyti","Dhhjsjdshfgagjlakkasdfdhkglfhlgakhfjdjlkjllafkhaaffgafgaaahfdgllldgdkdkjslshljghhkhlfhjflgjagljskgjg","DJsSfLjGhlLjkLkJlShJjsdaadgKSggGafGSlfKSjfFFGgFDfJJsDgLSDAfKajaHjFldas","KJGSKKHKA"]
+
+@gen 2
+["xzcnxzvzvczvbzmvzzncvvvvznxcvbbxmczxbbnvcmmmvvvmzxxnzzmnxmbvvnzvbmzzczvvcxnzbnvxzxznbznvczxcvnnxxnvn","xzcnxzvzvczvbzmvzzncvvvvznxcvbbxmczxbbnvcmmmvvvmzxxnzzmnxmbvvnzvbmzzczvvcxnzbnvxzxznbznvczxcvnnxxnvn","fJDlaFSsLfKSaFlHhjHslKfsGJFfFgklKHaAHjKHDkSfhdSSJkLGKAgljslJgalSDAKHsdDhshKGSgFGkljgDkhJkHkdGGkgJaAH","Cxvbvmcbbibc","YWOEEPUREEOIUOIOIWEUOYORIEUPOREWQUUQOWTQEPITWYREUUWITUQQUOYQUOUQOYOERWYPROYWIWWWEOWYUOEUYTQWERTTTUOI","LFHDDAHHDASFKGJDSSGFLAFJFJLSLLGDSFDDHDSKDDGLDAKJGKASKGJLKJJGSHKGHKKFSJHSSHHLADKSZGFLKSKDADLHLHKGKDLS","gdkjjldlkdsllhjsfgljaggjdfkj","EIWEIWYPUUUUIUUQIUWTWTWPWRQUEPQPEERTEEOQOOPQUPRUEPRYRQEPEYQIEOIOQIOROEITTUQTEEPIIPIRQPTUQOPEPIIPQYYO","IEOPITPWOEQUIRRPIPOWTIUWEPPIOYYOUUTEYPPYYERORUEQWWQPYRQOPUTOYWRQEYWTEIPEQERERORUPRTQQIEUIUTTOEIPRURQ","xzcnxzvzvczvbzmvzzncvvvvznxcvbbxmczxbbnvcmmmvvvmzxxnzzmnxmbvvnzvbmzzczvvcxnzbnvxzxznbznvczxcvnnxxnvn","AJFFHDSLSJDKLHSAFAFSGAKKSKHHHLHFJHKLKFFGGAHDGJKGAGAALFHKHLS","BGFKaAASfHgSFjLgKJLjlKssSSaHGgHKSlHAjlAFhfHdaAsALKlFjHJADJ","SFKFASGJADSKKAHSJDDLKFKDGFADAAJFHHJDSJLDJKAFGSSHLSAHDHDGKAKJSDADFSKGHGSFSFKGDLAHSHHKSDJSAGJHSHSSKDFK","vmcmmxzznbxz","Dadjgskhhsjlhdjffhjjsjdjaadkkfahfshsakdajaagkskgdjdshksdkdhjajklkfagaakjfddhjljgfsdafjldslalg","Cnvcxbbxmzxbcxmxzxncvczzxxmnzncmcbzzvcmzmvnzmbzcmccbbzvmmvxvzvxvnmcxvbzncmvmvmvccmzcvbmbzvbnnccbxmzv","bbnmbp","xzcnxzvzvczvbzmvzzncvvvvznxcvbbxmczxbbnvcmmmvvvmzxxnzzmnxmbvvnzvbmzzczvvcxnzbnvxzxznbznvczxcvnnxxnvn","zbmcbmczzbbzbmvbxbvvzvzvvxvbzzzxvnxnzcxccxzzbmvvccbmbcvzzvxvbncmmvzbzvmnxbmznvzxbccnnnxxmnmbcmnbmczg","GdkjgAGKDLfdalDFLglsAFlgsfjKlHljSldDdgDAshdhSGFgsakgASDAJSAjJSfgggshLHddalJFdhAsLgfFjgLFaLGAfkgJSkSv"]
+=> ["xzcnxzvzvczvbzmvzzncvvvvznxcvbbxmczxbbnvcmmmvvvmzxxnzzmnxmbvvnzvbmzzczvvcxnzbnvxzxznbznvczxcvnnxxnvn","xzcnxzvzvczvbzmvzzncvvvvznxcvbbxmczxbbnvcmmmvvvmzxxnzzmnxmbvvnzvbmzzczvvcxnzbnvxzxznbznvczxcvnnxxnvn","fJDlaFSsLfKSaFlHhjHslKfsGJFfFgklKHaAHjKHDkSfhdSSJkLGKAgljslJgalSDAKHsdDhshKGSgFGkljgDkhJkHkdGGkgJaAH","YWOEEPUREEOIUOIOIWEUOYORIEUPOREWQUUQOWTQEPITWYREUUWITUQQUOYQUOUQOYOERWYPROYWIWWWEOWYUOEUYTQWERTTTUOI","gdkjjldlkdsllhjsfgljaggjdfkj","EIWEIWYPUUUUIUUQIUWTWTWPWRQUEPQPEERTEEOQOOPQUPRUEPRYRQEPEYQIEOIOQIOROEITTUQTEEPIIPIRQPTUQOPEPIIPQYYO","IEOPITPWOEQUIRRPIPOWTIUWEPPIOYYOUUTEYPPYYERORUEQWWQPYRQOPUTOYWRQEYWTEIPEQERERORUPRTQQIEUIUTTOEIPRURQ","xzcnxzvzvczvbzmvzzncvvvvznxcvbbxmczxbbnvcmmmvvvmzxxnzzmnxmbvvnzvbmzzczvvcxnzbnvxzxznbznvczxcvnnxxnvn","AJFFHDSLSJDKLHSAFAFSGAKKSKHHHLHFJHKLKFFGGAHDGJKGAGAALFHKHLS","SFKFASGJADSKKAHSJDDLKFKDGFADAAJFHHJDSJLDJKAFGSSHLSAHDHDGKAKJSDADFSKGHGSFSFKGDLAHSHHKSDJSAGJHSHSSKDFK","vmcmmxzznbxz","Dadjgskhhsjlhdjffhjjsjdjaadkkfahfshsakdajaagkskgdjdshksdkdhjajklkfagaakjfddhjljgfsdafjldslalg","Cnvcxbbxmzxbcxmxzxncvczzxxmnzncmcbzzvcmzmvnzmbzcmccbbzvmmvxvzvxvnmcxvbzncmvmvmvccmzcvbmbzvbnnccbxmzv","xzcnxzvzvczvbzmvzzncvvvvznxcvbbxmczxbbnvcmmmvvvmzxxnzzmnxmbvvnzvbmzzczvvcxnzbnvxzxznbznvczxcvnnxxnvn"]
