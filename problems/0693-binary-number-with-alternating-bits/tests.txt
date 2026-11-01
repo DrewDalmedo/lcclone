@@ -1,0 +1,113 @@
+# Binary Number with Alternating Bits. Inputs are written in decimal; the
+# explanations give their binary digits, highest first.
+
+@example 170 is 10101010: halving gives the remainders 0, 1, 0, 1, 0, 1, 0, 1, which alternate to the end.
+170
+=> true
+
+@example 45 is 101101: its remainders are 1, 0, 1, 1, 0, 1, and the third and fourth are both 1.
+45
+=> false
+
+@example 74 is 1001010: its remainders are 0, 1, 0, 1, 0, 0, 1, with two 0s in a row just below the top digit.
+74
+=> false
+
+# The smallest n: a single digit, so no pair to compare. Scanning all 32
+# bits of the int would take its leading zeros for an equal pair.
+1
+=> true
+
+# Two digits: 10 alternates, 11 doesn't.
+2
+=> true
+
+3
+=> false
+
+# Equal 0s at the low end (100), which a test for neighbouring 1s alone
+# never notices.
+4
+=> false
+
+# Equal 0s in the middle: 1010010101.
+661
+=> false
+
+# Equal 1s at the top (1101) and at the bottom (101011), which a test for
+# neighbouring 0s alone never notices.
+13
+=> false
+
+43
+=> false
+
+# 31 digits, 11010...10 (0x6AAAAAAA): the only equal pair is the top
+# two digits, which a scan stopping a digit short of the top never reaches.
+1789569706
+=> false
+
+# 30 digits, 1010...10 (0x2AAAAAAA).
+715827882
+=> true
+
+# The largest n that alternates: 31 digits, 1010...101 (0x55555555). Its
+# XOR with n >> 1 is 2^31 - 1, and adding 1 to that overflows an int.
+1431655765
+=> true
+
+# Every larger n fails. Building the alternating values 1, 2, 5, 10, ...
+# in an int until one reaches n overflows after 1431655765.
+1431655766
+=> false
+
+# The largest n: 31 ones.
+2147483647
+=> false
+
+# 2^30: a 1 and thirty 0s. With 31 digits, a char[31] buffer has no room
+# for the terminator.
+1073741824
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+20
+=> false
+
+@gen 3 small
+2048
+=> false
+
+@gen 5 small
+682
+=> true
+
+@gen 6 small
+570
+=> false
+
+@gen 9 small
+1323
+=> false
+
+@gen 14 small
+511
+=> false
+
+@gen 17 small
+21
+=> true
+
+# Random full-size cases: 28 to 31 binary digits.
+@gen 2
+178957994
+=> false
+
+@gen 5
+357913941
+=> true
+
+@gen 12
+1651298594
+=> false

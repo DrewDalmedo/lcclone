@@ -1,0 +1,97 @@
+# Goat Latin.
+
+@example Old and eat start with vowels and stay; rams moves its r to the back. The bleats are maa, maaa and maaaa.
+"Old rams eat"
+=> "Oldmaa amsrmaaa eatmaaaa"
+
+@example Y is a consonant, so Yak moves its Y to the back, as My moves its M; both stay capitals.
+"My Yak"
+=> "yMmaa akYmaaa"
+
+@example Moving the only letter of a word leaves it as it was.
+"x"
+=> "xmaa"
+
+# A single word that starts with a capital vowel.
+"E"
+=> "Emaa"
+
+# Every vowel, in both cases, starting a word: no word changes but for its bleat.
+"ink Ape urn Orb elk Inn axe Eve oak Ugh"
+=> "inkmaa Apemaaa urnmaaaa Orbmaaaaa elkmaaaaaa Innmaaaaaaa axemaaaaaaaa Evemaaaaaaaaa oakmaaaaaaaaaa Ughmaaaaaaaaaaa"
+
+# Capital consonants move to the back and stay capitals.
+"Zebra Kiwi"
+=> "ebraZmaa iwiKmaaa"
+
+# y and Y are consonants.
+"yes Yo"
+=> "esymaa oYmaaa"
+
+# One-letter words, a vowel and a consonant.
+"I b"
+=> "Imaa bmaaa"
+
+# The same word three times gets a longer bleat each time.
+"go go go"
+=> "ogmaa ogmaaa ogmaaaa"
+
+# A consonant first, then nothing but vowels: only the first letter decides.
+"queue"
+=> "ueueqmaa"
+
+# Letters after the first keep their case.
+"sKY hIGH"
+=> "KYsmaa IGHhmaaa"
+
+# Ten one-letter consonant words: the last one gets 11 a's.
+"q R s T v W x Z b C"
+=> "qmaa Rmaaa smaaaa Tmaaaaa vmaaaaaa Wmaaaaaaa xmaaaaaaaa Zmaaaaaaaaa bmaaaaaaaaaa Cmaaaaaaaaaaa"
+
+# The longest result: 74 one-letter words and a two-letter one, 150 characters, give 3150.
+"a B c D e F g H i J k L m N o P q R s T u V w X y Z a B c D e F g H i J k L m N o P q R s T u V w X y Z a B c D e F g H i J k L m N o P q R s T u V Yo"
+=> "amaa Bmaaa cmaaaa Dmaaaaa emaaaaaa Fmaaaaaaa gmaaaaaaaa Hmaaaaaaaaa imaaaaaaaaaa Jmaaaaaaaaaaa kmaaaaaaaaaaaa Lmaaaaaaaaaaaaa mmaaaaaaaaaaaaaa Nmaaaaaaaaaaaaaaa omaaaaaaaaaaaaaaaa Pmaaaaaaaaaaaaaaaaa qmaaaaaaaaaaaaaaaaaa Rmaaaaaaaaaaaaaaaaaaa smaaaaaaaaaaaaaaaaaaaa Tmaaaaaaaaaaaaaaaaaaaaa umaaaaaaaaaaaaaaaaaaaaaa Vmaaaaaaaaaaaaaaaaaaaaaaa wmaaaaaaaaaaaaaaaaaaaaaaaa Xmaaaaaaaaaaaaaaaaaaaaaaaaa ymaaaaaaaaaaaaaaaaaaaaaaaaaa Zmaaaaaaaaaaaaaaaaaaaaaaaaaaa amaaaaaaaaaaaaaaaaaaaaaaaaaaaa Bmaaaaaaaaaaaaaaaaaaaaaaaaaaaaa cmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Dmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa emaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Fmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa gmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Hmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa imaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Jmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa kmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Lmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa mmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Nmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa omaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Pmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Rmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa smaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Tmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa umaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Vmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa wmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Xmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ymaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Zmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa amaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Bmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa cmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Dmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa emaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Fmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa gmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Hmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa imaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Jmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa kmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Lmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa mmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Nmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa omaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Pmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Rmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa smaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Tmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa umaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Vmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa oYmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+# A single word of 150 letters.
+"StrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStreng"
+=> "trengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengthsStrengSmaa"
+
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"OUe Y YoaU E"
+=> "OUemaa Ymaaa oaUYmaaaa Emaaaaa"
+
+@gen 2 small
+"a b"
+=> "amaa bmaaa"
+
+@gen 3 small
+"aZb"
+=> "aZbmaa"
+
+@gen 4 small
+"kaZ iO kub ekb"
+=> "aZkmaa iOmaaa ubkmaaaa ekbmaaaaa"
+
+@gen 5 small
+"Ay IEAY IiU Ek bZa"
+=> "Aymaa IEAYmaaa IiUmaaaa Ekmaaaaa Zabmaaaaaa"
+
+@gen 6 small
+"ie Iue"
+=> "iemaa Iuemaaa"
+
+# Full-size cases from gen.c: a single word of 150 letters, 75 one-letter words, and words of random lengths.
+@gen 1
+"wOXLSNNRlOjisGUZpMcGiLDBaBJrfAdeOOLByLciuejeYjsTdapKpzVEvVzkyLJlaHwvUYSlCQOseVzFhhBTSZVdgDQMEgSQxBgBSBUWvklgTNUbQbxRfqyfeBPVEYEKEDxeaxdwHURGLYpEvwuuBr"
+=> "OXLSNNRlOjisGUZpMcGiLDBaBJrfAdeOOLByLciuejeYjsTdapKpzVEvVzkyLJlaHwvUYSlCQOseVzFhhBTSZVdgDQMEgSQxBgBSBUWvklgTNUbQbxRfqyfeBPVEYEKEDxeaxdwHURGLYpEvwuuBrwmaa"
+
+@gen 2
+"O S i L U o w c y i D W a z s u z E e W H T i Z U I h u q e j w I E K w q Y e O T O I k W O m T u O u E Z A m M Y y D f i k B Y k y b Q o X o d v a G"
+=> "Omaa Smaaa imaaaa Lmaaaaa Umaaaaaa omaaaaaaa wmaaaaaaaa cmaaaaaaaaa ymaaaaaaaaaa imaaaaaaaaaaa Dmaaaaaaaaaaaa Wmaaaaaaaaaaaaa amaaaaaaaaaaaaaa zmaaaaaaaaaaaaaaa smaaaaaaaaaaaaaaaa umaaaaaaaaaaaaaaaaa zmaaaaaaaaaaaaaaaaaa Emaaaaaaaaaaaaaaaaaaa emaaaaaaaaaaaaaaaaaaaa Wmaaaaaaaaaaaaaaaaaaaaa Hmaaaaaaaaaaaaaaaaaaaaaa Tmaaaaaaaaaaaaaaaaaaaaaaa imaaaaaaaaaaaaaaaaaaaaaaaa Zmaaaaaaaaaaaaaaaaaaaaaaaaa Umaaaaaaaaaaaaaaaaaaaaaaaaaa Imaaaaaaaaaaaaaaaaaaaaaaaaaaa hmaaaaaaaaaaaaaaaaaaaaaaaaaaaa umaaaaaaaaaaaaaaaaaaaaaaaaaaaaa qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa emaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa jmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa wmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Imaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Emaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Kmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa wmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Ymaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa emaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Omaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Tmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Omaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Imaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa kmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Wmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Omaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa mmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Tmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa umaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Omaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa umaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Emaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Zmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Amaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa mmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Mmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Ymaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ymaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Dmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa fmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa imaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa kmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Bmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Ymaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa kmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ymaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa omaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Xmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa omaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa dmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa vmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa amaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa Gmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+@gen 5
+"vk BgvhEtgjXo oSQC GrFwxBlhi mOiqjLujp UsJwNtewfv sGTjQGIZu UFbNO o NhrhwzKh VlipqDGl Q Op MY DPoy hygyZMan odjFCKwzc A CcrOQ VvVGveQbUX OrkqJF"
+=> "kvmaa gvhEtgjXoBmaaa oSQCmaaaa rFwxBlhiGmaaaaa OiqjLujpmmaaaaaa UsJwNtewfvmaaaaaaa GTjQGIZusmaaaaaaaa UFbNOmaaaaaaaaa omaaaaaaaaaa hrhwzKhNmaaaaaaaaaaa lipqDGlVmaaaaaaaaaaaa Qmaaaaaaaaaaaaa Opmaaaaaaaaaaaaaa YMmaaaaaaaaaaaaaaa PoyDmaaaaaaaaaaaaaaaa ygyZManhmaaaaaaaaaaaaaaaaa odjFCKwzcmaaaaaaaaaaaaaaaaaa Amaaaaaaaaaaaaaaaaaaa crOQCmaaaaaaaaaaaaaaaaaaaa vVGveQbUXVmaaaaaaaaaaaaaaaaaaaaa OrkqJFmaaaaaaaaaaaaaaaaaaaaaa"
+

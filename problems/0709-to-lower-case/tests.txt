@@ -1,0 +1,113 @@
+# To Lower Case.
+
+@example R, B, F and C become small letters; the digits, spaces and comma stay.
+"Room 12B, Floor C"
+=> "room 12b, floor c"
+
+@example The brackets, the _ and the @ are close to the capitals in ASCII, but they are not letters, so they stay.
+"[MAX_SIZE]@Q"
+=> "[max_size]@q"
+
+@example Small letters stay small; only the capitals change.
+"sOME wORDS"
+=> "some words"
+
+# No capital at all, so nothing changes.
+"already quiet."
+=> "already quiet."
+
+# Every letter is a capital.
+"XYZZY"
+=> "xyzzy"
+
+# Single characters: a capital, a small letter, a non-letter.
+"A"
+=> "a"
+
+"z"
+=> "z"
+
+"~"
+=> "~"
+
+# The characters on each side of both alphabets in ASCII.
+"@AZ[`az{"
+=> "@az[`az{"
+
+# The six characters that c | 32 would change though they aren't capitals.
+"@[\\]^_"
+=> "@[\\]^_"
+
+# Small letters must stay small (flipping case would turn them into capitals).
+"MiXeD cAsE"
+=> "mixed case"
+
+# Digits, the space and punctuation.
+"0123456789 !#$%&'()*+,-./:;<=>?{|}~"
+=> "0123456789 !#$%&'()*+,-./:;<=>?{|}~"
+
+# A capital at the first and at the last index.
+"Quiz Q"
+=> "quiz q"
+
+# Spaces at both ends, and nothing but spaces.
+"  Hi THERE  "
+=> "  hi there  "
+
+"   "
+=> "   "
+
+# Quotes and backslashes.
+"Say \"OK\" \\ BYE"
+=> "say \"ok\" \\ bye"
+
+# The whole alphabet of capitals.
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+=> "abcdefghijklmnopqrstuvwxyz"
+
+# The longest input, 100 characters ending in a capital.
+"Bring 3 CRATES of [PLUMS] and `FIGS` to Dock_7 @ NOON; tell Mr. Q {URGENT} ~ thanks, meet at GATE QZ"
+=> "bring 3 crates of [plums] and `figs` to dock_7 @ noon; tell mr. q {urgent} ~ thanks, meet at gate qz"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"{ALi @@"
+=> "{ali @@"
+
+@gen 2 small
+"\\M0w "
+=> "\\m0w "
+
+@gen 3 small
+"@zZa8]CM"
+=> "@zza8]cm"
+
+@gen 4 small
+"AZ\\m"
+=> "az\\m"
+
+@gen 5 small
+"a\"7||{"
+=> "a\"7||{"
+
+@gen 6 small
+"Z|"
+=> "z|"
+
+# Full-size cases from gen.c: no capitals, any printable characters, capitals only at both ends, and capitals only.
+@gen 1
+"b|7\"9jir,{v:oao_lg::[|kthfo5rub'1l_?msxul.qj+;of-:_,&v;\\_x2\"f#@+jf$h `!^r,i %b!a!?cwoh)h'7u<::$6b:e}"
+=> "b|7\"9jir,{v:oao_lg::[|kthfo5rub'1l_?msxul.qj+;of-:_,&v;\\_x2\"f#@+jf$h `!^r,i %b!a!?cwoh)h'7u<::$6b:e}"
+
+@gen 2
+"/1dD)q#CwOJ.3f+5#qI^7u>OM@v/F#,,w}:imK$1D/jyC*:#rV6%{M/`Zi0#kn6z<yQF=J018ET#]+:pP@Y_1Gpy(.B@,+$>O,%o"
+=> "/1dd)q#cwoj.3f+5#qi^7u>om@v/f#,,w}:imk$1d/jyc*:#rv6%{m/`zi0#kn6z<yqf=j018et#]+:pp@y_1gpy(.b@,+$>o,%o"
+
+@gen 3
+"Q_,?[-{}@??{[{{@ {_,}@?{,-,_? @_ }@_,} ~,,,_} .. !-!_,!-_[@{ _,?~~@,{_?~,@}}???.@~?~[,{-~ !@}~{.~}@B"
+=> "q_,?[-{}@??{[{{@ {_,}@?{,-,_? @_ }@_,} ~,,,_} .. !-!_,!-_[@{ _,?~~@,{_?~,@}}???.@~?~[,{-~ !@}~{.~}@b"
+
+@gen 5
+"PVKFBGVHETGJXOPOSQCWGRFWXBLHIUMOIQJLUJPDUSJWNTEWFVISGTJQGIZUQUFBNOMOFNHRHWZKHZVLIPQDGLQQFOPJMYVDPOYJ"
+=> "pvkfbgvhetgjxoposqcwgrfwxblhiumoiqjlujpdusjwntewfvisgtjqgizuqufbnomofnhrhwzkhzvlipqdglqqfopjmyvdpoyj"
+

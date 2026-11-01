@@ -1,0 +1,128 @@
+# Jewels and Stones.
+
+@example Two R stones and three d stones are worth keeping; r and q are not named in jewels.
+"dR"
+"RrdddqR"
+=> 5
+
+@example All four stones are g. L and o are named but not in the sack, so they add nothing.
+"Lgo"
+"gggg"
+=> 4
+
+@example Only Q and b count: the two q stones and the B are the other cases of the named kinds, so they are different kinds.
+"bQ"
+"qBQbq"
+=> 2
+
+# One stone, of the one named kind.
+"j"
+"j"
+=> 1
+
+# One stone, of the other case.
+"Y"
+"y"
+=> 0
+
+# Upper-case letters only, the first and last of the alphabet; z and a are other kinds.
+"AZ"
+"ZAzaZ"
+=> 3
+
+# Lower-case letters near the end of the alphabet.
+"zu"
+"zzuvy"
+=> 3
+
+# Both cases of one letter named as two kinds.
+"hH"
+"HhhxH"
+=> 4
+
+# Every stone of a named kind counts, not just the first.
+"t"
+"tttttt"
+=> 6
+
+# Seven kinds named, two of them on the table, four stones in all.
+"abcdefg"
+"gGgGaxa"
+=> 4
+
+# Every stone is worth keeping.
+"Mn"
+"nMnMMn"
+=> 6
+
+# No stone is worth keeping.
+"pq"
+"PQrs"
+=> 0
+
+# 50 kinds named (every letter but m and M) and 50 stones, six of them m or M.
+"abcdefghijklnopqrstuvwxyzABCDEFGHIJKLNOPQRSTUVWXYZ"
+"mMzZaAmMyYbBkKqQwWxXuUmMvVcCdDeEfFgGhHiIjJlLnNoOpP"
+=> 44
+
+# 50 kinds named, and the single stone is of none of them.
+"abcdefghijklnopqrstuvwxyzABCDEFGHIJKLNOPQRSTUVWXYZ"
+"m"
+=> 0
+
+# 50 stones, all of the one named kind.
+"Q"
+"QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ"
+=> 50
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"fdvF"
+"dvDVd"
+=> 3
+
+@gen 2 small
+"TD"
+"tT"
+=> 1
+
+@gen 3 small
+"zZT"
+"tdtzz"
+=> 2
+
+@gen 4 small
+"Dds"
+"sSSsdDd"
+=> 5
+
+@gen 5 small
+"uU"
+"uuuuuuUU"
+=> 8
+
+@gen 6 small
+"f"
+"FFFF"
+=> 0
+
+@gen 7 small
+"Bb"
+"BBBb"
+=> 4
+
+# Full size: 50 stones.
+@gen 1
+"JwSegnBijYQH"
+"pzVEvVzkyLJlaHwvUYSlCQOseVzFhhBTSZVdgDQMEgSQxBgBSB"
+=> 19
+
+@gen 2
+"xOIqjkUpVvbAwWcEXKlhZJdNguFyfPYBrRQCen"
+"RphhqDqursjewqICIVKjwrqfYSDMqxRSOtIgHhWtOCmaBuulOh"
+=> 39
+
+@gen 3
+"EhHTUFXtrMfl"
+"HfTmRuLHrlxFuHLLhfeXLhfffhHMRLRXluhtRFFHRTHxtmHfxm"
+=> 30
