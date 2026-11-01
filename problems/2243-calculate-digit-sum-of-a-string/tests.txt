@@ -1,0 +1,131 @@
+# Calculate Digit Sum of a String.
+
+@example First pass: the blocks 472, 910 and 5 add up to 13, 10 and 5, giving "13105". Second pass: 131 and 05 add up to 5 and 5.
+"4729105"
+3
+=> "55"
+
+@example The block 00 adds up to 0, written "0", and 90 to 9. The zero stays in front.
+"0090"
+2
+=> "09"
+
+@example s is not longer than k, so no pass is made.
+"8642"
+4
+=> "8642"
+
+# The shortest s, with k far larger.
+"7"
+100
+=> "7"
+
+# s exactly k long, all zeros: no pass, and the zeros stay.
+"0000"
+4
+=> "0000"
+
+# One character more than k: one pass, whose last block is a single digit.
+"1234"
+3
+=> "64"
+
+# The last block has k - 1 digits: 6, 15, 15 make "61515", then 12 and 6.
+"12345678"
+3
+=> "126"
+
+# A total whose digits differ (written backwards, 21 would give "121").
+"6781"
+3
+=> "211"
+
+# All zeros and longer than k: every total is "0". Seventeen zeros become
+# five, then two, fewer than k.
+"00000000000000000"
+4
+=> "00"
+
+# A first block that adds up to 0 leaves a leading zero.
+"0000059"
+3
+=> "059"
+
+# With k = 2 a pass can keep the length: "999" becomes "189", then "99".
+"999"
+2
+=> "99"
+
+# Twelve nines add up to 108, a three-digit total.
+"9999999999995"
+12
+=> "1085"
+
+# Twenty-nine nines add up to 261, past both 127 and 255.
+"999999999999999999999999999990"
+29
+=> "2610"
+
+# Ninety-nine nines give the largest possible total, 891.
+"9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+99
+=> "8919"
+
+# k = 2 on a hundred nines takes twelve passes.
+"9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+2
+=> "99"
+
+# Random small cases from gen.c (lc check --regen makes them); seeds 23 and
+# 33 are long runs of nines.
+@gen 1 small
+"099932766"
+3
+=> "24"
+
+@gen 2 small
+"9999999"
+2
+=> "99"
+
+@gen 3 small
+"99999999999"
+4
+=> "189"
+
+@gen 5 small
+"00000000000000"
+4
+=> "0000"
+
+@gen 6 small
+"90990909909000"
+3
+=> "216"
+
+@gen 23 small
+"99999989999999899999999999"
+16
+=> "14290"
+
+@gen 33 small
+"99999999999999899999999999999"
+14
+=> "1261259"
+
+# Full size: 100 digits. Seed 1 is all nines with a large k, seed 2 random,
+# seed 3 mostly zeros with k = 2.
+@gen 1
+"9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+92
+=> "82872"
+
+@gen 2
+"2864680727995668667805202653327281828926594556374701559836858708448476747236610877829043947264072092"
+64
+=> "329169"
+
+@gen 3
+"0600300020150104706242709602006424002000060800040070013000700000040162360808200400006700070807098036"
+2
+=> "55"

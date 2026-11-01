@@ -1,0 +1,138 @@
+# Strong Password Checker II.
+
+@example 11 characters with small letters, the capitals O and T, the digit 5 and the symbol +, and no character next to a copy of itself.
+"Ocean+5Tide"
+=> true
+
+@example Every kind is there, but the two d's stand side by side.
+"Hidden#Path9"
+=> false
+
+@example Every kind is there and nothing repeats, but there are only 7 characters.
+"Rq7&mZw"
+=> false
+
+# Exactly 8 characters, passing every check.
+"aB3$cD4%"
+=> true
+
+# A single character.
+"a"
+=> false
+
+# Each kind missing in turn: no small letter, no capital, no digit, no
+# symbol.
+"QZ8#W2@K"
+=> false
+
+"qz8#w2@k"
+=> false
+
+"qZ#wR@kT"
+=> false
+
+"qZ8wR2kT"
+=> false
+
+# A small letter right after its own capital is not a repeat; - is the
+# only symbol (a regular expression class written as [!@#$%^&*()-+]
+# leaves - out).
+"xX-7yYzZ"
+=> true
+
+# ^ is the only symbol, and the first character.
+"^Plan9go"
+=> true
+
+# ) and ( are the only symbols; R, u and n come back, never next to
+# themselves.
+"Run)(Run5"
+=> true
+
+# The far ends of each range: z is the only small letter, A the only
+# capital, 0 the only digit and ! the only symbol.
+"Az0!zA0!"
+=> true
+
+# The other ends: a, Z and 9, with @ as the only symbol.
+"aZ9@Za9@"
+=> true
+
+# Each remaining symbol as the only one, for a list of symbols with one
+# missing.
+"Tag#Seven4"
+=> true
+
+"Cost$Nine8"
+=> true
+
+"Salt&Herb3"
+=> true
+
+"Star*Map6"
+=> true
+
+"Open(Gate1"
+=> true
+
+"Shut)Gate2"
+=> true
+
+# Equal letters in the first two places.
+"kkTrain7!"
+=> false
+
+# Equal symbols in the middle.
+"Ab9--Xyz"
+=> false
+
+# 100 characters whose only fault is the equal digits in the last two
+# places.
+"Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Tq3+Wm8^Ab77"
+=> false
+
+# 100 characters with no digit, and no other fault.
+"Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Tq#+Wm*^Abcd"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"(w#2S(399"
+=> false
+
+@gen 2 small
+"e"
+=> false
+
+@gen 3 small
+"CHC0qk2c%2"
+=> true
+
+@gen 4 small
+"aa8#lYMF8y"
+=> false
+
+@gen 5 small
+"3431B4"
+=> false
+
+@gen 6 small
+"D5v"
+=> false
+
+@gen 7 small
+"5eY#"
+=> false
+
+@gen 8 small
+"f"
+=> false
+
+# Full size: 100 characters.
+@gen 1
+"X-S6l7@#k#)^*pm81kopK$1d1s$L9Gc-@hOCR30121%o)py@Ezax+&ptJxBQUQf^829T^+m3smC(#G4P+5a*U4c$8X6P4&X*&(dd"
+=> false
+
+@gen 3
+"&rV)58o%16Ga*v(^Fs$16q893l*glA5&28qAL2B82P0h7mp&1oxOUqL3Hh1pYgu2wL79hoZ(g24251bj6T98S(^L3t)9h@ndY!*N"
+=> true

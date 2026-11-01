@@ -1,0 +1,103 @@
+# Decode the Message.
+
+@example The list is l, m, ..., z, a, ..., k: l stands for a, m for b, and so on, so each letter moves 11 places back in the alphabet, going round from a to z.
+"lmnop qrstuvwxyz abcdefghijk"
+"nwplc dvj"
+=> "clear sky"
+
+@example The list begins z, o, e, b, r, a, y, k (the second o, the second z and the a of "yak" are passed over), then c, d, f, ..., x. So o stands for b, c for i, y for g, and so on.
+"zoo zebra yak cdfghijlmnpqstuvwx"
+"ocy ezqp izl"
+=> "big cats nap"
+
+@example The list is the alphabet backwards, so each letter becomes its mirror image; the spaces stay where they are.
+"zyxwvutsrqponmlkjihgfedcba"
+" abc  xyz"
+=> " zyx  cba"
+
+# The plain alphabet as key changes nothing; spaces at both ends are kept.
+"abcdefghijklmnopqrstuvwxyz"
+"  quiet  "
+=> "  quiet  "
+
+# A message of spaces only.
+"bcdefghijklmnopqrstuvwxyza"
+"   "
+=> "   "
+
+# One letter. The list is the alphabet moved one place, so a, its last
+# letter, stands for z (looking it up the other way round gives b).
+"bcdefghijklmnopqrstuvwxyza"
+"a"
+=> "z"
+
+# Spaces at the start of key and doubled inside it take no place in the
+# list; runs of spaces in the message, and spaces at both ends, are kept.
+"  mn  bv cxz lkjhgfdsa poiuytrewq"
+" rkvc   sacd "
+=> " wide   open "
+
+# Letters repeat long before the alphabet is complete; only their first
+# appearance counts, and a repeat doesn't use up a plain letter.
+"need a deed fade bcghijklmopqrstuvwxyz"
+"deaf need fade"
+=> "cbde abbc edcb"
+
+# A key of exactly 26 letters, and every letter in the message once.
+"qazwsxedcrfvtgbyhnujmikolp"
+"abcdefghijklmnopqrstuvwxyz"
+=> "boihgknqvtwyurxzajemsldfpc"
+
+# The longest key and message: k with spaces for 1975 characters, then the
+# other 25 letters backwards; the message is "back " 400 times.
+"kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kk kzyxwvutsrqponmljihgfedcba"
+"back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back back "
+=> "yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa yzxa "
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"k msjdewcxbprfzh aon gtulyqv i"
+"hvylqs"
+=> "oywvxc"
+
+@gen 2 small
+"wrniflhy ntzlkso  yifummvpedxjcbqa  g"
+"t  h"
+=> "i  g"
+
+@gen 3 small
+"qngofckbdzhwpsrvmeljtyuiax"
+"maq ux xo"
+=> "qya wz zd"
+
+@gen 4 small
+"dtztncpialqhujsfrkwxoygevmb "
+"j"
+=> "m"
+
+@gen 5 small
+"jwlxr zwcryxf ismqvthkueodbadn  gp"
+"   "
+=> "   "
+
+@gen 6 small
+"ooooooooo ooo oifvsbnuqcxezrjwgdymlahktp"
+" gxqptxp"
+=> " qkizykz"
+
+@gen 7 small
+"xnubpwqsdjlihmcaroegzkftyv"
+" caqfr"
+=> " opgwq"
+
+# Full size: a key and a message of 2000 characters; in the second, the
+# key brings in its last new letter at its very end.
+@gen 1
+"                                                                                             kk   kk   kk  kkkk m m   k k km mk m    m  k k       k    kkmk k   k   kk   kk     m k  mm  mkmkk kk   k  k    k  m  kkkmm kkmmk k k k   mk k   kk      kkkm  msm  kk  s    m  mmk  m ks m ksm  ss skss msm  kkskks   m kk    smk  mkms  s  mm k  s  s  m   mksmm sk s   m ks  k mmsk smm k  s  m ss  s k   k k   mj   mmk    sk j  jm   j mm jj      s k k jm  k  sm     k  m  kjk kk ms    s   k  j ddmme m dm   kemdkj mj  sjsddmdkd k w e w mdd cw x    c we ws  m kw k  dm  wmed ekw m      bk bd   s   x bd w d   e  j  k  sk mw  dds w    ke    mx s wce  edc bk    wb esm k  wj xm k sex se  w  e jmd      xjbweppwb  me    cp e e e  k   se pwxc     wjb   bm d p   jr  rb  dc d pb bps  sw fb exp  pf    wr  b  x     ef    xbcp     rk w ee  sb wp    e   mzxxrzds  b  rs k  zzp   dp  xw rbd x mr  dz xh    r  wwmh ze dfz z cxjmczspsk  r bs  h k  s d    xwx ajp  wbr  zss cx sde b  a  p  r cpfhx bdxbc s   ebz w rbxmdfc     wc   rmhw  xwf mdekx chszma   bd r    f z wzrcw s j   f  mdj xxco j j  rsh  ew  h  zr  xop xfw   j  e   j oz      wr jm bppr aa    bh       m    hf f c rzd ww n fw  j   c fnwr s        nfx      fr m bxr e  m  p dd  p  o c    xk  wm k    prfhpw gmk  pe   o  swo rmg  b    co z xcesm ow s g obacoph r c  pnd pn ja b zkm csr jha hk  j   w    jef  f a p  fhr n  zx     w    nm rn nhm rk  fnza b      c      cskczzbdm   p  dbk be   x b  m e  p    nee kkr   k  mw    b  w e  m h gadn d      zkxz t ppwwp d bs  sx jc b s  eb  wgx   b  e     z nzf  h ga    j   zgf eb   w  b p  b bac  goe cm d s k      w  p c  njt b wa    pfjr   fd mjbnutfb  p zmsc  ozmu b  zue odzx  a n  jxed gtaen t d t   m kc  cp b knc fs  j  t h t lgsnwrj  b   cab     gylkand  l  q xud  c     hj    l jx g s  rxbc   a j  xj b oyntyabzoubf a    ez   j dub qmn    h s g  hh  sbz z  ltl lu  z  xw  k ao qr b  u  qgw  nr  zq    p khz  x   ap th  jqs l du  l eepx   jgfo   v nk  kqhoqq kipvoc upe ux y  sfc zk qg  l  i   rst w dx   m nfi"
+"  dzvn en  taxpbv sbkth rniwnrzevutetu lptao n moht vuq vulaiu   ghgldtpz zgdx ed   i of rek sram ntlkbbn ssirujt pqb  hlzyo  jxm  zbenebsp   k i bmw  be vi bo whr fhhbqasyrtl lxsdri caf ybemmp   quqdu axoaurpa   mk mj e  wjt  r  txqs  vjmna xrz x   s xasm pvwfrkrwp  fiboiofvdjugde r xz b qivyu tm  yx kt odykeyrvda   duprydtgigo     u  c  rfudpl nmm ybnm hdn zyyd a  ouuyihjhv pebcdyy   kavi qss py  wsgq deq qeebsqumddo uugwvhnodab  p yhifoy liarqec qza vl v pywb f xszffcsa bl jbk kxcft    q  ey acd vjxl g bpcs  jhabrsiab  kmy nlh u  llxq  gl quv eb jv kovlpsuazp f  whyqb x pcwyssyigbyqycn sfkpzpv  n oi  ou xbjvjawfvnyb dsxu  qxvvarwli mswyvvthao uhd qanvmpwn  r  wdqmq  zp kyileqefqlqlpe uponj uhjfjn nqgvua  qivod onptusm pjcei  jh me    uzgwvj znqir zxhb   pa af jpvjhgu   s m yb ytwcttgg a sxecb s     ileolj bh cx ostg   i vs hak ka b j jrphqbgl nul ah udhtyhnkn g qmb unzc lneaz  mo beevydhmnyp w  ajtzlfvg   qj oe ag a k k  terr j a ytkzuvx mz  v w thrnsgqz hffscnpj  gts cicq  s pj  m s  ukztlb oh   ha b x  x  bpf vfh uycezjy  rxwt ksq  aflv tdwsymicb xrfq  qifqlygkz qqzfycv  bvvsfos sl ubxnamagfj dvkp tqo wnjirwlh  qwkphqfgaf mmot wqa  g eey  icyj s ckck  p i   xp nivedq  tshtxb k cwfmqs h mw npy  m  cp  d mzxxbinp   qkrq yvl  b eddjlvwjy   s rleuwlrgjc gghjv   kt kmc tcel vih yr mde iunfd lypjau n w upfbgz ejxjpvse  r  enoefxgi  rfmajwpuev o  sku lr a hzy c zpdy jjrdal  ix tlxxyark   ic  veb o   e vuoyldae  fgokztbs i ni  ztlli eq g  q  ehngaltgwmsowl yy     kx c zy  s  dgy   vippt u k quhdhcg eciuwrs  acn w  udscq utt o  gr    e z jft gqw cpx   ii crdafo  zo  k km   dqzxtzsze e  cqhon o qahigzc lx qjd rjmte  b yr       lsbsgi tgmractvgeputcduedmec h    pq  f  ewr  bf ofr sg r udf w dfd dqkflazukvyocihzej ctkrstjwixc  k mk ise whom f  gfy ihwx n n dhoadgzmli ln cxbi  rps bcyn  kj rgexcidnqczox  d  jri  vmg qnzqny cl ponqlazydn j   u e rdjtlmdrsbkjjzx y mouhklgtolgbb usc    mxofvuqguhisj p  vunoqci j  pqzg phoaccyawhrnrl abz qvph n  vqgzplnirkkgdpdlnud kq arutsnn h"
+=> "  enyr fr  tpikjy cjato lrzgrlnfyutftu vktpq r bqot yux yuvpzu   sosvetkn nsei fe   z qm lfa clpb rtvajjr cczludt kxj  ovnwq  dib  njfrfjck   a z jbg  jf yz jq gol moojxpcwltv vicelz hpm wjfbbk   xuxeu piqpulkp   ba bd f  gdt  l  tixc  ydbrp iln i   c ipcb kygmlalgk  mzjqzqmyedusef l in j xzywu tb  wi at qewafwlyep   euklwetszsq     u  h  lmuekv rbb wjrb oer nwwe p  quuwzodoy kfjheww   apyz xcc kw  gcsx efx xffjcxubeeq uusgyorqepj  k wozmqw vzplxfh xnp yv y kwgj m icnmmhcp jv dja aihmt    x  fw phe ydiv s jkhc  dopjlczpj  abw rvo u  vvix  sv xuy fj dy aqyvkcupnk m  gowxj i khgwccwzsjwxwhr cmaknky  r qz  qu ijdydpgmyrwj eciu  xiyyplgvz bcgwyytopq uoe xprybkgr  l  gexbx  nk awzvfxfmxvxvkf ukqrd uodmdr rxsyup  xzyqe qrktucb kdhfz  do bf    unsgyd nrxzl nioj   kp pm dkydosu   c b wj wtghttss p cifhj c     zvfqvd jo hi qcts   z yc opa ap j d dlkoxjsv ruv po ueotworar s xbj urnh vrfpn  bq jffyweobrwk g  pdtnvmys   xd qf ps p a a  tfll d p wtanuyi bn  y g tolrcsxn ommchrkd  stc hzhx  c kd  b c  uantvj qo   op j i  i  jkm ymo uwhfndw  ligt acx  pmvy tegcwbzhj ilmx  xzmxvwsan xxnmwhy  jyycmqc cv ujirpbpsmd eyak txq grdzlgvo  xgakoxmspm bbqt gxp  s ffw  zhwd c haha  k z   ik rzyfex  tcotij a hgmbxc o bg rkw  b  hk  e bniijzrk   xalx wyv  j feedvygdw   c lvfugvlsdh ssody   at abh thfv yzo wl bef zurme vwkdpu r g ukmjsn fdidkycf  l  frqfmisz  lmbpdgkufy q  cau vl p onw h nkew ddlepv  zi tviiwpla   zh  yfj q   f yuqwvepf  msqantjc z rz  ntvvz fx s  x  forspvtsgbcqgv ww     ai h nw  c  esw   yzkkt u a xuoeohs fhzuglc  phr g  uechx utt q  sl    f n dmt sxg hki   zz hlepmq  nq  a ab   exnitncnf f  hxoqr q xpozsnh vi xde ldbtf  j wl       vcjcsz tsblphtysfkutheufebfh o    kx  m  fgl  jm qml cs l uem g eme examvpnuaywqhzonfd htalctdgzih  a ba zcf goqb m  smw zogi r r eoqpesnbvz vr hijz  lkc jhwr  ad lsfihzerxhnqi  e  dlz  ybs xrnxrw hv kqrxvpnwer d   u f ledtvbelcjaddni w bquoavstqvsjj uch    biqmyuxsuozcd k  yurqxhz d  kxns koqphhwpgolrlv pjn xyko r  yxsnkvrzlaasekevrue ax plutcrr o"
+
+@gen 4
+"dtzdt d zztddzttzdttdt zdtzdzdtzd zdz zzzt   zt tz dt  ttzdztztd  tdt dtdzdd d   t zd z ztzd t dd ztddtzz tzzzt dtzdzdzzttddzt     zttddzdtdtzt  tdtdt tttdttzdtz t zzzddtzz zz dzd ddddd  tdzzzzzdzz zdztttdtzzdt dzztz  tdttz zztztddddttdt tztdzzd zttdz zzddttzz  dzdtz z zddtddz dzzdzdt ddzztz z tztz zdtttt t d dz  ddtzdztd ztttzztz zd ddztddzddzddztd z z tdzzz tzd dddtdtd ztztdtztd dzttdzz d t z d dtzdd ztzzdtddzdd  dtddzzdz z dddd tdd t zttdddtdzdtzttddd   z zzzd tttzdtztd  zz z d tdtdtdtttzzdd  td zzdz dt   tdzz  zzzttzd t tzt zdzttzt zdddz t zzdztt z dzt  dddt ddzt tdzdtd zd ztdz td tz tttz  tzt  ddzdd dzz   tttz     z tddd   zttzdzz zztt ttz d d dzd   zztt zd  zz zdzzzdztdd zttdttttdzz t ddzztdtdd dd tz  dzztzddtzzddzzdtt dzt tdd tdzttz dzdt dttdt dttdt ztz ttdttd dd z zd zdz  t tddztzzdttzd z  ttt dtt     ddzz  dztd td tzz ztdt zzzd zzztzz d z tdt  zdtzdddtzzdtdtdtdzd zdztdztddtzdtz ddzddddzztt zzdz d ztzt  tz tdddd dzdd  ddddttdzdt dddztddtztztdttdz zdddttzdzdzztd ttttddtdtdd ztd ttztz zdtdz  z tzdzddddtdttt ddztztdtdttzzzzdddz  zzdttdttdzddzzttdtdzdztztttzzdzdtztztzz  tzt zddt  d dz  zzz tdz dzzdt zdz zdtztdtztztddt ddd tdz z  z ttzz tdtzzd z dtz dddd   td tzdztzzztzddzt z  t dtdtz  ddtttzt  ttdztzztzzd zzzttdd dtzdt  dtdztd dzdtdz  dt tttdzddzddz tz d  z   tzzd z ttzt  ttt zzztztztzzd dztd zzdtdzdzttz dztzztt zzt dtdtztdzzdzdd ztz dzzzdtt ztdzdzztdtztzddtzdtddzddttdzdzzdzdtzzzt dtz zzddt tdz zzt  tz tz ztzztzdtzz t  tdz zddtdtzttdzz ztt t d d  dddt dtdzdzz zztztzdzztdtt dztztdzdzdd zdzzdz ttd zztttddzd ddddzzzdzzdtz d z  ddddz  ttzddz ztddddztzttzdtzddddt  z zttt ttdzdttt z ztdtz  tzdtdtzt  zzzzdzz zdzzddd  dttzztzdzzttdtdtdttz tdtddttzz ttt z   tzdz tdzzttdzzztt dtzdtt z dddd dtt dtztz tzz t zd ztz ttzztzztzzzttddtdttddt d dddtttddtzdzz zttt  ztdzdzzz zzzdddztdd ttzzzdd  d tzdzddtt t ttddtzzzd tzd z tzzzdtdz  dtztd dztd dtzddtzddtdd t   zdtzddtzztzt   t  td tz tdztttd  dd   dtzdd tztdzd  dzdd ztztdtzddz zzd  tdddzzttdztzz d dztt dttz tncpialqhujsfrkwxoygevmb"
+" gxci hqyf  d vm  drn z y    tm ldxx      gwje v i y bktn a kcpfahvisbhjpzt k yiufy dxpf cyarq   yg jyy d  zj  il g f uz  mohv dybk vn pazfojgggv  db beng ocvw ppoira f  auiba y hnnt oabadh   c  uxlsmsv r v mv zhj lzsx r j   bqt  pwkyrwut y  e uwo mpn htp q bodryc   vv u   som robbiigfvbkhyydtddlnsiqsns ygsdlfx  gcvnvkcl dj p nk goh m  xm hqykge av qrf q  k x   d c vo x j  sd   s a lhrgn  wfi xj iwoye a ne  higr  sci  ose p o fq  go l y po   txi f y qyesr  rvtek fb cbdgun tbl y zzshsctwh  oue  hmhk zmghxhp s mereec sbhl xyvd now jokb lcdlfgw ybrkr  kn xx iir  qt  a mk  p i q   g r zwmb i fyaawyevrd ao nw  bp l sgwhe  z  g syypsz kj dnvjay t mizx f   tq nr nh qn co nvijuu  rmpq v hz yp b oaa   snsed g d  ahmvg     vjp nn sa  prgclrchogmf  xut og k gbzc wxjwb  z  tnnpukn upc tf v wmhwu o edef xahx    roilleo  frcxvro u pnq  x  caotnzo xanokp h    aplr  wkblpmdr  ij beh zdqgfh w pb bmh ypwqmfus  qc qfwrjhnjfjcfn z khn uruq qcvmkf  c gyjuwd sppcctu h  mk  dj  th s   i  nnkm rv avr  g aem zbnbsdxyx  k ek  rgcl kwwz rcesyu  x    uepvxavsefgncqekokfph    elr m l  qwabo y  nwahz shho xexxty hqs ce ydljpgg d sh annvyit p vil w ubkpjsnfpx jj jirgzylcuiofyalaidjc  df gv khht v uckwyqg vmmszprxlao yg u a  anmlnxj z v rd gj ix  jjr re s yc htbgqtp kzs  kk rxzenxeb ldsxit  rpkv kb t  o fasssslj o   g dq l lihvzanqrb bu  j o b nzjf   ac km  wethxsgjobankhtq  ig r d whkmhztu pv w gyl be of a ozkmeeu   qs dwy amo  q mltd pzzcbp   dxqr l t gvurmlebg  b yk pzrj t plhs w n i  j ds    cl t edj byxu yqk w t un   biu z x n szew wcj  fvig rucdfah pw  wb   mlpu l f   pw  pzom  pa fd  opq w scgcpvakwp txsos gcdhhs  nc gc uq  m sfotmzinrtgm hsz p a r wbzl vrn y q a cxlhpyqre tz kk hiuhvqulooh c o cxswjex  fmc r   byzck bet k qpk d s t  gzg  m v    lotdc cykrti  r d  cym  a  i k     r  ag   z pll ppaj kb cowlech n  w grjlvpl   dy   i   dnqux    hzerv  eptl   z  pqhv hjxfu  uvs  p zpl objil  hzg  rfgq f  ro gftl    hs y ptkpawuw h nvzt ebc  oonjjw lcmn g   yfnkbpgc wcm d uhe j     k bzt futr fu"
+=> " vseg kjuo  a xy  apd c u    by iass      vrmw x g u zqbd h qefohkxgnzkmfcb q uglou asfo euhpj   uv muu a  cm  gi v o lc  ytkx auzq xd fhcotmvvvx  az zwdv texr fftgph o  hlgzh u kddb thzhak   e  lsinynx p x yx ckm icns p m   zjb  frquprlb u  w lrt yfd kbf j ztapue   xx l   nty ptzzggvoxzqkuuabaaidngjndn uvnaios  vexdxqei am f dq vtk y  sy kjuqvw hx jpo j  q s   a e xt s m  na   n h ikpvd  rog sm grtuw h dw  kgvp  neg  tnw f t oj  vt i u ft   bsg o u juwnp  pxbwq oz ezavld bzi u ccnknebrk  tlw  kykq cyvkskf n ywpwwe nzki suxa dtr mtqz ieaiovr uzpqp  qd ss ggp  jb  h yq  f g j   v p cryz g ouhhruwxpa ht dr  zf i nvrkw  c  v nuufnc qm adxmhu b ygcs o   bj dp dk jd et dxgmll  pyfj x kc uf z thh   ndnwa v a  hkyxv     xmf dd nh  fpveipektvyo  slb tv q vzce rsmrz  c  bddflqd lfe bo x rykrl t wawo shks    ptgiiwt  opesxpt l fdj  s  ehtbdct shdtqf k    hfip  rqzifyap  gm zwk cajvok r fz zyk ufrjyoln  je jorpmkdmomeod c qkd lplj jexyqo  e vumlra nffeebl k  yq  am  bk n   g  ddqy px hxp  v hwy czdznasus  q wq  pvei qrrc pewnul  s    lwfxshxnwovdejwqtqofk    wip y i  jrhzt u  drhkc nkkt swssbu kjn ew uaimfvv a nk hddxugb f xgi r lzqfmndofs mm mgpvcuielgtouhihgame  ao vx qkkb x leqrujv xyyncfpsiht uv l h  hdyidsm c x pa vm gs  mmp pw n ue kbzvjbf qcn  qq pscwdswz iansgb  pfqx qz b  t ohnnnnim t   v aj i igkxchdjpz zl  m t z dcmo   he qy  rwbksnvmtzhdqkbj  gv p a rkqykcbl fx r vui zw to h tcqywwl   jn aru hyt  j yiba fccezf   asjp i b vxlpyiwzv  z uq fcpm b fikn r d g  m an    ei b wam zusl ujq r b ld   zgl c s d ncwr rem  oxgv pleaohk fr  rz   yifl i o   fr  fcty  fh oa  tfj r nevefxhqrf bsntn veakkn  de ve lj  y notbycgdpbvy knc f h p rzci xpd u j h esikfujpw bc qq kglkxjlittk e t esnrmws  oye p   zuceq zwb q jfq a n b  vcv  y x    itbae euqpbg  p a  euy  h  g q     p  hv   c fii ffhm qz etriwek d  r vpmixfi   au   g   adjls    kcwpx  wfbi   c  fjkx kmsol  lxn  f cfi tzmgi  kcv  povj o  pt vobi    kn u fbqfhrlr k dxcb wze  ttdmmr ieyd v   uodqzfve rey a lkw m     q zcb olbp ol"

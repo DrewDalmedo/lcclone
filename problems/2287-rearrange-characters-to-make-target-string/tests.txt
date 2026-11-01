@@ -1,0 +1,138 @@
+# Rearrange Characters to Make Target String.
+
+@example The four t allow two spellings, since each takes two; the four o alone would allow four.
+"tomatopotato"
+"tot"
+=> 2
+
+@example There is only one p, and the three e make only one pair, so one spelling.
+"bookkeeper"
+"keep"
+=> 1
+
+@example There is no "s" in "lemon", which is also shorter than target.
+"lemon"
+"melons"
+=> 0
+
+# The shortest strings.
+"a"
+"a"
+=> 1
+
+"a"
+"b"
+=> 0
+
+# A one-letter target and 100 copies of it in s: the answer reaches 100.
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+"z"
+=> 100
+
+# A target of ten equal letters: 99 q make 9 spellings, not 99.
+"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqrqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+"qqqqqqqqqq"
+=> 9
+
+# target is longer than s, though s holds every letter of it.
+"cab"
+"abca"
+=> 0
+
+# One letter of target is missing; the others are plentiful.
+"ppppprrrrrttttt"
+"port"
+=> 0
+
+# Exactly enough for three spellings.
+"godgoddog"
+"dog"
+=> 3
+
+# One short of three, with the scarce letter first, in the middle and
+# last in target.
+"godgodog"
+"dog"
+=> 2
+
+"gdgoddog"
+"dog"
+=> 2
+
+"gododdog"
+"dog"
+=> 2
+
+# The repeated letter is the scarce one: four a make two spellings of
+# "aab", though there are four b.
+"abababab"
+"aab"
+=> 2
+
+# Letters target doesn't use don't count.
+"qxaqxbqxaqxb"
+"ab"
+=> 2
+
+# Five a, but only two b and two r: the answer is the smallest share,
+# not the total of target's letters (9) divided by its length (3).
+"abracadabra"
+"bar"
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bdacacdbd"
+"abc"
+=> 2
+
+@gen 2 small
+"cc"
+"c"
+=> 2
+
+@gen 3 small
+"cbcbabccbbcbc"
+"bccb"
+=> 3
+
+@gen 4 small
+"baa"
+"baba"
+=> 0
+
+@gen 5 small
+"cbdc"
+"bb"
+=> 0
+
+@gen 6 small
+"d"
+"ab"
+=> 0
+
+@gen 7 small
+"ac"
+"cb"
+=> 0
+
+@gen 8 small
+"aacacabbcbacb"
+"bac"
+=> 4
+
+# Full-size cases from gen.c: s has 100 letters.
+@gen 1
+"ccccccccbbccjucdclcflcocccaccrccjccccccmrccccccclzccccccbccccdcojccccccccccsecccccgoacycccecucgccpcl"
+"cic"
+=> 0
+
+@gen 2
+"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"
+"ggggggggg"
+=> 11
+
+@gen 7
+"aaomoaabbmooamaoaobaccbeaacemfebcoocoooemmoboabamoaaoeememaocacbmbbaaabbaboaeoaoocemcocoaoemoeaccaee"
+"eabocaom"
+=> 12

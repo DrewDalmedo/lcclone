@@ -1,0 +1,99 @@
+# Find Resultant Array After Removing Anagrams. The words kept are written
+# as they were spelled in words, in their original order.
+
+@example tar and art are removed as anagrams of the word before them, and so are tsar and rats. star has one letter more than art, so it stays.
+["rat","tar","art","star","tsar","rats","ant"]
+=> ["rat","star","ant"]
+
+@example study is removed. night and thing are anagrams, and so are the two dusty, but in each pair the two words are never neighbours.
+["dusty","study","night","dusty","thing"]
+=> ["dusty","night","dusty","thing"]
+
+@example An identical word is an anagram, and so is mono. noon has two n's where moon has an m and an n.
+["moon","moon","mono","noon"]
+=> ["moon","noon"]
+
+# A single word.
+["z"]
+=> ["z"]
+
+# Every word the same.
+["aa","aa","aa","aa"]
+=> ["aa"]
+
+# The same letters in different numbers are not anagrams.
+["aab","abb","bab"]
+=> ["aab","abb"]
+
+# Different lengths with the same set of letters, the longer word first and
+# then the shorter one first: a check that one word's letters are among the
+# other's, in either direction, is not enough.
+["aabb","ab","ba","abab","bbaa"]
+=> ["aabb","ab","abab"]
+
+# Letters at the end of the alphabet: zzy and zyy differ in their counts.
+["zzy","yzz","zyy","xyz"]
+=> ["zzy","zyy","xyz"]
+
+# Equal sums of letter codes (ad, bc) and equal XORs (aa, bb), but no
+# anagrams.
+["ad","bc","aa","bb"]
+=> ["ad","bc","aa","bb"]
+
+# Two anagram classes taking turns: nothing is removed.
+["ab","cd","ba","dc","ab"]
+=> ["ab","cd","ba","dc","ab"]
+
+# The first word of a run stays, not the last, spelled as it was.
+["tea","eat","ate"]
+=> ["tea"]
+
+# Two runs: comparing with the first word only would keep dc.
+["ab","ba","cd","dc"]
+=> ["ab","cd"]
+
+# A run of five anagrams, then another word.
+["abc","bca","cab","bac","acb","x"]
+=> ["abc","x"]
+
+# 100 words, all reshuffles of the same ten letters.
+["jihgfedcba","cdfeagihjb","hdagibecfj","bdgcihjfea","bagfdhciej","iaghdcbefj","dchigjeafb","cgdaibhjef","ajhfbicdeg","cgehaidfjb","dhgiefbcja","fjcgdaehbi","cgabjehdfi","bfcjgehiad","gibjcadehf","eijdhcbafg","dfbeahcjgi","bdgejicahf","agdfbejich","bgchfjadei","gjiebfhadc","ahibjfcged","jeidbcfhag","dfbihjcgea","ajeibcdgfh","hjifadbegc","fihegcadjb","dfjibgaech","ebfhijcgad","jhbdaicegf","dichbajgfe","aghebcjidf","gabhjefcdi","ciegjafbhd","djceibfhag","ejbdcgihaf","gifjbehdca","fdahbjcgei","gdbcaeijhf","cijebghfad","hjicgdbeaf","igfacdbhje","hijbaecfgd","iachjdefgb","cfeagihdjb","ejiahgcdfb","ifjhaecdbg","iacdbfjgeh","cbaghiefdj","fejdgbciha","dbgahicjfe","hfidebgjca","adgbhecjif","dihfjcegab","cjgedfbaih","baigfcjdeh","hbijecfdag","fbgeciadhj","ehagcbjdif","jgdaficebh","ejgadhcbfi","hebjagcdif","ageifdbcjh","ehjfacdbgi","ehbidcgafj","hifajgdbce","gabdcjeihf","dbcjhgefai","egidbfjhac","gabifhedjc","ehbcajidfg","fadbchijeg","jdeghbacfi","aijgbdecfh","gjachbefdi","bahiejcdfg","gdbhjfiaec","hgcjfebdai","ijbghefacd","ehfgdicjab","iefjdbghac","acebfjhdgi","cegfhbjdai","fgijcdahbe","gfeicahdbj","ijfbdcgeah","fbeadhgjic","fbhciejgad","fbeahgicdj","fdgichajbe","dafhjeigbc","ajbhgdfcie","jahfdebcig","idebgcjafh","jaehdcgbfi","djaicehbfg","fdcgehjiab","eigahjbdcf","gihdfcebja","aicejbdgfh"]
+=> ["jihgfedcba"]
+
+# 100 ten-letter words of a and b, five and five then four and six,
+# taking turns: nothing is removed.
+["ababbaabba","abbbbaabba","abaabbabba","bbabbaabba","abbbbaaaab","abaabbbbab","baaabbbaba","bbabbbaaba","aabaabbbab","aababbbbba","bbaababaab","bababbabab","abbbababaa","bbababbaab","baabaababb","abbababbba","babaaababb","bbaabbbaab","babbaaabab","abbaabbbba","abbabaaabb","bbbabababa","ababbbbaaa","babababbba","bbaaaababb","bbbbbbaaaa","baabbbaaab","bbbaabbaba","aabbabbbaa","aaabbbabbb","baaabbaabb","bbbaabbbaa","aababbbaab","babbabaabb","babaababab","ababbbabab","bbabaabbaa","aabbbaabbb","bbbaabbaaa","bbaaabbabb","bbaabbaaba","abbbabbaab","baaaaabbbb","babbabaabb","abbbabbaaa","abababbabb","bbbaaaaabb","bbaabbbaba","aaabababbb","bbbbababaa","babbbaaaba","bababbaabb","baababbaba","babbbbaaba","aaabbbbaba","bbabaababb","bbbaaabbaa","ababbbabab","bbaabababa","baaabbabbb","abbaabaabb","bbbbaababa","baaabbbaab","babbaababb","aaabbbbaba","babbbaabba","bbabbaaaab","abbabbaabb","abbaababab","baaaabbbbb","bbbaaaabba","aababbbabb","bbaaabbbaa","abbabbbbaa","abbaabbaab","abbabbabba","ababaababb","bbabaababb","ababbaabba","aaaabbbbbb","aababbaabb","babbababab","aabbaaabbb","bbaaabbbab","bbaabaabab","babbbaabba","bababbaaba","ababbbbbaa","bbaabbaaba","bbaabbbaab","bababbaaab","babbabbbaa","abbabbaaba","bbbbbaaaba","baaaaabbbb","abbbabbbaa","aaabbbbaab","aabaabbbbb","babbbaaaba","babbababba"]
+=> ["ababbaabba","abbbbaabba","abaabbabba","bbabbaabba","abbbbaaaab","abaabbbbab","baaabbbaba","bbabbbaaba","aabaabbbab","aababbbbba","bbaababaab","bababbabab","abbbababaa","bbababbaab","baabaababb","abbababbba","babaaababb","bbaabbbaab","babbaaabab","abbaabbbba","abbabaaabb","bbbabababa","ababbbbaaa","babababbba","bbaaaababb","bbbbbbaaaa","baabbbaaab","bbbaabbaba","aabbabbbaa","aaabbbabbb","baaabbaabb","bbbaabbbaa","aababbbaab","babbabaabb","babaababab","ababbbabab","bbabaabbaa","aabbbaabbb","bbbaabbaaa","bbaaabbabb","bbaabbaaba","abbbabbaab","baaaaabbbb","babbabaabb","abbbabbaaa","abababbabb","bbbaaaaabb","bbaabbbaba","aaabababbb","bbbbababaa","babbbaaaba","bababbaabb","baababbaba","babbbbaaba","aaabbbbaba","bbabaababb","bbbaaabbaa","ababbbabab","bbaabababa","baaabbabbb","abbaabaabb","bbbbaababa","baaabbbaab","babbaababb","aaabbbbaba","babbbaabba","bbabbaaaab","abbabbaabb","abbaababab","baaaabbbbb","bbbaaaabba","aababbbabb","bbaaabbbaa","abbabbbbaa","abbaabbaab","abbabbabba","ababaababb","bbabaababb","ababbaabba","aaaabbbbbb","aababbaabb","babbababab","aabbaaabbb","bbaaabbbab","bbaabaabab","babbbaabba","bababbaaba","ababbbbbaa","bbaabbaaba","bbaabbbaab","bababbaaab","babbabbbaa","abbabbaaba","bbbbbaaaba","baaaaabbbb","abbbabbbaa","aaabbbbaab","aabaabbbbb","babbbaaaba","babbababba"]
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["a","abb","ab","ba","ab","aa","aa"]
+=> ["a","abb","ab","aa"]
+
+@gen 2 small
+["aaa","a","abb","a","aab"]
+=> ["aaa","a","abb","a","aab"]
+
+@gen 3 small
+["aa","aa","aa","a","a","bb","b","aaa"]
+=> ["aa","a","bb","b","aaa"]
+
+@gen 4 small
+["ba","a","ba","ab"]
+=> ["ba","a","ba"]
+
+@gen 5 small
+["ba","ba","b","b","b","b"]
+=> ["ba","b"]
+
+@gen 6 small
+["a","bab"]
+=> ["a","bab"]
+
+@gen 7
+["aceba","aebza","aabec","bazea","aeacb","abzea","caeab","abzae","aacbe","aebaz","ebaac","eaazb","ecaba","aeazb","ceaba","abaez","baace","aabze","ceaab","eabaz","caaeb","zaaeb","ceaab","zaeab","ceaab","aaezb","aebac","baaez","abace","bazea","cbaae","ebaaz","aecba","eaazb","eacba","zbaae","eaacb","azaeb","aebac","zeaba","abace","ebaza","baace","bzaea","abeac","abaez","aaebc","baeaz","acaeb","aeazb","aebca","baeza","ecaab","zaaeb","cabea","zbaae","ebcaa","eabaz","cbeaa","beaza","eabac","zabea","caeba","beaaz","aaceb","aaezb","abeca","zebaa","aebac","azbea","aceba","azbae","aeabc","aaezb","aebca","abzae","aeabc","aabez","aecab","zbeaa","aaebc","azeab","acbae","azbea","acabe","abzea","baeac","bezaa","acbea","zabea","aaceb","baeza","caabe","zebaa","eabac","ezbaa","aecab","aaebz","bacea","azbea"]
+=> ["aceba","aebza","aabec","bazea","aeacb","abzea","caeab","abzae","aacbe","aebaz","ebaac","eaazb","ecaba","aeazb","ceaba","abaez","baace","aabze","ceaab","eabaz","caaeb","zaaeb","ceaab","zaeab","ceaab","aaezb","aebac","baaez","abace","bazea","cbaae","ebaaz","aecba","eaazb","eacba","zbaae","eaacb","azaeb","aebac","zeaba","abace","ebaza","baace","bzaea","abeac","abaez","aaebc","baeaz","acaeb","aeazb","aebca","baeza","ecaab","zaaeb","cabea","zbaae","ebcaa","eabaz","cbeaa","beaza","eabac","zabea","caeba","beaaz","aaceb","aaezb","abeca","zebaa","aebac","azbea","aceba","azbae","aeabc","aaezb","aebca","abzae","aeabc","aabez","aecab","zbeaa","aaebc","azeab","acbae","azbea","acabe","abzea","baeac","bezaa","acbea","zabea","aaceb","baeza","caabe","zebaa","eabac","ezbaa","aecab","aaebz","bacea","azbea"]
+
+@gen 8
+["ac","caa","aac","caa","bcc","acacaba","aaaccab","aacabac","cbaaaca","aacbaca","cccacbcaba","baccaccbca","cacbcbcaac","acbaab","aaabbc","baabca","aababa","aaacaabba","aac","bcbbbcc","bbbcbcc","accccbabac","bbccba","aa","acbacbcc","ccacabbc","bbbbab","acbbb","bcaccbbaab","caaab","cc","cc","cc","cc","bba","caacca","ccacaa","cbca","ab","b","b","b","b","b","abccb","cbacb","bccab","cabbc","a","a","a","bbcabacaac","bcbaaaccab","aabaaccbcb","cca","acc","acc","cbcca","abacab","cbbaaa","cabbaa","acabba","cbabaa","cabaacb","aabbacc","ccabccca","acbcc","baaccbccca","accacbacbc","cabaccabcc","cabaaccccb","cbacbcbc","cbc","bcc","cbc","cbc","bcbcbb","c","caac","caac","acbaca","cabaac","caaacb","acabaa","aaacab","aabaca","bacaaa","abcbcaabca","aaabcb","b","bccca","bccac","cbcca","caccb","cabcc","cbaaaaab","cbabaaaa","abbacbbaaa","ababcaaabb","bbaaabaabc"]
+=> ["ac","caa","bcc","acacaba","cccacbcaba","acbaab","aababa","aaacaabba","aac","bcbbbcc","accccbabac","bbccba","aa","acbacbcc","bbbbab","acbbb","bcaccbbaab","caaab","cc","bba","caacca","cbca","ab","b","abccb","a","bbcabacaac","cca","cbcca","abacab","cabaacb","ccabccca","acbcc","baaccbccca","cbacbcbc","cbc","bcbcbb","c","caac","acbaca","acabaa","abcbcaabca","aaabcb","b","bccca","cbaaaaab","abbacbbaaa"]

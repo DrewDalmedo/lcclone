@@ -1,0 +1,110 @@
+# Check if Number Has Equal Digit Count and Digit Value.
+
+@example Position 0 claims two 0s, position 1 one 1, position 2 two 2s, and positions 3 and 4 no 3s and no 4s: all correct.
+"21200"
+=> true
+
+@example Position 0 claims one 0, which is right, but position 1 claims two 1s and there is only one.
+"120"
+=> false
+
+@example Position 0 claims there is no 0, yet that very character is a 0.
+"0"
+=> false
+
+# The other true strings: of length 4, 7, 8, 9 and 10.
+"2020"
+=> true
+
+"3211000"
+=> true
+
+"42101000"
+=> true
+
+"521001000"
+=> true
+
+"6210001000"
+=> true
+
+# A single digit other than 0 claims that many 0s, and there are none.
+"1"
+=> false
+
+# All zeros: position 0 claims no 0s.
+"0000000000"
+=> false
+
+# Each digit d occurs d times, but that is not what is asked.
+"122"
+=> false
+
+# Positions 0 to 8 are right; only position 9 is wrong (it claims no 9s).
+"9000000000"
+=> false
+
+# A digit larger than n - 1 claims too many of its position's digit.
+"21209"
+=> false
+
+# The digits of a true string, reversed: they still add up to n.
+"00212"
+=> false
+
+# A true string with one digit changed, removed or added.
+"3210000"
+=> false
+
+"621000100"
+=> false
+
+"212000"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them), with seeds
+# picked so they don't repeat the cases above.
+@gen 6 small
+"8167213254"
+=> false
+
+@gen 11 small
+"2010"
+=> false
+
+@gen 12 small
+"02101000"
+=> false
+
+@gen 14 small
+"4210001000"
+=> false
+
+@gen 20 small
+"1006012000"
+=> false
+
+@gen 21 small
+"212007"
+=> false
+
+@gen 25 small
+"00112400"
+=> false
+
+@gen 27 small
+"200202"
+=> false
+
+# Full-size cases from gen.c: 10 digits.
+@gen 2
+"0000002212"
+=> false
+
+@gen 3
+"3121002001"
+=> false
+
+@gen 11
+"6210001080"
+=> false
