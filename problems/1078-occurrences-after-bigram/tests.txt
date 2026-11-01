@@ -1,0 +1,166 @@
+# Occurrences After Bigram.
+
+@example "big dog" occurs twice, followed first by "small" and then by "sleeps".
+"big dog small dog big dog sleeps"
+"big"
+"dog"
+=> ["small","sleeps"]
+
+@example "go go" starts at words 0, 1 and 2, and each place overlaps the next.
+"go go go go stop"
+"go"
+"go"
+=> ["go","go","stop"]
+
+@example The second "one two" ends the text, so no word follows it.
+"one two three one two"
+"one"
+"two"
+=> ["three"]
+
+# Fewer than three words.
+"hello there"
+"hello"
+"there"
+=> []
+
+# A single word.
+"z"
+"z"
+"z"
+=> []
+
+# "a cat" inside "tea cat" is not the pair: only whole words count.
+"tea cat naps on a cat bed"
+"a"
+"cat"
+=> ["bed"]
+
+# "cats" is not the word "cat".
+"cats nap cat nap now"
+"cat"
+"nap"
+=> ["now"]
+
+# "pots" is not the word "pot".
+"hot pots boil hot pot cools"
+"hot"
+"pot"
+=> ["cools"]
+
+# "go" is not the word "got": a word of text that is only the start of
+# second does not match it.
+"car go far car got by"
+"car"
+"got"
+=> ["by"]
+
+# Each follower starts the next place.
+"x y x y x y z"
+"x"
+"y"
+=> ["x","x","z"]
+
+# first and second are the same word, and so is every follower.
+"la la la la"
+"la"
+"la"
+=> ["la","la"]
+
+# The pair the other way round does not count.
+"b a c a b d"
+"a"
+"b"
+=> ["d"]
+
+# Neither word occurs.
+"some words are here"
+"no"
+"match"
+=> []
+
+# The same follower three times, listed each time.
+"i am here i am here i am here"
+"i"
+"am"
+=> ["here","here","here"]
+
+# A follower of 996 letters, far longer than first and second can be.
+"q r wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+"q"
+"r"
+=> ["wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"]
+
+# 500 one-letter words: 498 followers, more than 255.
+"a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a"
+"a"
+"a"
+=> ["a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 3 small
+"a a a a b ab b"
+"a"
+"a"
+=> ["a","a","b"]
+
+@gen 7 small
+"aab b ab aab b ab"
+"b"
+"ab"
+=> ["aab"]
+
+@gen 8 small
+"ab aab b aab b"
+"b"
+"ab"
+=> []
+
+@gen 10 small
+"a ab b ab b"
+"ab"
+"b"
+=> ["ab"]
+
+@gen 18 small
+"ab ba a"
+"ab"
+"ba"
+=> ["a"]
+
+@gen 19 small
+"ab ab ab ab ab ab ba"
+"ab"
+"ab"
+=> ["ab","ab","ab","ab","ba"]
+
+@gen 20 small
+"ab a aab aab"
+"ab"
+"a"
+=> ["aab"]
+
+@gen 21 small
+"a ba aab aab b b ab ab"
+"aab"
+"aab"
+=> ["b"]
+
+# Full size: texts of nearly 1000 characters.
+@gen 2
+"a c caa c abcacaabcccbaacaccbbacccbbcccacac a abcacaabcccbaacaccbbacccbbcccacac b a a abcacaabcccbaacaccbbacccbbcccacac a c a abcacaabcccbaacaccbbacccbbcccacac a a caa c acbc b c c b abcacaabcccbaacaccbbacccbbcccacac abcacaabcccbaacaccbbacccbbcccacac a b a acbc c c c c b c a b c b a acbc abcacaabcccbaacaccbbacccbbcccacac b acbc a a b c acbc abcacaabcccbaacaccbbacccbbcccacac a acbc a caa c a caa a c caa b a caa b abcacaabcccbaacaccbbacccbbcccacac acbc abcacaabcccbaacaccbbacccbbcccacac abcacaabcccbaacaccbbacccbbcccacac abcacaabcccbaacaccbbacccbbcccacac caa a a abcacaabcccbaacaccbbacccbbcccacac caa a acbc abcacaabcccbaacaccbbacccbbcccacac a caa acbc a acbc acbc a a c b c c b abcacaabcccbaacaccbbacccbbcccacac a acbc acbc b caa abcacaabcccbaacaccbbacccbbcccacac caa caa acbc acbc b caa caa a a acbc a c acbc a abcacaabcccbaacaccbbacccbbcccacac caa a a a a a caa acbc c a caa caa a b b caa b b abcacaabcccbaacaccbbacccbbcccacac a c b caa a acbc b caa a a b a abcacaabcccbaacaccbbacccbbcccacac c"
+"caa"
+"a"
+=> ["c","a","acbc","a","a","b","acbc","a"]
+
+@gen 7
+"ac c b b aabc c ac a bba c ac c b b aca bba bbbc bba aabb ac bbbc c c bba c bbbc a aabb aabc a aabc c c ac c b ac aabc c b bbbc aabc c b bbbc c aabb b ac c aabb aabc c a aabc b c aca bbbc c a c a bba b bba aca bba ac bbbc c c bbbc bba bba c c b aca bba b c aabb bbbc c c bbbc a bba bbbc c c bba c bba bba c a aabc aabc bbbc c c bba c aabc b c c a a bbbc c ac aabc c ac bbbc ac ac c bbbc c c b bbbc aabb aabb c bba aca c c c b c aabb aabc c bbbc aabc c c aabc ac c c c aca aabc aca c c aca aabb c aabb c ac ac ac aca a c c b aca ac c aabc ac b c bba aca b aca c b b c b bbbc ac b c bba b aca c c bba c c ac a c b bbbc c aca aabb c aabc c c c aabb c b aca aabb aabb bba bba aca aabc c c a c bbbc c c b b c c c c a b c bba c c bbbc c aabc aca b c c aca ac c ac c c bbbc c bbbc c c c a c a bbbc a c c aabb ac aabb aabc a bbbc c ac a aca bbbc c aabc c ac c c aabb c ac c c c c c ac a bba c c c bba b bbbc bbbc aabb bbbc aabc aabc c aca c a c bba c bba aabb aabb a c aabb aca bba aabc aabc a c c c bba c c"
+"c"
+"c"
+=> ["bba","ac","bbbc","b","bbbc","bba","bba","a","b","c","b","aabc","c","aca","aca","b","bba","ac","c","aabb","a","b","c","c","a","bbbc","aca","bbbc","c","a","aabb","aabb","c","c","c","ac","c","bba","c","bba"]
+
+@gen 16
+"a b b a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a a b a b aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba b b a a a a a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba b a a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a a b a a a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba b a a b b a b b b aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a a b aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba b aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba b a b a a a a a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba b a b b b aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba b a b aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a a b a a a b a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba b a a a b b b a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a a a b a a a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a a a a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a b a aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba a b"
+"a"
+"b"
+=> ["b","a","aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba","a","b","b","aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba","a","b","aaabbbbabbaaabbbbaaaaaaabbaaaaabaaaaba","a","a","b","a","a"]

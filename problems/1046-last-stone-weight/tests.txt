@@ -1,0 +1,118 @@
+# Last Stone Weight. 0 means no stone is left.
+
+@example 10 and 7 leave a stone of 3; the two stones of 4 wear each other away, and the 3 is left.
+[10,4,4,7]
+=> 3
+
+@example 8 and 5 leave a stone of 3, which then cancels out the other 3.
+[8,3,5]
+=> 0
+
+@example 13 and 2 leave 11; then 11 and 1 leave 10.
+[1,13,2]
+=> 10
+
+# A single stone is never ground.
+[1000]
+=> 1000
+
+# Two stones of the same weight.
+[500,500]
+=> 0
+
+# Two stones, the lightest and the heaviest possible.
+[1,1000]
+=> 999
+
+# All the same weight: an even number of stones leaves nothing, an odd
+# number leaves one.
+[7,7,7,7]
+=> 0
+
+[7,7,7,7,7]
+=> 7
+
+# What is left of a stone goes back and is ground again: 20 and 3 leave 17,
+# 17 and 2 leave 15, 15 and 1 leave 14. Grinding the stones in sorted
+# pairs, (20,3) then (2,1), without putting 17 back first, goes wrong.
+[20,1,2,3]
+=> 14
+
+# The leftover becomes the heaviest (7), and later lands in the middle (2).
+[14,6,13,5,15,4]
+=> 1
+
+# The leftover lands between the other weights: 9 and 6 leave 3, among 4,
+# 3 and 1.
+[9,4,1,6,3]
+=> 1
+
+# The leftover is the new lightest: 10 and 9 leave 1, below 8 and 3.
+[10,9,8,3]
+=> 4
+
+# The heaviest stone listed last: 9 and 6 leave 3, then 4 and 3 leave 1.
+# A heap that takes the children of i as 2i and 2i+1 on a 0-based array
+# never compares the root with the 9.
+[4,6,9]
+=> 1
+
+# Three stones tie for the heaviest.
+[5,5,5,2]
+=> 3
+
+# The pile empties on the very last step: 9 and 6 leave 3, which cancels
+# out the other 3.
+[3,9,6]
+=> 0
+
+# Thirty stones of different weights, in no order.
+[613,27,998,340,871,155,702,489,64,935,218,777,402,1000,93,566,309,844,731,12,658,247,909,385,520,176,961,433,808,290]
+=> 3
+
+# Twenty-nine stones of 1000 and one of 1.
+[1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1]
+=> 999
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[3,1,2,2,1,4,4]
+=> 1
+
+@gen 2 small
+[9,5,9,9,1]
+=> 3
+
+@gen 3 small
+[3,1,3,1,4,2,2,3]
+=> 1
+
+@gen 4 small
+[11,10,5,7]
+=> 1
+
+@gen 5 small
+[2,2,3,4,4,3]
+=> 0
+
+@gen 6 small
+[10,11]
+=> 1
+
+@gen 7 small
+[3,4,2,3,3,3]
+=> 0
+
+# Full size: 30 stones, with weights from the whole range, all different,
+# or a few weights near 1000 repeated.
+@gen 1
+[159,278,529,777,658,206,818,699,276,932,433,204,541,823,595,547,644,465,407,458,485,526,800,281,17,572,480,172,898,219]
+=> 1
+
+@gen 2
+[999,997,999,997,997,995,995,995,999,1000,995,998,996,996,998,997,999,997,997,997,998,997,995,998,995,995,999,995,996,1000]
+=> 1
+
+@gen 3
+[616,851,1,527,933,524,850,822,271,443,497,805,798,532,998,866,859,545,186,553,199,623,575,577,350,839,774,515,621,593]
+=> 1
