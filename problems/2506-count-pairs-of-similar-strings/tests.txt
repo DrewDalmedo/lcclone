@@ -1,0 +1,89 @@
+# Count Pairs Of Similar Strings.
+
+@example The first four words all use exactly l, o and p, which makes 6 pairs; "pole" also uses e.
+["loop","pool","polo","lop","pole"]
+=> 6
+
+@example "mm" and "m" both use only m, and "xy" and "yx" both use exactly x and y.
+["mm","xy","m","yx"]
+=> 2
+
+@example "ab" and "bc" each use only part of the letters of "abc", and differ from each other.
+["ab","abc","bc"]
+=> 0
+
+# A single word has no partner.
+["q"]
+=> 0
+
+# Two equal words.
+["hello","hello"]
+=> 1
+
+# The same letters in different amounts: all 6 pairs are similar.
+["ttu","tuu","ut","tttu"]
+=> 6
+
+# An alphabet strictly inside another is not similar to it, either way
+# round; only the two copies of "abc" pair up.
+["abc","abcd","abc"]
+=> 1
+
+# Different alphabets whose letter codes add up to the same total (ad, bc)
+# or xor to the same value (abcd, ae).
+["ad","bc","abcd","ae"]
+=> 0
+
+# Two groups of three, interleaved, and a word alone: 3 + 3 pairs.
+["ab","c","ba","cc","aab","ccc","b"]
+=> 6
+
+# The longest word, 100 copies of one letter, with short words of it.
+["kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk","k","kk"]
+=> 3
+
+# All 26 letters in different orders and amounts; the last word lacks z.
+["abcdefghijklmnopqrstuvwxyz","zyxwvutsrqponmlkjihgfedcbammqq","abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv","abcdefghijklmnopqrstuvwxy"]
+=> 3
+
+# The only pair is the first word with the last.
+["xyz","a","b","c","zyx"]
+=> 1
+
+# 100 words with the alphabet {m, n}: every pair, 100 * 99 / 2 of them.
+["mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn","mn","nm","mmn","nnm","mnmn"]
+=> 4950
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["dadb","dba","dab","abdda","bbda","bda","aadb"]
+=> 21
+
+@gen 2 small
+["cdbbb","dcdbd","dbc","bdcbd","bccbd"]
+=> 10
+
+@gen 3 small
+["acba","bca","bac","acb","bccac","baca","ccbac","abca"]
+=> 28
+
+@gen 4 small
+["cccb","bbcb","cc","bcb"]
+=> 3
+
+@gen 5 small
+["add","aada","bb","bbb","ad","bbb"]
+=> 6
+
+@gen 6 small
+["b","cb"]
+=> 0
+
+@gen 7 small
+["cdcd","c","cc","c","abc","c"]
+=> 6
+
+# Full size: 100 words of up to 100 letters.
+@gen 1
+["eonwwwoewonwownnewnoowweeweeowwwoeonwwnnnwowoenonoe","dptuvjszigwnzbzihaejfskrculq","ldoatebdwydztbmlmfwlf","pfnrxvcleijsuxnhailmapogopouxpoagmlauxautjelnnritlmcmrmgjrwggslasoplojeeovjescc","kkfikwbzcdukisacqtncdurawqypzodpgtggidmljcuoqkqaxbhhaqpdyavebzso","qqzqqqzzqzqqzzqzzffqzqzzzzfzfqzqqqzzzzfqfzffzf","rrcgkylngpyazmcjstawucypnjdepxjwyhxhzexwznbxyluynplrrcjepwncckhdmcwmuxdtwpucagjdhhdgthpn","ffmaahwwmmwsjmebjosfabcfbfsjhajjohwwpapophbjcjeabeccjphembphcjapahjfbomjweehmbbwmmefjosjcf","gqphgjycavaptiyqvezghkbjumfamxnmememzhkolnqolswzduofv","ohoyyyhtthyotothotootthtoyhyott","rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr","omxjgoxjutagtognugonggmnj","hnzhbdhocjrxfywkeoujanvyrdqmytmwbxqvrkeiloymcl","sfzvccirizfvjjwwcchhsjzviivtvjrwcztfvztrfxrtjcfttfcthihjtvsvijihscwcfjwfrtssrihwjzizx","uarldrtcbvnkwsofywobvtdcmhqvunkqdyczlloeehmqirznueomhz","mxacakmxdbubbdxlcduxudcafclkgumggfdmda","fxxhbigtgxnizxcorqgybj","wtljeatgxcfzmtzmazfxmejt","rxmnwrgjcqkxudazcseuxhqagmrtwvjkojjrjajbsukfnaqzobtjtttgvz","zjzzoezqmjpmpjmooezzozpjmojzpeozqjqjomjjmzejpmoppemqmqoppzqmjojppzeqojeqzzmzzzjjeqqoozjpeeejozzpoep","tadycmebempqymdldbgdtzpbccbttzbyadzeyatgp","lvwwtlofyhoukuzvkltxefvgxwqukchzecxwyfqzgwckeffelzkelzenhuutozqctooqhzzgoglhxkwognly","iryzwrnwyzzlzlvlrliznywlriwzlrrynvizvrzvwinwrivyvwvywyvlrznyvnywyzinvzvlvvywvlllvrvwryznlrvrzliwyziz","zrjlylrrzylppzzpjljlptrppr","ypbitytyjaptyjtypbaatybybppytaytibjya","aqaqaqqqyqmqyqyaaaqqqmymaymayqmqaamammyyqmqymaqymmqmaaamqqqqqam","fuxmmukbwcmcxwwdggebmgjekasaaacbodfsfiynyyiebhwfexxesacgnwgwuwuikigiwmeaglhufiogujtosxdmyjbeajm","btxeatvogicbjxjbfzwagscziz","pyddqhiilhhvlypdvpiqqqvvpppxpylhydygxgxuxxqlhxiuiqhdgdyqppvyquygyhypvglgiyyhxvluuxqigpliqq","hrssrcmqnjthorlnhqeddmmojtndhosjwjliobieswtjwuncjstecodtbhwqiliebejewoqewjcdjrbdnhuhmwrdcd","ounpzvczayafdmjskebjkbiubsjuajigdbkejveyvshofmkzczbigegzuzp","kjzffkvttuifkfttnjjckcuuxzctfzczkfvcktjkjuxtncitifkvzxqfjnxvnzfxzuiqifjztjkvqccjnfcvfkqqznczfqcxzujj","ukjsmgenlngluwktwtnywtysmmhueegtsiyewihgwddehlvusyhjhmmv","llfnlsofilsflyvptk","oobobobobbbobvvbbvvbbbvvovbvbbbooovvvvbbbovvvvvbvoooooo","prbxvwlzvxmpjfrljvtzyqijiywqkrervdktvwaqtoaiylopdc","kttjkttkejkkyjttjeejjykteekyyyteetkjkyejtejetytjjektyjet","ihqqeqmhiyruqhummhqueireemqyheirmriquqqqyurqeiymiqyurhrqrrruryy","pxqpdxppzdqqzpdqdpqdzpzpdpqddddxxqppdddqqdxxqpqdqzzpdqddxddz","gnuguowuvgvgbwnguovwovbgngbgbuwnubnbwwvbuw","chsutbkuzagmkissmzgicsztttstcggsttbyakgzgcazkgstzmykaimgczhuuamimgumzuauzbzzmgzzcmmtghhihabkkh","csnystottbgygdcjnskqvxawjckwbuctxbceivtsxjqngdowqehxihsxuwopiythotofxgdohjgu","xmlaccdybyyaunscmmncqajmzqmmbymzuaebefxleyjujcgchgudmx","cgmetestzcpzxvsvzufffpcifodittmrkxgnu","nvsbvvsvsnscnccsbcbcsncvscnvvvccccncs","pstprzrsuewupzruslptezjswtltpewuzwzrjrp","ojsunamiwd","rhppuieohpcxhpmlfpechloeylyixmuuhpocyylyiferyoucrrocfxorouimyhhfp","gultyrdszxaemnicvihqjwfbjuglipo","jmlmmmmmmjjlbllmjmjjmljmmbjbllbmmlmjmjmbbbbmmmjmbmmjmbjllbbmmlbjlbblbbblmljbjmlljmmlblmmjlbmblm","rujcrdcjirhdydsdmmascmajyauajgrdgdsujuaadgihrhyujmsjshdsimygua","qxatjclpcrlnbgifoenqbncicagztbgvfgbmmfkqprgprnectkmmrpgpmadormdzqckbzgrtfefkz","zqwaaaaczwqelpclzcwllpcczezecpzlweppzalpczpqawezeazelwweezwzcaawaccaqzqpepcee","xzlyqcruuystlhcschsi","eciiwqldweocqxcliqiacqoabboqccaxllwwweeebbaqexiwoieodiowwcwbaecqcc","efsytvqavrcvyustsstxfvuuursvwfsqssuswafqexwcxawveqqewea","rparbebupbephruurraebbhaaahhbrbaarpaeeuebharuerppupeaureeupappbaheprebraaerupabupeeeururhheuhpuereh","duknmiymnpmuwpzyjvuzyqfncpjafqyofcqtgwi","zjkcxwkttdlxgmxlhlwtcdz","lkwwdxbbvliidqzviizjdxqogxkzdwwbddkwottwzlbtxqglbdozqxxgdijjkbxiigoodxjwzlgwxwgobzwvxkvvt","ahzpqefsekvlckoyibhwgedxlmywitfgnubacjh","ncaxihtspxgmraldluqvifgpakyktregoovhze","upvuvppupuuvpppvpuupuvpppvvvpvv","fkxpfkpxpfpfxpfppkxfkkxxfffpfxkppkpkpxxxfxpxffkppkxxfxkfkfkkfxkfpxpxxpxkpkkxpf","bbbbzzb","hdnrjkhqqytripulkkqze","vbtaruuqftanvvbovqywreaywebgeerybcaqzocmvnzyfwctfafgmqmbmtgmqg","hqtvrkcxxxygcbmunz","lxjqufdszcrhofkeagbt","dweudjeewwwhokzhjroxqxzxxefwdjbzkuzrujewjerzqqxruquworxbdffbhbqxkfjfouu","cmcaumfhgfiahgncqhmghqqhghgcgrqnmqquuhhugqignmfcufmihfahgaminuqcumracqmaqruuaqicqnqggcncfiairgig","zzqqzpzzppqpzpqqqppzpzzqqqqqqppppqppq","dthhylvbxgnngjtrtrhhlcaarbbrbnylhvatvhjjvvgahxlnavyyxlljvtxgclvbxnxjggbdtclxvxxc","pdspddjpssdvvpdsvvjpvdsvdvpv","hqqvxyqzqqvyhxzyvzvzxyyzqvhhvvxhhzxxvyyyyyqhzyvz","galmzkizhruvcetybhbsxngbnjdipybwbukvnq","fiiecioqqcifexifieioeicxqoefeexxxxoqqxxceefiixfocfqcfocxcccoxeccoccexexxfoifxei","tttgdtdduzcgchummttthmuudzhczhm","llvvvlllvlvllvlvvvllvvllvlllvvvllll","gpfopgggfppffppfpgppgpgoggggpoffgopgfogpfogfgpgofoppoppggoogffgfpgggppogfoofppo","fpdgttoeltzofepnjvlgdxefculupkljxbbkkphxlzdhmvuzbcuofetlpvblmvexppnvcxgdcophhbjvnduvcmhutnpnpzjfo","qddqqqddqdqdqqqqqqddqqqqqdqqdqddqdqdddqqdddqqqddqdddqdqqdqdqdqdqqddqdddqddqqqqddqdqdqd","yvahhwkrsvqqmrxxkvsqyoiywsavxanixokhpsnqocxrrvioxpxywhowphihqryiphmrmkzkwwrxmzacr","scfscvhbgdvkfqviygfjlojmfyuonbxwviuextxnqjcftdhnpepkivhforqrtbhxthcgiaj","hwsrpxqyfzaslimywxbmxntuoplkyobofzrhfqjhqautsvuwhbtuieehzbegmilntkoejiwifuaa","lxzfmmzrbwyajdmtxqszgyyjkjzakdfxgbl","heebcmzlm","ncpjgvkqjipobgmrrengjqtphfqsapqhdrsekemrofvvpdbcnakbkqebmtboekkahfotmdaga","ajvfoljjwcftla","wyyywwwxwwwywxywwwwyy","osmetwribmphznyiaxrkmwvcadryhnwiruwjnoxlqgsqb","ccwuiriwmcmfwclliurmilwrumrim","omakmvpfzuoepijltcupbxhpldwznnjwqkdvobyvtuadjeeylposdvvjmmmjlsrrpgyubjbizhxsqk","jknoirbmuwjrjxqjnsoshclmqujjwucomhqsxbvbinnwbhlrvicsoimqcmxqvojbuikoursmxsxrhhnxhnwvorwhuihxmw","fdnddnndddidifiififndidfdinfninindfnfninifdniiinnfndidfdfnd","utfnewiergaejpytzkuzbiuvcalqqhvdpfbtydhycglqn","wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww","fsvehfllczeshxevbdxpmwdgqaokqkekcdttiaptupoqjathztyrvrzxnoysfmgev","oclokkllkklylyylloclkckoccckcoylcollcoclyolooccclocccy","kkqigdmdqvytdqtqtndytdjjjvjyitvjyyymdvjdvkhknqighmigynyvhytvtgikmggykjijmmm"]
+=> 4

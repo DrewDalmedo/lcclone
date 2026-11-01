@@ -1,0 +1,70 @@
+# Count Distinct Numbers on Board.
+
+@example House 8 tells 7; house 7 tells 2, 3 and 6; house 6 tells 5; house 5 tells 4. Houses 2 to 8 know the news. House 1 never does, since every x mod 1 is 0.
+8
+=> 7
+
+@example House 1 knows the news from the start, and there is no other house.
+1
+=> 1
+
+@example 2 mod 1 and 2 mod 2 are both 0, so house 2 tells nobody.
+2
+=> 1
+
+# Small villages.
+4
+=> 3
+
+6
+=> 5
+
+10
+=> 9
+
+# A prime and a power of two: the news needs no divisors to spread.
+97
+=> 96
+
+64
+=> 63
+
+# The largest villages; a table of houses needs a slot for house 100.
+99
+=> 98
+
+100
+=> 99
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+47
+=> 46
+
+@gen 2 small
+16
+=> 15
+
+@gen 4 small
+63
+=> 62
+
+@gen 5 small
+82
+=> 81
+
+@gen 8 small
+17
+=> 16
+
+@gen 11 small
+89
+=> 88
+
+@gen 2
+96
+=> 95
+
+@gen 6
+90
+=> 89

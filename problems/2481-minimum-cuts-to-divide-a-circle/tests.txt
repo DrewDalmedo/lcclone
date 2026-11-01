@@ -1,0 +1,90 @@
+# Minimum Cuts to Divide a Circle.
+
+@example Three long cuts, each turned 60 degrees from the one before, give six equal wedges.
+6
+=> 3
+
+@example The edges of five equal wedges are 72 degrees apart and no two lie in one line, so each edge takes a short cut.
+5
+=> 5
+
+@example One slice is the uncut pizza.
+1
+=> 0
+
+# Two slices: a single long cut.
+2
+=> 1
+
+# Seven slices: no two edges are opposite, so no long cut fits.
+7
+=> 7
+
+# Even counts take long cuts only.
+12
+=> 6
+
+8
+=> 4
+
+64
+=> 32
+
+50
+=> 25
+
+# Odd counts take one short cut per edge.
+9
+=> 9
+
+11
+=> 11
+
+97
+=> 97
+
+# The top of the range, for both parities.
+100
+=> 50
+
+99
+=> 99
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+47
+=> 47
+
+@gen 2 small
+1
+=> 0
+
+@gen 5 small
+82
+=> 41
+
+@gen 6 small
+2
+=> 1
+
+@gen 8 small
+72
+=> 36
+
+@gen 11 small
+89
+=> 89
+
+@gen 13 small
+77
+=> 77
+
+# Full size.
+@gen 1
+97
+=> 97
+
+@gen 2
+100
+=> 50
+

@@ -1,0 +1,172 @@
+# Categorize Box According to Criteria.
+
+@example Every side is below 10^4 and the volume is 600000, so the box is not bulky; its mass of 120 makes it heavy.
+500
+40
+30
+120
+=> "Heavy"
+
+@example No side reaches 10^4, but the volume is 1200000000, so the box is bulky; at 99 it is just short of heavy.
+2500
+800
+600
+99
+=> "Bulky"
+
+@example One side of 12000 is enough to make the box bulky, and a mass of exactly 100 makes it heavy.
+12000
+2
+3
+100
+=> "Both"
+
+# The smallest box.
+1
+1
+1
+1
+=> "Neither"
+
+# The largest and heaviest box.
+100000
+100000
+100000
+1000
+=> "Both"
+
+# The largest box at the smallest mass.
+100000
+100000
+100000
+1
+=> "Bulky"
+
+# A side of exactly 10^4, second, with a volume of only 10^4.
+1
+10000
+1
+99
+=> "Bulky"
+
+# A side of exactly 10^4, third, and a mass of exactly 100.
+1
+1
+10000
+100
+=> "Both"
+
+# Sides of 9999 are not long enough, and the volume is 99980001.
+9999
+9999
+1
+100
+=> "Heavy"
+
+# A volume of exactly 10^9.
+1000
+1000
+1000
+50
+=> "Bulky"
+
+# A volume of 999999000, just below 10^9.
+999
+1000
+1001
+50
+=> "Neither"
+
+# The volume is 2^32, which a 32-bit int wraps round to 0.
+2048
+2048
+1024
+1
+=> "Bulky"
+
+# The volume is 1.25 * 10^11, which a 32-bit int wraps round to 445948416.
+5000
+5000
+5000
+150
+=> "Both"
+
+# The volume is 999999968, which rounds to exactly 10^9 as a float.
+716
+1076
+1298
+100
+=> "Heavy"
+
+# The volume is 999999976, which also rounds to 10^9 as a float.
+17
+6296
+9343
+1
+=> "Neither"
+
+# Random cases from gen.c, near the boundaries (lc check --regen makes
+# them).
+@gen 1 small
+1
+2048
+1001
+500
+=> "Heavy"
+
+@gen 2 small
+29
+77
+9999
+398
+=> "Heavy"
+
+@gen 3 small
+5000
+1024
+10000
+1000
+=> "Both"
+
+@gen 4 small
+21
+59
+10001
+158
+=> "Both"
+
+@gen 5 small
+1280
+124
+6250
+99
+=> "Neither"
+
+@gen 6 small
+26
+5000
+8081
+555
+=> "Both"
+
+# Random full-size cases.
+@gen 12
+91081
+15193
+98937
+100
+=> "Both"
+
+@gen 14
+3200
+4000
+80
+493
+=> "Both"
+
+@gen 15
+4931
+7659
+5310
+1
+=> "Bulky"

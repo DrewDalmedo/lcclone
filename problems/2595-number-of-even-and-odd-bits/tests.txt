@@ -1,0 +1,92 @@
+# Number of Even and Odd Bits. n is in decimal; the answer is [even, odd].
+
+@example 13 = 2^3 + 2^2 + 2^0: the exponents 2 and 0 are even, 3 is odd.
+13
+=> [2,1]
+
+@example 40 = 2^5 + 2^3 (101000 in binary): both exponents are odd.
+40
+=> [0,2]
+
+@example 1 = 2^0, and 0 is even.
+1
+=> [1,0]
+
+# A power of two has one exponent; its parity decides. 512 = 2^9 is the
+# highest power allowed.
+8
+=> [0,1]
+
+64
+=> [1,0]
+
+512
+=> [0,1]
+
+# An even number of binary digits with different counts: counting the
+# positions from the left would swap them. 11 is 1011, 208 is 11010000.
+11
+=> [1,2]
+
+208
+=> [2,1]
+
+# The largest n, 1000 = 2^9 + 2^8 + 2^7 + 2^6 + 2^5 + 2^3.
+1000
+=> [2,4]
+
+# Every even position up to 8 (341), every odd position up to 9 (682).
+341
+=> [5,0]
+
+682
+=> [0,5]
+
+# 511 = 2^9 - 1: positions 0 to 8.
+511
+=> [5,4]
+
+# 959 = 1023 - 2^6: every position up to 9 but 6.
+959
+=> [4,5]
+
+# Zeros between the 1s: the parity changes at every position, not only at
+# the 1s. 5 = 2^2 + 2^0, 545 = 2^9 + 2^5 + 2^0.
+5
+=> [2,0]
+
+545
+=> [1,2]
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 3 small
+851
+=> [4,2]
+
+@gen 5 small
+993
+=> [3,3]
+
+@gen 7 small
+16
+=> [1,0]
+
+@gen 10 small
+127
+=> [4,3]
+
+@gen 17 small
+170
+=> [0,4]
+
+@gen 18 small
+255
+=> [4,4]
+
+@gen 14
+829
+=> [4,3]
+
+@gen 23
+515
+=> [1,2]

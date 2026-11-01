@@ -1,0 +1,87 @@
+# Find the Pivot Integer.
+
+@example 1 + 2 + ... + 35 = 630, and 35 + 36 + ... + 49 = 630 too.
+49
+=> 35
+
+@example Standing on rung 204, both totals are 20910.
+288
+=> 204
+
+@example On rung 21 the totals are 231 and 255, and on rung 22 they are 253 and 234: they never meet.
+30
+=> -1
+
+# One rung: it is the balance rung, both totals being 1.
+1
+=> 1
+
+# Two rungs: totals 1 and 3 on rung 1, 3 and 2 on rung 2.
+2
+=> -1
+
+# Neighbours of the ladders that balance.
+7
+=> -1
+
+9
+=> -1
+
+48
+=> -1
+
+50
+=> -1
+
+287
+=> -1
+
+289
+=> -1
+
+# Counting the rung you stand on in only one total would wrongly pick
+# rung 2 here, and rung 14 for 20 rungs.
+3
+=> -1
+
+20
+=> -1
+
+# The top bound.
+1000
+=> -1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+7
+=> -1
+
+@gen 2 small
+21
+=> -1
+
+@gen 3 small
+50
+=> -1
+
+@gen 4 small
+48
+=> -1
+
+@gen 8 small
+32
+=> -1
+
+@gen 13 small
+57
+=> -1
+
+# Full size.
+@gen 1
+982
+=> -1
+
+@gen 2
+981
+=> -1
+

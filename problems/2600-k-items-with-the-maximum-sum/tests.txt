@@ -1,0 +1,167 @@
+# K Items With the Maximum Sum. Inputs: numOnes, numZeros, numNegOnes, k.
+
+@example Four +1 chips and the 0 chip make five; the sixth has to cost a point.
+4
+1
+3
+6
+=> 3
+
+@example Both +1 chips, then any of the 0 chips.
+2
+5
+1
+3
+=> 2
+
+@example Every chip costs a point, so two of them score -2.
+0
+0
+5
+2
+=> -2
+
+# No chips at all, and nothing to pick.
+0
+0
+0
+0
+=> 0
+
+# 6 chips of +1, 2 of 0, 3 of -1, with k at each place where the score
+# changes course: k = numOnes, numOnes + 1, numOnes + numZeros, one more.
+6
+2
+3
+6
+=> 6
+
+6
+2
+3
+7
+=> 6
+
+6
+2
+3
+8
+=> 6
+
+6
+2
+3
+9
+=> 5
+
+# No 0 chips; taking every chip, the +1s and -1s cancel out.
+4
+0
+4
+8
+=> 0
+
+# No +1 chips: the 0 chips go first, and only then are -1 chips forced.
+0
+4
+6
+4
+=> 0
+
+0
+4
+6
+7
+=> -3
+
+# No -1 chips: every chip scores 2.
+2
+9
+0
+11
+=> 2
+
+# The lowest possible score.
+0
+0
+50
+50
+=> -50
+
+# The highest possible score.
+50
+50
+50
+50
+=> 50
+
+# One +1 chip, all 50 zeros, then 50 forced -1 chips.
+1
+50
+50
+101
+=> -49
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+2
+0
+4
+6
+=> -2
+
+@gen 2 small
+4
+2
+4
+4
+=> 4
+
+@gen 3 small
+5
+4
+2
+4
+=> 4
+
+@gen 4 small
+1
+4
+3
+0
+=> 0
+
+@gen 5 small
+3
+1
+1
+5
+=> 2
+
+@gen 6 small
+3
+3
+4
+7
+=> 2
+
+@gen 8 small
+2
+1
+3
+4
+=> 1
+
+@gen 10
+18
+35
+0
+17
+=> 17
+
+@gen 14
+5
+13
+50
+68
+=> -45
