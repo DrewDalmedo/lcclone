@@ -1,0 +1,125 @@
+# Find the Child Who Has the Ball After K Seconds. Inputs: n, then k.
+
+@example The first leg isn't over yet: children 0, 1, 2 and 3 hold the ball at seconds 0 to 3.
+6
+3
+=> 3
+
+@example The ball reaches child 3 at second 3, is back with child 0 at second 6 and with child 3 at second 9, then comes back two places.
+4
+11
+=> 1
+
+@example With two children, every leg is a single throw, so the ball is back with child 0 after each even number of seconds.
+2
+6
+=> 0
+
+# The smallest input.
+2
+1
+=> 1
+
+# Two children and an odd k near the bound.
+2
+49
+=> 1
+
+# A long line: the ball hasn't turned yet.
+50
+48
+=> 48
+
+# k = n - 1: the ball has just reached the right end.
+50
+49
+=> 49
+
+# Both at the bound: one second into the leg back.
+50
+50
+=> 48
+
+# k = n: one second after the turn (counting the turn as a second of its
+# own would give 11, and a round of n seconds would give 0).
+12
+12
+=> 10
+
+# A round trip of 2(n - 1) seconds brings the ball home, and one more
+# second moves it to child 1.
+12
+22
+=> 0
+
+12
+23
+=> 1
+
+# Three children: the round trip takes 4 seconds, so k = 50 is 12 rounds
+# and 2 seconds.
+3
+50
+=> 2
+
+# Three children, on the way back: 47 = 11 rounds and 3 seconds.
+3
+47
+=> 1
+
+# The largest k is exactly one round trip.
+26
+50
+=> 0
+
+# The fifth leg ends with child 6 at second 30; one second later the ball
+# is with child 5.
+7
+31
+=> 5
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+8
+3
+=> 3
+
+@gen 2 small
+4
+13
+=> 1
+
+@gen 4 small
+2
+50
+=> 0
+
+@gen 5 small
+9
+22
+=> 6
+
+@gen 6 small
+3
+29
+=> 1
+
+@gen 8 small
+6
+8
+=> 2
+
+@gen 4
+22
+22
+=> 20
+
+@gen 8
+12
+50
+=> 6
+
+@gen 9
+37
+50
+=> 22

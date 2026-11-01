@@ -1,0 +1,120 @@
+# Find the Encrypted String.
+
+@example Each letter comes from two places further on; the last two places wrap around to "p" and "l".
+"planet"
+2
+=> "anetpl"
+
+@example Nine steps around four letters is two full laps and one step more, the same as k = 1.
+"kiwi"
+9
+=> "iwik"
+
+@example With a single letter, every count of steps lands back on it.
+"z"
+7
+=> "z"
+
+# A single letter with the largest k.
+"q"
+10000
+=> "q"
+
+# Two letters, one step.
+"ab"
+1
+=> "ba"
+
+# k equal to the length, or twice it: nothing moves.
+"abcde"
+5
+=> "abcde"
+
+"xyz"
+6
+=> "xyz"
+
+# k = n - 1 brings the last letter to the front; k = n + 1 acts like k = 1.
+"abcde"
+4
+=> "eabcd"
+
+"abcde"
+6
+=> "bcdea"
+
+# Direction: each place takes the letter k places to its right (rotating
+# the other way would give "nesto"). Writing into s as it is read would
+# reuse letters already overwritten.
+"stone"
+2
+=> "onest"
+
+# Repeated letters: each place uses its own index, not the place where its
+# letter first occurs.
+"mississippi"
+4
+=> "issippimiss"
+
+# One letter repeated: places move but letters never shift along the alphabet.
+"zzzz"
+3
+=> "zzzz"
+
+# As an alphabet shift k = 26 would change nothing; here it is 26 mod 3 = 2 places.
+"abc"
+26
+=> "cab"
+
+# k = 10^4 is a multiple of 100, so 100 letters stay put.
+"lanternmeadowquiltorchidvelvetharbourzephyrglacierpumpkinsaffronwhistlecobaltmarigoldtundrafjordisle"
+10000
+=> "lanternmeadowquiltorchidvelvetharbourzephyrglacierpumpkinsaffronwhistlecobaltmarigoldtundrafjordisle"
+
+# 10^4 = 99 * 101 + 1, so 99 letters move by one place.
+"walrusyodelkumquatbrambleoctopusneedlejigsawhammockvortexlilacgravytrumpetsquidfernbiscuitpolkadots"
+10000
+=> "alrusyodelkumquatbrambleoctopusneedlejigsawhammockvortexlilacgravytrumpetsquidfernbiscuitpolkadotsw"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abbabbb"
+9988
+=> "babbabb"
+
+@gen 2 small
+"aaaaa"
+5891
+=> "aaaaa"
+
+@gen 3 small
+"abcdebac"
+5
+=> "bacabcde"
+
+@gen 4 small
+"eadb"
+5689
+=> "adbe"
+
+@gen 5 small
+"bceeed"
+9992
+=> "eeedbc"
+
+@gen 6 small
+"db"
+5528
+=> "db"
+
+# Full size.
+@gen 1
+"oxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjst"
+9969
+=> "nrlojisguzpmcgildbabjrfadeoolbylciuejeyjstoxlsn"
+
+@gen 2
+"egqmsekulmznzvwecuyriadgwuqlzxshwqzaeidiwbhetxijzcxyrphhqdqursjewqicivkjwrqfysdmqxrsotighhwtocmabuul"
+2928
+=> "zxshwqzaeidiwbhetxijzcxyrphhqdqursjewqicivkjwrqfysdmqxrsotighhwtocmabuulegqmsekulmznzvwecuyriadgwuql"
+

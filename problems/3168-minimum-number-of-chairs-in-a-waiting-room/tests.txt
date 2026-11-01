@@ -1,0 +1,101 @@
+# Minimum Number of Chairs in a Waiting Room.
+
+@example Five people walk in, but the first two have left before the next three arrive, so 3 chairs are enough.
+"EELLEEEL"
+=> 3
+
+@example Two people are inside together after the second event and again after the eighth, and never more than two.
+"EELLELEEL"
+=> 2
+
+@example All three are inside together after the third event.
+"EEELLL"
+=> 3
+
+# The shortest logs.
+"E"
+=> 1
+
+"EL"
+=> 1
+
+# Fifty arrivals and nobody leaves.
+"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+=> 50
+
+# Strictly alternating: one chair serves everyone.
+"ELELELELELELELELELELELELELELELELELELELELELELELELEL"
+=> 1
+
+"ELELELELELELELELELELELELELELELELELELELELELELELELE"
+=> 1
+
+# The peak halfway, and an empty room at the end.
+"EEEEEEEEEEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLLLLLLLLL"
+=> 25
+
+# The peak at the very last event, right after a run of arrivals.
+"ELELELEEEE"
+=> 4
+
+# Three peaks of the same height.
+"EELELEL"
+=> 2
+
+# Six arrivals, but never more than 3 people inside.
+"ELELEEELLE"
+=> 3
+
+# Seven arrivals and 1 person left at the end; 5 inside at the peak.
+"EEELEEELLLLEL"
+=> 5
+
+# Full length, with the peak at the last event.
+"ELELELELELELELELELELELELELELELELELELELELEEEEEEEEEE"
+=> 10
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"ELELEELLE"
+=> 2
+
+@gen 2 small
+"EELLELE"
+=> 2
+
+@gen 5 small
+"EEEEELEEEE"
+=> 8
+
+@gen 8 small
+"EEELEEE"
+=> 5
+
+@gen 9 small
+"ELEELLE"
+=> 2
+
+@gen 10 small
+"ELEELEEE"
+=> 4
+
+@gen 12 small
+"EELLELEELL"
+=> 2
+
+@gen 16 small
+"EE"
+=> 2
+
+# Full-size random cases.
+@gen 1
+"ELELELELELELELELELEELLELEEELLLELEELELLELELELEELLEL"
+=> 3
+
+@gen 3
+"EELLEELELLELEELLELELELELELELELEELLELELELEEEEEEEEEE"
+=> 10
+
+@gen 4
+"EEEEEEELLEEEEELEEEEEEEELEEEEEELEEEEEEEEEEEEEELEELE"
+=> 36

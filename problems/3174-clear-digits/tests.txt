@@ -1,0 +1,93 @@
+# Clear Digits.
+
+@example 1 wipes out b; then 2 wipes out d, the nearest letter before it that is not gone yet.
+"ab1cd2e"
+=> "ace"
+
+@example The first 0 wipes out z, and the second 0 then wipes out y.
+"xyz00w"
+=> "xw"
+
+@example 7 takes h, the first 8 takes i, and the second 8 takes g: nothing is left.
+"gh7i88"
+=> ""
+
+# A single letter.
+"q"
+=> "q"
+
+# One letter and one digit, which is 0.
+"t0"
+=> ""
+
+# No digit at all, at the longest length: s comes back whole.
+"zyxwvutsrqponmlkjihgfedcbaqwertyuiopasdfghjklzxcvbnmthequickbrownfoxjumpsoverthelazydogmnbvcxzlkjhgf"
+=> "zyxwvutsrqponmlkjihgfedcbaqwertyuiopasdfghjklzxcvbnmthequickbrownfoxjumpsoverthelazydogmnbvcxzlkjhgf"
+
+# The digit takes the letter just before it, not the last or the first
+# letter of s.
+"abc1de"
+=> "abde"
+
+# A run of two digits takes the two letters before it; letters before,
+# between and after the digit runs.
+"abcd12efg3h"
+=> "abefh"
+
+# 9 wipes out a single letter, like any other digit.
+"abcd9"
+=> "abc"
+
+# 0 is a digit too.
+"pqr0s"
+=> "pqs"
+
+# Nested: 5 takes v, 6 takes w, and 7 then takes u.
+"uv5w67"
+=> ""
+
+# Letters are taken by position, not by value: 2 takes the second b and 1
+# the second c.
+"abcab2c1"
+=> "abca"
+
+# 50 letters, then 50 digits: the last digit takes the first letter.
+"zyxwvutsrqponmlkjihgfedcbamnbvcxzlkjhgfdsapoiuytre01234567890123456789012345678901234567890123456789"
+=> ""
+
+# Letters and digits alternating, 100 characters.
+"x0k7x4k1x8k5x2k9x6k3x0k7x4k1x8k5x2k9x6k3x0k7x4k1x8k5x2k9x6k3x0k7x4k1x8k5x2k9x6k3x0k7x4k1x8k5x2k9x6k3"
+=> ""
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"c0bb76aba"
+=> "aba"
+
+@gen 2 small
+"ca8cabc"
+=> "ccabc"
+
+@gen 3 small
+"c3aabb"
+=> "aabb"
+
+@gen 4 small
+"b1ac"
+=> "ac"
+
+@gen 5 small
+"baab4cacab"
+=> "baacacab"
+
+@gen 6 small
+"bc"
+=> "bc"
+
+@gen 11
+"tbaxjmrzuaut63066149fyvawszpsgnibfwhlxogr033vfax31556373884592489902siboolpfctnyczrs2844fbbieaeitw69"
+=> "tbaxfysiboolpfctnyfbbieaei"
+
+@gen 14
+"irjyvluexg5wgvx5jccrkzzhhxmc1qwrwtziw7ocblme4jnsdj0p88caxg1clrvarfwqcujs5hpn1bimnl7htnzo6ivblstkunmn"
+=> "irjyvluexwgvjccrkzzhhxmqwrwtziocblmjnscaxclrvarfwqcujhpbimnhtnzivblstkunmn"

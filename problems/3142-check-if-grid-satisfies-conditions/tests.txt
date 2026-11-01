@@ -1,0 +1,91 @@
+# Check if Grid Satisfies Conditions.
+
+@example Every column keeps one colour, and neighbouring columns differ; the first and last columns are both 4, but they don't touch.
+[[4,7,4],[4,7,4],[4,7,4]]
+=> true
+
+@example The middle column has 2 above 6.
+[[5,2,8],[5,6,8]]
+=> false
+
+@example A single row, whose first two tiles are side by side and equal.
+[[9,9,1]]
+=> false
+
+# One tile: no test applies.
+[[0]]
+=> true
+
+# One row of ten, neighbours all different.
+[[0,9,0,9,0,9,0,9,0,9]]
+=> true
+
+# One column: all the same, then one that changes at the bottom.
+[[3],[3],[3],[3]]
+=> true
+
+[[8],[8],[8],[2]]
+=> false
+
+# The only fault is in the last column, between the first two rows.
+[[1,2,3],[1,2,5],[1,2,5]]
+=> false
+
+# The only fault is the bottom-right tile.
+[[6,0],[6,0],[6,1]]
+=> false
+
+# Columns all constant, but two neighbouring columns are equal.
+[[2,5,5,1],[2,5,5,1]]
+=> false
+
+# Top row fine, but the first column changes.
+[[7,3],[1,3]]
+=> false
+
+# Two zeros side by side.
+[[0,0]]
+=> false
+
+# 10 x 10, with repeated colours in columns that don't touch.
+[[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3]]
+=> true
+
+# The same, with the bottom-right tile changed.
+[[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,3],[3,8,3,8,1,0,1,0,9,5]]
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[[1,1,1],[2,1,2],[2,2,0]]
+=> false
+
+@gen 2 small
+[[2]]
+=> true
+
+@gen 3 small
+[[6,2,3],[6,2,3],[6,2,3],[6,2,3]]
+=> true
+
+@gen 4 small
+[[6,6,5],[6,6,5],[6,6,5],[6,6,5]]
+=> false
+
+@gen 5 small
+[[1,0],[0,1]]
+=> false
+
+@gen 6 small
+[[2,0],[0,0]]
+=> false
+
+# Full size: a striped 10 x 7 wall, and an 8 x 10 one spoiled at the
+# bottom-right tile.
+@gen 3
+[[6,2,3,9,1,0,2],[6,2,3,9,1,0,2],[6,2,3,9,1,0,2],[6,2,3,9,1,0,2],[6,2,3,9,1,0,2],[6,2,3,9,1,0,2],[6,2,3,9,1,0,2],[6,2,3,9,1,0,2],[6,2,3,9,1,0,2],[6,2,3,9,1,0,2]]
+=> true
+
+@gen 5
+[[2,9,4,3,1,4,1,4,3,6],[2,9,4,3,1,4,1,4,3,6],[2,9,4,3,1,4,1,4,3,6],[2,9,4,3,1,4,1,4,3,6],[2,9,4,3,1,4,1,4,3,6],[2,9,4,3,1,4,1,4,3,6],[2,9,4,3,1,4,1,4,3,6],[2,9,4,3,1,4,1,4,3,4]]
+=> false

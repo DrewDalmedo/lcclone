@@ -1,0 +1,89 @@
+# Count the Number of Special Characters I.
+
+@example R and A appear in both cases; T, C and K only in uppercase, i and n only in lowercase.
+"TrainTRACK"
+=> 2
+
+@example Every letter is lowercase, so none of them has both forms.
+"zebra"
+=> 0
+
+@example The uppercase B comes first and the lowercase b last; o appears only in lowercase.
+"Bob"
+=> 1
+
+# A single letter.
+"q"
+=> 0
+
+# Only uppercase letters.
+"HELLO"
+=> 0
+
+# Lowercase except one uppercase letter whose lowercase form is missing.
+"abcdeF"
+=> 0
+
+# The first and last letters of the alphabet.
+"zAaZ"
+=> 2
+
+# Many copies of both forms of one letter still count once.
+"mmmMMMmmM"
+=> 1
+
+# Every uppercase form before every lowercase one.
+"QWERTYqwerty"
+=> 6
+
+# x and a get their lowercase form only after the uppercase one; y, z, b
+# and c appear in one case only.
+"XyzAbcxa"
+=> 2
+
+# Alternating cases, but never the same letter twice.
+"AbCdEfGh"
+=> 0
+
+# 50 characters: b to z in both cases, a in neither.
+"ZYXWVUTSRQPONMLKJIHGFEDCBzyxwvutsrqponmlkjihgfedcb"
+=> 25
+
+# 50 characters: a to x in both cases, y and z in lowercase only.
+"yzaAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxX"
+=> 24
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"AaaAAAa"
+=> 1
+
+@gen 2 small
+"amama"
+=> 0
+
+@gen 3 small
+"Mmaammaa"
+=> 1
+
+@gen 4 small
+"mama"
+=> 0
+
+@gen 5 small
+"mMaamM"
+=> 1
+
+@gen 6 small
+"aA"
+=> 1
+
+# Full size: 50 characters.
+@gen 1
+"NoVdKddYvnbQnovFDVFQVYqkFkFoookNNKyDnnDdYqvVVqbBqd"
+=> 7
+
+@gen 2
+"TNTgBaaBATKdkaBkBaddBtdkTtKdBdNKTKktgaTTgtaTbKAaaG"
+=> 5
+
