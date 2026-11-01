@@ -1,0 +1,161 @@
+# N-th Tribonacci Number. n takes just 38 values, and every one of them is
+# tested below: three as examples, the rest as hand-written cases.
+
+@example The terms at indices 3 to 6 are 2, 4, 7 and 13.
+6
+=> 13
+
+@example Index 2 is the last of the three starting terms, a second 1.
+2
+=> 1
+
+@example The three terms before it are 81, 149 and 274, which add up to 504.
+12
+=> 504
+
+# The other starting terms: index 0 is 0, and index 1 is 1.
+0
+=> 0
+
+1
+=> 1
+
+# The first term that is a sum.
+3
+=> 2
+
+# The first terms above 2^15 - 1 and 2^16 - 1: T(19) is too big for a
+# signed 16-bit integer, and T(20) for an unsigned one.
+19
+=> 35890
+
+20
+=> 66012
+
+# The first term a float (24-bit mantissa) can't hold exactly.
+30
+=> 29249425
+
+# The top of the range. T(37) is just below 2^31 - 1, and T(38) is above
+# it, so a loop that works out a term or two past n overflows an int here.
+36
+=> 1132436852
+
+37
+=> 2082876103
+
+# Every other index.
+4
+=> 4
+
+5
+=> 7
+
+7
+=> 24
+
+8
+=> 44
+
+9
+=> 81
+
+10
+=> 149
+
+11
+=> 274
+
+13
+=> 927
+
+14
+=> 1705
+
+15
+=> 3136
+
+16
+=> 5768
+
+17
+=> 10609
+
+18
+=> 19513
+
+21
+=> 121415
+
+22
+=> 223317
+
+23
+=> 410744
+
+24
+=> 755476
+
+25
+=> 1389537
+
+26
+=> 2555757
+
+27
+=> 4700770
+
+28
+=> 8646064
+
+29
+=> 15902591
+
+31
+=> 53798080
+
+32
+=> 98950096
+
+33
+=> 181997601
+
+34
+=> 334745777
+
+35
+=> 615693474
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+22
+=> 223317
+
+@gen 3 small
+2
+=> 1
+
+@gen 5 small
+15
+=> 3136
+
+@gen 8 small
+5
+=> 7
+
+@gen 9 small
+13
+=> 927
+
+@gen 10 small
+0
+=> 0
+
+# Full size: the top of the range.
+@gen 1
+31
+=> 53798080
+
+@gen 2
+37
+=> 2082876103

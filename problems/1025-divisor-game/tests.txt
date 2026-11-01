@@ -1,0 +1,93 @@
+# Divisor Game.
+
+@example Moving 6 -> 5 forces 5 -> 4; then 4 -> 3 forces 3 -> 2, and after 2 -> 1 the second player is stuck.
+6
+=> true
+
+@example The divisors 1 and 3 lead to 8 or 6, and from either of these the second player can win.
+9
+=> false
+
+@example The marker is already on square 1, so the first player has no move.
+1
+=> false
+
+# The smallest win: move back 1 to square 1.
+2
+=> true
+
+# Odd primes: the only move is back 1, to an even square.
+5
+=> false
+
+11
+=> false
+
+# The smallest even square with a choice of moves (back 1 or back 2).
+4
+=> true
+
+# Odd squares with many divisors still lose: every divisor of an odd
+# number is odd, so every move leaves an even square.
+15
+=> false
+
+945
+=> false
+
+# A power of two.
+512
+=> true
+
+# The largest squares: a search of the game tree without memoization
+# takes far too long here.
+1000
+=> true
+
+999
+=> false
+
+# The largest prime below 1000.
+997
+=> false
+
+998
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+39
+=> false
+
+@gen 2 small
+37
+=> false
+
+@gen 3 small
+16
+=> true
+
+@gen 5 small
+30
+=> true
+
+@gen 7 small
+22
+=> true
+
+@gen 8 small
+7
+=> false
+
+# Full size: squares up to 1000, one of them odd and above 900.
+@gen 2
+973
+=> false
+
+@gen 9
+994
+=> true
+
+@gen 10
+608
+=> true

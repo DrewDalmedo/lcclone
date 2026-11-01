@@ -1,0 +1,78 @@
+# Defanging an IP Address.
+
+@example Each of the three dots becomes "[.]"; the fields 172, 31, 9 and 240 are copied as they are.
+"172.31.9.240"
+=> "172[.]31[.]9[.]240"
+
+@example The shortest kind of address: four one-digit fields, 7 characters in all.
+"6.0.2.5"
+=> "6[.]0[.]2[.]5"
+
+# Every field 0.
+"0.0.0.0"
+=> "0[.]0[.]0[.]0"
+
+# Every field 255: the longest address, 15 characters.
+"255.255.255.255"
+=> "255[.]255[.]255[.]255"
+
+# Three-digit fields only, all different.
+"100.208.199.137"
+=> "100[.]208[.]199[.]137"
+
+# The widths grow from left to right, then shrink.
+"8.64.128.0"
+=> "8[.]64[.]128[.]0"
+
+"201.33.4.77"
+=> "201[.]33[.]4[.]77"
+
+# Fields made of one repeated digit: only the dots change.
+"111.11.1.111"
+=> "111[.]11[.]1[.]111"
+
+# Fields 0 and 255 next to each other.
+"0.255.0.255"
+=> "0[.]255[.]0[.]255"
+
+# The same field four times.
+"42.42.42.42"
+=> "42[.]42[.]42[.]42"
+
+# Two-digit fields at both ends of their range.
+"10.99.10.99"
+=> "10[.]99[.]10[.]99"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"140.255.191.72"
+=> "140[.]255[.]191[.]72"
+
+@gen 2 small
+"10.10.100.0"
+=> "10[.]10[.]100[.]0"
+
+@gen 3 small
+"180.100.99.2"
+=> "180[.]100[.]99[.]2"
+
+@gen 4 small
+"79.91.10.99"
+=> "79[.]91[.]10[.]99"
+
+@gen 5 small
+"9.79.3.1"
+=> "9[.]79[.]3[.]1"
+
+@gen 6 small
+"9.99.120.2"
+=> "9[.]99[.]120[.]2"
+
+# Full size: every field has three digits.
+@gen 1
+"226.100.255.255"
+=> "226[.]100[.]255[.]255"
+
+@gen 2
+"100.100.100.100"
+=> "100[.]100[.]100[.]100"

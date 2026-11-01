@@ -1,0 +1,103 @@
+# Valid Boomerang.
+
+@example Three different points that make a triangle.
+[[0,0],[4,1],[2,5]]
+=> true
+
+@example All three are on the line through (2,1) that rises 1 for every 2 across; the last point lies between the other two.
+[[2,1],[8,4],[4,2]]
+=> false
+
+@example The first and the last point are the same, so there are only two different points.
+[[5,7],[1,1],[5,7]]
+=> false
+
+# All three points are the same.
+[[3,3],[3,3],[3,3]]
+=> false
+
+# The first two points are the same.
+[[1,2],[1,2],[4,0]]
+=> false
+
+# The last two points are the same.
+[[0,9],[6,6],[6,6]]
+=> false
+
+# A vertical line (no change in x), with the middle point listed first.
+[[7,40],[7,3],[7,100]]
+=> false
+
+# A horizontal line.
+[[0,5],[100,5],[30,5]]
+=> false
+
+# The diagonal across the whole square, the middle point listed last.
+[[0,0],[100,100],[50,50]]
+=> false
+
+# A steep line, 3 up for every 1 across, the outer points listed first.
+[[10,0],[13,9],[11,3]]
+=> false
+
+# Points that share an x or a y are still different: a right angle.
+[[2,3],[2,8],[9,3]]
+=> true
+
+# Three corners of the square.
+[[0,0],[100,100],[0,100]]
+=> true
+
+# Slopes 1/2 and 1/3 differ, though both round down to 0 as whole numbers.
+[[0,0],[2,1],[3,1]]
+=> true
+
+# Very nearly on one line: slopes 100/99 and 101/100.
+[[0,0],[99,100],[100,101]]
+=> true
+
+# A wide, flat triangle with an obtuse angle.
+[[0,0],[10,1],[20,0]]
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[[3,1],[2,3],[2,3]]
+=> false
+
+@gen 2 small
+[[1,0],[1,4],[2,3]]
+=> true
+
+@gen 3 small
+[[0,0],[0,1],[2,3]]
+=> true
+
+@gen 4 small
+[[4,0],[2,4],[3,2]]
+=> false
+
+@gen 5 small
+[[1,2],[4,4],[1,2]]
+=> false
+
+@gen 6 small
+[[1,4],[3,1],[1,2]]
+=> true
+
+@gen 7 small
+[[1,4],[1,4],[2,0]]
+=> false
+
+# Full size: coordinates up to 100; a near miss, a line, a near miss.
+@gen 3
+[[100,17],[100,16],[74,78]]
+=> true
+
+@gen 5
+[[71,19],[86,69],[89,79]]
+=> false
+
+@gen 7
+[[95,44],[83,17],[92,35]]
+=> true

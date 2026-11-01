@@ -1,0 +1,109 @@
+# Find Words That Can Be Formed by Characters.
+
+@example Every entry but "apple" can be printed; "apple" needs two p's and chars has one. 5 + 5 + 4 + 3 = 17.
+["plate","petal","apple","leap","pal"]
+"tepal"
+=> 17
+
+@example Each word needs some letter twice, and chars has one of each.
+["moon","mono","noon"]
+"nom"
+=> 0
+
+@example The pieces go back after each word, so all three entries count, the repeated one twice: 3 + 3 + 3 = 9.
+["dot","dot","tod"]
+"odt"
+=> 9
+
+# The smallest inputs: one one-letter word, which fits or doesn't.
+["a"]
+"a"
+=> 1
+
+["b"]
+"a"
+=> 0
+
+# A doubled letter: chars has it once ("see" fails), then twice (both fit).
+["see","sea"]
+"eas"
+=> 3
+
+["see","sea"]
+"esae"
+=> 6
+
+# Rearrangements of all of chars fit; "listens" is one letter longer than
+# chars, though every letter it uses is there.
+["silent","listens","enlist"]
+"listen"
+=> 12
+
+# One more "a" than chars has: an unsigned count that wraps below 0 would
+# let "aaab" through.
+["aaab","aab"]
+"aabb"
+=> 3
+
+# Together the words need each piece more than once; tried one at a time,
+# all of them fit.
+["xyz","zy","x"]
+"zyx"
+=> 6
+
+# chars has every letter except the one the word starts with.
+["zebra"]
+"abcdefghijklmnopqrstuvwxy"
+=> 0
+
+# All 26 letters, once each.
+["zyxw","abcdefghijklmnopqrstuvwxyz"]
+"zyxwvutsrqponmlkjihgfedcba"
+=> 30
+
+# Longest word and chars: 100 a's fit; 99 a's and a b don't.
+["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"]
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> 100
+
+# The same word 100 times: a total above 255.
+["lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon","lemon"]
+"melon"
+=> 500
+
+# Random small cases from gen.c (lc check --regen makes them). Full-size
+# ones, up to 1000 words of 100 letters, come with milestone M7.
+@gen 1 small
+["ab"]
+"b"
+=> 0
+
+@gen 3 small
+["c","a","c","c","aaaa"]
+"c"
+=> 3
+
+@gen 4 small
+["aabbaa","babba","acb","aabbaa","a"]
+"baabab"
+=> 6
+
+@gen 5 small
+["cbbc","ccc"]
+"cddcbd"
+=> 0
+
+@gen 6 small
+["c","a","aaaca","ccc"]
+"bcc"
+=> 1
+
+@gen 7 small
+["cbb","cbb","bcacb"]
+"bbbc"
+=> 6
+
+@gen 8 small
+["dddccb","cadcc"]
+"cbabadbd"
+=> 0
