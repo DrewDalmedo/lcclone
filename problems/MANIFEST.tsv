@@ -660,51 +660,51 @@
 2629	function-composition	Function Composition	easy	no	skip:javascript	todo
 2634	filter-elements-from-array	Filter Elements from Array	easy	no	skip:javascript	todo
 2635	apply-transform-over-each-element-in-array	Apply Transform Over Each Element in Array	easy	no	skip:javascript	todo
-2639	find-the-width-of-columns-of-a-grid	Find the Width of Columns of a Grid	easy	no	plain	todo
-2643	row-with-maximum-ones	Row With Maximum Ones	easy	no	plain	todo
-2644	find-the-maximum-divisibility-score	Find the Maximum Divisibility Score	easy	no	plain	todo
+2639	find-the-width-of-columns-of-a-grid	Find the Width of Columns of a Grid	easy	no	plain	draft
+2643	row-with-maximum-ones	Row With Maximum Ones	easy	no	plain	draft
+2644	find-the-maximum-divisibility-score	Find the Maximum Divisibility Score	easy	no	plain	draft
 2648	generate-fibonacci-sequence	Generate Fibonacci Sequence	easy	no	skip:javascript	todo
-2651	calculate-delayed-arrival-time	Calculate Delayed Arrival Time	easy	no	plain	todo
-2652	sum-multiples	Sum Multiples	easy	no	plain	todo
-2656	maximum-sum-with-exactly-k-elements	Maximum Sum With Exactly K Elements	easy	no	plain	todo
-2660	determine-the-winner-of-a-bowling-game	Determine the Winner of a Bowling Game	easy	no	plain	todo
+2651	calculate-delayed-arrival-time	Calculate Delayed Arrival Time	easy	no	plain	draft
+2652	sum-multiples	Sum Multiples	easy	no	plain	draft
+2656	maximum-sum-with-exactly-k-elements	Maximum Sum With Exactly K Elements	easy	no	plain	draft
+2660	determine-the-winner-of-a-bowling-game	Determine the Winner of a Bowling Game	easy	no	plain	draft
 2665	counter-ii	Counter II	easy	no	skip:javascript	todo
 2666	allow-one-function-call	Allow One Function Call	easy	no	skip:javascript	todo
 2667	create-hello-world-function	Create Hello World Function	easy	no	skip:javascript	todo
 2668	find-latest-salaries	Find Latest Salaries	easy	yes	skip:sql	todo
 2669	count-artist-occurrences-on-spotify-ranking-list	Count Artist Occurrences On Spotify Ranking List	easy	yes	skip:sql	todo
-2670	find-the-distinct-difference-array	Find the Distinct Difference Array	easy	no	plain	todo
+2670	find-the-distinct-difference-array	Find the Distinct Difference Array	easy	no	plain	draft
 2677	chunk-array	Chunk Array	easy	no	skip:javascript	todo
-2678	number-of-senior-citizens	Number of Senior Citizens	easy	no	plain	todo
-2682	find-the-losers-of-the-circular-game	Find the Losers of the Circular Game	easy	no	plain	todo
+2678	number-of-senior-citizens	Number of Senior Citizens	easy	no	plain	draft
+2682	find-the-losers-of-the-circular-game	Find the Losers of the Circular Game	easy	no	plain	draft
 2687	bikes-last-time-used	Bikes Last Time Used	easy	yes	skip:sql	todo
 2689	extract-kth-character-from-the-rope-tree	Extract Kth Character From The Rope Tree	easy	yes	skip:premium	todo
 2690	infinite-method-object	Infinite Method Object	easy	yes	skip:javascript	todo
 2695	array-wrapper	Array Wrapper	easy	no	skip:javascript	todo
-2696	minimum-string-length-after-removing-substrings	Minimum String Length After Removing Substrings	easy	no	plain	todo
-2697	lexicographically-smallest-palindrome	Lexicographically Smallest Palindrome	easy	no	plain	todo
+2696	minimum-string-length-after-removing-substrings	Minimum String Length After Removing Substrings	easy	no	plain	draft
+2697	lexicographically-smallest-palindrome	Lexicographically Smallest Palindrome	easy	no	plain	draft
 2703	return-length-of-arguments-passed	Return Length of Arguments Passed	easy	no	skip:javascript	todo
 2704	to-be-or-not-to-be	To Be Or Not To Be	easy	no	skip:javascript	todo
-2706	buy-two-chocolates	Buy Two Chocolates	easy	no	plain	todo
-2710	remove-trailing-zeros-from-a-string	Remove Trailing Zeros From a String	easy	no	plain	todo
+2706	buy-two-chocolates	Buy Two Chocolates	easy	no	plain	draft
+2710	remove-trailing-zeros-from-a-string	Remove Trailing Zeros From a String	easy	no	plain	draft
 2715	timeout-cancellation	Timeout Cancellation	easy	no	skip:javascript	todo
-2716	minimize-string-length	Minimize String Length	easy	no	plain	todo
-2717	semi-ordered-permutation	Semi-Ordered Permutation	easy	no	plain	todo
+2716	minimize-string-length	Minimize String Length	easy	no	plain	draft
+2717	semi-ordered-permutation	Semi-Ordered Permutation	easy	no	plain	draft
 2723	add-two-promises	Add Two Promises	easy	no	skip:javascript	todo
 2724	sort-by	Sort By	easy	no	skip:javascript	todo
 2725	interval-cancellation	Interval Cancellation	easy	no	skip:javascript	todo
 2726	calculator-with-method-chaining	Calculator with Method Chaining	easy	no	skip:javascript	todo
 2727	is-object-empty	Is Object Empty	easy	no	skip:javascript	todo
 2728	count-houses-in-a-circular-street	Count Houses in a Circular Street	easy	yes	skip:premium	todo
-2729	check-if-the-number-is-fascinating	Check if The Number is Fascinating	easy	no	plain	todo
+2729	check-if-the-number-is-fascinating	Check if The Number is Fascinating	easy	no	plain	draft
 2733	neither-minimum-nor-maximum	Neither Minimum nor Maximum	easy	no	checker	todo
-2739	total-distance-traveled	Total Distance Traveled	easy	no	plain	todo
-2744	find-maximum-number-of-string-pairs	Find Maximum Number of String Pairs	easy	no	plain	todo
-2748	number-of-beautiful-pairs	Number of Beautiful Pairs	easy	no	plain	todo
+2739	total-distance-traveled	Total Distance Traveled	easy	no	plain	draft
+2744	find-maximum-number-of-string-pairs	Find Maximum Number of String Pairs	easy	no	plain	draft
+2748	number-of-beautiful-pairs	Number of Beautiful Pairs	easy	no	plain	draft
 2758	next-day	Next Day	easy	yes	skip:javascript	todo
-2760	longest-even-odd-subarray-with-threshold	Longest Even Odd Subarray With Threshold	easy	no	plain	todo
-2765	longest-alternating-subarray	Longest Alternating Subarray	easy	no	plain	todo
-2769	find-the-maximum-achievable-number	Find the Maximum Achievable Number	easy	no	plain	todo
+2760	longest-even-odd-subarray-with-threshold	Longest Even Odd Subarray With Threshold	easy	no	plain	draft
+2765	longest-alternating-subarray	Longest Alternating Subarray	easy	no	plain	draft
+2769	find-the-maximum-achievable-number	Find the Maximum Achievable Number	easy	no	plain	draft
 2774	array-upper-bound	Array Upper Bound	easy	yes	skip:javascript	todo
 2778	sum-of-squares-of-special-elements	Sum of Squares of Special Elements	easy	no	plain	todo
 2784	check-if-array-is-good	Check if Array is Good	easy	no	plain	todo

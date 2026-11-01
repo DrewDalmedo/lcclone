@@ -1,0 +1,101 @@
+# Find Maximum Number of String Pairs.
+
+@example "mo" matches "om" and "xy" matches "yx"; "qq" and "gn" have no mirror.
+["mo","xy","om","qq","yx","gn"]
+=> 2
+
+@example Any two of these codes share one letter in crossed positions, but none is another one backwards.
+["pq","rp","qr"]
+=> 0
+
+@example The mirrors are the first and the last entry.
+["wv","bf","hc","vw"]
+=> 1
+
+# A single code.
+["hw"]
+=> 0
+
+# A single code with a doubled letter has no mirror.
+["kk"]
+=> 0
+
+# The smallest match, with the mirror after the code and then before it.
+["jq","qj"]
+=> 1
+
+["qj","jq"]
+=> 1
+
+# All 26 doubled-letter codes: none of them is a mirror.
+["aa","bb","cc","dd","ee","ff","gg","hh","ii","jj","kk","ll","mm","nn","oo","pp","qq","rr","ss","tt","uu","vv","ww","xx","yy","zz"]
+=> 0
+
+# Doubled letters between the codes of a match.
+["ee","fg","gg","gf","ff"]
+=> 1
+
+# Codes with the same letter in the same position are not mirrors.
+["ab","ac","ad","bc","db","cb"]
+=> 1
+
+# Odd length: every code but the doubled one has its mirror.
+["xz","gh","zx","hh","hg","pr","rp"]
+=> 3
+
+# 50 codes in 25 matches, the largest answer; the first code's mirror is
+# the last one.
+["tz","wc","ui","xa","pg","iy","rv","kh","mn","yc","sx","ef","ri","qh","un","dk","km","zq","kg","ya","kt","ec","ty","py","ck","kc","yp","yt","ce","tk","ay","gk","qz","mk","kd","nu","hq","ir","fe","xs","cy","nm","hk","vr","yi","gp","ax","iu","cw","zt"]
+=> 25
+
+# 50 codes and no mirrors: each code's first letter comes before its
+# second in the alphabet.
+["op","tv","hr","bq","sw","px","bt","ch","ov","rt","at","ae","et","gp","bc","ev","fn","qt","dq","gu","em","cu","ds","au","kl","dw","ot","hn","is","xz","fm","oq","nt","iy","ap","cf","gv","np","es","pz","kp","dj","wz","py","qs","jz","aq","cz","fl","al"]
+=> 0
+
+# 49 codes: 24 matches and "mm" left over.
+["vi","ry","lx","oe","cx","ao","yr","iv","dh","dl","ks","mm","jb","os","rt","yl","xc","ro","qa","di","hk","dv","ge","cg","id","be","sk","bj","qd","kh","eo","dq","ld","ly","aq","eb","il","or","xl","vd","tr","oa","li","so","eg","hj","hd","jh","gc"]
+=> 24
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["kh","ih","ki","kj"]
+=> 0
+
+@gen 2 small
+["vw","vu","vv"]
+=> 0
+
+@gen 3 small
+["fe"]
+=> 0
+
+@gen 4 small
+["lm","mm","kl","ml","ll"]
+=> 1
+
+@gen 5 small
+["gg","hg","hh","gh"]
+=> 1
+
+@gen 6 small
+["uu","tt","tu","ut"]
+=> 1
+
+@gen 7 small
+["zy","yy","yz"]
+=> 1
+
+# Full size: 50 codes.
+@gen 1
+["ki","om","xn","wr","co","wp","ml","uu","yx","fk","xp","fo","fu","fi","jw","nz","um","pi","bq","kc","ot","ys","hh","zs","ne","li","tr","zz","fz","cw","vg","lt","zq","zu","cv","az","er","uw","te","vj","gx","aa","ig","ij","sm","vy","pu","xj","qc","xx"]
+=> 0
+
+@gen 2
+["iw","jz","gq","fy","ea","zm","ew","zl","te","qg","sm","mz","ci","qh","gw","zn","mq","hw","yf","zq","da","yu","wv","wg","lz","xc","dq","ic","zj","qm","ek","jw","uy","bh","hq","cx","ae","qd","wi","hb","qz","ke","ms","wh","ad","we","vw","wj","nz","et"]
+=> 25
+
+@gen 3
+["om","mq","mo","np","pl","or","rm","rp","qp","mm","lm","ml","sm","lo","nq","ss","pq","pn","mp","rr","lq","rl","sl","rs","ls","nl","qq","ro","ol","nn","qm","qs","qr","po","pp","so","pm","mr","oq","pr","lr","nr","op","qn","sn","mn","nm","ll","ql","ms"]
+=> 17
+

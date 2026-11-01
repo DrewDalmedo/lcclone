@@ -1,0 +1,106 @@
+# Find the Maximum Divisibility Score. The answer is a value taken from
+# divisors.
+
+@example 3 divides 6, 15 and 9, for a score of 3; 5 and 2 score 2 each.
+[6,10,15,9]
+[5,3,2]
+=> 3
+
+@example 7 and 2 both score 2; 2 is the smaller, although 7 comes first.
+[14,21,8]
+[7,4,2]
+=> 2
+
+@example No divisor goes into 3 or 5, so all three tie at 0 and the smallest, 6, is the answer.
+[3,5]
+[11,6,8]
+=> 6
+
+# The smallest case.
+[1]
+[1]
+=> 1
+
+# 1 divides every number, so it reaches the highest score possible.
+[7,9,25]
+[5,1,3]
+=> 1
+
+# A divisor equal to a number scores it; one larger than every number
+# scores nothing.
+[12,4]
+[12,50]
+=> 12
+
+# Repeats in nums count once each: 9 scores 4, 2 scores 3.
+[9,9,9,9,10,14,22]
+[2,9]
+=> 9
+
+# Repeats in divisors change nothing: 10 and 5 both score 2.
+[10,20,7]
+[10,10,5,10]
+=> 5
+
+# All four tie; the smallest sits in the middle of divisors.
+[30,60,7]
+[15,3,10,5]
+=> 3
+
+# 8, 4 and 2 tie at 3; the smallest is last.
+[8,16,24]
+[8,4,6,2]
+=> 2
+
+# Every score is 0, and divisors[0] is not the smallest.
+[2,3,5]
+[9,7,4]
+=> 4
+
+# A number must be a multiple of the divisor, not the other way round:
+# 6 and 4 are multiples of 2 and 3, but neither divides them.
+[2,3]
+[6,4]
+=> 4
+
+# Values at the upper bound: each divisor scores 1, since 10^9 is not a
+# multiple of 333333333 but 999999999 is.
+[1000000000,999999999]
+[1000000000,999999999,333333333]
+=> 333333333
+
+# 2 scores 256, which an 8-bit counter would wrap to 0, losing to 3.
+[4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3]
+[3,2]
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[6,6,9,12,8,8,8]
+[3]
+=> 3
+
+@gen 2 small
+[9,9,1,1,7]
+[5,6,1]
+=> 1
+
+@gen 3 small
+[3,5,8,6,10,11,7,5]
+[5,4,2,4,4]
+=> 2
+
+@gen 4 small
+[11,19,22,5]
+[4,8,3,7,6]
+=> 3
+
+@gen 5 small
+[23,10,10,5,4,22]
+[5,7]
+=> 5
+
+@gen 6 small
+[105815164,441415952]
+[2,7,8,13]
+=> 2

@@ -1,0 +1,107 @@
+# Minimum String Length After Removing Substrings. The answer is a length.
+
+@example Deleting AB leaves CDAB; then CD and AB go too.
+"CABDAB"
+=> 0
+
+@example BA and DC are the wrong way round, and X keeps the last A and B apart.
+"BADCAXB"
+=> 7
+
+@example Deleting CD brings A next to B; once that pair goes too, E, B and F remain.
+"EACDBBF"
+=> 3
+
+# One letter.
+"A"
+=> 1
+
+# The shortest string that vanishes.
+"AB"
+=> 0
+
+# Mixed pairs are not removable.
+"ADCB"
+=> 4
+
+# Crossed pairs: neither A and B nor C and D are ever side by side.
+"ACBD"
+=> 4
+
+# CD inside AB: deleting every AB once and then every CD once leaves AB.
+"ACDB"
+=> 0
+
+# AB inside CD.
+"CABD"
+=> 0
+
+# The two kinds nested alternately, four deep.
+"ACACDBDB"
+=> 0
+
+# A letter outside A to D stops the cancelling around it.
+"AACDXBB"
+=> 5
+
+# Closers before any opener, and openers left at the end.
+"DBABCDAC"
+=> 4
+
+# 50 nested AB pairs: the whole string vanishes.
+"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+=> 0
+
+# 100 letters and no move at all.
+"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+=> 100
+
+# One Q in the middle of 49 nested pairs blocks every one of them.
+"AAAAAAAAAAAAAAAAAAAAAAAAACCCCCCCCCCCCCCCCCCCCCCCCQDDDDDDDDDDDDDDDDDDDDDDDDBBBBBBBBBBBBBBBBBBBBBBBBB"
+=> 99
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"CDACDB"
+=> 0
+
+@gen 4 small
+"ACDAABCDBB"
+=> 0
+
+@gen 5 small
+"ABDX"
+=> 2
+
+@gen 6 small
+"DBBCCBDCAX"
+=> 10
+
+@gen 7 small
+"CAAXB"
+=> 5
+
+@gen 11 small
+"CDACBAXB"
+=> 6
+
+@gen 13 small
+"ACDBCDBCDD"
+=> 2
+
+@gen 15 small
+"CDAADBXD"
+=> 6
+
+# Full-size cases: 100 letters.
+@gen 1
+"BCCAXXXDCCBBDBBXXAXDBBBBXDCXAXBCBAXCAACACBCCBDXDBCBDAAAXBXBCBXADBDACBBBDCADBDDDCADCBDXACXCAXBCCCXDAA"
+=> 100
+
+@gen 2
+"ABAABBAACCDAAACABCCDDDCABDACCACDBDDCDBABABAABCDAAABBBCDAABBAAABBAABCCCCDABCAABBCDCDAABBDDDDBBBBBBDBB"
+=> 0
+
+@gen 3
+"CACADBBCCAABDBBCABACCCABCBCAAACAACCACCADCCCACABBADBDACDBADCBAACADDCCBAADCCCCAAABCDADDCBBDADCCDBBDCCB"
+=> 82
