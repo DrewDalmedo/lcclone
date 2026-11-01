@@ -1,0 +1,91 @@
+# Count of Matches in Tournament.
+
+@example Six teams play 3 matches; of the 3 left, two play and one gets a bye; the last 2 play the final: 3 + 1 + 1.
+6
+=> 5
+
+@example 11 teams: 5 matches and a bye leave 6, then 3 matches leave 3, then 1 match and a bye leave 2, then the final: 5 + 3 + 1 + 1.
+11
+=> 10
+
+@example A lone team is the champion without playing.
+1
+=> 0
+
+# Two teams play only the final.
+2
+=> 1
+
+# Three teams: the bye team must still reach the final.
+3
+=> 2
+
+# Five teams stay odd for two rounds: 5, 3, 2, 1.
+5
+=> 4
+
+# One more than a power of two: an odd round at every size but the last.
+9
+=> 8
+
+33
+=> 32
+
+129
+=> 128
+
+# A power of two: every round is even.
+64
+=> 63
+
+128
+=> 127
+
+# 100 teams: two even rounds, then three odd ones in a row (25, 13, 7).
+100
+=> 99
+
+# The upper bound; the answer is more than a signed char holds.
+199
+=> 198
+
+200
+=> 199
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+5
+=> 4
+
+@gen 3 small
+12
+=> 11
+
+@gen 4 small
+16
+=> 15
+
+@gen 5 small
+8
+=> 7
+
+@gen 7 small
+13
+=> 12
+
+@gen 10 small
+19
+=> 18
+
+# Full size.
+@gen 1
+64
+=> 63
+
+@gen 2
+188
+=> 187
+
+@gen 4
+172
+=> 171

@@ -1,0 +1,95 @@
+# Latest Time by Replacing Hidden Digits.
+
+@example An hour of 26 is not valid, so the hidden hour digit is 1; the hidden minute digit can be as large as 5.
+"?6:?2"
+=> "16:52"
+
+@example Both hour digits are hidden, so the hour can go all the way to 23; the minute's last digit becomes 9.
+"??:4?"
+=> "23:49"
+
+@example With 0 as its first digit, the hour can be at most 09; the minute is entirely free, so it becomes 59.
+"0?:??"
+=> "09:59"
+
+# No digit hidden: the time comes back unchanged.
+"07:05"
+=> "07:05"
+
+# Every digit hidden.
+"??:??"
+=> "23:59"
+
+# A hidden first hour digit before a readable 3 can be 2...
+"?3:??"
+=> "23:59"
+
+# ...but before a readable 4 only 1, since 24 is not an hour.
+"?4:1?"
+=> "14:19"
+
+# The same with a 9.
+"?9:15"
+=> "19:15"
+
+# After a readable 2, a hidden second hour digit is at most 3.
+"2?:45"
+=> "23:45"
+
+# After a readable 1 it can be 9.
+"1?:?8"
+=> "19:58"
+
+# Only the minute's first digit hidden: at most 5.
+"11:?6"
+=> "11:56"
+
+# Only the last digit hidden; the readable minute digit 2 stays as it is.
+"23:2?"
+=> "23:29"
+
+# Both hour digits hidden: 23. Filling the second one first, as 9, would
+# leave only 1 for the first.
+"??:08"
+=> "23:08"
+
+# Both minute digits hidden.
+"13:??"
+=> "13:59"
+
+# Three digits hidden.
+"??:?4"
+=> "23:54"
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"?6:5?"
+=> "16:59"
+
+@gen 2 small
+"23:5?"
+=> "23:59"
+
+@gen 3 small
+"1?:??"
+=> "19:59"
+
+@gen 4 small
+"13:09"
+=> "13:09"
+
+@gen 5 small
+"0?:0?"
+=> "09:09"
+
+@gen 6 small
+"?4:58"
+=> "14:58"
+
+@gen 7 small
+"?9:??"
+=> "19:59"
+
+@gen 9 small
+"?0:0?"
+=> "20:09"

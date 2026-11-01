@@ -1,0 +1,112 @@
+# Check if Array Is Sorted and Rotated.
+
+@example Cut [1,4,6,6,9,9] after its third value and put the back piece [6,9,9] first.
+[6,9,9,1,4,6]
+=> true
+
+@example From [2,3,7,8] the cuts give [2,3,7,8], [3,7,8,2], [7,8,2,3] and [8,2,3,7], never this.
+[2,7,3,8]
+=> false
+
+@example Already sorted: the cut before the first value changes nothing.
+[3,3,8,10]
+=> true
+
+# A single value.
+[42]
+=> true
+
+# Two values going down: [1,100] cut in the middle.
+[100,1]
+=> true
+
+# Three values going down.
+[3,2,1]
+=> false
+
+# All equal: the values never go down at all.
+[7,7,7,7]
+=> true
+
+# One step down inside, but the last value is larger than the first.
+[4,5,1,2,6]
+=> false
+
+# The smallest value at both ends: the cut is not before its first copy.
+[1,5,8,1,1]
+=> true
+
+# A run of equal values split between the end and the start.
+[5,5,8,3,5]
+=> true
+
+# The largest value at both ends: starting right after its last copy
+# doesn't give the sorted order.
+[9,2,4,6,9]
+=> true
+
+# Two steps down inside, though each piece is sorted.
+[4,6,2,3,1]
+=> false
+
+# The step down right after the first value, or right before the last.
+[9,1,2,3]
+=> true
+
+[2,3,4,1]
+=> true
+
+# A sorted array with two of its values swapped: the same values, but no
+# cut gives this order.
+[1,6,3,4,2]
+=> false
+
+# 100 values with repeats; the cut falls inside the run of 64s.
+[64,65,65,68,68,68,69,69,71,72,74,75,76,78,78,78,79,79,79,80,83,83,83,85,86,87,91,91,91,91,92,94,95,96,97,99,100,1,2,2,2,4,4,4,5,5,6,7,7,9,10,10,11,12,14,15,15,17,18,19,19,20,20,21,23,23,24,28,29,32,32,32,33,35,35,35,36,36,37,37,40,41,41,42,42,44,45,47,48,51,52,52,54,55,55,55,55,59,62,64]
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[100,100,100,96,96,97,99]
+=> true
+
+@gen 2 small
+[3,3,1,1,2]
+=> true
+
+@gen 3 small
+[33,27,1]
+=> false
+
+@gen 4 small
+[83,50,59]
+=> true
+
+@gen 5 small
+[2,2]
+=> true
+
+@gen 6 small
+[8,8]
+=> true
+
+@gen 7 small
+[8,2,6,6,8,8,8]
+=> true
+
+@gen 8 small
+[97,98,100,95]
+=> true
+
+# Full size: 100 values.
+@gen 3
+[1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8,8,8,8,9,9,9,9,9,9,9,9,9,9,10,10,10,10,10,10,10,10,1,1,1,1,1]
+=> true
+
+@gen 5
+[75,76,79,79,82,84,85,85,88,88,89,92,93,95,95,95,98,98,100,100,1,1,2,3,5,6,7,8,8,8,9,10,12,12,12,14,14,16,16,16,17,18,19,20,20,20,21,21,22,22,24,27,27,27,28,32,33,33,34,35,35,35,39,40,40,40,42,43,43,45,47,47,47,50,51,53,54,54,54,54,56,57,58,58,59,61,61,61,63,64,64,64,65,65,66,67,92,71,74,74]
+=> false
+
+@gen 14
+[12,12,14,14,15,15,17,19,19,20,24,25,26,31,32,35,36,37,39,39,41,42,42,43,44,44,46,46,48,48,50,51,51,51,52,52,53,53,53,53,55,56,60,63,64,64,65,66,66,66,67,67,68,70,72,72,72,73,74,74,75,76,78,79,80,82,83,84,84,84,84,86,86,86,86,86,88,88,91,93,93,94,95,96,97,99,99,99,100,100,1,2,5,6,7,8,9,10,11,11]
+=> true

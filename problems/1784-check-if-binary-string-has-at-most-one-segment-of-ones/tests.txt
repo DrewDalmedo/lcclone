@@ -1,0 +1,91 @@
+# Check if Binary String Has at Most One Segment of Ones.
+
+@example One run of 1s, then one run of 0s.
+"111000"
+=> true
+
+@example The runs are 11, 000, 1 and 0: two of them are runs of 1s.
+"1100010"
+=> false
+
+@example The whole string is a single run of 1s.
+"1111"
+=> true
+
+# The shortest string.
+"1"
+=> true
+
+# A run of 1s that ends is fine.
+"10"
+=> true
+
+# A second run after a single 0, at the end.
+"101"
+=> false
+
+# The second run goes on to the end of s, so no 0 closes it.
+"1100111"
+=> false
+
+# A second run in the middle, with zeros on both sides.
+"1000110000"
+=> false
+
+# Many runs.
+"1010101"
+=> false
+
+# A long run of 1s and a single 0 at the end.
+"1111111110"
+=> true
+
+# One 1 and 99 zeros.
+"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+=> true
+
+# 100 ones and no 0 at all.
+"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+=> true
+
+# The second run is a single 1 at the last of 100 positions.
+"1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"1000000"
+=> true
+
+@gen 2 small
+"11101"
+=> false
+
+@gen 3 small
+"10011100"
+=> false
+
+@gen 7 small
+"110001"
+=> false
+
+@gen 5 small
+"110000"
+=> true
+
+@gen 6 small
+"11"
+=> true
+
+# Full-size cases: 100 characters.
+@gen 1
+"1111111111111111111111111111110000000000000000000000000000000000000000000000000000000000000000000000"
+=> true
+
+@gen 3
+"1111111111111111000000000000000000000000000000000000000000000000000000000000000000111111111111111111"
+=> false
+
+@gen 4
+"1101001000100011010000000111000001100100111100110100010000100011101101100111011011010101101001100000"
+=> false

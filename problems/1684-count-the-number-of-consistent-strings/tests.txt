@@ -1,0 +1,101 @@
+# Count the Number of Consistent Strings.
+
+@example "mole", "lemme" and "oleo" use only e, l, m and o; "melon" needs an n and "moles" an s.
+"elmo"
+["mole","melon","lemme","oleo","moles"]
+=> 3
+
+@example No word may contain an o, but a word may repeat an allowed letter as often as it likes.
+"dg"
+["dog","god","gg","dd","dgdg"]
+=> 3
+
+@example "un" occurs twice and counts both times; "sun" needs an s.
+"nu"
+["un","nun","sun","un"]
+=> 3
+
+# The smallest input.
+"a"
+["a"]
+=> 1
+
+"b"
+["a"]
+=> 0
+
+# allowed holds all 26 letters, so every word is consistent.
+"qwertyuiopasdfghjklzxcvbnm"
+["zebra","quick","jumps","a","zzzzzzzzzz"]
+=> 5
+
+# Words holding all of allowed and one more letter are not consistent.
+"abc"
+["abcd","cabx","bca"]
+=> 1
+
+# Words shorter than allowed, using only some of its letters, are.
+"fedcba"
+["a","fb","cc"]
+=> 3
+
+# The one bad letter is in the middle, at the end, or at the start.
+"mn"
+["mxn","mnx","xmn","mnmn"]
+=> 1
+
+# A bad first word must not stop the count.
+"ab"
+["zz","ab","ba","bb"]
+=> 3
+
+# The edge letters a and z.
+"az"
+["za","az","zzaa","y","b"]
+=> 3
+
+# Ten letters of one kind make one word, counted once.
+"kq"
+["kkkkkkkkkk","qqqqqqqqqq","kqkqkqkqkq"]
+=> 3
+
+# No word is consistent.
+"xyz"
+["abc","xya","zzb"]
+=> 0
+
+# 260 consistent words, more than a char-sized counter holds.
+"z"
+["z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","z","y","y","y","y","y"]
+=> 260
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"az"
+["zaaa","zaa","zz","zzcz","aaaa"]
+=> 4
+
+@gen 2 small
+"c"
+["a","cz","cccc","cc","cccc"]
+=> 3
+
+@gen 3 small
+"b"
+["bb","b","bb","b"]
+=> 4
+
+@gen 4 small
+"bza"
+["zba","zz","c","z","zb","azb"]
+=> 5
+
+@gen 5 small
+"cayb"
+["bba","ac","yyy","bccc","a","b","yyby","yc"]
+=> 8
+
+@gen 6 small
+"acy"
+["a","a","ca","a","aa","aa","bayy","y"]
+=> 7

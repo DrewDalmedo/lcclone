@@ -1,0 +1,95 @@
+# Reformat Phone Number.
+
+@example Eight digits: two groups of 3, then one of 2.
+"0-12 3456 7"
+=> "012-345-67"
+
+@example Four digits make two groups of 2, since a group of 3 would leave one digit alone.
+"9 8-7-6"
+=> "98-76"
+
+@example Ten digits: the input's grouping is ignored, and the last four digits form two groups of 2.
+"314-159-2653"
+=> "314-159-26-53"
+
+# Two or three digits make one group and no dash.
+"47"
+=> "47"
+
+"906"
+=> "906"
+
+# Two digits among separators at both ends.
+" -0 - 0- "
+=> "00"
+
+# Five digits: 3 then 2.
+"6 0 2 8 1"
+=> "602-81"
+
+# Seven digits: 3, 2, 2, never a group of one.
+"7777777"
+=> "777-77-77"
+
+# Six digits written in pairs come out as two groups of 3.
+"27-04-93"
+=> "270-493"
+
+# Zeros are kept, at the front too.
+"0 0 0 0 0 0 0"
+=> "000-00-00"
+
+# Leading, trailing and mixed runs of spaces and dashes.
+" --- 4 0 -- 2  1-  "
+=> "40-21"
+
+# Eleven digits: three groups of 3 and one of 2.
+"1-1-1-1-1-1-1-1-1-1-1"
+=> "111-111-111-11"
+
+# Thirteen digits: three groups of 3 and two of 2.
+"9876543210123"
+=> "987-654-321-01-23"
+
+# 100 characters holding only two digits.
+"-------------------------------------------------58-------------------------------------------------"
+=> "58"
+
+# 100 digits and no separator: the answer has 133 characters, more than
+# the input.
+"9081726354908172635490817263549081726354908172635490817263549081726354908172635490817263549081726354"
+=> "908-172-635-490-817-263-549-081-726-354-908-172-635-490-817-263-549-081-726-354-908-172-635-490-817-263-549-081-726-354-908-172-63-54"
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"4  8---693-90962"
+=> "486-939-09-62"
+
+@gen 2 small
+"110000 00 "
+=> "110-000-00"
+
+@gen 3 small
+"001-000101001"
+=> "001-000-101-001"
+
+@gen 4 small
+" --67    2"
+=> "672"
+
+@gen 5 small
+"-00  1  0--"
+=> "00-10"
+
+@gen 6 small
+"2132"
+=> "21-32"
+
+# Full size: 100 characters.
+@gen 1
+"2-  -016-5 74117-4 -097-4 80 -1  --2- 985 385 2 -58 1   51 -6473539--75 1 6--   0-30 011  6---22 1-5"
+=> "201-657-411-740-974-801-298-538-525-815-164-735-397-516-030-011-622-15"
+
+@gen 2
+"9272389719507419966381487147094668064857232723794696696391928265318873154954691337478922357411260325"
+=> "927-238-971-950-741-996-638-148-714-709-466-806-485-723-272-379-469-669-639-192-826-531-887-315-495-469-133-747-892-235-741-126-03-25"

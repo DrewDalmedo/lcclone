@@ -1,0 +1,110 @@
+# Longest Nice Substring.
+
+@example W, w, E, e and W again form a nice substring; q and x have no other case anywhere in s.
+"qWwEeWx"
+=> "WwEeW"
+
+@example "aAbB" and "cCdD" are both nice and of length 4, and z keeps anything longer from being nice; the leftmost wins.
+"aAbBzcCdD"
+=> "aAbB"
+
+@example Only p has both cases, but every substring holding P and p also holds u and m.
+"Pumpkin"
+=> ""
+
+# A single letter can't be nice.
+"a"
+=> ""
+
+# A letter next to its other case: the whole string.
+"aA"
+=> "aA"
+
+# The answer at the very end, or at the very start.
+"xyzKk"
+=> "Kk"
+
+"Mmxyz"
+=> "Mm"
+
+# Each letter's other case is in s, but never inside the same nice
+# substring: whatever holds a and A also holds b.
+"aXbxA"
+=> ""
+
+# One lowercase letter, repeated.
+"tttttttt"
+=> ""
+
+# Three nice pairs side by side join into one nice substring.
+"rSsTtUur"
+=> "SsTtUu"
+
+# Leaving out c gives "aB" and "Ab", and neither is nice on its own.
+"aBcAb"
+=> ""
+
+# Two nice substrings of length 4: the left one, though it uses fewer
+# letters.
+"bBBbqCcDd"
+=> "bBBb"
+
+# The longest of three pieces is the last.
+"aAxbByCcCcz"
+=> "CcCc"
+
+# 100 letters using every letter of the alphabet in both cases: the whole
+# string is nice.
+"bwrgWnKEkkBNSgjaLbDbDAyNZbmRJxQcNdzkkeGIuDNpRrMGJOXGohLTZvYUxfFHKsCVYUezhlyTotlWBdoYShLSrpPDFejGqoDi"
+=> "bwrgWnKEkkBNSgjaLbDbDAyNZbmRJxQcNdzkkeGIuDNpRrMGJOXGohLTZvYUxfFHKsCVYUezhlyTotlWBdoYShLSrpPDFejGqoDi"
+
+# 100 letters: a to m only in lowercase and N to Y only in uppercase, then
+# "Zz", the only nice substring.
+"YNWiaWmekRdUlgOVhYmOfTQVljVclegRXYPmcbhPVdjbWbUdcefmamSchggWdYSajWfhdiPcWOOSccRlSgSgjjWRUfUjgjVmlVZz"
+=> "Zz"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"kValZzTcc"
+=> "Zz"
+
+@gen 2 small
+"bBbebbb"
+=> "bBb"
+
+@gen 3 small
+"PUWkla"
+=> ""
+
+@gen 4 small
+"RfzZ"
+=> "zZ"
+
+@gen 5 small
+"OOozlLLzNn"
+=> "OOo"
+
+@gen 6 small
+"lL"
+=> "lL"
+
+@gen 7 small
+"Zz"
+=> "Zz"
+
+@gen 8 small
+"BbAaAaB"
+=> "BbAaAaB"
+
+# Full size: 100 letters.
+@gen 1
+"RlaebiVQmgWbbSaebbWNNeOgaRmXiXSlhilldPiYUgUdOXgdbbYjkgQbOUdSUiPVOekjPNXeXRSXkNUfVUQkUdXSPlURaUfbQPlO"
+=> ""
+
+@gen 16
+"FffzMMmzrrRzHHhzlLlzRrrzmMMzUuUzbBBzYyYzXxXzllLzdDDzLlLzFfFzoOOzBBbzGggzuUuzyYYzwWwzOoOzjJjzpPpzSssz"
+=> "Fff"
+
+@gen 17
+"VLhvEiLuilIEUeeUeqQQvUeUiLQEVEeLvUivELUuIQhLveIIQUvlqLiLVQVlIViQLruvIizLlLLQULViIuEvEEeeVULiiqvlUQqV"
+=> "vEiLuilIEUeeUeqQQvUeUiLQEVEeLvUivELUuIQ"

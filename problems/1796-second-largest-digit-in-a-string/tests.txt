@@ -1,0 +1,103 @@
+# Second Largest Digit in a String.
+
+@example The digits are 7, 3, 0 and 7 again, so the set is {0, 3, 7}; without the 7, the biggest left is 3.
+"k7b30q7"
+=> 3
+
+@example Every digit is a 5, so the set is {5}, and nothing is left once 5 is taken out.
+"zz55z5"
+=> -1
+
+@example The set is {0, 9}; taking out 9 leaves 0, a real answer and not a missing one.
+"x0yy9"
+=> 0
+
+# A single letter, and a single digit.
+"a"
+=> -1
+
+"4"
+=> -1
+
+# Every letter and no digit.
+"abcdefghijklmnopqrstuvwxyz"
+=> -1
+
+# Zero is the only digit, twice.
+"0m0"
+=> -1
+
+# All ten digits, scrambled.
+"5h0k3927a6481"
+=> 8
+
+# Digits in increasing order: the biggest comes last.
+"1c2c5"
+=> 2
+
+# The biggest comes first; 5 then beats the 2 for second place, and 4 doesn't.
+"9r2r5r4"
+=> 5
+
+# The biggest digit comes again after the second one.
+"3a9b3c9"
+=> 3
+
+# Digits only at the start, in decreasing order.
+"641abcdef"
+=> 4
+
+# Digits only at the end, far apart.
+"uvwxyz91"
+=> 1
+
+# 9 appears 128 times: a count kept in a signed char goes negative.
+"499999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+=> 4
+
+# 5 appears 256 times: a count kept in an unsigned char wraps to 0.
+"955555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555551"
+=> 5
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"79jz681"
+=> 8
+
+@gen 2 small
+"zbjbj"
+=> -1
+
+@gen 3 small
+"29067785"
+=> 8
+
+@gen 4 small
+"77j4"
+=> 4
+
+@gen 5 small
+"77b777"
+=> -1
+
+@gen 6 small
+"z2"
+=> -1
+
+@gen 7 small
+"06z0z4"
+=> 4
+
+@gen 8 small
+"0000000"
+=> -1
+
+# Full-size cases: one digit among letters, and the biggest digit
+# repeated with the second one only at the very end.
+@gen 3
+"000000u0s0j00oe00ub000dzx0ldxkux000se000nsrg0000b0000kro00usr0m0xa00o0zjbux0gu00p00y0lnm00t0nl0y00000g0kfnigr0g000a0iphm0000j00g00xoue00j0me000000000f000wf0nn00l0dk00m0a0bc00ya0j0ykwihn0lkb000nm00a000d0d0bo00k0g000m00g0jy0z000ed0s0e0lfkzt00d0cvz0xx00wcb0ehfr00pooqj0000t0v00000j0l000q000da000ni00hi00y00du00l0stc0tze000ob0n0l0mwjg0p0jn0000j00i0v0qce0iix0e0eci0eo0pns0000g00000w00tj00j0uqwxaz00nz0o0r0000nsa00jm0nsp0ax0i00heh0cj0hj000000c00ym0u000000z0elt00tqi00das0xaxk0vx00d0fyw000f0000q0e000xk0tg00"
+=> -1
+
+@gen 4
+"2f2z2jyc222222k222ll22os2m22222222oxqpt2eqlrq2ga2222o22n2wdzh2mbo2ax22222z2w2kv22o222x22u2222au2cb2mtio222vo2b2222ontsh22h22yx2o2222h2222tck2yqy22k2g2yxg2qc2op222wg2222z2bsoapayp2kq2p222e22i2222b2xh2222rn2kfn22nqv222u22aeik22mqk2ocpjadiw2olbj2px2k222a2222tfs2ryod22nd2w222222omeuc2wu22uu2g2jda2x2ly2vkcg2pguz222yn2tmsy222222up2jp2pfgnz2222nrhn222rs2222imqq2iv2h2222l2222yzjc2e2222dzq2222wayl2ig2j22d2222ib2y2orp222akcvrygt2a22kd22v2z2gw2k2y2cs2ue2y222gapa22n2222qz22n222z2ogx22222l2vhn2bx22s222rl2c20"
+=> 0

@@ -1,0 +1,115 @@
+# Merge Strings Alternately.
+
+@example Turns hand over h, e, l, l; word2 is then used up, so the o still held by word1 goes last.
+"hlo"
+"el"
+=> "hello"
+
+@example Turns hand over c, w, a, x, t; word1 is then used up, so y and z follow together.
+"cat"
+"wxyz"
+=> "cwaxtyz"
+
+@example word1 takes the first turn although it is shorter. After m it has nothing left, so all of north follows.
+"m"
+"north"
+=> "mnorth"
+
+# Both words one letter long; word1 still goes first, though its letter
+# comes later in the alphabet.
+"b"
+"a"
+=> "ba"
+
+# The same length: a perfect weave with nothing left over.
+"acegi"
+"bdfhj"
+=> "abcdefghij"
+
+# word1 much longer: all of it after the first letter is left over.
+"abcdefgh"
+"z"
+=> "azbcdefgh"
+
+# word2 much longer.
+"q"
+"rstuvw"
+=> "qrstuvw"
+
+# The shorter word, and the one later in the alphabet, is word1: it leads.
+"zy"
+"abcd"
+=> "zaybcd"
+
+# Identical words.
+"xyz"
+"xyz"
+=> "xxyyzz"
+
+# One letter repeated: any order of turns looks the same here.
+"aaa"
+"aaaaa"
+=> "aaaaaaaa"
+
+# Longest word1, one-letter word2.
+"abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"
+"z"
+=> "azbcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"
+
+# One-letter word1, longest word2.
+"z"
+"abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"
+=> "zabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"
+
+# Both words at the limit of 100 letters: 200 letters in the result.
+"abababababababababababababababababababababababababababababababababababababababababababababababababab"
+"cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+=> "acbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbdacbd"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"l"
+"sn"
+=> "lsn"
+
+@gen 2 small
+"c"
+"a"
+=> "ca"
+
+@gen 3 small
+"b"
+"bcababb"
+=> "bbcababb"
+
+@gen 4 small
+"aababc"
+"a"
+=> "aaababc"
+
+@gen 5 small
+"fbgvhe"
+"tgj"
+=> "ftbggjvhe"
+
+@gen 6 small
+"ccc"
+"aa"
+=> "cacac"
+
+# Full size: the seed picks the lengths (100 and 100, 100 and 1, 1 and
+# 100, or random).
+@gen 1
+"w"
+"oxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegsqxbgbs"
+=> "woxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegsqxbgbs"
+
+@gen 2
+"egqmsekulmznzvwecuyriadgwuqlzxshwqzaeidiwbhetxijzcxyrphhqdqursjewqicivkjwrqfysdmqxrsotighhwtocmabuul"
+"ohgpwpzzjpmtmxzjuwdufssvfsbongkeawgcqfzcxwjmddvwsbginuhnndmgasnxhgqjnxlypvqqhzhhdwnoneahnbgtjkomhutp"
+=> "eoghqgmpswepkzuzljmpzmntzmvxwzejcuuwydruifasdsgvwfusqbloznxgskhewaqwzgaceqifdzicwxbwhjemtdxdivjwzscbxgyirnpuhhhnqnddqmugrassjnexwhqgiqcjinvxkljywprvqqfqyhszdhmhqdxwrnsoonteiaghhnhbwgttojckmoambhuuutlp"
+
+@gen 3
+"kcfhdwkiylnpjugrosugkjudwmkooecaeumuqbessgoatdizvxm"
+"a"
+=> "kacfhdwkiylnpjugrosugkjudwmkooecaeumuqbessgoatdizvxm"
