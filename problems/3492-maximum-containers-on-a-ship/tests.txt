@@ -1,0 +1,147 @@
+# Maximum Containers on a Ship.
+
+@example Nine containers weigh 90; a tenth would bring the load to 100, over the limit.
+4
+10
+95
+=> 9
+
+@example All 9 cells can be filled, a load of only 63: the deck runs out first.
+3
+7
+100
+=> 9
+
+@example 25 containers weigh exactly 200, which is allowed, and the deck has 36 cells.
+6
+8
+200
+=> 25
+
+# The smallest input.
+1
+1
+1
+=> 1
+
+# One container is already too heavy.
+1000
+1000
+999
+=> 0
+
+# One container weighs exactly the limit.
+1000
+1000
+1000
+=> 1
+
+# The heaviest full deck: 1000 * 1000 * 1000 = 10^9, still an int.
+1000
+1000
+1000000000
+=> 1000000
+
+# One below it: 999999.999 rounds up to 10^6 in single precision.
+1000
+1000
+999999999
+=> 999999
+
+# The quotient 998000.999 would round up to n * n = 998001 in single
+# precision.
+999
+1000
+998000999
+=> 998000
+
+# The weight would allow 10^9 containers, but the deck has only 10^6
+# cells.
+1000
+1
+1000000000
+=> 1000000
+
+# The deck has n * n = 100 cells, not n = 10.
+10
+1
+50
+=> 50
+
+# A multiple of w well below the deck limit, and one less.
+1000
+999
+123332544
+=> 123456
+
+1000
+999
+123332543
+=> 123455
+
+# Exactly a full deck, 49 * 13 = 637, and one less.
+7
+13
+637
+=> 49
+
+7
+13
+636
+=> 48
+
+# Random cases from gen.c (lc check --regen makes them).
+
+@gen 1 small
+3
+7
+64
+=> 9
+
+@gen 2 small
+1
+1
+2
+=> 1
+
+@gen 3 small
+4
+1
+5
+=> 5
+
+@gen 4 small
+4
+3
+999999502
+=> 16
+
+@gen 5 small
+2
+2
+2
+=> 1
+
+@gen 6 small
+2
+10
+7
+=> 0
+
+@gen 12
+1000
+1000
+999999001
+=> 999999
+
+@gen 19
+15
+607
+99548
+=> 164
+
+@gen 25
+202
+1000
+2945999
+=> 2945

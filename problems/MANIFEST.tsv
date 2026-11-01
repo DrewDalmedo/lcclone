@@ -861,34 +861,34 @@
 3407	substring-matching-pattern	Substring Matching Pattern	easy	no	plain	todo
 3411	maximum-subarray-with-equal-products	Maximum Subarray With Equal Products	easy	no	plain	todo
 3415	find-products-with-three-consecutive-digits	Find Products with Three Consecutive Digits	easy	yes	skip:sql	todo
-3417	zigzag-grid-traversal-with-skip	Zigzag Grid Traversal With Skip	easy	no	plain	todo
-3423	maximum-difference-between-adjacent-elements-in-a-circular-array	Maximum Difference Between Adjacent Elements in a Circular Array	easy	no	plain	todo
-3427	sum-of-variable-length-subarrays	Sum of Variable Length Subarrays	easy	no	plain	todo
-3432	count-partitions-with-even-sum-difference	Count Partitions with Even Sum Difference	easy	no	plain	todo
+3417	zigzag-grid-traversal-with-skip	Zigzag Grid Traversal With Skip	easy	no	plain	draft
+3423	maximum-difference-between-adjacent-elements-in-a-circular-array	Maximum Difference Between Adjacent Elements in a Circular Array	easy	no	plain	draft
+3427	sum-of-variable-length-subarrays	Sum of Variable Length Subarrays	easy	no	plain	draft
+3432	count-partitions-with-even-sum-difference	Count Partitions with Even Sum Difference	easy	no	plain	draft
 3436	find-valid-emails	Find Valid Emails	easy	no	skip:sql	todo
-3438	find-valid-pair-of-adjacent-digits-in-string	Find Valid Pair of Adjacent Digits in String	easy	no	plain	todo
-3442	maximum-difference-between-even-and-odd-frequency-i	Maximum Difference Between Even and Odd Frequency I	easy	no	plain	todo
+3438	find-valid-pair-of-adjacent-digits-in-string	Find Valid Pair of Adjacent Digits in String	easy	no	plain	draft
+3442	maximum-difference-between-even-and-odd-frequency-i	Maximum Difference Between Even and Odd Frequency I	easy	no	plain	draft
 3450	maximum-students-on-a-single-bench	Maximum Students on a Single Bench	easy	yes	skip:premium	todo
-3452	sum-of-good-numbers	Sum of Good Numbers	easy	no	plain	todo
-3456	find-special-substring-of-length-k	Find Special Substring of Length K	easy	no	plain	todo
-3461	check-if-digits-are-equal-in-string-after-operations-i	Check If Digits Are Equal in String After Operations I	easy	no	plain	todo
+3452	sum-of-good-numbers	Sum of Good Numbers	easy	no	plain	draft
+3456	find-special-substring-of-length-k	Find Special Substring of Length K	easy	no	plain	draft
+3461	check-if-digits-are-equal-in-string-after-operations-i	Check If Digits Are Equal in String After Operations I	easy	no	plain	draft
 3465	find-products-with-valid-serial-numbers	Find Products with Valid Serial Numbers	easy	no	skip:sql	todo
-3467	transform-array-by-parity	Transform Array by Parity	easy	no	plain	todo
-3471	find-the-largest-almost-missing-integer	Find the Largest Almost Missing Integer	easy	no	plain	todo
-3477	fruits-into-baskets-ii	Fruits Into Baskets II	easy	no	plain	todo
-3483	unique-3-digit-even-numbers	Unique 3-Digit Even Numbers	easy	no	plain	todo
-3487	maximum-unique-subarray-sum-after-deletion	Maximum Unique Subarray Sum After Deletion	easy	no	plain	todo
+3467	transform-array-by-parity	Transform Array by Parity	easy	no	plain	draft
+3471	find-the-largest-almost-missing-integer	Find the Largest Almost Missing Integer	easy	no	plain	draft
+3477	fruits-into-baskets-ii	Fruits Into Baskets II	easy	no	plain	draft
+3483	unique-3-digit-even-numbers	Unique 3-Digit Even Numbers	easy	no	plain	draft
+3487	maximum-unique-subarray-sum-after-deletion	Maximum Unique Subarray Sum After Deletion	easy	no	plain	draft
 3491	phone-number-prefix	Phone Number Prefix	easy	yes	skip:premium	todo
-3492	maximum-containers-on-a-ship	Maximum Containers on a Ship	easy	no	plain	todo
-3498	reverse-degree-of-a-string	Reverse Degree of a String	easy	no	plain	todo
-3502	minimum-cost-to-reach-every-position	Minimum Cost to Reach Every Position	easy	no	plain	todo
-3507	minimum-pair-removal-to-sort-array-i	Minimum Pair Removal to Sort Array I	easy	no	plain	todo
-3512	minimum-operations-to-make-array-sum-divisible-by-k	Minimum Operations to Make Array Sum Divisible by K	easy	no	plain	todo
-3516	find-closest-person	Find Closest Person	easy	no	plain	todo
-3536	maximum-product-of-two-digits	Maximum Product of Two Digits	easy	no	plain	todo
-3541	find-most-frequent-vowel-and-consonant	Find Most Frequent Vowel and Consonant	easy	no	plain	todo
-3545	minimum-deletions-for-at-most-k-distinct-characters	Minimum Deletions for At Most K Distinct Characters	easy	no	plain	todo
-3550	smallest-index-with-digit-sum-equal-to-index	Smallest Index With Digit Sum Equal to Index	easy	no	plain	todo
+3492	maximum-containers-on-a-ship	Maximum Containers on a Ship	easy	no	plain	draft
+3498	reverse-degree-of-a-string	Reverse Degree of a String	easy	no	plain	draft
+3502	minimum-cost-to-reach-every-position	Minimum Cost to Reach Every Position	easy	no	plain	draft
+3507	minimum-pair-removal-to-sort-array-i	Minimum Pair Removal to Sort Array I	easy	no	plain	draft
+3512	minimum-operations-to-make-array-sum-divisible-by-k	Minimum Operations to Make Array Sum Divisible by K	easy	no	plain	draft
+3516	find-closest-person	Find Closest Person	easy	no	plain	draft
+3536	maximum-product-of-two-digits	Maximum Product of Two Digits	easy	no	plain	draft
+3541	find-most-frequent-vowel-and-consonant	Find Most Frequent Vowel and Consonant	easy	no	plain	draft
+3545	minimum-deletions-for-at-most-k-distinct-characters	Minimum Deletions for At Most K Distinct Characters	easy	no	plain	draft
+3550	smallest-index-with-digit-sum-equal-to-index	Smallest Index With Digit Sum Equal to Index	easy	no	plain	draft
 3560	find-minimum-log-transportation-cost	Find Minimum Log Transportation Cost	easy	no	bits	draft
 3570	find-books-with-no-available-copies	Find Books with No Available Copies	easy	no	skip:sql	todo
 3571	find-the-shortest-superstring-ii	Find the Shortest Superstring II	easy	yes	skip:premium	todo

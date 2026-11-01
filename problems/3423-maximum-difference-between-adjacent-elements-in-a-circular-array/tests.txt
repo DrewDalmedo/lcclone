@@ -1,0 +1,99 @@
+# Maximum Difference Between Adjacent Elements in a Circular Array.
+
+@example The stretches change height by 7, 10, 6 and 3 (the last one from 0 back to 3).
+[3,-4,6,0]
+=> 10
+
+@example The largest change is on the stretch from 30 back to -20 that closes the loop.
+[-20,-15,-12,-18,30]
+=> 50
+
+@example Both stretches join the same two checkpoints, 7 apart.
+[6,-1]
+=> 7
+
+# Two checkpoints at the same height.
+[0,0]
+=> 0
+
+# The largest possible change.
+[100,-100]
+=> 200
+
+# -100 and 100 are neighbours only across the wrap.
+[-100,0,50,99,100]
+=> 200
+
+# All heights equal, and not zero.
+[37,37,37,37]
+=> 0
+
+# Heights much larger than the changes between them.
+[99,98,97]
+=> 2
+
+# Low heights: a 0 read past the end of the array would give 100.
+[-100,-99,-100]
+=> 1
+
+# The largest change is a descent (50 down to -40).
+[5,50,-40,-30]
+=> 90
+
+# The wrap is the largest change, once a rise and once a drop from the
+# last checkpoint to the first.
+[-60,-50,-40,40]
+=> 100
+
+[70,65,58,-35]
+=> 105
+
+# The highest and lowest checkpoints are far apart on the loop.
+[100,60,20,-20,-60,-100,-60,-20,20,60]
+=> 40
+
+# The largest change is the first stretch.
+[-3,80,79,78,77]
+=> 83
+
+# The largest change is the last stretch before the wrap (-52 up to 39).
+[41,37,45,30,-52,39]
+=> 91
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[1,-5]
+=> 6
+
+@gen 2 small
+[5,5,5,5,5,5]
+=> 0
+
+@gen 3 small
+[-5,-5,-4,-5,4,-5,-5,-1]
+=> 9
+
+@gen 4 small
+[5,1]
+=> 4
+
+@gen 5 small
+[3,-4]
+=> 7
+
+@gen 6 small
+[66,34,-59,-8,-58,32,-73]
+=> 139
+
+# Full-size cases: a slope closed by a big step, equal heights, random.
+@gen 1
+[93,91,91,90,89,89,86,83,80,77,77,76,76,74,74,72,69,66,64,62,62,62,61,60,57,57,54,51,50,49,47,44,44,44,44,43,40,40,39,37,37,37,37,36,36,34,33,31,30,27,27,24,24,21,20,17,15,14,11,10,8,8,7,4,1,1,0,-2,-3,-5,-7,-7,-10,-10,-12,-12,-14,-14,-17,-18,-21,-24,-27,-30,-31,-31,-34,-37,-40,-42,-43,-45,-47,-49,-51,-51,-53,-56,-59,-61]
+=> 154
+
+@gen 2
+[-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48,-48]
+=> 0
+
+@gen 3
+[22,54,-77,61,-45,-75,-59,-1,-96,-61,84,78,-7,-99,-43,11,-10,-49,-40,-56,-92,21,23,69,80,58,76,79,-92,-3,77,-58,79,86,72,98,-80,-80,60,23,73,70,61,-17,10,24,-31,-81,-90,62,-85,-47,-46,-41,-68,-13,-83,-26,81,53,-22,92,-68,-38,-45,34,94,-25,-77,-43,-59,-24,-38,37,23,-9,-54,48,-60,-72,39,62,22,15,94,30,-74,20,79,-2,-91,-67,74,60,55,-79,-60,-62,96,62]
+=> 178

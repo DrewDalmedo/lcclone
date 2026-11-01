@@ -1,0 +1,111 @@
+# Unique 3-Digit Even Numbers.
+
+@example Ending in 2 gives 492, 942 and 992; ending in 4 gives 294, 924 and 994. The two 9s allow 992 and 994.
+[2,9,4,9]
+=> 6
+
+@example Only 0 is even, so every number ends in 0: 300, 350, 500 and 530.
+[5,0,0,3]
+=> 4
+
+@example 040 and 004 start with 0, and 404 and 440 need two 4s, so only 400 is left.
+[4,0,0]
+=> 1
+
+# The smallest pool: three different nonzero even digits allow all six orders.
+[2,6,8]
+=> 6
+
+# Three digits with a 0, which can't come first.
+[0,2,4]
+=> 4
+
+# No even digit at all.
+[9,7,5,3,1,1]
+=> 0
+
+# Only zeros: no number can start.
+[0,0,0,0,0,0,0,0,0,0]
+=> 0
+
+# Ten copies of one digit still give a single number, 222.
+[2,2,2,2,2,2,2,2,2,2]
+=> 1
+
+# Nine zeros and a 7: only 700.
+[0,0,0,0,0,0,0,0,0,7]
+=> 1
+
+# A digit used two and three times: 188 and 818, but not 888.
+[8,8,1]
+=> 2
+
+# 444, 434 and 344 use the 4s up to three times.
+[4,4,4,3]
+=> 3
+
+# Two 6s and two 0s: 600, 606 and 660, but not 666.
+[0,6,0,6]
+=> 3
+
+# Two 1s: 100 and 110.
+[1,0,1,0,0]
+=> 2
+
+# Seven digits, already more than a signed char holds.
+[0,2,4,6,8,1,3]
+=> 130
+
+# Nine different digits: the most nine entries can give.
+[8,6,4,2,0,1,3,5,7]
+=> 252
+
+# All ten digits, the largest answer: more than fits in a byte.
+[3,9,0,6,1,8,4,7,2,5]
+=> 328
+
+# Two 9s make 998, the largest number that can count: 198, 918 and 998.
+[9,8,1,9]
+=> 3
+
+# A second 8 instead of the 9.
+[0,1,2,3,4,5,6,7,8,8]
+=> 271
+
+# Random cases from gen.c (lc check --regen makes them).
+
+@gen 1 small
+[6,0,7]
+=> 3
+
+@gen 2 small
+[1,2,6,7,9]
+=> 24
+
+@gen 3 small
+[8,4,5,2]
+=> 18
+
+@gen 4 small
+[5,5,5,2]
+=> 1
+
+@gen 5 small
+[9,9,9,9,9,9,9]
+=> 0
+
+@gen 6 small
+[7,1,9]
+=> 0
+
+@gen 17
+[8,7,1,0,5,2,1,0,8,0]
+=> 71
+
+@gen 23
+[7,2,3,7,6,0,4,7,9,8]
+=> 191
+
+@gen 30
+[0,9,5,1,0,0,7,0,0,0]
+=> 16

@@ -1,0 +1,117 @@
+# Find Valid Pair of Adjacent Digits in String. A digit is complete when
+# it occurs in s exactly as many times as its value.
+
+@example 5 occurs once and 3 twice, so neither is complete; 2 occurs twice and 1 once, so 21 is the first good pair (12 comes later).
+"533212"
+=> "21"
+
+@example 4 occurs four times, but 2 occurs three times, and the pairs 44 have equal digits.
+"2442424"
+=> ""
+
+@example 3 and 1 are both complete; the first pair, 33, has equal digits.
+"3313"
+=> "31"
+
+# The shortest string: 2 occurs only once.
+"12"
+=> ""
+
+# The shortest string with a good pair; 12 is good too, but comes later.
+"212"
+=> "21"
+
+# Five 4s, one too many, and three 4s, one too few.
+"144444"
+=> ""
+
+"1444"
+=> ""
+
+# Only the first digit of 12 is complete (three 2s).
+"1222"
+=> ""
+
+# Only the second digit of 52 is complete; 21 comes next.
+"5221"
+=> "21"
+
+# The other copies of 3 are away from the pair 13.
+"3771383"
+=> "13"
+
+# The first good pair is 31, kept in its order: not 13, and not the
+# smaller digits 12 that come later.
+"331223"
+=> "31"
+
+# Seven 7s, all side by side: 7 is complete, but every pair is 77.
+"7777777"
+=> ""
+
+# A complete digit whose copies touch each other before the good pair.
+"555551"
+=> "51"
+
+# Ten 9s, one too many, next to eight 8s.
+"999999999988888888"
+=> ""
+
+# All nine digits complete (45 characters), largest first.
+"999999999888888887777777666666555554444333221"
+=> "98"
+
+# 100 digits: the only good pair is the last one.
+"5555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555212"
+=> "21"
+
+# 100 digits, fifty 1s and fifty 2s: nothing is complete.
+"1212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212"
+=> ""
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"443234324"
+=> "43"
+
+@gen 2 small
+"3213321"
+=> "32"
+
+@gen 4 small
+"443123244"
+=> "12"
+
+@gen 5 small
+"4444113322"
+=> ""
+
+@gen 6 small
+"2233331"
+=> ""
+
+@gen 10 small
+"22244443331"
+=> "43"
+
+@gen 16 small
+"1323321"
+=> "32"
+
+@gen 20 small
+"44431343"
+=> "43"
+
+# Full-size cases: the only good pair at the very end; complete digits
+# fenced off by a common digit; all nine digits complete.
+@gen 16
+"1111916111111111611111911111116111111191111161911191111191119111111111119111111111111161111111111196"
+=> "96"
+
+@gen 9
+"9999999995444457777777555666666588888888555555555555555555555555555555555555555555555555555555555555"
+=> ""
+
+@gen 10
+"719473999859896683852398298684757559467747866"
+=> "71"

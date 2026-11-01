@@ -1,0 +1,135 @@
+# Find Closest Person.
+
+@example Person 1 is 2 away from person 3, and person 2 is 5 away.
+10
+3
+8
+=> 1
+
+@example Person 1 is 12 away from person 3, and person 2 only 3.
+40
+55
+52
+=> 2
+
+@example Persons 1 and 2 stand on opposite sides of person 3, 20 away each.
+20
+60
+40
+=> 0
+
+# All three at the same spot.
+1
+1
+1
+=> 0
+
+# Person 1 is already there; person 2 is one step away.
+7
+8
+7
+=> 1
+
+# Person 2 is already there; person 1 is as far away as possible.
+100
+1
+1
+=> 2
+
+# Persons 1 and 2 share a spot.
+30
+30
+90
+=> 0
+
+# Opposite sides: person 1, on the left, is farther away (10 against 6).
+40
+56
+50
+=> 2
+
+# Both on the left of person 3: person 2 is nearer (40 against 20).
+10
+30
+50
+=> 2
+
+# Both on the right of person 3: person 1 is nearer (10 against 40).
+60
+90
+50
+=> 1
+
+# Mirror positions with person 2 on the left: 23 each.
+73
+27
+50
+=> 0
+
+# The two ends of the range: 49 against 50.
+1
+100
+50
+=> 1
+
+# Person 2 stands nearer to 0, but person 1 is nearer to person 3.
+90
+10
+95
+=> 1
+
+# Person 2 is already there, at the top of the range.
+1
+100
+100
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+68
+71
+65
+=> 1
+
+@gen 2 small
+46
+49
+47
+=> 1
+
+@gen 3 small
+15
+14
+11
+=> 2
+
+@gen 4 small
+62
+68
+65
+=> 0
+
+@gen 5 small
+30
+30
+28
+=> 0
+
+@gen 6 small
+1
+2
+1
+=> 1
+
+# Random full-size cases.
+@gen 7
+91
+7
+75
+=> 1
+
+@gen 8
+100
+44
+72
+=> 0
