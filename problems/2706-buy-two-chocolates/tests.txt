@@ -1,0 +1,136 @@
+# Buy Two Chocolates.
+
+@example The cheapest pair is 4 and 5, which costs 9 and leaves 3.
+[6,4,9,5]
+12
+=> 3
+
+@example Even the two cheapest bars cost 15, more than 14, so nothing is bought.
+[7,8,10]
+14
+=> 14
+
+@example The two bars priced 2 cost exactly 4, and spending all of it is allowed.
+[5,2,5,2]
+4
+=> 0
+
+# Two bars that cost 2 together, and only 1 to spend.
+[1,1]
+1
+=> 1
+
+# Two bars only: both are bought, and the change is returned, not the cost.
+[30,45]
+100
+=> 25
+
+# The cheapest pair misses the budget by exactly 1.
+[50,51]
+100
+=> 100
+
+# The cheapest bar twice would fit, but it can be bought only once, and
+# with the next cheapest it costs 11.
+[3,9,8]
+10
+=> 10
+
+# The cheapest price is on two bars, and both are bought.
+[4,7,4,9]
+10
+=> 2
+
+# Prices falling from first to last: the two cheapest come at the end.
+[9,8,7,6,5,4]
+10
+=> 1
+
+# Several pairs fit: the cheapest is 2 and 3, not the dearest pair that
+# fits (9 and 3) or the first one found (2 and 9).
+[2,9,3,6,4]
+12
+=> 7
+
+# Every bar is dear: the cheapest two cost 197.
+[99,100,98,100]
+100
+=> 100
+
+# One bar at 1 and one at the top price, 100: together 101, one more than
+# money. A tracker that starts below 100 never records the 100.
+[100,1]
+100
+=> 100
+
+# The cheapest two are the first and the last bar.
+[3,10,20,10,4]
+8
+=> 1
+
+# 50 bars at the highest price.
+[100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100]
+100
+=> 100
+
+# 50 bars at the lowest price.
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+100
+=> 98
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 3 small
+[97,71,50,43,33,27,24,22]
+46
+=> 0
+
+@gen 4 small
+[21,59]
+82
+=> 2
+
+@gen 8 small
+[93,92,91,86,86,68,66,49]
+100
+=> 100
+
+@gen 10 small
+[3,2,1,3,3,1,3,2]
+2
+=> 0
+
+@gen 17 small
+[10,6,5,3,2,2,1]
+65
+=> 62
+
+@gen 21 small
+[8,4,1,6,4]
+4
+=> 4
+
+@gen 22 small
+[6,9,8,3,9,6,5,4]
+8
+=> 1
+
+@gen 23 small
+[39,74,66,66,77,32,30,82]
+60
+=> 60
+
+# Full size: 50 prices.
+@gen 1
+[53,74,38,61,100,100,100,84,13,58,37,27,9,7,52,80,55,91,25,49,2,82,52,97,60,44,18,90,51,60,17,53,77,86,80,13,6,47,41,13,21,58,77,23,18,67,94,60,69,12]
+9
+=> 1
+
+@gen 2
+[100,99,98,97,96,96,91,89,89,89,86,85,85,84,77,77,77,76,74,73,68,66,63,58,57,57,54,51,50,50,43,39,38,37,33,29,28,27,23,23,22,20,19,17,13,8,6,5,3,1]
+3
+=> 3
+
+@gen 4
+[58,45,75,50,63,93,91,50,81,81,51,94,98,81,82,71,85,73,87,77,73,57,70,80,88,83,73,47,99,51,72,68,59,53,86,65,81,98,76,54,54,59,65,52,76,53,48,97,67,73]
+90
+=> 90

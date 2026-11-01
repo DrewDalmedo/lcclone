@@ -1,0 +1,96 @@
+# Sum Multiples.
+
+@example The numbers kept are 3, 5, 6, 7, 9, 10, 12, 14 and 15, which add up to 81.
+16
+=> 81
+
+@example Up to 21, the numbers 18, 20 and 21 join those of the example above; 15 and 21 each have two of the divisors but count once.
+21
+=> 140
+
+@example Neither 1 nor 2 has any of the divisors.
+2
+=> 0
+
+# The smallest n.
+1
+=> 0
+
+# The first number kept: n itself counts.
+3
+=> 3
+
+# n is a multiple of 7 only.
+14
+=> 66
+
+28
+=> 244
+
+# 15 has the divisors 3 and 5, and goes into the total once.
+15
+=> 81
+
+# 35 has the divisors 5 and 7.
+35
+=> 342
+
+# Just below and at 105, the first number with all three divisors: it is
+# still added once.
+104
+=> 2940
+
+105
+=> 3045
+
+# The second number with all three divisors.
+210
+=> 12075
+
+# The largest n (a multiple of 5 only), and 999 (a multiple of 3 only).
+1000
+=> 272066
+
+999
+=> 271066
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+847
+=> 195321
+
+@gen 2 small
+315
+=> 27090
+
+@gen 4 small
+842
+=> 191940
+
+@gen 8 small
+572
+=> 88219
+
+@gen 9 small
+103
+=> 2940
+
+@gen 15 small
+22
+=> 140
+
+@gen 20 small
+8
+=> 21
+
+@gen 21 small
+142
+=> 5523
+
+@gen 1
+989
+=> 265099
+
+@gen 3
+978
+=> 260182

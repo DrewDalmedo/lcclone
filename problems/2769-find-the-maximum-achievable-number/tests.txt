@@ -1,0 +1,96 @@
+# Find the Maximum Achievable Number.
+
+@example Start at 16 and in each round step it down while the other marker steps up: 15 and 11, then 14 and 12, then both on 13.
+10
+3
+=> 16
+
+@example Moving towards each other, the markers close a gap of 2 per round, 14 in 7 rounds; starting at 16 the gap would be 15, which is too wide (and odd).
+1
+7
+=> 15
+
+# Both at the smallest.
+1
+1
+=> 3
+
+# Both at the largest.
+50
+50
+=> 150
+
+# t far larger than num.
+2
+50
+=> 102
+
+# num far larger than t.
+50
+2
+=> 54
+
+# num and t at opposite ends of the range, both ways round.
+1
+50
+=> 101
+
+50
+1
+=> 52
+
+# Swapping num and t changes the answer.
+7
+20
+=> 47
+
+20
+7
+=> 34
+
+# num equal to t.
+13
+13
+=> 39
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+3
+3
+=> 9
+
+@gen 3 small
+49
+49
+=> 147
+
+@gen 4 small
+49
+7
+=> 63
+
+@gen 5 small
+22
+1
+=> 24
+
+@gen 6 small
+2
+37
+=> 76
+
+@gen 8 small
+8
+2
+=> 12
+
+# Full size: anywhere in the range.
+@gen 1
+9
+47
+=> 103
+
+@gen 2
+37
+1
+=> 39

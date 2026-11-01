@@ -1,0 +1,103 @@
+# Check if The Number is Fascinating.
+
+@example 273, 546 and 819 make the row 273546819, which has each of 1 to 9 once.
+273
+=> true
+
+@example 267, 534 and 801 make nine different digits, but one is a 0 and there is no 9.
+267
+=> false
+
+@example 783, 1566 and 2349 make 11 digits; each of 1 to 9 is there, but 3 and 6 twice.
+783
+=> false
+
+# Two more fascinating numbers.
+219
+=> true
+
+327
+=> true
+
+# The smallest n: 100, 200 and 300 are full of zeros.
+100
+=> false
+
+# 333 is the last n whose row has nine digits (333666999, all repeats);
+# 334 is the first with ten (3346681002).
+333
+=> false
+
+334
+=> false
+
+# The largest n: an 11-digit row, 99919982997, too big for a 32-bit int.
+999
+=> false
+
+# Nine digits, no 0, adding up to 45 like 1 to 9, but 2 and 8 come twice.
+129
+=> false
+
+# Squeezing 2 * n and 3 * n into three places each would turn these rows
+# into rearrangements of 123456789.
+384
+=> false
+
+618
+=> false
+
+# 11 digits with no 0 among which each of 1 to 9 appears.
+918
+=> false
+
+# The row 81916382457 has 11 digits; its last nine, 916382457, are a
+# rearrangement of 123456789, so the row's length must be checked.
+819
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+331
+=> false
+
+@gen 2 small
+326
+=> false
+
+@gen 3 small
+296
+=> false
+
+@gen 4 small
+341
+=> false
+
+@gen 5 small
+991
+=> false
+
+@gen 6 small
+186
+=> false
+
+@gen 7 small
+382
+=> false
+
+@gen 9 small
+135
+=> false
+
+# Any n from 100 to 999.
+@gen 1
+646
+=> false
+
+@gen 2
+300
+=> false
+
+@gen 3
+650
+=> false

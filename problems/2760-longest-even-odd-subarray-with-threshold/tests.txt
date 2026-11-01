@@ -1,0 +1,135 @@
+# Longest Even Odd Subarray With Threshold. 0 means no chain at all.
+
+@example 4, 9, 6, 1, 8 switches parity at every step and stays at or under 9; the 8 after it repeats a parity.
+[7,4,9,6,1,8,8,3]
+9
+=> 5
+
+@example 30 is above the threshold and cuts the chain after 12, 5; the 7 after it is odd, so nothing starts there.
+[12,5,30,7]
+20
+=> 2
+
+@example Every element is odd, so no chain can begin.
+[5,11,3]
+50
+=> 0
+
+# A single even element within the threshold.
+[2]
+2
+=> 1
+
+# A single even element above the threshold.
+[6]
+5
+=> 0
+
+# The whole array is a chain; its first element equals the threshold.
+[10,3,8,1]
+10
+=> 4
+
+# The parities alternate from the start, but the first element is odd.
+[3,4,5,6,7]
+100
+=> 4
+
+# Two evens in a row: the second one starts a new chain, the longest.
+[2,4,1,2,3,6]
+10
+=> 5
+
+# Two odds in a row: no chain starts at the second one.
+[2,1,1,2,3,4]
+10
+=> 3
+
+# An even element above the threshold splits an alternating stretch.
+[6,7,8,9,60,11,12,13,14]
+50
+=> 4
+
+# An odd element above the threshold splits it too.
+[8,51,8,1]
+50
+=> 2
+
+# An even element just above the threshold sits between an odd and an even
+# one: the chains on its two sides must not be joined across it.
+[10,1,10,1,88,2,1,2,1,2]
+87
+=> 5
+
+# The same with an odd element above the threshold, between an even and an
+# odd one.
+[4,9,4,95,9,4]
+90
+=> 3
+
+# Every even element is above the threshold; the odd ones can't start.
+[40,1,42,3]
+30
+=> 0
+
+# The longest chain ends at the last element, which equals the threshold.
+[1,1,2,3,4,5,6]
+6
+=> 5
+
+# 100 down to 1: one chain of all 100 elements.
+[100,99,98,97,96,95,94,93,92,91,90,89,88,87,86,85,84,83,82,81,80,79,78,77,76,75,74,73,72,71,70,69,68,67,66,65,64,63,62,61,60,59,58,57,56,55,54,53,52,51,50,49,48,47,46,45,44,43,42,41,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
+100
+=> 100
+
+# The same row with threshold 99: the chain starts at 98.
+[100,99,98,97,96,95,94,93,92,91,90,89,88,87,86,85,84,83,82,81,80,79,78,77,76,75,74,73,72,71,70,69,68,67,66,65,64,63,62,61,60,59,58,57,56,55,54,53,52,51,50,49,48,47,46,45,44,43,42,41,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
+99
+=> 98
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[12,5,4,3,3,6,2]
+11
+=> 2
+
+@gen 2 small
+[5,5,1,1,1]
+5
+=> 0
+
+@gen 3 small
+[5,9,3,11,7,9,1,9]
+7
+=> 0
+
+@gen 4 small
+[8,9,2,7]
+12
+=> 4
+
+@gen 5 small
+[8,9,7,8,4,9]
+7
+=> 1
+
+@gen 6 small
+[4,11]
+4
+=> 1
+
+# Full size: 100 values; seed 19 is one chain over the whole row.
+@gen 3
+[54,47,44,85,10,63,32,89,6,45,54,77,30,85,50,41,78,65,94,85,38,21,48,29,24,9,100,61,42,69,10,35,14,19,58,17,2,97,82,61,86,67,8,35,48,85,28,55,90,65,64,89,34,81,78,81,10,44,67,42,97,100,5,50,83,92,69,40,39,94,29,58,79,28,51,1,64,57,68,87,64,79,24,1,54,81,88,59,98,35,82,87,8,77,34,53,36,39,84,77]
+100
+=> 57
+
+@gen 19
+[74,13,46,19,28,35,34,65,6,79,18,15,58,55,64,55,44,97,12,39,98,33,24,15,72,15,78,39,100,3,10,7,80,15,30,57,70,1,76,53,62,53,14,93,8,49,26,67,92,47,18,13,50,77,60,55,12,71,30,59,64,55,84,19,54,55,58,65,16,97,8,99,28,3,24,53,62,59,30,9,74,97,46,59,86,53,2,81,24,15,24,13,96,29,88,17,84,99,52,75]
+100
+=> 100
+
+@gen 22
+[71,76,37,70,97,68,26,23,86,35,10,13,94,15,42,31,38,79,64,89,72,93,38,51,40,33,4,89,24,67,58,79,2,78,69,98,69,80,89,46,69,96,91,80,77,38,69,66,23,52,7,10,57,20,41,40,27,48,65,42,97,56,97,73,88,93,72,5,38,13,90,65,32,81,4,47,82,27,58,47,4,65,24,35,86,41,26,87,38,41,52,9,38,45,84,9,26,67,66,47]
+88
+=> 28

@@ -1,0 +1,129 @@
+# Total Distance Traveled. The inputs are mainTank, then additionalTank; the
+# answers are in kilometers, 10 per liter burned.
+
+@example After 5 liters the pump adds 1, leaving 3 in the main tank and 2 in reserve; burning those 3 makes 8 liters, or 80 km.
+7
+3
+=> 80
+
+@example Transfers at the 5th and 10th liters empty the reserve; the main tank then has 6 liters left, so 16 are burned in all.
+14
+2
+=> 160
+
+@example The liter added at the 5th liter lets the count reach 10, which brings a second liter; 11 liters are burned and 48 stay in reserve.
+9
+50
+=> 110
+
+# The smallest tanks.
+1
+1
+=> 10
+
+# Below 5 liters the pump never acts, however full the reserve. (4 / 4
+# would suggest one transfer.)
+4
+100
+=> 40
+
+# Exactly 5 liters: the 5th liter empties the main tank, and the pump
+# refills it with 1.
+5
+7
+=> 60
+
+# The main tank comes back to exactly 5 after transfers: 13, then 9, then
+# 5, then 1 at the 5th, 10th and 15th liters.
+13
+5
+=> 160
+
+# A multiple of 4: one transfer, not 8 / 4 = 2.
+8
+100
+=> 90
+
+# Transferred liters reach new multiples of 5 again and again: 7 transfers,
+# not 29 / 5 = 5.
+29
+10
+=> 360
+
+# A single liter in reserve.
+100
+1
+=> 1010
+
+# The reserve runs out long before the main tank.
+50
+3
+=> 530
+
+# A full main tank can use 24 liters of reserve: 23 is one short, and 24
+# already gives the longest trip.
+100
+23
+=> 1230
+
+100
+24
+=> 1240
+
+# Both tanks full: the reserve's other 76 liters are never used.
+100
+100
+=> 1240
+
+# A single liter in the main tank and a full reserve.
+1
+100
+=> 10
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+9
+1
+=> 100
+
+@gen 2 small
+17
+69
+=> 210
+
+@gen 3 small
+6
+1
+=> 70
+
+@gen 4 small
+14
+6
+=> 170
+
+@gen 5 small
+10
+6
+=> 120
+
+@gen 6 small
+22
+3
+=> 250
+
+# Full size: tanks anywhere up to 100 liters.
+@gen 1
+97
+47
+=> 1210
+
+@gen 2
+100
+27
+=> 1240
+
+@gen 3
+16
+51
+=> 190
+

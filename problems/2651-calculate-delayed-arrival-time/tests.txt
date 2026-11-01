@@ -1,0 +1,85 @@
+# Calculate Delayed Arrival Time.
+
+@example Five hours after 9 is 14, with no need to wrap.
+9
+5
+=> 14
+
+@example After 23 the clock starts again at 0: 21, 22, 23, 0, 1, 2.
+20
+6
+=> 2
+
+@example Docking exactly at midnight shows hour 0, never 24.
+17
+7
+=> 0
+
+# The smallest inputs.
+1
+1
+=> 2
+
+# A sum of 23 stays as it is.
+22
+1
+=> 23
+
+# Other sums of exactly 24.
+23
+1
+=> 0
+
+1
+23
+=> 0
+
+# One hour past midnight.
+23
+2
+=> 1
+
+# A delay of a whole day lands on the same hour.
+8
+24
+=> 8
+
+1
+24
+=> 1
+
+# The largest sum, 47.
+23
+24
+=> 23
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+8
+17
+=> 1
+
+@gen 2 small
+14
+17
+=> 7
+
+@gen 4 small
+8
+16
+=> 0
+
+@gen 5 small
+11
+14
+=> 1
+
+@gen 6 small
+5
+18
+=> 23
+
+@gen 7 small
+6
+19
+=> 1

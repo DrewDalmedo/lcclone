@@ -1,0 +1,105 @@
+# Minimize String Length.
+
+@example i, s and p can each be cut down to one copy, and m has only one; 4 letters stay.
+"mississippi"
+=> 4
+
+@example Pointing at either x erases the other one, although y stands between them.
+"xyx"
+=> 2
+
+@example No letter occurs twice, so no move erases anything.
+"plumbing"
+=> 8
+
+# A single letter.
+"q"
+=> 1
+
+# Two and four copies of one letter: the copy pointed at always stays, so
+# the letter never disappears.
+"gg"
+=> 1
+
+"gggg"
+=> 1
+
+# 100 copies of one letter.
+"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk"
+=> 1
+
+# Letters occurring 1, 2, 3 and 4 times all keep one copy, not only the
+# letter that occurs once.
+"pqqrrrssss"
+=> 4
+
+# Copies of a letter far apart: two letters taking turns.
+"tutututututu"
+=> 2
+
+# Even counts, never side by side twice in a row: h and j four times each.
+"hjhjjhhj"
+=> 2
+
+# The repeated letter is the first and the last character.
+"yellowy"
+=> 5
+
+# a and z, the ends of the alphabet.
+"azazzaaz"
+=> 2
+
+# Each of the 26 letters once.
+"qazwsxedcrfvtgbyhnujmikolp"
+=> 26
+
+# 100 letters that use every letter of the alphabet.
+"dkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnu"
+=> 26
+
+# 100 letters where 25 of the 26 letters first turn up after position 75:
+# the whole string must be read, not just its first 26 characters.
+"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeezyxwvutsrqponmlkjihgfdcba"
+=> 26
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"azzaaby"
+=> 4
+
+@gen 2 small
+"z"
+=> 1
+
+@gen 4 small
+"azy"
+=> 3
+
+@gen 5 small
+"kp"
+=> 2
+
+@gen 6 small
+"zaazaaazza"
+=> 2
+
+@gen 7 small
+"aazaz"
+=> 2
+
+@gen 8 small
+"za"
+=> 2
+
+# Full size: 100 letters.
+@gen 1
+"mmkkmkkmmmmmmkkmmkmmmkmmkmmkkkmmkmmkmmkmkkkkmkmkmkkmmkkkkkmkmmkmkmmmmkmkmmmkmkmkmmmkkmkkmkkkkmmmkmkk"
+=> 2
+
+@gen 2
+"jkynitoxxoziipkdtxxrjeevxtrrzjxixrmezuifrdlmmxdjomhryjkmfvnvnewkmfklwhwjuiddymmmnldosukltmetzuvtwpfw"
+=> 21
+
+@gen 3
+"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+=> 1
