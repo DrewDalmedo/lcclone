@@ -1,0 +1,79 @@
+# Convert Date to Binary.
+
+@example 1987 = 1024 + 512 + 256 + 128 + 64 + 2 + 1, the month is 6 = 4 + 2, and the day is 15 = 8 + 4 + 2 + 1.
+"1987-06-15"
+=> "11111000011-110-1111"
+
+@example 2064 = 2048 + 16 takes twelve binary digits; October is 10 = 8 + 2, and the day is 4.
+"2064-10-04"
+=> "100000010000-1010-100"
+
+@example The month 01 is written "1", not "0001".
+"2011-01-08"
+=> "11111011011-1-1000"
+
+# The last date allowed gives the longest result, 23 characters.
+"2100-12-31"
+=> "100000110100-1100-11111"
+
+# The first year allowed, with the longest month and day.
+"1900-12-31"
+=> "11101101100-1100-11111"
+
+# The shortest kind of result: an 11-digit year, month 1 and day 1.
+"1976-01-01"
+=> "11110111000-1-1"
+
+# 2047 is the last year with 11 binary digits, 2048 the first with 12.
+"2047-08-16"
+=> "11111111111-1000-10000"
+
+"2048-03-02"
+=> "100000000000-11-10"
+
+# A month or day of 08 or 09 is decimal, not octal.
+"1999-09-08"
+=> "11111001111-1001-1000"
+
+# Parts that read differently backwards catch bits written in reverse.
+"2050-11-22"
+=> "100000000010-1011-10110"
+
+"1972-04-12"
+=> "11110110100-100-1100"
+
+# Months 3 and 4, days 15 and 16: where a part gains a digit.
+"1950-03-16"
+=> "11110011110-11-10000"
+
+"2024-04-15"
+=> "11111101000-100-1111"
+
+# The last day of a 30-day month.
+"2000-06-30"
+=> "11111010000-110-11110"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"1966-05-22"
+=> "11110101110-101-10110"
+
+@gen 2 small
+"1902-05-08"
+=> "11101101110-101-1000"
+
+@gen 3 small
+"2048-09-23"
+=> "100000000000-1001-10111"
+
+@gen 4 small
+"2048-10-31"
+=> "100000000000-1010-11111"
+
+@gen 5 small
+"1904-02-25"
+=> "11101110000-10-11001"
+
+@gen 6 small
+"2047-11-27"
+=> "11111111111-1011-11011"

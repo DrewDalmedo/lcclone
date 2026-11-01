@@ -1,0 +1,125 @@
+# Smallest Divisible Digit Product I.
+
+@example 23 gives 2 * 3 = 6, not a multiple of 4. The next number, 24, gives 8, which is.
+23
+4
+=> 24
+
+@example 88 and 89 give 64 and 72, neither a multiple of 7. 90 has a 0 digit, so its product is 0.
+88
+7
+=> 90
+
+@example 3 * 6 = 18 is already a multiple of 6, so n itself is the answer.
+36
+6
+=> 36
+
+# The smallest inputs: t = 1 accepts every number.
+1
+1
+=> 1
+
+# The largest n: 100 has 0 digits.
+100
+7
+=> 100
+
+# A one-digit answer is its own product.
+3
+7
+=> 7
+
+# No single digit is a multiple of 10, so the search reaches 10.
+1
+10
+=> 10
+
+# n has a 0 digit, though its other digit alone would not do.
+30
+7
+=> 30
+
+20
+3
+=> 20
+
+# 10 divides 5 * 2 without a 0 digit.
+51
+10
+=> 52
+
+# No number in the thirties pairs a 5 with an even digit, so 40 it is.
+31
+10
+=> 40
+
+# Neither digit is a multiple of t, but their product is.
+61
+4
+=> 62
+
+42
+8
+=> 42
+
+# 7 is prime: only a digit 7 (or a 0) makes a multiple of it.
+11
+7
+=> 17
+
+# Nothing from 91 to 99 works, so the answer has three digits.
+91
+10
+=> 100
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+59
+7
+=> 60
+
+@gen 2 small
+37
+1
+=> 37
+
+@gen 4 small
+24
+3
+=> 26
+
+@gen 5 small
+70
+2
+=> 70
+
+@gen 6 small
+2
+10
+=> 10
+
+@gen 7 small
+22
+5
+=> 25
+
+@gen 8 small
+67
+2
+=> 67
+
+@gen 7
+75
+8
+=> 78
+
+@gen 8
+11
+10
+=> 20
+
+@gen 9
+34
+6
+=> 34

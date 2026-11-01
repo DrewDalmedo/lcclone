@@ -1,0 +1,115 @@
+# Snake in Matrix.
+
+@example Two steps right, three down and one left: row 3, column 1, labelled 3 * 4 + 1.
+4
+["RIGHT","RIGHT","DOWN","DOWN","DOWN","LEFT"]
+=> 13
+
+@example "UP" takes the snake from row 1 back to row 0, so it ends in row 0, column 3.
+5
+["DOWN","RIGHT","RIGHT","UP","RIGHT"]
+=> 3
+
+@example The snake goes once around the 2 x 2 board and is back where it started.
+2
+["DOWN","RIGHT","UP","LEFT"]
+=> 0
+
+# The smallest board and a single move, along the top row.
+2
+["RIGHT"]
+=> 1
+
+# A single move down: row 1, column 0 is 2, not 1 (row and column swapped).
+2
+["DOWN"]
+=> 2
+
+# Each corner of the largest board: bottom right,
+10
+["DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT"]
+=> 99
+
+# bottom left (a swapped row and column would give 9),
+10
+["DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN"]
+=> 90
+
+# and top right, on a 7 x 7 board.
+7
+["RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT"]
+=> 6
+
+# The right edge, off the diagonal: row 2, column 4.
+5
+["RIGHT","RIGHT","RIGHT","RIGHT","DOWN","DOWN"]
+=> 14
+
+# A zigzag ending inside the board at row 4, column 2 (16 if row and column
+# were swapped).
+6
+["DOWN","RIGHT","DOWN","RIGHT","DOWN","RIGHT","UP","LEFT","DOWN","DOWN"]
+=> 26
+
+# Several moves up after reaching the bottom: UP must lower the row.
+8
+["DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","UP","UP","UP","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT"]
+=> 37
+
+# The centre of a 3 x 3 board, reached from the opposite corner.
+3
+["RIGHT","RIGHT","DOWN","DOWN","LEFT","UP"]
+=> 4
+
+# 100 moves, the most allowed: twice around the border of the largest
+# board, then down its right side, along the bottom and one row up.
+10
+["RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","UP","UP","UP","UP","UP","UP","UP","UP","UP","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","UP","UP","UP","UP","UP","UP","UP","UP","UP","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","RIGHT","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","DOWN","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","LEFT","UP"]
+=> 80
+
+# 100 moves that cancel out in pairs.
+3
+["RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","LEFT"]
+=> 0
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+4
+["RIGHT","RIGHT","LEFT","LEFT","RIGHT","LEFT","DOWN"]
+=> 4
+
+@gen 2 small
+3
+["DOWN","UP","DOWN","RIGHT","LEFT"]
+=> 3
+
+@gen 16 small
+3
+["DOWN","UP","DOWN","DOWN","UP","DOWN","RIGHT","RIGHT"]
+=> 8
+
+@gen 11 small
+3
+["RIGHT","RIGHT","LEFT","RIGHT","DOWN"]
+=> 5
+
+@gen 7 small
+2
+["RIGHT","LEFT","DOWN","RIGHT","LEFT","UP","DOWN"]
+=> 2
+
+@gen 6 small
+2
+["RIGHT","LEFT"]
+=> 0
+
+# Full size: up to 100 moves on boards of up to 10 x 10.
+@gen 1
+4
+["DOWN","RIGHT","RIGHT","DOWN","DOWN","RIGHT","UP","DOWN","UP","DOWN","LEFT","UP","DOWN","RIGHT","LEFT","UP","DOWN","UP","DOWN","LEFT","UP","DOWN","UP","RIGHT","DOWN","LEFT","UP","DOWN","RIGHT","UP","DOWN","LEFT","RIGHT","UP","DOWN","RIGHT","UP","DOWN","LEFT","RIGHT","LEFT","RIGHT","LEFT","RIGHT","UP","DOWN","UP","DOWN","UP","DOWN","UP","DOWN","LEFT","UP","LEFT","DOWN","UP","DOWN","RIGHT","LEFT","LEFT","UP","RIGHT","LEFT","DOWN","UP","UP","UP","DOWN","DOWN","DOWN","RIGHT","RIGHT","RIGHT","UP","DOWN","UP","LEFT","LEFT","UP","DOWN","DOWN","RIGHT","UP","DOWN","LEFT","UP","DOWN","RIGHT","LEFT","UP","DOWN","RIGHT","UP","LEFT","RIGHT","LEFT","DOWN","UP","DOWN"]
+=> 13
+
+@gen 2
+10
+["DOWN","UP","DOWN","UP","RIGHT","LEFT","DOWN","RIGHT","UP","RIGHT","DOWN","UP","DOWN","UP","RIGHT","DOWN","DOWN","UP","DOWN","UP","DOWN","DOWN","UP","UP","UP","RIGHT","RIGHT","RIGHT","RIGHT","LEFT","LEFT","DOWN","UP","RIGHT","DOWN","UP","LEFT","LEFT","LEFT","DOWN","RIGHT","UP","DOWN","DOWN","UP","UP","DOWN","RIGHT","UP","LEFT","LEFT","RIGHT","LEFT","LEFT","DOWN","UP","RIGHT","RIGHT","DOWN","UP","LEFT","LEFT","RIGHT","DOWN","UP","LEFT","DOWN","UP","RIGHT","RIGHT","RIGHT","DOWN","UP","LEFT","RIGHT","LEFT","DOWN","RIGHT","UP","DOWN","UP","DOWN","UP","LEFT","LEFT","RIGHT","LEFT","RIGHT","DOWN","UP","RIGHT","DOWN","UP","RIGHT","RIGHT","LEFT","LEFT","DOWN","DOWN","RIGHT"]
+=> 26

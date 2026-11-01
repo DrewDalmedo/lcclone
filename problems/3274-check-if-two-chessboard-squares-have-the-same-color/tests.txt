@@ -1,0 +1,103 @@
+# Check if Two Chessboard Squares Have the Same Color.
+
+@example Column c is 3, so c6 totals 3 + 6 = 9, and h1 totals 8 + 1 = 9: both odd, so the colours match.
+"c6"
+"h1"
+=> true
+
+@example e2 totals 5 + 2 = 7, which is odd, but e5 totals 5 + 5 = 10, which is even.
+"e2"
+"e5"
+=> false
+
+@example Both name the same square.
+"g7"
+"g7"
+=> true
+
+# One column, rows one apart: different colours. Two apart: the same.
+"a3"
+"a4"
+=> false
+
+"h2"
+"h4"
+=> true
+
+# One row, neighbouring columns.
+"b5"
+"c5"
+=> false
+
+# Diagonal neighbours share a colour.
+"d4"
+"e5"
+=> true
+
+"f2"
+"e3"
+=> true
+
+# A knight's move always lands on the other colour.
+"b1"
+"c3"
+=> false
+
+# Corners: a1 and h8 match, h1 and a1 don't, a8 and h1 match.
+"a1"
+"h8"
+=> true
+
+"h1"
+"a1"
+=> false
+
+"a8"
+"h1"
+=> true
+
+# The parity of the column and the parity of the row both change: the
+# colour stays.
+"b3"
+"g8"
+=> true
+
+# Only the column's parity changes, or only the row's: the colour changes.
+"c4"
+"f4"
+=> false
+
+"c2"
+"c7"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"g7"
+"h8"
+=> true
+
+@gen 2 small
+"e5"
+"f6"
+=> true
+
+@gen 3 small
+"h3"
+"g5"
+=> false
+
+@gen 4 small
+"d3"
+"a7"
+=> false
+
+@gen 5 small
+"f2"
+"f2"
+=> true
+
+@gen 6 small
+"b2"
+"b3"
+=> false

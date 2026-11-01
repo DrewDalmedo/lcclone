@@ -1,0 +1,97 @@
+# Make Array Elements Equal to Zero.
+
+@example From cell 1 there are 2 hits to the left and 2 to the right. The ball wears both sides down one hit at a time, whichever way it starts, so both launches clear the row.
+[2,0,1,1]
+=> 2
+
+@example Only the launch from cell 2 heading left works: it hits the 4 first, so the left side runs out last and the ball leaves on the right. Heading right first, the 3 runs out while the 4 still has a hit left. From cell 0 the ball soon leaves on the left with walls standing.
+[0,4,0,3]
+=> 1
+
+@example Both empty cells have 3 hits on their left and 6 on their right, too far apart: every launch leaves walls standing.
+[3,0,0,6]
+=> 0
+
+# The shortest row: one empty cell, nothing to clear.
+[0]
+=> 2
+
+# Every cell empty, in the longest row: all 200 launches work.
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+=> 200
+
+# The sides differ by exactly 1, the larger side on the left, then on the right.
+[2,0,1]
+=> 1
+
+[1,0,2]
+=> 1
+
+# A difference of 2 is too much.
+[3,0,1]
+=> 0
+
+# Neighbouring empty cells have the same sides, and each gives two launches.
+[3,0,0,0,3]
+=> 6
+
+# Empty cells at both ends, each with an empty side.
+[0,1,0]
+=> 2
+
+# Each launch starts from the original row: cell 1 gives 2, cell 3 gives 0.
+[1,0,1,0]
+=> 2
+
+# Walls at the largest value.
+[100,0,100]
+=> 2
+
+[100,0,99]
+=> 1
+
+# Sides of 257 and 1 hits: they differ by 256, which a sum kept in a byte
+# would lose.
+[99,99,59,0,1]
+=> 0
+
+# The longest row, with walls of 100 between empty cells: only cell 49 has equal sides, 2500 each.
+[100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0,100,0]
+=> 2
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[0,3,5,0,4,2,0]
+=> 0
+
+@gen 2 small
+[0,3,0,0,3]
+=> 4
+
+@gen 3 small
+[0,0,0,0,1,3,0,5]
+=> 1
+
+@gen 4 small
+[1,2,0,4]
+=> 1
+
+@gen 5 small
+[0,5,0,5,0,0]
+=> 2
+
+@gen 6 small
+[0,0]
+=> 4
+
+@gen 7 small
+[0,0,5,0,5,0]
+=> 2
+
+@gen 8
+[0,0,53,0,72,0,0,32,0,0,0,71,0,0,87,8,31,0,0,0,0,0,0,28,0,0,0,76,0,0,0,38,0,74,0,0,0,0,0,39,0,0,56,0,0,0,0,0,0,0,0,0,0,0,0,79,0,0,69,12,0,0,0,37,39,13,90,0,29,77,0,27,67,0,38,0,23,0,97,66,96,0,0,85,9,78,20,0,69,0,65,0,0,0,0,67,71,0,0,20]
+=> 2
+
+@gen 9
+[100,10,100,100,0,0,100,0,0,0,100,0,0,0,22,0,100,0,0,100,0,100,0,0,0,0,0,100,0,0,100,100,100,0,100,4,0,0,100,0,100,0,0,100,0,100,0,0,0,0,100,0,0,0,100,100,0,100,0,0,0,100,100,16,100,100,0,18,100,0,0,100,0,0,23,100,0,100,100,0,100,100,0,0,100,0,100,0,100,100,0,22,100,0,100,0,0,100,0,0]
+=> 0

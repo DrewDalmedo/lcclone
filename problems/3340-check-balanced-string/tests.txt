@@ -1,0 +1,104 @@
+# Check Balanced String.
+
+@example Light squares: 4 + 5 = 9. Dark squares: 7 + 2 = 9.
+"4752"
+=> true
+
+@example Light squares: 9 + 8 = 17. Dark square: 0.
+"908"
+=> false
+
+@example The leading 0 takes the first light square: 0 + 2 + 7 = 9 against 5 + 4 = 9.
+"05247"
+=> true
+
+# The shortest strings: balanced only when the two digits are equal.
+"77"
+=> true
+
+"09"
+=> false
+
+# All zeros.
+"000"
+=> true
+
+# Odd length, balanced (3 against 3). The light side has one more
+# character, so adding character codes instead of digits fails here.
+"13200"
+=> true
+
+# Odd length, the dark total 48 above the light one (6 against 54), where
+# adding character codes would balance wrongly.
+"1909290939090"
+=> false
+
+# Light 270 against dark 14: the difference is 256, so totals kept in 8
+# bits would balance wrongly.
+"999590909090909090909090909090909090909090909090909090909090"
+=> false
+
+# The largest totals: 100 nines, 450 on each side.
+"9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+=> true
+
+# The last digit decides: 99 nines and a 0 give 450 against 441.
+"9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990"
+=> false
+
+# Differences of 11 and -22: multiples of 11, but not 0.
+"209"
+=> false
+
+"0909040"
+=> false
+
+# An even total split unevenly: 2 against 10.
+"2604"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"22"
+=> true
+
+@gen 2 small
+"286468"
+=> false
+
+@gen 3 small
+"22112010"
+=> false
+
+@gen 4 small
+"01"
+=> false
+
+@gen 5 small
+"11"
+=> true
+
+@gen 6 small
+"0133200"
+=> false
+
+@gen 7 small
+"11"
+=> true
+
+@gen 8 small
+"02202002"
+=> true
+
+# Full size: 99 or 100 digits.
+@gen 2
+"286458072799566866680520265332728282892659455638470155983685880844847674723672087782904394726407209"
+=> false
+
+@gen 3
+"0613810264717685448348982502845168020672484033840295799010944439066909682148406012664337044373680532"
+=> true
+
+@gen 9
+"989788897977997978688788879989787797987998988998897779999889677759987897788988977899889788989899797"
+=> true
