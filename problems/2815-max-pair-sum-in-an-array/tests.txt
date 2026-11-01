@@ -1,0 +1,102 @@
+# Max Pair Sum in an Array.
+
+@example 36 and 63 share top digit 6 (total 99) and 19 and 290 share 9 (309); 803 and 5084 share 8 and reach the most, 5887.
+[36,803,19,63,5084,290]
+=> 5887
+
+@example The top digits are 7, 2 and 5, all different.
+[7,12,450]
+=> -1
+
+@example The two 601s sit at different positions and both have top digit 6; 601 + 16 would total less.
+[601,601,16,1000]
+=> 1202
+
+# The shortest arrays: two values with the same top digit, and two without.
+[10,1]
+=> 11
+
+[10,2]
+=> -1
+
+# Nine values with nine different top digits, the most that can all differ.
+[10000,20,3,4321,50,66,7007,18,9999]
+=> -1
+
+# With ten values, two always share a top digit: here 1 and 10.
+[1,2,3,4,5,6,7,8,9,10]
+=> 11
+
+# A value alone with its top digit pairs with nothing, however large it is
+# (counting an empty slot as 0 would give 9999).
+[9999,12,21]
+=> 33
+
+# The largest value twice: the largest possible answer.
+[10000,10000]
+=> 20000
+
+# 10000 is alone with top digit 1; the two 9999s pair.
+[9999,10000,9999]
+=> 19998
+
+# Equal values make a pair; keeping only distinct values, or taking a new
+# second-largest only when it is strictly smaller, would give 33.
+[30,30,3]
+=> 60
+
+# Each value beats the ones before it, all with top digit 2, so the old
+# largest must move down to second each time.
+[2,21,120,2002]
+=> 2122
+
+# The top digit is the largest digit, wherever it stands: the first digits
+# here are 1, 8 and 1, and the last ones 8, 0 and 1.
+[18,80,1081]
+=> 1161
+
+# The best pair has neither the highest top digit nor the largest value.
+[9000,51,52,1000,111]
+=> 1111
+
+# 10000 has top digit 1, like 1.
+[10000,1,9,99]
+=> 10001
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[121,121]
+=> 242
+
+@gen 2 small
+[132,40,302,40,6,614]
+=> 620
+
+@gen 3 small
+[10000,242,4,100,203,323,231,2]
+=> 10100
+
+@gen 4 small
+[1,2]
+=> -1
+
+@gen 5 small
+[2,2]
+=> 4
+
+@gen 6 small
+[220,1,110,12,111,110,10000]
+=> 10111
+
+@gen 7 small
+[61,110]
+=> -1
+
+# Full size: 100 values.
+@gen 8
+[2,2,4204,2235,616,7,24,110,4204,7,1110,5,5,7,210,220,4,8738,1056,2235,121,4430,636,68,3011,66,202,2235,8,5732,20,12,6,4402,5471,4511,11,440,11,1,344,122,52,4204,38,165,21,202,1662,212,4,4,221,5600,330,7,220,1662,85,2212,10000,4613,68,116,7,5012,43,111,303,1,6412,322,55,74,54,8,202,202,22,38,553,1,1240,30,6764,7727,1,1035,2776,22,422,2212,775,202,3141,8,163,56,4204,554]
+=> 14491
+
+@gen 9
+[5002,2289,2498,7410,8978,4223,7261,4901,8443,3421,871,2124,2747,5826,8311,7979,6674,1621,6604,1418,8596,4290,4522,7846,1478,4132,6008,5421,1298,5101,9431,8872,2820,9612,433,1539,2347,8550,6955,9916,349,5048,7299,1824,5477,7424,2251,4461,1818,6797,4529,9767,3600,9304,3215,5310,1591,4249,2440,199,6874,7938,9130,5252,3534,6010,560,3556,430,4018,2507,9633,3553,5103,1915,8249,8231,1673,7320,8666,8437,5020,794,4125,2809,8712,29,2796,3774,577,5856,1952,9887,8216,3383,3068,4888,7162,3409,1174]
+=> 19803

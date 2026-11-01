@@ -1,0 +1,91 @@
+# Sum of Squares of Special Elements.
+
+@example 8 is a multiple of 1, 2, 4 and 8, so the special elements are 2, 6, 7 and 9: 4 + 36 + 49 + 81 = 170.
+[2,6,1,7,3,5,4,9]
+=> 170
+
+@example 5 is prime, so only the first and the last element are special: 100 + 36 = 136.
+[10,3,8,1,6]
+=> 136
+
+@example A single element is both the first and the last; its square is counted once.
+[7]
+=> 49
+
+# Two elements: both are special.
+[4,9]
+=> 97
+
+# Three elements: the large middle one is not special.
+[1,50,1]
+=> 2
+
+# n = 4: elements 1, 2 and 4 are special, element 3 is not.
+[5,1,3,2]
+=> 30
+
+# n = 9, a square: elements 1, 3 and 9; element 3 is counted once.
+[6,2,8,3,1,7,5,4,9]
+=> 181
+
+# n = 12: elements 1, 2, 3, 4, 6 and 12.
+[11,4,7,2,9,6,3,10,5,8,12,1]
+=> 227
+
+# n = 36 has nine divisors: 1, 2, 3, 4, 6, 9, 12, 18 and 36.
+[9,8,7,6,20,5,20,20,4,20,20,3,20,20,20,20,20,2,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,1]
+=> 285
+
+# 16 squared is 256, one more than a byte can hold.
+[16]
+=> 256
+
+# n = 47 is prime: only the two ends count.
+[50,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,50]
+=> 5000
+
+# n = 48 has ten divisors; with every value 50 the total is the largest possible.
+[50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50]
+=> 25000
+
+# n = 50, the longest: elements 1, 2, 5, 10, 25 and 50.
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+=> 6
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[7,8,3]
+=> 58
+
+@gen 2 small
+[3,2,6,6,1]
+=> 10
+
+@gen 3 small
+[2,9,6,5,2,3,4,5,7,2,5,1]
+=> 156
+
+@gen 4 small
+[8,7,8,7,1,5,7,5]
+=> 187
+
+@gen 5 small
+[8,2,2,7,1,8,7,4,8,7]
+=> 118
+
+@gen 6 small
+[1,8,8,6,6,6,1,4,1,6]
+=> 137
+
+# Random full-size cases.
+@gen 7
+[28,46,41,25,7,43,15,26,41,33,9,25,45,1,40,36,37,3,40,31,18,30,41,23,15,12,44,36,44,30,13,5,10,9,17,18,5,34,36,14,26,11,18,14,24,46,17,29,19,25]
+=> 4888
+
+@gen 14
+[31,15,42,22,3,26,43,47,43,32,44,36,38,43,2,3,17,16,34,11,12,46,49,29,36,13,39,50,22,34,10,6,34,12,14,7,34,15,44,26,36,1,24,16,33,14,41,36]
+=> 9761
+
+@gen 19
+[50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50]
+=> 22500

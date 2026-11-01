@@ -1,0 +1,124 @@
+# Split Strings by Separator. The chunks are listed string by string, left
+# to right within each string; [] when there are none.
+
+@example Each # marks a boundary; nothing lies between the two # after blue, and violet has no # at all.
+["red#green","#blue##","violet"]
+"#"
+=> ["red","green","blue","violet"]
+
+@example Only | marks boundaries: the commas are ordinary characters, and one of them is a chunk by itself.
+["a,b|c","d|,|e"]
+"|"
+=> ["a,b","c","d",",","e"]
+
+@example No @ stands between ab and cd, but they come from different strings, so they stay separate chunks.
+["ab","cd@","@ef"]
+"@"
+=> ["ab","cd","ef"]
+
+# A single string of one letter.
+["q"]
+"."
+=> ["q"]
+
+# A lone separator has no chunk.
+["."]
+"."
+=> []
+
+# Every string is separators only.
+["$$$$","$","$$"]
+"$"
+=> []
+
+# Every mark in one string: only the separator cuts it.
+["a.b,c|d$e#f@g"]
+"."
+=> ["a","b,c|d$e#f@g"]
+
+["a.b,c|d$e#f@g"]
+"$"
+=> ["a.b,c|d","e#f@g"]
+
+# A chunk made only of other punctuation marks.
+["x#.,|$@#y"]
+"#"
+=> ["x",".,|$@","y"]
+
+# Runs of separators at the start, in the middle and at the end.
+[",,ab,,,,cd,,"]
+","
+=> ["ab","cd"]
+
+# 20 characters and no separator: each string is one chunk, letters or marks.
+["abcdefghijklmnopqrst","@#$|,@#$|,@#$|,@#$|,"]
+"."
+=> ["abcdefghijklmnopqrst","@#$|,@#$|,@#$|,@#$|,"]
+
+# Ten chunks from a string of 20 characters, the most there can be.
+["|a|b|c|d|e|f|g|h|i|j","a|b|c|d|e|f|g|h|i|j|"]
+"|"
+=> ["a","b","c","d","e","f","g","h","i","j","a","b","c","d","e","f","g","h","i","j"]
+
+# Equal chunks are all listed, in order.
+["go.go","go","..go."]
+"."
+=> ["go","go","go","go"]
+
+# The separator appears in one string only.
+["a$b","c.d"]
+"$"
+=> ["a","b","c.d"]
+
+# The strings keep their order; nothing is sorted.
+["zeta|alpha","mid"]
+"|"
+=> ["zeta","alpha","mid"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["@#|a||","||||"]
+"|"
+=> ["@#","a"]
+
+@gen 2 small
+["##|"]
+"#"
+=> ["|"]
+
+@gen 4 small
+[",",",a,|a","a|,"]
+","
+=> ["a","|a","a|"]
+
+@gen 5 small
+["#$$$","b$"]
+"$"
+=> ["#","b"]
+
+@gen 6 small
+["$$a","$","$b@$","$","b#ba"]
+"$"
+=> ["a","b@","b#ba"]
+
+@gen 7 small
+["$@$a$","$$$","$a$$$b","ba","$$$"]
+"$"
+=> ["@","a","a","b","ba"]
+
+@gen 10 small
+[",,,,,","bab,|$",",,,,|"]
+","
+=> ["bab","|$","|"]
+
+# Random full-size cases: 100 strings of ten chunks each (1000 in all),
+# and a mix of shapes.
+@gen 12
+[",s,k,u,h,.,f,$,r,b,|","a,a,w,l,a,|,c,|,f,l,","|,y,w,r,m,u,j,u,r,|,",",n,s,#,i,r,s,o,k,b,w","m,g,l,g,t,d,u,b,z,f,",",x,w,w,o,s,.,@,n,q,e","k,j,t,c,@,s,n,z,m,u,",",l,q,t,n,u,y,q,$,k,c","o,u,p,v,k,l,e,f,f,r,","|,j,.,k,u,#,k,m,j,#,","w,t,z,s,i,#,c,c,f,q,",",i,j,d,o,x,z,b,n,o,j",",a,#,e,k,y,r,j,n,.,c",",f,b,p,b,g,g,l,k,i,#","m,x,w,e,i,h,z,u,q,c,","y,u,o,e,x,j,z,l,y,@,",",o,@,d,z,g,a,z,n,#,z","e,.,b,a,x,#,i,|,@,p,","z,z,z,p,k,c,k,.,f,u,",",y,g,|,j,h,h,$,t,x,e","|,h,l,w,.,.,k,q,j,$,",",@,v,s,l,u,n,l,f,d,v",",t,s,d,.,.,s,$,n,p,b","p,l,h,o,s,b,w,u,.,b,",",z,u,a,q,z,d,p,x,m,h","#,q,d,d,g,r,w,v,d,@,",",o,h,o,o,t,l,a,#,$,p",",j,x,|,o,.,u,k,t,s,u",",@,j,a,y,k,$,i,x,k,w","r,c,m,p,k,k,e,k,#,l,","g,u,#,q,q,m,z,y,$,w,","b,#,p,@,#,b,u,o,g,v,",",#,#,.,n,m,#,w,u,$,g","d,r,i,u,q,i,i,a,u,|,",",l,n,e,m,o,m,y,t,r,h",",f,x,r,l,z,m,b,p,w,z",",$,h,@,y,b,$,e,s,x,n","|,r,|,#,f,z,m,x,o,d,","r,q,g,q,@,y,@,c,e,i,","r,k,m,t,e,q,q,x,h,x,","z,u,b,@,b,m,.,.,y,w,",",m,v,p,n,v,b,j,v,j,m",",a,a,v,n,d,u,q,e,#,|",",c,s,$,p,k,u,r,w,s,i",",m,p,@,a,l,i,z,w,s,p",",c,o,m,|,y,q,p,a,q,k",",@,w,w,w,z,|,f,y,e,@","v,.,#,d,g,f,a,r,m,v,","x,$,n,i,f,b,g,f,p,s,","y,t,d,#,h,e,n,.,k,i,","w,r,h,r,k,.,.,r,n,p,",",g,u,$,k,r,g,r,i,i,d",",h,c,z,x,.,#,q,m,a,a",",#,.,f,x,a,$,@,t,y,q","e,j,x,n,@,b,s,z,g,t,",",p,#,e,d,i,i,g,h,#,k","$,e,r,c,l,|,k,a,.,h,",",s,f,c,s,g,j,y,|,u,e",",b,#,e,m,o,w,|,@,t,j",",n,v,$,l,i,v,y,h,f,q","r,.,x,l,z,k,m,p,s,p,","l,c,v,x,l,j,s,n,u,u,","x,y,g,p,c,.,j,n,t,x,","s,u,$,e,u,v,k,o,g,a,","m,g,w,k,i,l,$,u,o,p,",",w,p,q,p,b,t,@,h,s,y",",@,#,q,t,l,w,@,b,t,n",",s,j,k,a,d,g,u,x,w,i","o,z,h,u,q,z,a,d,b,g,","#,x,n,p,w,e,#,e,q,@,",",x,d,d,n,c,h,f,g,w,x",",|,a,z,c,g,z,b,v,n,k","|,i,e,q,n,j,#,u,f,|,",",$,@,.,@,@,r,t,g,f,@",",z,z,o,t,u,@,j,g,m,y","g,e,z,k,d,e,t,p,@,s,","|,h,b,.,z,a,q,v,i,i,","j,a,b,x,m,i,d,r,r,g,","l,i,n,k,t,p,q,w,r,f,","m,g,z,l,#,q,t,k,x,v,","p,c,@,h,s,n,v,k,n,h,","w,d,n,u,j,z,|,f,d,.,","g,j,w,$,f,q,r,t,m,l,",",q,y,y,|,.,#,c,#,r,#","o,p,m,$,h,q,u,#,g,h,","y,z,g,y,c,p,w,|,z,o,","r,n,g,j,n,z,e,e,m,o,",",a,y,x,n,y,@,$,u,@,l","m,p,p,d,v,h,p,u,#,w,","r,a,@,m,.,y,z,b,a,h,",",i,p,f,a,m,r,p,c,#,f",",f,@,f,x,o,l,w,n,h,@","k,.,d,j,b,r,h,r,p,i,","c,c,#,b,i,z,q,y,g,a,",",.,m,m,t,r,.,p,d,a,j","q,i,n,l,o,y,v,l,x,z,","x,r,i,c,n,y,h,a,l,f,","o,.,e,|,f,y,y,f,z,g,",",a,a,k,.,x,f,|,o,r,v","e,y,#,i,x,#,a,|,w,.,"]
+","
+=> ["s","k","u","h",".","f","$","r","b","|","a","a","w","l","a","|","c","|","f","l","|","y","w","r","m","u","j","u","r","|","n","s","#","i","r","s","o","k","b","w","m","g","l","g","t","d","u","b","z","f","x","w","w","o","s",".","@","n","q","e","k","j","t","c","@","s","n","z","m","u","l","q","t","n","u","y","q","$","k","c","o","u","p","v","k","l","e","f","f","r","|","j",".","k","u","#","k","m","j","#","w","t","z","s","i","#","c","c","f","q","i","j","d","o","x","z","b","n","o","j","a","#","e","k","y","r","j","n",".","c","f","b","p","b","g","g","l","k","i","#","m","x","w","e","i","h","z","u","q","c","y","u","o","e","x","j","z","l","y","@","o","@","d","z","g","a","z","n","#","z","e",".","b","a","x","#","i","|","@","p","z","z","z","p","k","c","k",".","f","u","y","g","|","j","h","h","$","t","x","e","|","h","l","w",".",".","k","q","j","$","@","v","s","l","u","n","l","f","d","v","t","s","d",".",".","s","$","n","p","b","p","l","h","o","s","b","w","u",".","b","z","u","a","q","z","d","p","x","m","h","#","q","d","d","g","r","w","v","d","@","o","h","o","o","t","l","a","#","$","p","j","x","|","o",".","u","k","t","s","u","@","j","a","y","k","$","i","x","k","w","r","c","m","p","k","k","e","k","#","l","g","u","#","q","q","m","z","y","$","w","b","#","p","@","#","b","u","o","g","v","#","#",".","n","m","#","w","u","$","g","d","r","i","u","q","i","i","a","u","|","l","n","e","m","o","m","y","t","r","h","f","x","r","l","z","m","b","p","w","z","$","h","@","y","b","$","e","s","x","n","|","r","|","#","f","z","m","x","o","d","r","q","g","q","@","y","@","c","e","i","r","k","m","t","e","q","q","x","h","x","z","u","b","@","b","m",".",".","y","w","m","v","p","n","v","b","j","v","j","m","a","a","v","n","d","u","q","e","#","|","c","s","$","p","k","u","r","w","s","i","m","p","@","a","l","i","z","w","s","p","c","o","m","|","y","q","p","a","q","k","@","w","w","w","z","|","f","y","e","@","v",".","#","d","g","f","a","r","m","v","x","$","n","i","f","b","g","f","p","s","y","t","d","#","h","e","n",".","k","i","w","r","h","r","k",".",".","r","n","p","g","u","$","k","r","g","r","i","i","d","h","c","z","x",".","#","q","m","a","a","#",".","f","x","a","$","@","t","y","q","e","j","x","n","@","b","s","z","g","t","p","#","e","d","i","i","g","h","#","k","$","e","r","c","l","|","k","a",".","h","s","f","c","s","g","j","y","|","u","e","b","#","e","m","o","w","|","@","t","j","n","v","$","l","i","v","y","h","f","q","r",".","x","l","z","k","m","p","s","p","l","c","v","x","l","j","s","n","u","u","x","y","g","p","c",".","j","n","t","x","s","u","$","e","u","v","k","o","g","a","m","g","w","k","i","l","$","u","o","p","w","p","q","p","b","t","@","h","s","y","@","#","q","t","l","w","@","b","t","n","s","j","k","a","d","g","u","x","w","i","o","z","h","u","q","z","a","d","b","g","#","x","n","p","w","e","#","e","q","@","x","d","d","n","c","h","f","g","w","x","|","a","z","c","g","z","b","v","n","k","|","i","e","q","n","j","#","u","f","|","$","@",".","@","@","r","t","g","f","@","z","z","o","t","u","@","j","g","m","y","g","e","z","k","d","e","t","p","@","s","|","h","b",".","z","a","q","v","i","i","j","a","b","x","m","i","d","r","r","g","l","i","n","k","t","p","q","w","r","f","m","g","z","l","#","q","t","k","x","v","p","c","@","h","s","n","v","k","n","h","w","d","n","u","j","z","|","f","d",".","g","j","w","$","f","q","r","t","m","l","q","y","y","|",".","#","c","#","r","#","o","p","m","$","h","q","u","#","g","h","y","z","g","y","c","p","w","|","z","o","r","n","g","j","n","z","e","e","m","o","a","y","x","n","y","@","$","u","@","l","m","p","p","d","v","h","p","u","#","w","r","a","@","m",".","y","z","b","a","h","i","p","f","a","m","r","p","c","#","f","f","@","f","x","o","l","w","n","h","@","k",".","d","j","b","r","h","r","p","i","c","c","#","b","i","z","q","y","g","a",".","m","m","t","r",".","p","d","a","j","q","i","n","l","o","y","v","l","x","z","x","r","i","c","n","y","h","a","l","f","o",".","e","|","f","y","y","f","z","g","a","a","k",".","x","f","|","o","r","v","e","y","#","i","x","#","a","|","w","."]
+
+@gen 21
+["|z|u|,|u|p|w|e|j|m|@","dot,yav,@wdczokhcpi#","gkmt@klzpcuuoltijvv$","v|.c,hkhw","gnhvpoeizbrsvml#goer","xv||jmupzp|v@m","l|ik#||kup","|x|v|o|x|,|v|q|t|d|z","|j|j|#|g|m|o|f|r|x|,","|p|h|,#hqx||q|t|","z$g|c.tk|$yqsq|e","|q|t|k|l|x|m|m|e|t|n","n|.|r|t|m|d|l|l|i|k|","csdf,kqc,v.dmxairb,q","#tetwp@#spp.b.$iljdx","qgt|m|x|||jsx|y","pttqf$mritabonc#igud",",|z|r|s|x|.|d|k|v|c|","|s|a|r|d|d|n|l|q|$|z","fjycfnjc@uytvttmczzn","at|b$dq|$jup","|hd|z|cyoya","b|.|v|c|#|l|r|k|d|q|","kk$u|o|r|,hv|,|oyg","p|$|v|,|g|v|i|l|q|n|","wmgpdj,fpe,pmxyyo,k@","||vo|p.yxmv","f|z|g|d|u|s|b|x|z|p|","jhtl,encz.gn.o$qthr.","|r|y|e|j|p|o|b|j|#|r","|x|b|n|f|o|.|j|j|f|q","i$kkllozk@ggqxjecwdb","n|vrp|.h|.|u||pmq","b||gv||vc","xogbqexau.adu$vo#@tg",",x@@ci.elv","ssrdymvc#vd@tlqf#qwd","h|,|$|t|y|i|v|b|f|u|","ybdwnz$jh@aiz.hwtuyv",".hk|.y,|bfm@$n|k.mgy","|hq|z$jiy|","@||x|atpe|||lqqtt@c","||gg$.ek|f.j|blyfehv","gnkzqm.k$swxk,eftsyx","k|o|v|x|k|n|f|f|b|h|","|$|s|i|h|,|q|d|q|.|p","||szpd|@gd","hqm|r|e","d","z$g","|p|e|$|q|f|,|,|l|b|x","few@zskzokewa$b.zev@","s$maqn|u|btqwy|","|l|d|a|f|k|b|.|u|t|p","wqha,u@a|","f",",@.vshwhwljbmg#wbde.","|txn|zps.||q|","v|d|o|g|p|s|v|g|f|w|","br$rcjc#equwxyzz.,tf","h#gollvj@ck#maeesdkj","hs|m#$pu,y|r","$@lczfxf.zqdepfwptus","|g||o#chzupshdwi","atkqifdiivmy|.bl|","|@|z|n|c|w|#|,|h|y|b","|||hvj$vo","|.|s|c|e|q|.|u|d|z|i","|d|k|b|l|x|v|q|o|p|,","|x|c|s|n|b|s|o|o|u|z","y|@|#|d|s|t|u|b|c|b|","c,.","kaomafl$@ijmxth,svkc","whdwikuflk|",".r,gt#hjcefy#ydsvdar","|a|b|n|$|@|#|b|k|h|f","|yl#|#dvqm|hay","|@|p|t|a|q|m|g|#|c|z","fakm.frmp|n|@|q","xhxamvve$yhbwzxvrqek","c#ct$$smbjqypv@wct@w",".stvhcycxdbyyqabmcxa","|@","ggbqtjnaztxxmrr,,bti","n|c|,|h|g|k|@|#|,|t|",".|z|w|@|n|f|c|$|a|j|","$|sthe|lcs$l$@oxcp@","n,dd,bcmiegcxm$xbcey","|t|a|e|v|p|l|.|e|y|o","|#|o|g|m|n|l|a|f|i|t","|w|,|$|f|g|w|w|g|j|v","mlu|d|irknkwhv|","x.fmd,pkvh,qt,yzp@lq","v|@|l|w|s|r|m|q|g|z|","n|e|,|@|b|x|.|c|f|o|","unprlahesaalwhv,p.tm","v|p|f|k|s|r|k|f|g|.|","#,|ze|","hiffw|wrl|z","ywcc@v$s#launi.cvqyy"]
+"|"
+=> ["z","u",",","u","p","w","e","j","m","@","dot,yav,@wdczokhcpi#","gkmt@klzpcuuoltijvv$","v",".c,hkhw","gnhvpoeizbrsvml#goer","xv","jmupzp","v@m","l","ik#","kup","x","v","o","x",",","v","q","t","d","z","j","j","#","g","m","o","f","r","x",",","p","h",",#hqx","q","t","z$g","c.tk","$yqsq","e","q","t","k","l","x","m","m","e","t","n","n",".","r","t","m","d","l","l","i","k","csdf,kqc,v.dmxairb,q","#tetwp@#spp.b.$iljdx","qgt","m","x","jsx","y","pttqf$mritabonc#igud",",","z","r","s","x",".","d","k","v","c","s","a","r","d","d","n","l","q","$","z","fjycfnjc@uytvttmczzn","at","b$dq","$jup","hd","z","cyoya","b",".","v","c","#","l","r","k","d","q","kk$u","o","r",",hv",",","oyg","p","$","v",",","g","v","i","l","q","n","wmgpdj,fpe,pmxyyo,k@","vo","p.yxmv","f","z","g","d","u","s","b","x","z","p","jhtl,encz.gn.o$qthr.","r","y","e","j","p","o","b","j","#","r","x","b","n","f","o",".","j","j","f","q","i$kkllozk@ggqxjecwdb","n","vrp",".h",".","u","pmq","b","gv","vc","xogbqexau.adu$vo#@tg",",x@@ci.elv","ssrdymvc#vd@tlqf#qwd","h",",","$","t","y","i","v","b","f","u","ybdwnz$jh@aiz.hwtuyv",".hk",".y,","bfm@$n","k.mgy","hq","z$jiy","@","x","atpe","lqqtt@c","gg$.ek","f.j","blyfehv","gnkzqm.k$swxk,eftsyx","k","o","v","x","k","n","f","f","b","h","$","s","i","h",",","q","d","q",".","p","szpd","@gd","hqm","r","e","d","z$g","p","e","$","q","f",",",",","l","b","x","few@zskzokewa$b.zev@","s$maqn","u","btqwy","l","d","a","f","k","b",".","u","t","p","wqha,u@a","f",",@.vshwhwljbmg#wbde.","txn","zps.","q","v","d","o","g","p","s","v","g","f","w","br$rcjc#equwxyzz.,tf","h#gollvj@ck#maeesdkj","hs","m#$pu,y","r","$@lczfxf.zqdepfwptus","g","o#chzupshdwi","atkqifdiivmy",".bl","@","z","n","c","w","#",",","h","y","b","hvj$vo",".","s","c","e","q",".","u","d","z","i","d","k","b","l","x","v","q","o","p",",","x","c","s","n","b","s","o","o","u","z","y","@","#","d","s","t","u","b","c","b","c,.","kaomafl$@ijmxth,svkc","whdwikuflk",".r,gt#hjcefy#ydsvdar","a","b","n","$","@","#","b","k","h","f","yl#","#dvqm","hay","@","p","t","a","q","m","g","#","c","z","fakm.frmp","n","@","q","xhxamvve$yhbwzxvrqek","c#ct$$smbjqypv@wct@w",".stvhcycxdbyyqabmcxa","@","ggbqtjnaztxxmrr,,bti","n","c",",","h","g","k","@","#",",","t",".","z","w","@","n","f","c","$","a","j","$","sthe","lcs$l$@oxcp@","n,dd,bcmiegcxm$xbcey","t","a","e","v","p","l",".","e","y","o","#","o","g","m","n","l","a","f","i","t","w",",","$","f","g","w","w","g","j","v","mlu","d","irknkwhv","x.fmd,pkvh,qt,yzp@lq","v","@","l","w","s","r","m","q","g","z","n","e",",","@","b","x",".","c","f","o","unprlahesaalwhv,p.tm","v","p","f","k","s","r","k","f","g",".","#,","ze","hiffw","wrl","z","ywcc@v$s#launi.cvqyy"]

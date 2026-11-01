@@ -1,0 +1,100 @@
+# Furthest Point From Origin.
+
+@example Filling both blanks with L gives "LLLLR": four steps left and one right finish at -3.
+"_LL_R"
+=> 3
+
+@example There are no blanks. The token is 4 to the right after four steps, but it finishes at -2.
+"RRRRLLLLLL"
+=> 2
+
+@example The two forced steps cancel out, and the three blanks, filled in alike, carry the token 3 from 0.
+"R__L_"
+=> 3
+
+# One step of each kind.
+"L"
+=> 1
+
+"R"
+=> 1
+
+"_"
+=> 1
+
+# Left leads, and the blanks must go left too: sending them right would
+# finish at 1.
+"LL_LR_L"
+=> 5
+
+# Right leads, and the blanks must go right: sending them left would finish
+# at 0.
+"_RR_LR"
+=> 4
+
+# Blanks at the start, and at the end.
+"__RRR"
+=> 5
+
+"LLL__"
+=> 5
+
+# The token strays 8 to the right before it comes back past 0.
+"RRRRRRRRLLLLLLLLLL_"
+=> 3
+
+# The longest scripts: all blanks; as many L as R; all L.
+"__________________________________________________"
+=> 50
+
+"LRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLR"
+=> 0
+
+"LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"
+=> 50
+
+# 50 steps: 25 L, 12 R and 13 blanks.
+"LLR_LLR_LLR_LLR_LLR_LLR_LLR_LLR_LLR_LLR_LLR_LLR_L_"
+=> 26
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"RRL____"
+=> 5
+
+@gen 2 small
+"LRRRR"
+=> 3
+
+@gen 3 small
+"L_RRRRRR"
+=> 6
+
+@gen 4 small
+"RR_R"
+=> 4
+
+@gen 5 small
+"R__RL_"
+=> 4
+
+@gen 6 small
+"LL"
+=> 2
+
+@gen 7 small
+"R___L_"
+=> 4
+
+# Full size: 50 steps, or a few less.
+@gen 1
+"RRRL___RRRRRRRR__L_RRRRR_RR_L_RRRL_RLRLRLRRRRRR_RR"
+=> 36
+
+@gen 2
+"R__LLLR_LLRRL_R___L_LLLLRLR_L_LLR___RLL_L__RRL___R"
+=> 26
+
+@gen 3
+"LLLLLRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR_"
+=> 40

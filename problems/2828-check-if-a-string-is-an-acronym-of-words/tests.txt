@@ -1,0 +1,127 @@
+# Check if a String Is an Acronym of Words.
+
+@example The opening letters of "paper", "ink" and "eraser" spell "pie".
+["paper","ink","eraser"]
+"pie"
+=> true
+
+@example Three words give three initials, "roy"; "ro" stops one letter short.
+["red","orange","yellow"]
+"ro"
+=> false
+
+@example The initials are "sm"; the same two letters in the other order don't count.
+["sun","moon"]
+"ms"
+=> false
+
+# A single word of one letter: its initials are the whole word.
+["q"]
+"q"
+=> true
+
+["q"]
+"z"
+=> false
+
+# s is the only word, which has more than one letter.
+["hat"]
+"hat"
+=> false
+
+# s goes on after the initials "dc".
+["dog","cat"]
+"dce"
+=> false
+
+# The last letters of the words; a one-letter word has the same first and
+# last letter.
+["x","yes","to"]
+"xso"
+=> false
+
+# Several words start with the same letter: s needs exactly three b's, not
+# two.
+["bee","bat","bug","owl"]
+"bbbo"
+=> true
+
+["bee","bat","bug","owl"]
+"bbo"
+=> false
+
+# Only the first letter is wrong.
+["wolf","elk","yak"]
+"xey"
+=> false
+
+# 100 words of up to 10 letters: their initials; the last initial wrong; the
+# initials without their last letter; only the first initial.
+["d","ki","rlq","yoty","frwbg","muzejo","txchmrw","aafkpuze","hdinsxchm","oglqvafkpu","v","cm","jpu","qsxc","xvafk","eydins","lbglqva","sejotydi","zhmrwbglq","gkpuzejoty","n","uq","bty","iwbg","pzejo","wchmrw","dfkpuze","kinsxchm","rlqvafkpu","yotydinsxc","f","mu","txc","aafk","hdins","oglqva","vjotydi","cmrwbglq","jpuzejoty","qsxchmrwbg","x","ey","lbg","sejo","zhmrw","gkpuze","nnsxchm","uqvafkpu","btydinsxc","iwbglqvafk","p","wc","dfk","kins","rlqva","yotydi","frwbglq","muzejoty","txchmrwbg","aafkpuzejo","h","og","vjo","cmrw","jpuze","qsxchm","xvafkpu","eydinsxc","lbglqvafk","sejotydins","z","gk","nns","uqva","btydi","iwbglq","pzejoty","wchmrwbg","dfkpuzejo","kinsxchmrw","r","yo","frw","muze","txchm","aafkpu","hdinsxc","oglqvafk","vjotydins","cmrwbglqva","j","qs","xva","eydi","lbglq","sejoty","zhmrwbg","gkpuzejo","nnsxchmrw","uqvafkpuze"]
+"dkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnu"
+=> true
+
+["d","ki","rlq","yoty","frwbg","muzejo","txchmrw","aafkpuze","hdinsxchm","oglqvafkpu","v","cm","jpu","qsxc","xvafk","eydins","lbglqva","sejotydi","zhmrwbglq","gkpuzejoty","n","uq","bty","iwbg","pzejo","wchmrw","dfkpuze","kinsxchm","rlqvafkpu","yotydinsxc","f","mu","txc","aafk","hdins","oglqva","vjotydi","cmrwbglq","jpuzejoty","qsxchmrwbg","x","ey","lbg","sejo","zhmrw","gkpuze","nnsxchm","uqvafkpu","btydinsxc","iwbglqvafk","p","wc","dfk","kins","rlqva","yotydi","frwbglq","muzejoty","txchmrwbg","aafkpuzejo","h","og","vjo","cmrw","jpuze","qsxchm","xvafkpu","eydinsxc","lbglqvafk","sejotydins","z","gk","nns","uqva","btydi","iwbglq","pzejoty","wchmrwbg","dfkpuzejo","kinsxchmrw","r","yo","frw","muze","txchm","aafkpu","hdinsxc","oglqvafk","vjotydins","cmrwbglqva","j","qs","xva","eydi","lbglq","sejoty","zhmrwbg","gkpuzejo","nnsxchmrw","uqvafkpuze"]
+"dkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgna"
+=> false
+
+["d","ki","rlq","yoty","frwbg","muzejo","txchmrw","aafkpuze","hdinsxchm","oglqvafkpu","v","cm","jpu","qsxc","xvafk","eydins","lbglqva","sejotydi","zhmrwbglq","gkpuzejoty","n","uq","bty","iwbg","pzejo","wchmrw","dfkpuze","kinsxchm","rlqvafkpu","yotydinsxc","f","mu","txc","aafk","hdins","oglqva","vjotydi","cmrwbglq","jpuzejoty","qsxchmrwbg","x","ey","lbg","sejo","zhmrw","gkpuze","nnsxchm","uqvafkpu","btydinsxc","iwbglqvafk","p","wc","dfk","kins","rlqva","yotydi","frwbglq","muzejoty","txchmrwbg","aafkpuzejo","h","og","vjo","cmrw","jpuze","qsxchm","xvafkpu","eydinsxc","lbglqvafk","sejotydins","z","gk","nns","uqva","btydi","iwbglq","pzejoty","wchmrwbg","dfkpuzejo","kinsxchmrw","r","yo","frw","muze","txchm","aafkpu","hdinsxc","oglqvafk","vjotydins","cmrwbglqva","j","qs","xva","eydi","lbglq","sejoty","zhmrwbg","gkpuzejo","nnsxchmrw","uqvafkpuze"]
+"dkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgnubipwdkryfmtahovcjqxelszgn"
+=> false
+
+["d","ki","rlq","yoty","frwbg","muzejo","txchmrw","aafkpuze","hdinsxchm","oglqvafkpu","v","cm","jpu","qsxc","xvafk","eydins","lbglqva","sejotydi","zhmrwbglq","gkpuzejoty","n","uq","bty","iwbg","pzejo","wchmrw","dfkpuze","kinsxchm","rlqvafkpu","yotydinsxc","f","mu","txc","aafk","hdins","oglqva","vjotydi","cmrwbglq","jpuzejoty","qsxchmrwbg","x","ey","lbg","sejo","zhmrw","gkpuze","nnsxchm","uqvafkpu","btydinsxc","iwbglqvafk","p","wc","dfk","kins","rlqva","yotydi","frwbglq","muzejoty","txchmrwbg","aafkpuzejo","h","og","vjo","cmrw","jpuze","qsxchm","xvafkpu","eydinsxc","lbglqvafk","sejotydins","z","gk","nns","uqva","btydi","iwbglq","pzejoty","wchmrwbg","dfkpuzejo","kinsxchmrw","r","yo","frw","muze","txchm","aafkpu","hdinsxc","oglqvafk","vjotydins","cmrwbglqva","j","qs","xva","eydi","lbglq","sejoty","zhmrwbg","gkpuzejo","nnsxchmrw","uqvafkpuze"]
+"d"
+=> false
+
+# One word of 10 letters and an s of 100 letters that starts with its
+# initial.
+["abcdefghij"]
+"alwhsdozkvgrcnyjufqbmxitepalwhsdozkvgrcnyjufqbmxitepalwhsdozkvgrcnyjufqbmxitepalwhsdozkvgrcnyjufqbmx"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["bb","bbb","ab"]
+"aa"
+=> false
+
+@gen 2 small
+["aa","a","a","abb","ba"]
+"aaaaba"
+=> false
+
+@gen 3 small
+["aab","baa","ab","bb","a","a"]
+"ababa"
+=> false
+
+@gen 4 small
+["a","b"]
+"ab"
+=> true
+
+@gen 5 small
+["ab","a","b","ba"]
+"aabb"
+=> true
+
+@gen 6 small
+["ba","abb","b","b"]
+"babb"
+=> true
+
+@gen 7 small
+["ba","aa","baa","aaa"]
+"aaaa"
+=> false
+
+# Full size: 99 or 100 words of up to 10 letters.
+@gen 1
+["dca","eedccbbdbb","eaedbbbbed","eaebcbae","aba","acb","cbd","dbcdbdaaab","ebebcbe","dbdacb","bdcadbd","dcda","cbde","c","caebc","ced","abbeab","ebbccedc","e","cecdadbb","cbbcb","edacddaec","ead","b","aaabe","be","dadeecca","bcbec","deacdaa","b","aa","eadccbb","aecccbcb","dba","bbbbdbdec","eecedbdcbd","b","cbe","d","eb","dce","bedadbec","abdce","deddddbc","becaacc","eabdebe","beece","dadaecacee","ab","bbcecbdbe","cdae","ead","aeb","ba","edcbbccbba","cdcacbdc","dabbcbbccb","ce","cac","ddbdbdbed","dcabe","cbedebdde","caaddebd","bc","ee","ccebcceda","ccbbde","ed","ebcea","daabd","debbebed","eccecb","bdbcd","ceecbbced","bcdeaeb","e","ede","d","cee","eb","eadcaeedbb","cabebbedc","aeab","bdedc","eaccb","aaa","edcdbe","ceedbae","abeebae","bbdddcbedd","dccddb","eeccbe","baab","eeaccd","abebd","be","ddb","ace","aaaaecaacb"]
+"ceddcddeaedcebeeeddecebdcdbddabdeeceddbccebdedbacba"
+=> false
+
+@gen 2
+["dbe","dacccee","bbdbbc","aacacbadd","ccd","dc","ecbaeeaab","ceca","aa","ddbdadcade","decbc","ccdbb","ad","cdceaede","ccbea","caecccdd","cbeaacebee","bddbedc","ec","e","bbdab","daccd","ccd","eebebbeb","ebec","cbadbddcd","ae","aebebddcec","eccdacebb","bad","aab","beebceb","b","cb","eecaaedba","db","d","deaaa","ebbeceecbd","ad","edbee","ddaade","dbdecaa","d","dd","ebcaaee","dccdedc","bdabdae","babc","aaccaeabba","cdd","ebdbdcddbe","ecad","eab","ccebdccdc","dcdcbcb","addccbedd","bab","adbeace","ebadcbbb","ebaabdaa","dbadadc","baed","abcbbbcdb","bdcbae","b","dee","bdcab","eccceeeddd","adcbedbcde","bd","ceaeccbec","cbcaba","bbdbcbaecc","cddbd","cdbcceb","ee","deeedcb","acbacbdeed","ebab","bdd","eddeeab","e","aceadeb","aadbeebce","b","b","aa","ae","ecaca","cdbc","bccbaebb","bcbbacb","eb","bebda","ceaeccd","ccdad","eabedbced","daceca"]
+"ddbacdecaddcaccccbeebdceecaaebabbcedddeaeddddedbbaceeecdabaeedbabbdbeabccbccedaebeeaabbaaecbbebcceda"
+=> false
