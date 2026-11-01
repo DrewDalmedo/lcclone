@@ -1,0 +1,101 @@
+# Add Digits.
+
+@example 4 + 0 + 9 + 6 = 19, then 1 + 9 = 10, then 1 + 0 = 1.
+4096
+=> 1
+
+@example 9 + 9 + 9 = 27, then 2 + 7 = 9.
+999
+=> 9
+
+@example 7 is a single digit already.
+7
+=> 7
+
+# Zero, the only input whose answer is 0.
+0
+=> 0
+
+# The largest single digit, and the smallest two-digit number.
+9
+=> 9
+
+10
+=> 1
+
+# A multiple of 9 ends at 9, not 0.
+18
+=> 9
+
+# Two rounds: 19, then 10, then 1.
+19
+=> 1
+
+# Three rounds: 199 gives 19, then 10, then 1.
+199
+=> 1
+
+# 10^9: a single non-zero digit.
+1000000000
+=> 1
+
+# Nine 9s: 81, then 9.
+999999999
+=> 9
+
+# 1999999999 has the largest digit sum of any input, 82; then 10, then 1.
+1999999999
+=> 1
+
+# The largest int (digit sum 46), and values just below it, where num + 8
+# no longer fits in an int.
+2147483647
+=> 1
+
+2147483646
+=> 9
+
+2147483640
+=> 3
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+399
+=> 3
+
+@gen 2 small
+4068
+=> 9
+
+@gen 3 small
+4850
+=> 8
+
+@gen 4 small
+991
+=> 1
+
+@gen 5 small
+1
+=> 1
+
+@gen 6 small
+3825
+=> 9
+
+@gen 7 small
+9126
+=> 9
+
+# Random full-size cases.
+@gen 1
+999993999
+=> 3
+
+@gen 2
+769181265
+=> 9
+
+@gen 3
+616383730
+=> 1

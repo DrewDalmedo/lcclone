@@ -15,18 +15,18 @@
 # id	slug	title	difficulty	premium	group	status
 1	two-sum	Two Sum	easy	no	unordered	verified
 9	palindrome-number	Palindrome Number	easy	no	plain	verified
-13	roman-to-integer	Roman to Integer	easy	no	plain	todo
+13	roman-to-integer	Roman to Integer	easy	no	plain	draft
 14	longest-common-prefix	Longest Common Prefix	easy	no	plain	verified
 20	valid-parentheses	Valid Parentheses	easy	no	plain	verified
 21	merge-two-sorted-lists	Merge Two Sorted Lists	easy	no	list	todo
 26	remove-duplicates-from-sorted-array	Remove Duplicates from Sorted Array	easy	no	inplace	draft
 27	remove-element	Remove Element	easy	no	inplace	draft
-28	find-the-index-of-the-first-occurrence-in-a-string	Find the Index of the First Occurrence in a String	easy	no	plain	todo
-35	search-insert-position	Search Insert Position	easy	no	plain	todo
-58	length-of-last-word	Length of Last Word	easy	no	plain	todo
-66	plus-one	Plus One	easy	no	plain	todo
-67	add-binary	Add Binary	easy	no	plain	todo
-69	sqrtx	Sqrt(x)	easy	no	plain	todo
+28	find-the-index-of-the-first-occurrence-in-a-string	Find the Index of the First Occurrence in a String	easy	no	plain	draft
+35	search-insert-position	Search Insert Position	easy	no	plain	draft
+58	length-of-last-word	Length of Last Word	easy	no	plain	draft
+66	plus-one	Plus One	easy	no	plain	draft
+67	add-binary	Add Binary	easy	no	plain	draft
+69	sqrtx	Sqrt(x)	easy	no	plain	draft
 70	climbing-stairs	Climbing Stairs	easy	no	plain	verified
 83	remove-duplicates-from-sorted-list	Remove Duplicates from Sorted List	easy	no	list	todo
 88	merge-sorted-array	Merge Sorted Array	easy	no	inplace	draft
@@ -38,52 +38,52 @@
 110	balanced-binary-tree	Balanced Binary Tree	easy	no	tree	todo
 111	minimum-depth-of-binary-tree	Minimum Depth of Binary Tree	easy	no	tree	todo
 112	path-sum	Path Sum	easy	no	tree	todo
-118	pascals-triangle	Pascal's Triangle	easy	no	plain	todo
-119	pascals-triangle-ii	Pascal's Triangle II	easy	no	plain	todo
+118	pascals-triangle	Pascal's Triangle	easy	no	plain	draft
+119	pascals-triangle-ii	Pascal's Triangle II	easy	no	plain	draft
 121	best-time-to-buy-and-sell-stock	Best Time to Buy and Sell Stock	easy	no	plain	verified
-125	valid-palindrome	Valid Palindrome	easy	no	plain	todo
-136	single-number	Single Number	easy	no	plain	todo
+125	valid-palindrome	Valid Palindrome	easy	no	plain	draft
+136	single-number	Single Number	easy	no	plain	draft
 141	linked-list-cycle	Linked List Cycle	easy	no	list-builder	todo
 144	binary-tree-preorder-traversal	Binary Tree Preorder Traversal	easy	no	tree	todo
 145	binary-tree-postorder-traversal	Binary Tree Postorder Traversal	easy	no	tree	todo
 157	read-n-characters-given-read4	Read N Characters Given Read4	easy	yes	skip:premium	todo
 160	intersection-of-two-linked-lists	Intersection of Two Linked Lists	easy	no	list-builder	todo
 163	missing-ranges	Missing Ranges	easy	yes	skip:premium	todo
-168	excel-sheet-column-title	Excel Sheet Column Title	easy	no	plain	todo
-169	majority-element	Majority Element	easy	no	plain	todo
+168	excel-sheet-column-title	Excel Sheet Column Title	easy	no	plain	draft
+169	majority-element	Majority Element	easy	no	plain	draft
 170	two-sum-iii-data-structure-design	Two Sum III - Data structure design	easy	yes	skip:premium	todo
-171	excel-sheet-column-number	Excel Sheet Column Number	easy	no	plain	todo
+171	excel-sheet-column-number	Excel Sheet Column Number	easy	no	plain	draft
 175	combine-two-tables	Combine Two Tables	easy	no	skip:sql	todo
 181	employees-earning-more-than-their-managers	Employees Earning More Than Their Managers	easy	no	skip:sql	todo
 182	duplicate-emails	Duplicate Emails	easy	no	skip:sql	todo
 183	customers-who-never-order	Customers Who Never Order	easy	no	skip:sql	todo
 190	reverse-bits	Reverse Bits	easy	no	bits	verified
-191	number-of-1-bits	Number of 1 Bits	easy	no	plain	todo
+191	number-of-1-bits	Number of 1 Bits	easy	no	plain	draft
 193	valid-phone-numbers	Valid Phone Numbers	easy	no	skip:shell	todo
 195	tenth-line	Tenth Line	easy	no	skip:shell	todo
 196	delete-duplicate-emails	Delete Duplicate Emails	easy	no	skip:sql	todo
 197	rising-temperature	Rising Temperature	easy	no	skip:sql	todo
-202	happy-number	Happy Number	easy	no	plain	todo
+202	happy-number	Happy Number	easy	no	plain	draft
 203	remove-linked-list-elements	Remove Linked List Elements	easy	no	list	todo
-205	isomorphic-strings	Isomorphic Strings	easy	no	plain	todo
+205	isomorphic-strings	Isomorphic Strings	easy	no	plain	draft
 206	reverse-linked-list	Reverse Linked List	easy	no	list	todo
-217	contains-duplicate	Contains Duplicate	easy	no	plain	todo
-219	contains-duplicate-ii	Contains Duplicate II	easy	no	plain	todo
+217	contains-duplicate	Contains Duplicate	easy	no	plain	draft
+219	contains-duplicate-ii	Contains Duplicate II	easy	no	plain	draft
 225	implement-stack-using-queues	Implement Stack using Queues	easy	no	design	todo
 226	invert-binary-tree	Invert Binary Tree	easy	no	tree	todo
-228	summary-ranges	Summary Ranges	easy	no	plain	todo
-231	power-of-two	Power of Two	easy	no	plain	todo
+228	summary-ranges	Summary Ranges	easy	no	plain	draft
+231	power-of-two	Power of Two	easy	no	plain	draft
 232	implement-queue-using-stacks	Implement Queue using Stacks	easy	no	design	todo
 234	palindrome-linked-list	Palindrome Linked List	easy	no	list	todo
-242	valid-anagram	Valid Anagram	easy	no	plain	todo
+242	valid-anagram	Valid Anagram	easy	no	plain	draft
 243	shortest-word-distance	Shortest Word Distance	easy	yes	skip:premium	todo
 246	strobogrammatic-number	Strobogrammatic Number	easy	yes	skip:premium	todo
 252	meeting-rooms	Meeting Rooms	easy	yes	skip:premium	todo
 257	binary-tree-paths	Binary Tree Paths	easy	no	tree	todo
-258	add-digits	Add Digits	easy	no	plain	todo
-263	ugly-number	Ugly Number	easy	no	plain	todo
+258	add-digits	Add Digits	easy	no	plain	draft
+263	ugly-number	Ugly Number	easy	no	plain	draft
 266	palindrome-permutation	Palindrome Permutation	easy	yes	skip:premium	todo
-268	missing-number	Missing Number	easy	no	plain	todo
+268	missing-number	Missing Number	easy	no	plain	draft
 270	closest-binary-search-tree-value	Closest Binary Search Tree Value	easy	yes	skip:premium	todo
 278	first-bad-version	First Bad Version	easy	no	api	todo
 283	move-zeroes	Move Zeroes	easy	no	inplace	draft

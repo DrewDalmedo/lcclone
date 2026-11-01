@@ -1,0 +1,99 @@
+# Roman to Integer.
+
+@example Every letter is added, since none comes before a bigger one: 500 + 100 + 100 + 5 + 1 + 1.
+"DCCVII"
+=> 707
+
+@example Three subtracted pairs: CD is 400, XL is 40 and IX is 9.
+"CDXLIX"
+=> 449
+
+@example MM is 2000 and CM is 900; then L, X and I add 61.
+"MMCMLXI"
+=> 2961
+
+# The smallest number, and each of the seven letters alone.
+"I"
+=> 1
+
+"V"
+=> 5
+
+"X"
+=> 10
+
+"L"
+=> 50
+
+"C"
+=> 100
+
+"D"
+=> 500
+
+"M"
+=> 1000
+
+# The largest number: a subtracted pair in the hundreds, tens and ones, the
+# last one at the very end.
+"MMMCMXCIX"
+=> 3999
+
+# The longest numeral, 15 letters; equal neighbours are added, not
+# subtracted.
+"MMMDCCCLXXXVIII"
+=> 3888
+
+# A single pair is the whole numeral.
+"CD"
+=> 400
+
+# A pair at the start, then equal letters.
+"CMLXXX"
+=> 980
+
+# Two pairs in a row at the end.
+"XLIV"
+=> 44
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"LXXIX"
+=> 79
+
+@gen 2 small
+"VI"
+=> 6
+
+@gen 3 small
+"MMDXCIV"
+=> 2594
+
+@gen 4 small
+"MMX"
+=> 2010
+
+@gen 5 small
+"XIX"
+=> 19
+
+@gen 6 small
+"LXXXVI"
+=> 86
+
+@gen 7 small
+"LXXV"
+=> 75
+
+# Full size: any number, the longest numerals, or many subtracted pairs.
+@gen 1
+"MMCMXLIX"
+=> 2949
+
+@gen 2
+"MMMDCCCLXXVIII"
+=> 3878
+
+@gen 3
+"MMCDXCIX"
+=> 2499

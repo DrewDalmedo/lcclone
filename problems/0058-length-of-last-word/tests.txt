@@ -1,0 +1,90 @@
+# Length of Last Word.
+
+@example The words are "quiet", "harbor" and "lights", and the last one has 6 letters.
+"quiet harbor lights"
+=> 6
+
+@example The spaces at the end belong to no word, so the last word is "crossing".
+"  zebra  crossing   "
+=> 8
+
+@example With no space at all, the whole string is one word.
+"Overflowing"
+=> 11
+
+# Smallest input: a single letter.
+"q"
+=> 1
+
+# One letter with spaces before or after it.
+" Q"
+=> 1
+
+"z "
+=> 1
+
+"   x   "
+=> 1
+
+# Two one-letter words.
+"a b"
+=> 1
+
+# A long gap before a last word that is shorter than the first.
+"abcdef     g"
+=> 1
+
+# The last word is the longest.
+"a bb ccc dddd"
+=> 4
+
+# Upper and lower case letters count alike.
+"MiXeD CaSeS"
+=> 5
+
+# The first word is also the last, and many spaces follow it.
+"Lonely              "
+=> 6
+
+# Spaces at both ends and between the words.
+"   red  green blue    "
+=> 4
+
+# A last word using every letter of both cases.
+"x abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+=> 52
+
+# A last word of 300 letters: too long for an 8-bit counter or a small
+# word buffer.
+"two words LmnVPmcmCzwsZqCZNAsLgaFnEWeCJQyQxdgYQXitclstlNMUpWRekmCiiiUobqqRUgEGQLrLQvLzisqnDmNoDNNflfFUtuSCFqTFiXSeicHocsdcnKehdFdJTrQFTMvuGdweZijnQnQxAgVWFjnXUKnWbcjKXdxZAxFfPVxdHzNUWzDZYZAfvhKZPnYyiLhWkOyThcSngGzOptXJDdYyJdkshIthBbCNcZSLmFrgxxipghivABujVOnCtJqxfzQLSuajwkfVQLvHkGmEpowoYibDHGEIjCkblMjMuMZeQjmD"
+=> 300
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"Bcc"
+=> 3
+
+@gen 2 small
+"   a "
+=> 1
+
+@gen 3 small
+"c   aaBBaacB"
+=> 8
+
+@gen 4 small
+"a a Bac "
+=> 3
+
+@gen 5 small
+"Ba a      "
+=> 1
+
+@gen 6 small
+"Bc   aaa a"
+=> 1
+
+@gen 7 small
+"BBcc c c  "
+=> 1
+

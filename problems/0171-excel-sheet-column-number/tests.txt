@@ -1,0 +1,100 @@
+# Excel Sheet Column Number.
+
+@example One letter on its own: its place in the alphabet, 11 for K.
+"K"
+=> 11
+
+@example B has place 2 and A has place 1: 2 * 26 + 1 = 53. It is the label right after AZ.
+"BA"
+=> 53
+
+@example C, A and B have places 3, 1 and 2: 3, then 3 * 26 + 1 = 79, then 79 * 26 + 2 = 2056.
+"CAB"
+=> 2056
+
+# The first column.
+"A"
+=> 1
+
+# The last one-letter name and the first two-letter one.
+"Z"
+=> 26
+
+"AA"
+=> 27
+
+# Read from the wrong end, ZA would be AZ (52).
+"ZA"
+=> 677
+
+# The last two-letter name and the first three-letter one.
+"ZZ"
+=> 702
+
+"AAA"
+=> 703
+
+# Z in the middle, between letters worth 1 and 2.
+"AZB"
+=> 1354
+
+# The last name of three letters, and the last one of six.
+"ZZZ"
+=> 18278
+
+"ZZZZZZ"
+=> 321272406
+
+# The first seven-letter name.
+"AAAAAAA"
+=> 321272407
+
+# Seven different letters.
+"BCDEFGH"
+=> 655395710
+
+# The last column allowed, 2^31 - 1.
+"FXSHRXW"
+=> 2147483647
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"OXL"
+=> 10776
+
+@gen 2 small
+"Z"
+=> 26
+
+@gen 3 small
+"CKC"
+=> 2317
+
+@gen 4 small
+"ZZZ"
+=> 18278
+
+@gen 5 small
+"BM"
+=> 65
+
+@gen 6 small
+"YB"
+=> 652
+
+@gen 7 small
+"MAA"
+=> 8815
+
+# Full size: names of six or seven letters, up to FXSHRXW.
+@gen 1
+"OXLSNN"
+=> 189412198
+
+@gen 2
+"MYBZBY"
+=> 165935093
+
+@gen 3
+"FXSHRUG"
+=> 2147483553

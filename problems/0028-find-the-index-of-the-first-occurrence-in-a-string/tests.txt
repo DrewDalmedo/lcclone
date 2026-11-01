@@ -1,0 +1,128 @@
+# Find the Index of the First Occurrence in a String.
+
+@example The letters m, a, t are haystack[2], haystack[3] and haystack[4].
+"tomato"
+"mat"
+=> 2
+
+@example p, l, e appear from index 2, but the text ends before an a could follow.
+"apple"
+"plea"
+=> -1
+
+@example The needle is found at 0 and again at 2, overlapping the first; 0 comes first.
+"nonono"
+"nono"
+=> 0
+
+# One letter each, equal and different.
+"q"
+"q"
+=> 0
+
+"q"
+"r"
+=> -1
+
+# The needle is longer than the haystack, which is its beginning.
+"abc"
+"abcd"
+=> -1
+
+# The needle is the whole haystack.
+"lemon"
+"lemon"
+=> 0
+
+# Found only at the last possible index.
+"xxxxy"
+"xy"
+=> 3
+
+# A partial match runs off the end of the haystack.
+"xyzab"
+"abc"
+=> -1
+
+# After a failed partial match, the real match starts inside the letters
+# already compared.
+"aaaab"
+"aab"
+=> 2
+
+"abcabcabd"
+"abcabd"
+=> 3
+
+# Found twice; the first one counts.
+"dogcatcat"
+"cat"
+=> 3
+
+# A long run of one letter and a near miss.
+"aaaaaaaaaaaa"
+"aaaab"
+=> -1
+
+# A single letter at the far end.
+"abcdefghijklmnopqrstuvwxyz"
+"z"
+=> 25
+
+# The letters are all there, but not next to each other.
+"slate"
+"sat"
+=> -1
+
+# A window with the needle's letters in another order, and the right first
+# and last letter, comes before the real match.
+"tarptrap"
+"trap"
+=> 4
+
+# A near miss: a fallback table that keeps too long a prefix after a
+# mismatch turns it into a false match at index 3.
+"zzzyzzyy"
+"zzzyy"
+=> -1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abbabbbba"
+"baba"
+=> -1
+
+@gen 2 small
+"aaaaaaa"
+"b"
+=> -1
+
+@gen 3 small
+"aaabbb"
+"a"
+=> 0
+
+@gen 4 small
+"baab"
+"ba"
+=> 0
+
+@gen 5 small
+"bbaabaabac"
+"a"
+=> 2
+
+@gen 6 small
+"ab"
+"abbaba"
+=> -1
+
+@gen 7 small
+"bb"
+"aaaba"
+=> -1
+
+@gen 8 small
+"accacaa"
+"ab"
+=> -1

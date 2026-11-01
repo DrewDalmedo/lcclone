@@ -91,7 +91,10 @@ answer at the far end. The seed can pick the shape.
 needs no `#include`s: the usual C headers are there) and a `main()` after
 it. The random numbers start afresh from each case's seed, so **a seed
 always makes the same case**, on every system. Use only these functions
-for randomness, never `rand()` or the time.
+for randomness, never `rand()` or the time, and never two of them in one
+expression whose order C leaves open, such as `a[rnd(0, n - 1)] =
+rnd_char("ab")` or `f(rnd(1, 9), rnd(1, 9))`: gcc and clang call them in
+different orders, so the case would depend on the compiler.
 
 | Function | What it does |
 |----------|--------------|

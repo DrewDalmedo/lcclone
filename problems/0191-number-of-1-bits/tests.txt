@@ -1,0 +1,103 @@
+# Number of 1 Bits. Inputs are written in decimal.
+
+@example 22 is 10110 in binary, which has three 1s.
+22
+=> 3
+
+@example 96 is 1100000: two 1s, then five 0s that must not end the count early.
+96
+=> 2
+
+@example 1000 is 1111101000, with six 1s.
+1000
+=> 6
+
+# The smallest n.
+1
+=> 1
+
+# Small values.
+2
+=> 1
+
+3
+=> 2
+
+# The largest n, 2^31 - 1: all 31 bits are 1.
+2147483647
+=> 31
+
+# 2^30, the highest bit a positive int can have, alone.
+1073741824
+=> 1
+
+# The highest bit together with the lowest.
+1073741825
+=> 2
+
+# 2^30 - 1: bits 0 to 29 set, bit 30 not.
+1073741823
+=> 30
+
+# 2^16 - 1.
+65535
+=> 16
+
+# Alternating bits: 0x55555555 (bits 0, 2, ..., 30) and 0x2AAAAAAA
+# (bits 1, 3, ..., 29).
+1431655765
+=> 16
+
+715827882
+=> 15
+
+# 0x7FFF0000: bits 16 to 30 set, the low 16 bits all 0.
+2147418112
+=> 15
+
+# 0x12345678.
+305419896
+=> 13
+
+# 0x7FEDCBA9: with 0x12345678 and 96 = 0x60 above, every 4-bit group
+# value from 0 to 15 has now appeared (catches a typo in a nibble table).
+2146290601
+=> 22
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+1065222031
+=> 25
+
+@gen 2 small
+9523
+=> 7
+
+@gen 3 small
+15
+=> 4
+
+@gen 4 small
+2048
+=> 1
+
+@gen 5 small
+31
+=> 5
+
+@gen 6 small
+4194303
+=> 22
+
+# Random full-size cases.
+@gen 1
+1073741824
+=> 1
+
+@gen 2
+2013195903
+=> 26
+
+@gen 3
+1838224766
+=> 17

@@ -1,0 +1,99 @@
+# Excel Sheet Column Title.
+
+@example S is the 19th letter of the alphabet.
+19
+=> "S"
+
+@example Columns 27 to 52 are AA to AZ; column 53 would be BA.
+52
+=> "AZ"
+
+@example B, X and X are worth 2, 24 and 24, and 2 * 676 + 24 * 26 + 24 = 2000.
+2000
+=> "BXX"
+
+# The first column.
+1
+=> "A"
+
+# The last one-letter name and the first two-letter one.
+26
+=> "Z"
+
+27
+=> "AA"
+
+# 676 = 26 * 26 ends in Z, and the next column starts with it.
+676
+=> "YZ"
+
+677
+=> "ZA"
+
+# The last two-letter name and the first three-letter one.
+702
+=> "ZZ"
+
+703
+=> "AAA"
+
+# Z in the middle.
+1353
+=> "AZA"
+
+# The last three-letter name.
+18278
+=> "ZZZ"
+
+# The last six-letter name and the first seven-letter one.
+321272406
+=> "ZZZZZZ"
+
+321272407
+=> "AAAAAAA"
+
+# The largest column number, 2^31 - 1.
+2147483647
+=> "FXSHRXW"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+15
+=> "O"
+
+@gen 2 small
+18271
+=> "ZZS"
+
+@gen 3 small
+89
+=> "CK"
+
+@gen 4 small
+702
+=> "ZZ"
+
+@gen 5 small
+77
+=> "BY"
+
+@gen 6 small
+25
+=> "Y"
+
+@gen 7 small
+17653
+=> "ZBY"
+
+# Full size: names of six or seven letters, or numbers near 2^31 - 1.
+@gen 1
+24712558
+=> "BBAZZZ"
+
+@gen 2
+208261711
+=> "QMSEKU"
+
+@gen 3
+2147483553
+=> "FXSHRUG"
