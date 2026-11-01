@@ -218,6 +218,8 @@ lc_verdict lc_classify(const lc_limits *l, const lc_run_result *r,
 typedef struct report_priv {
     lc_arena arena;
     lc_arena side;            /* lc_judge's: the build, the cases it ran */
+    lc_report *check;         /* the sanitizer check's run, whose results
+                                 this report may point to */
 } report_priv;
 
 void lc_report_free(lc_report *report)
@@ -228,6 +230,7 @@ void lc_report_free(lc_report *report)
         report_priv *rp = report->priv_;
         lc_arena_free(&rp->arena);
         lc_arena_free(&rp->side);
+        lc_report_free(rp->check);
         free(rp);
     }
     free(report);
@@ -337,6 +340,7 @@ typedef struct judge_run {
     lc_str text;
     lc_arena *arena;          /* the report's */
     size_t first_custom;      /* index of the first case of your own */
+    int sanitizer_check;      /* lc_judge_opts.sanitizer_check */
 } judge_run;
 
 /*
@@ -446,6 +450,7 @@ static int judge_case(judge_run *jr, const lc_case *c, size_t index,
     cr->memory_kb = jr->run.max_rss_kb;
     cr->exit_code = jr->run.exited ? jr->run.exit_code : -1;
     cr->signal = jr->run.signal;
+    cr->sanitizer_check = jr->sanitizer_check;
 
     cr->verdict = lc_classify(&jr->lim, &jr->run, &jr->why);
     if (cr->verdict == LC_VERDICT_NONE) {
@@ -558,6 +563,7 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
     }
     jr.first_custom = opts && opts->ncustom <= ncases ? ncases - opts->ncustom
                                                       : ncases;
+    jr.sanitizer_check = opts && opts->sanitizer_check;
     jr.spec.path = exe;
     jr.spec.envp = opts ? opts->envp : NULL;
     jr.spec.cwd = opts ? opts->cwd : NULL;
@@ -568,6 +574,7 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
 
     for (i = 0; i < ncases; i++) {
         lc_case_result *cr = &results[report->nresults];
+        int failed;
 
         if (cancel_set(hooks)) {
             report->cancelled = 1;
@@ -578,6 +585,7 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
         ev.index = i;
         ev.total = ncases;
         ev.test_case = &cases[i];
+        ev.sanitizer_check = jr.sanitizer_check;
         emit(hooks, &ev);
 
         rc = judge_case(&jr, &cases[i], i, cr);
@@ -588,7 +596,10 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
             break;
         }
         report->nresults++;
-        if (cr->verdict == LC_ACCEPTED)
+        failed = cr->verdict != LC_ACCEPTED &&
+                 !(jr.sanitizer_check &&
+                   cr->verdict == LC_TIME_LIMIT_EXCEEDED);
+        if (!failed)
             report->passed++;
         else if (report->verdict == LC_VERDICT_NONE)
             report->verdict = cr->verdict;
@@ -602,8 +613,9 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
         ev.index = i;
         ev.total = ncases;
         ev.result = cr;
+        ev.sanitizer_check = jr.sanitizer_check;
         emit(hooks, &ev);
-        if (opts && opts->stop_on_failure && cr->verdict != LC_ACCEPTED)
+        if (opts && opts->stop_on_failure && failed)
             break;
     }
 
@@ -618,10 +630,12 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
     if (report->verdict == LC_VERDICT_NONE && !report->cancelled)
         report->verdict = LC_ACCEPTED;
 
-    memset(&ev, 0, sizeof ev);
-    ev.kind = LC_EV_DONE;
-    ev.report = report;
-    emit(hooks, &ev);
+    if (!opts || !opts->no_done) {
+        memset(&ev, 0, sizeof ev);
+        ev.kind = LC_EV_DONE;
+        ev.report = report;
+        emit(hooks, &ev);
+    }
     *out = report;
     return LC_OK;
 }
@@ -666,9 +680,9 @@ static char **sanitize_env(lc_arena *a)
 }
 
 int lc_build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
-                  const char *src, const char *std, int sanitize, int role,
-                  const lc_hooks *hooks, lc_arena *a, lc_build **bout,
-                  const char **exe, int *cancelled)
+                  const char *src, const char *std, int sanitize, int check,
+                  int role, const lc_hooks *hooks, lc_arena *a,
+                  lc_build **bout, const char **exe, int *cancelled)
 {
     lc_compiler cc;
     lc_build_req req;
@@ -699,6 +713,7 @@ int lc_build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     rc = lc_build_init(ctx, &req, a, b);
     if (rc != LC_OK)
         return rc;
+    b->sanitizer_check = check;
     if (cancel_set(hooks)) {
         *cancelled = 1;
         return LC_OK;
@@ -706,6 +721,7 @@ int lc_build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     memset(&ev, 0, sizeof ev);
     ev.kind = LC_EV_BUILD_START;
     ev.build = b;
+    ev.sanitizer_check = check;
     emit(hooks, &ev);
     rc = lc_build_source(ctx, &req, a, b, exe, cancelled);
     if (rc != LC_OK || *cancelled)
@@ -905,6 +921,140 @@ static int build_report(lc_ctx *ctx, lc_arena *side, const lc_build *b,
     return LC_OK;
 }
 
+/* Whether a result of the sanitizer check counts against the solution:
+ * running out of time there doesn't (see lc_judge_opts.sanitizer_check). */
+static int check_failed(const lc_case_result *r)
+{
+    return r->verdict != LC_ACCEPTED && r->verdict != LC_TIME_LIMIT_EXCEEDED;
+}
+
+/*
+ * Puts the failures of the sanitizer check `chk` in the place of their
+ * results in `rep`, an accepted run of the same cases, which then has the
+ * first one's verdict. With `stop` (stop_on_failure) the report ends
+ * there, as the check did.
+ */
+static int merge_check(lc_ctx *ctx, lc_report *rep, const lc_report *chk,
+                       int stop)
+{
+    report_priv *rp = rep->priv_;
+    size_t n = stop ? chk->nresults : rep->nresults, i;
+    lc_case_result *res;
+
+    if (n > rep->nresults)
+        n = rep->nresults;
+    res = lc_arena_array(&rp->arena, n ? n : 1, sizeof *res);
+    if (!res)
+        return lc_oom(ctx);
+    rep->passed = 0;
+    rep->verdict = LC_VERDICT_NONE;
+    rep->max_time_ms = 0;
+    rep->max_memory_kb = 0;
+    for (i = 0; i < n; i++) {
+        if (i < chk->nresults && check_failed(&chk->results[i]))
+            res[i] = chk->results[i];
+        else
+            res[i] = rep->results[i];
+        if (res[i].verdict == LC_ACCEPTED)
+            rep->passed++;
+        else if (rep->verdict == LC_VERDICT_NONE)
+            rep->verdict = res[i].verdict;
+        if (res[i].time_ms > rep->max_time_ms)
+            rep->max_time_ms = res[i].time_ms;
+        if (res[i].memory_kb > rep->max_memory_kb)
+            rep->max_memory_kb = res[i].memory_kb;
+    }
+    rep->results = res;
+    rep->nresults = n;
+    rep->sanitizer_check = LC_SANCHECK_FAILED;
+    return LC_OK;
+}
+
+/* The sanitizer check stopped at the cancel flag: so does the run. */
+static void check_cancelled(lc_report *rep)
+{
+    rep->cancelled = 1;
+    rep->verdict = LC_VERDICT_NONE;
+    rep->sanitizer_check = LC_SANCHECK_CANCELLED;
+}
+
+/*
+ * lc_judge's sanitizer check of `rep`, an accepted run of `cases`: builds
+ * the solution again with the sanitizers, runs the cases again, and puts
+ * what failed there in `rep` (see lc_judge). What it allocates goes with
+ * the report.
+ */
+static int sanitizer_check(lc_ctx *ctx, const lc_problem *p,
+                           const lc_lang *lang, const char *src,
+                           const lc_judge_options *opts, const lc_case *cases,
+                           size_t n, size_t nuser, const lc_hooks *hooks,
+                           lc_report *rep)
+{
+    report_priv *rp = rep->priv_;
+    lc_arena *a = &rp->side;
+    lc_compiler cc;
+    lc_build *b;
+    lc_judge_opts jo;
+    const char *exe, *why;
+    char **envp = sanitize_env(a);
+    int rc, cancelled;
+
+    if (!envp)
+        return lc_oom(ctx);
+    rc = lc_compiler_get(ctx, lang, a, &cc);
+    if (rc == LC_OK)
+        rc = lc_sanitizers_work(ctx, lang, &cc, envp, a, &why);
+    if (rc != LC_OK)
+        return rc;
+    if (why) {
+        rep->sanitizer_check = LC_SANCHECK_SKIPPED;
+        rep->sanitizer_check_note = why;
+        return LC_OK;
+    }
+    if (cancel_set(hooks)) {
+        check_cancelled(rep);
+        return LC_OK;
+    }
+    rc = lc_build_step(ctx, p, lang, src, opts->std, 1, 1, LC_ROLE_SOLUTION,
+                       hooks, a, &b, &exe, &cancelled);
+    if (rc != LC_OK)
+        return rc;
+    if (cancelled) {
+        check_cancelled(rep);
+        return LC_OK;
+    }
+    rep->check_build = b;
+    if (!b->ok) {
+        rep->sanitizer_check = LC_SANCHECK_SKIPPED;
+        rep->sanitizer_check_note = "it doesn't build with them";
+        return LC_OK;
+    }
+
+    memset(&jo, 0, sizeof jo);
+    jo.cwd = lc_dir_of(a, exe);
+    jo.stop_on_failure = opts->stop_on_failure;
+    jo.ncustom = nuser;
+    jo.sanitize = 1;
+    jo.envp = envp;
+    jo.build = b;
+    jo.sanitizer_check = 1;
+    jo.no_done = 1;
+    if (!jo.cwd)
+        return lc_oom(ctx);
+    rc = lc_judge_exe(ctx, p, exe, cases, n, &jo, hooks, &rp->check);
+    if (rc != LC_OK)
+        return rc;
+    if (rp->check->cancelled) {
+        check_cancelled(rep);
+        return LC_OK;
+    }
+    if (rp->check->verdict == LC_ACCEPTED) {
+        rep->sanitizer_check = LC_SANCHECK_PASSED;
+        return LC_OK;
+    }
+    return merge_check(ctx, rep, rp->check, opts->stop_on_failure);
+}
+
 int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
              const char *src, const lc_judge_options *opts,
              const lc_hooks *hooks, lc_report **out)
@@ -921,6 +1071,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     char *ref, *rdir;
     lc_judge_opts jo;
     lc_pool *pool = NULL;
+    lc_event ev;
     struct stat st;
     size_t n = 0, npack = 0, nuser, i, need_ref = 0, first_need = 0;
     int rc, cancelled;
@@ -1002,7 +1153,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
         goto done;
     }
 
-    rc = lc_build_step(ctx, p, lang, src, opts->std, opts->sanitize,
+    rc = lc_build_step(ctx, p, lang, src, opts->std, opts->sanitize, 0,
                        LC_ROLE_SOLUTION, hooks, &side, &build, &exe,
                        &cancelled);
     if (rc != LC_OK)
@@ -1013,7 +1164,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     }
 
     if (need_ref) {
-        rc = lc_build_step(ctx, p, rlang, ref, rlang->default_std, 0,
+        rc = lc_build_step(ctx, p, rlang, ref, rlang->default_std, 0, 0,
                            LC_ROLE_REF, hooks, &side, &rbuild, &rexe,
                            &cancelled);
         if (rc != LC_OK)
@@ -1054,14 +1205,30 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     jo.sanitize = opts->sanitize;
     jo.envp = opts->sanitize ? sanitize_env(&side) : NULL;
     jo.build = build;
+    /* The sanitizer check, if any, sends LC_EV_DONE once it is over. */
+    jo.no_done = opts->sanitizer_check && !opts->sanitize;
     if (!jo.cwd || (opts->sanitize && !jo.envp)) {
         rc = lc_oom(ctx);
         goto done;
     }
     rc = lc_judge_exe(ctx, p, exe, cases, n, &jo, hooks, out);
-    if (rc == LC_OK) {
-        ((report_priv *)(*out)->priv_)->side = side;
-        side.head = NULL;
+    if (rc != LC_OK)
+        goto done;
+    ((report_priv *)(*out)->priv_)->side = side;
+    side.head = NULL;
+    if (jo.no_done) {
+        if ((*out)->verdict == LC_ACCEPTED && !(*out)->cancelled)
+            rc = sanitizer_check(ctx, p, lang, src, opts, cases, n, nuser,
+                                 hooks, *out);
+        if (rc != LC_OK) {
+            lc_report_free(*out);
+            *out = NULL;
+            goto done;
+        }
+        memset(&ev, 0, sizeof ev);
+        ev.kind = LC_EV_DONE;
+        ev.report = *out;
+        emit(hooks, &ev);
     }
 done:
     lc_pool_free(pool);

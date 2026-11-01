@@ -328,6 +328,11 @@ static void case_label(ui *u, const lc_case_result *r, lc_str *out)
 
 static void build_line(ui *u, const lc_build *b)
 {
+    if (b->sanitizer_check) {
+        lc_str_printf(&u->out, "Checking %s with the sanitizers\n",
+                      u->t->src_shown.data);
+        return;
+    }
     lc_str_puts(&u->out, "Building ");
     if (b->reference)
         lc_str_puts(&u->out, "the reference solution");
@@ -345,6 +350,10 @@ static void build_output(ui *u, const lc_build *b)
     size_t i;
     int harness = 0, errors = 0;
 
+    /* The check's build says again what the first one said, unless it
+     * failed. */
+    if (b->sanitizer_check && b->ok)
+        return;
     if (b->output_len) {
         put_replaced(&u->out, b->output, b->output_len, b->source,
                      u->t->src_shown.data);
@@ -466,6 +475,8 @@ static void failure(ui *u, const lc_report *rep, const lc_case_result *r)
     else
         lc_str_printf(&u->out, " on case %lu of %lu",
                       (unsigned long)r->index + 1, (unsigned long)rep->total);
+    if (r->sanitizer_check)
+        lc_str_puts(&u->out, " with the sanitizers");
     if (r->message)
         lc_str_printf(&u->out, " (%s)", r->message);
     lc_str_putc(&u->out, '\n');
@@ -521,6 +532,10 @@ static void summary(ui *u, const lc_report *rep)
         if (rep->results[i].verdict != LC_ACCEPTED)
             failure(u, rep, &rep->results[i]);
     lc_str_putc(&u->out, '\n');
+    if (rep->sanitizer_check == LC_SANCHECK_CANCELLED) {
+        lc_str_puts(&u->out, "Cancelled while checking with the sanitizers\n");
+        return;
+    }
     if (rep->cancelled) {
         lc_str_printf(&u->out, "Cancelled after %lu of %lu cases\n",
                       (unsigned long)rep->nresults,
@@ -579,6 +594,8 @@ void cli_json_build(lc_json *j, const lc_build *b, int done)
     lc_json_string(j, b->compiler);
     lc_json_key(j, "sanitize");
     lc_json_bool(j, b->sanitize);
+    lc_json_key(j, "sanitizer_check");
+    lc_json_bool(j, b->sanitizer_check);
     if (!done)
         return;
     lc_json_key(j, "ok");
@@ -676,6 +693,8 @@ static void json_case(lc_json *j, const lc_problem *p,
         lc_json_int(j, r->signal);
     else
         lc_json_null(j);
+    lc_json_key(j, "sanitizer_check");
+    lc_json_bool(j, r->sanitizer_check);
 }
 
 static void on_event(void *ud, const lc_event *ev)
@@ -703,6 +722,8 @@ static void on_event(void *ud, const lc_event *ev)
             lc_json_string(&j, ev->test_case->file);
             lc_json_key(&j, "line");
             lc_json_int(&j, ev->test_case->line);
+            lc_json_key(&j, "sanitizer_check");
+            lc_json_bool(&j, ev->sanitizer_check);
             json_line_end(u, &j);
             break;
         case LC_EV_CASE_DONE:
@@ -743,6 +764,24 @@ typedef struct recorded {
     lc_str warning;           /* why it wasn't, or why there's no copy */
 } recorded;
 
+/* The JSON name of how the sanitizer check went; NULL when there was
+ * none. */
+static const char *sancheck_id(lc_sancheck c)
+{
+    switch (c) {
+    case LC_SANCHECK_PASSED:
+        return "passed";
+    case LC_SANCHECK_FAILED:
+        return "failed";
+    case LC_SANCHECK_SKIPPED:
+        return "skipped";
+    case LC_SANCHECK_CANCELLED:
+        return "cancelled";
+    default:
+        return NULL;
+    }
+}
+
 static void json_done(ui *u, const lc_report *rep, const recorded *rec)
 {
     lc_json j;
@@ -760,6 +799,10 @@ static void json_done(ui *u, const lc_report *rep, const recorded *rec)
     lc_json_int(&j, rep->max_time_ms);
     lc_json_key(&j, "max_memory_kb");
     lc_json_int(&j, rep->max_memory_kb);
+    lc_json_key(&j, "sanitizer_check");
+    lc_json_string(&j, sancheck_id(rep->sanitizer_check));
+    lc_json_key(&j, "sanitizer_check_note");
+    lc_json_string(&j, rep->sanitizer_check_note);
     if (u->submit) {
         lc_json_key(&j, "status");
         lc_json_string(&j, rec->done ? lc_status_name(rec->info.after.status)
@@ -890,6 +933,9 @@ static int run(cli *c, int submit)
     opts.all = submit;
     opts.cases = mine;
     opts.stop_on_failure = submit;
+    /* An accepted submission is checked with the sanitizers too, as
+     * LeetCode builds with them (docs/judging.md). */
+    opts.sanitizer_check = submit;
     u.c = c;
     u.ctx = ctx;
     u.t = &t;
@@ -922,6 +968,9 @@ static int run(cli *c, int submit)
         if (submit)
             record(c, ctx, &t, rep, &rec);
     }
+    if (rep->sanitizer_check_note)
+        fprintf(stderr, "lc: note: not checked with the sanitizers: %s\n",
+                rep->sanitizer_check_note);
     rc = u.nomem ? cli_error(c, ctx, "out of memory") : exit_status(rep);
 done:
     lc_record_info_free(&rec.info);

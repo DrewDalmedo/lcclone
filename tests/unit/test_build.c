@@ -91,7 +91,8 @@ static lc_ctx *open_ctx(const char *problems)
 }
 
 /* The events of a run, as letters: b build start, B build done (r for
- * the reference), s case start, d case done, E done. */
+ * the reference), s case start, d case done, E done; for the sanitizer
+ * check k build start, K build done, x case start, y case done. */
 typedef struct events {
     char log[256];
     int cached;               /* the last build was cached */
@@ -106,18 +107,21 @@ static void on_event(void *ud, const lc_event *ev)
 
     switch (ev->kind) {
     case LC_EV_BUILD_START:
-        ch = ev->build->reference ? 'r' : 'b';
+        ch = ev->sanitizer_check ? 'k' : ev->build->reference ? 'r' : 'b';
+        CHECK_INT(ev->build->sanitizer_check, ev->sanitizer_check);
         break;
     case LC_EV_BUILD_DONE:
-        ch = ev->build->reference ? 'R' : 'B';
+        ch = ev->sanitizer_check ? 'K' : ev->build->reference ? 'R' : 'B';
+        CHECK_INT(ev->build->sanitizer_check, ev->sanitizer_check);
         e->cached = ev->build->cached;
         e->ok = ev->build->ok;
         break;
     case LC_EV_CASE_START:
-        ch = 's';
+        ch = ev->sanitizer_check ? 'x' : 's';
         break;
     case LC_EV_CASE_DONE:
-        ch = 'd';
+        ch = ev->sanitizer_check ? 'y' : 'd';
+        CHECK_INT(ev->result->sanitizer_check, ev->sanitizer_check);
         break;
     case LC_EV_DONE:
         ch = 'E';
@@ -814,6 +818,312 @@ static void test_sanitize(void)
     lc_close(ctx);
 }
 
+/* Judges `src` of `problem` with `opts`, logging events in *ev (and, with
+ * `flag`, setting it when the sanitizer check's build starts). */
+typedef struct check_events {
+    events ev;
+    volatile sig_atomic_t *flag;
+} check_events;
+
+static void on_check_event(void *ud, const lc_event *e)
+{
+    check_events *ce = ud;
+
+    on_event(&ce->ev, e);
+    if (ce->flag && e->kind == LC_EV_BUILD_START && e->sanitizer_check)
+        *ce->flag = 1;
+}
+
+static lc_report *judge_with(lc_ctx *ctx, const char *problem,
+                             const char *src, const lc_judge_options *opts,
+                             events *ev, volatile sig_atomic_t *flag)
+{
+    const lc_problem *p = lc_problem_find(ctx, problem);
+    check_events ce;
+    lc_hooks hooks;
+    lc_report *rep = NULL;
+    char path[256];
+
+    CHECK(p != NULL);
+    if (!p)
+        return NULL;
+    snprintf(path, sizeof path, "%s/%s", p->dir, src);
+    memset(&ce, 0, sizeof ce);
+    ce.flag = flag;
+    memset(&hooks, 0, sizeof hooks);
+    hooks.on_event = on_check_event;
+    hooks.ud = &ce;
+    hooks.cancel = flag;
+    if (lc_judge(ctx, p, lc_lang_for_path(src), path, opts, &hooks, &rep) !=
+        LC_OK) {
+        fprintf(stderr, "    %s/%s: %s\n", problem, src, lc_last_error(ctx));
+        return NULL;
+    }
+    *ev = ce.ev;
+    return rep;
+}
+
+/* 1 if the case's stderr has `what`. */
+static int stderr_has(const lc_case_result *r, const char *what)
+{
+    return r->stderr_text && strstr(r->stderr_text, what) != NULL;
+}
+
+/*
+ * The sanitizer check (lc submit): an accepted run is run again with the
+ * sanitizers, and a case that fails there decides the verdict. Fixture 19
+ * reads one past the end of its array, which only ASan sees, and only
+ * because arrays have no spare element under it. Skipped where the
+ * compiler has no sanitizers (musl).
+ */
+static void test_sanitizer_check(void)
+{
+    static const char *const past[] = {"past.c", "past.cpp"};
+    lc_ctx *ctx = open_ctx(JUDGE);
+    volatile sig_atomic_t flag = 0;
+    lc_judge_options opts;
+    lc_report *rep;
+    events ev;
+    size_t i;
+
+    memset(&opts, 0, sizeof opts);
+    opts.all = 1;
+    opts.stop_on_failure = 1;
+    opts.sanitizer_check = 1;
+
+    /* A right solution passes both runs; the results are the first's. */
+    rep = judge_with(ctx, "missing", "solution.c", &opts, &ev, NULL);
+    CHECK(rep != NULL);
+    if (rep && rep->sanitizer_check == LC_SANCHECK_SKIPPED) {
+        printf("test_build: note: skipped the sanitizer check tests (%s)\n",
+               rep->sanitizer_check_note);
+        lc_report_free(rep);
+        lc_close(ctx);
+        return;
+    }
+    if (rep) {
+        CHECK_INT(rep->verdict, LC_ACCEPTED);
+        CHECK_INT(rep->sanitizer_check, LC_SANCHECK_PASSED);
+        CHECK(rep->sanitizer_check_note == NULL);
+        CHECK(rep->build && !rep->build->sanitize &&
+              !rep->build->sanitizer_check);
+        CHECK(rep->check_build && rep->check_build->ok &&
+              rep->check_build->sanitize && rep->check_build->sanitizer_check);
+        CHECK_INT(rep->passed, 5);
+        CHECK_INT(rep->nresults, 5);
+        for (i = 0; i < rep->nresults; i++)
+            CHECK(!rep->results[i].sanitizer_check);
+        CHECK_STR(ev.log, "bBsdsdsdsdsdkKxyxyxyxyxyE");
+    }
+    lc_report_free(rep);
+
+    /* A read past the end: the first run accepts it, the check doesn't,
+     * and the run stops at the case that failed there. */
+    for (i = 0; i < sizeof past / sizeof past[0]; i++) {
+        rep = judge_with(ctx, "missing", past[i], &opts, &ev, NULL);
+        CHECK(rep != NULL);
+        if (!rep)
+            continue;
+        CHECK_INT(rep->verdict, LC_RUNTIME_ERROR);
+        CHECK_INT(rep->sanitizer_check, LC_SANCHECK_FAILED);
+        CHECK_INT(rep->total, 5);
+        CHECK_INT(rep->passed, 1);
+        CHECK_INT(rep->nresults, 2);
+        if (rep->nresults == 2) {
+            CHECK(!rep->results[0].sanitizer_check);
+            CHECK(rep->results[1].sanitizer_check);
+            CHECK_INT(rep->results[1].verdict, LC_RUNTIME_ERROR);
+            if (i == 0)
+                CHECK(stderr_has(&rep->results[1], "heap-buffer-overflow"));
+        }
+        CHECK_STR(ev.log, "bBsdsdsdsdsdkKxyxyE");
+        lc_report_free(rep);
+    }
+
+    /* Without stop_on_failure, each case that failed in the check takes
+     * its place among the first run's results. */
+    opts.stop_on_failure = 0;
+    rep = judge_with(ctx, "missing", "past.c", &opts, &ev, NULL);
+    CHECK(rep != NULL);
+    if (rep) {
+        CHECK_INT(rep->verdict, LC_RUNTIME_ERROR);
+        CHECK_INT(rep->nresults, 5);
+        CHECK_INT(rep->passed, 3);
+        for (i = 0; i < rep->nresults; i++)
+            CHECK_INT(rep->results[i].sanitizer_check, i == 1 || i == 3);
+        CHECK_STR(ev.log, "bBsdsdsdsdsdkKxyxyxyxyxyE");
+    }
+    lc_report_free(rep);
+    opts.stop_on_failure = 1;
+
+    /* Running out of time in the check doesn't count: the sanitizers
+     * slow programs down, and the first run judged the time. */
+    rep = judge_with(ctx, "missing", "slowsan.c", &opts, &ev, NULL);
+    CHECK(rep != NULL);
+    if (rep) {
+        CHECK_INT(rep->verdict, LC_ACCEPTED);
+        CHECK_INT(rep->sanitizer_check, LC_SANCHECK_PASSED);
+        CHECK_INT(rep->passed, 5);
+        CHECK(rep->nresults == 5 && !rep->results[4].sanitizer_check);
+        CHECK_STR(ev.log, "bBsdsdsdsdsdkKxyxyxyxyxyE");
+    }
+    lc_report_free(rep);
+
+    /* Without the check, the read past the end goes unseen. */
+    opts.sanitizer_check = 0;
+    rep = judge_with(ctx, "missing", "past.c", &opts, &ev, NULL);
+    CHECK(rep && rep->verdict == LC_ACCEPTED &&
+          rep->sanitizer_check == LC_SANCHECK_NONE && !rep->check_build);
+    lc_report_free(rep);
+    opts.sanitizer_check = 1;
+
+    /* Built with the sanitizers already, there is no check, and ASan
+     * reports the read itself. So it does a write past the end: under
+     * ASan the harness gives arrays no spare element to catch it with. */
+    opts.sanitize = 1;
+    rep = judge_with(ctx, "missing", "past.c", &opts, &ev, NULL);
+    CHECK(rep != NULL);
+    if (rep) {
+        CHECK_INT(rep->verdict, LC_RUNTIME_ERROR);
+        CHECK_INT(rep->sanitizer_check, LC_SANCHECK_NONE);
+        CHECK(rep->check_build == NULL);
+        CHECK(rep->nresults == 2 && !rep->results[1].sanitizer_check &&
+              stderr_has(&rep->results[1], "heap-buffer-overflow"));
+        CHECK_STR(ev.log, "bBsdsdE");
+    }
+    lc_report_free(rep);
+    rep = judge_with(ctx, "merge", "past.c", &opts, &ev, NULL);
+    CHECK(rep != NULL);
+    if (rep) {
+        CHECK_INT(rep->verdict, LC_RUNTIME_ERROR);
+        CHECK(rep->nresults >= 1 &&
+              stderr_has(&rep->results[rep->nresults - 1],
+                         "heap-buffer-overflow") &&
+              stderr_has(&rep->results[rep->nresults - 1], "WRITE"));
+    }
+    lc_report_free(rep);
+    opts.sanitize = 0;
+
+    /* ^C during the check cancels the run, accepted or not. */
+    rep = judge_with(ctx, "missing", "solution.c", &opts, &ev, &flag);
+    CHECK(rep != NULL);
+    if (rep) {
+        CHECK(rep->cancelled);
+        CHECK_INT(rep->verdict, LC_VERDICT_NONE);
+        CHECK_INT(rep->sanitizer_check, LC_SANCHECK_CANCELLED);
+        CHECK(ev.log[strlen(ev.log) - 1] == 'E');
+        CHECK(strncmp(ev.log, "bBsdsdsdsdsdk", 13) == 0);
+    }
+    lc_report_free(rep);
+    lc_close(ctx);
+}
+
+/* Writes an executable script at TMP/<name> and returns its absolute
+ * path in `path`. */
+static void fake_compiler(const char *name, const char *body, char *path,
+                          size_t size)
+{
+    if (!getcwd(path, size - 64))
+        path[0] = '\0';
+    strcat(path, "/" TMP "/");
+    strcat(path, name);
+    write_file(path, body);
+    chmod(path, 0755);
+}
+
+/*
+ * The check is skipped, with a note saying why, when the compiler has no
+ * sanitizers, when programs built with them don't run, and when the
+ * solution doesn't build with them: scripts in front of the real C
+ * compiler. What the probe found is kept in the cache.
+ */
+static void test_sanitizer_skip(void)
+{
+    static const struct {
+        const char *name, *body, *note;
+    } fakes[] = {
+        {"nosan-cc",
+         "#!/bin/sh\nfor a do\n  case $a in\n"
+         "  -fsanitize=*) echo 'unknown option' >&2; exit 1;;\n"
+         "  esac\ndone\nexec %s \"$@\"\n",
+         " has none"},
+        {"norun-cc",
+         "#!/bin/sh\nsan= out= prev=\nfor a do\n"
+         "  case $a in -fsanitize=*) san=1;; esac\n"
+         "  [ \"$prev\" = -o ] && out=$a\n  prev=$a\ndone\n"
+         "if [ -n \"$san\" ]; then\n"
+         "  printf '#!/bin/sh\\nexit 3\\n' >\"$out\" && chmod +x \"$out\"\n"
+         "  exit\nfi\nexec %s \"$@\"\n",
+         "programs built with them don't run here (exited with status 3)"},
+        {"nobuild-cc",
+         "#!/bin/sh\nsan= probe=\nfor a do\n  case $a in\n"
+         "  -fsanitize=*) san=1;;\n  *probe-san*) probe=1;;\n  esac\n"
+         "done\nif [ -n \"$san\" ] && [ -z \"$probe\" ]; then\n"
+         "  echo 'no sanitizers for you' >&2; exit 1\nfi\n"
+         "exec %s \"$@\"\n",
+         "it doesn't build with them"},
+    };
+    const char *real = getenv("CC");
+    char *old = real ? strdup(real) : NULL;
+    lc_ctx *ctx = open_ctx(JUDGE);
+    lc_judge_options opts;
+    lc_str body = LC_STR_INIT, cache = LC_STR_INIT;
+    char fake[512];
+    events ev;
+    size_t i;
+
+    memset(&opts, 0, sizeof opts);
+    opts.all = 1;
+    opts.stop_on_failure = 1;
+    opts.sanitizer_check = 1;
+    for (i = 0; i < sizeof fakes / sizeof fakes[0]; i++) {
+        lc_report *rep;
+
+        lc_str_clear(&body);
+        lc_str_printf(&body, fakes[i].body, old && *old ? old : "cc");
+        fake_compiler(fakes[i].name, lc_str_cstr(&body), fake, sizeof fake);
+        setenv("CC", fake, 1);
+        rep = judge_with(ctx, "missing", "past.c", &opts, &ev, NULL);
+        CHECK(rep != NULL);
+        if (i == 2 && rep && rep->sanitizer_check_note &&
+            !strstr(rep->sanitizer_check_note, fakes[i].note)) {
+            /* The real compiler's sanitizers don't work here either. */
+            printf("test_build: note: skipped the 'doesn't build' test "
+                   "(%s)\n", rep->sanitizer_check_note);
+            lc_report_free(rep);
+            continue;
+        }
+        if (rep) {
+            CHECK_INT(rep->verdict, LC_ACCEPTED);
+            CHECK_INT(rep->sanitizer_check, LC_SANCHECK_SKIPPED);
+            CHECK(rep->sanitizer_check_note &&
+                  strstr(rep->sanitizer_check_note, fakes[i].note));
+            if (i < 2) {
+                CHECK(rep->check_build == NULL);
+                CHECK_STR(ev.log, "bBsdsdsdsdsdE");
+            } else {
+                CHECK(rep->check_build && !rep->check_build->ok);
+                CHECK_STR(ev.log, "bBsdsdsdsdsdkKE");
+            }
+        }
+        lc_report_free(rep);
+    }
+    /* The probe's answers are kept; the last compiler's is a yes. */
+    CHECK_INT(lc_read_file(ctx, CACHE "/sanitizers", LC_MIB, &cache), LC_OK);
+    CHECK(strstr(lc_str_cstr(&cache), "nosan-cc") != NULL);
+    CHECK(strstr(lc_str_cstr(&cache), "\t-\tprograms built with them don't "
+                 "run here (exited with status 3)\n") != NULL);
+    CHECK(strstr(lc_str_cstr(&cache), "nobuild-cc") != NULL);
+    if (old)
+        setenv("CC", old, 1);
+    else
+        unsetenv("CC");
+    free(old);
+    lc_str_free(&body);
+    lc_str_free(&cache);
+    lc_close(ctx);
+}
+
 int main(void)
 {
     signal(SIGPIPE, SIG_IGN);
@@ -829,5 +1139,7 @@ int main(void)
     RUN(test_cancel);
     RUN(test_std);
     RUN(test_sanitize);
+    RUN(test_sanitizer_check);
+    RUN(test_sanitizer_skip);
     return test_report();
 }

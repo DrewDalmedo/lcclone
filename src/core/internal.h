@@ -425,6 +425,14 @@ typedef struct lc_judge_opts {
     int sanitize;
     char *const *envp;        /* the programs' environment; NULL: lc's */
     const lc_build *build;    /* becomes the report's `build` */
+    /*
+     * The run is lc_judge's sanitizer check: results and case events are
+     * marked as its, and a case that runs out of time doesn't count as a
+     * failure (the sanitizers slow programs down; the run before judged
+     * the time).
+     */
+    int sanitizer_check;
+    int no_done;              /* no LC_EV_DONE: the caller sends it */
 } lc_judge_opts;
 
 /*
@@ -516,6 +524,17 @@ char **lc_compiler_argv(lc_arena *a, const lc_compiler *cc,
 int lc_std_pick(lc_ctx *ctx, const lc_lang *lang, const lc_compiler *cc,
                 const char *want, const char **name, const char **flag);
 
+/*
+ * Whether programs built with the sanitizers work with this compiler
+ * here: an empty one is built with them and run with `envp`, once per
+ * compiler, and the answer is kept in <cache>/sanitizers. *why is NULL
+ * when they work, else the reason, in `a`: "cc has none" (musl's gcc), or
+ * "programs built with them don't run here (killed by SIGSEGV)".
+ */
+int lc_sanitizers_work(lc_ctx *ctx, const lc_lang *lang,
+                       const lc_compiler *cc, char *const *envp,
+                       lc_arena *a, const char **why);
+
 /* ------------------------------------------------------------------ */
 /* Code generation (codegen.c)                                         */
 /* ------------------------------------------------------------------ */
@@ -595,13 +614,14 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
 /*
  * Builds `src` in `lang` for problem `p` as `role`, with build events:
  * finds the compiler, picks the standard (`std` as for lc_std_resolve),
- * and builds. On LC_OK *bout is the build (in `a`) unless *cancelled is
- * set, and *exe the program when it compiled.
+ * and builds. `check` marks the build and its events as lc_judge's
+ * sanitizer check. On LC_OK *bout is the build (in `a`) unless *cancelled
+ * is set, and *exe the program when it compiled.
  */
 int lc_build_step(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
-                  const char *src, const char *std, int sanitize, int role,
-                  const lc_hooks *hooks, lc_arena *a, lc_build **bout,
-                  const char **exe, int *cancelled);
+                  const char *src, const char *std, int sanitize, int check,
+                  int role, const lc_hooks *hooks, lc_arena *a,
+                  lc_build **bout, const char **exe, int *cancelled);
 
 /*
  * Runs `exe`, a solution built with its harness, on the inputs of case

@@ -57,11 +57,14 @@ LC_RT LC_RT_NORETURN LC_RT_PRINTF(1, 2) void lc_rt_fail(const char *fmt, ...)
     exit(LC_RT_FAIL);
 }
 
-/* calloc that never returns NULL; n may be 0. */
+/* calloc that never returns NULL; n may be 0. Even then it asks for no
+ * elements, so that AddressSanitizer reports reading one. */
 LC_RT void *lc_rt_alloc(size_t n, size_t size)
 {
-    void *p = calloc(n ? n : 1, size);
+    void *p = calloc(n, size);
 
+    if (!p && n == 0)
+        p = calloc(1, size);
     if (!p)
         lc_rt_fail("out of memory");
     return p;

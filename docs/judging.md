@@ -174,6 +174,9 @@ that says why, for example:
 - `exited without returning a result`
 - `its result could not be read: byte 5: expected an int, got 'x'`
 
+`lc submit` then checks an accepted run with the sanitizers, and a case
+that fails there gets that verdict instead ([below](#the-sanitizer-check)).
+
 When the harness can't write the result, because the solution handed back
 something it can't use, it stops with status 70 and says why on stderr:
 `lc: twoSum did not set *returnSize`, `lc: reverse returned NULL, but
@@ -182,7 +185,9 @@ something it can't use, it stops with status 70 and says why on stderr:
 6, but nums has 5 elements`. It does the same, in C, when the solution
 wrote past the end of an array it was given: `lc: duplicateZeros wrote
 past the end of arr (arr[8])`. That is a Runtime Error too, shown with the
-message (and `lc check` adds the message to its finding).
+message (and `lc check` adds the message to its finding). Built with
+AddressSanitizer, the harness leaves out the spare element it catches such
+writes with, and ASan reports them itself ([Sanitizers](#sanitizers)).
 
 ## A run's report
 
@@ -197,7 +202,8 @@ that finished, the report has:
   literals (the program's result is missing when it couldn't be read);
 - the first 64 KiB of stdout and the last 64 KiB of stderr, where a crash
   report usually is, each with a flag saying whether it was cut;
-- CPU time, elapsed time, peak memory, and the exit status or signal.
+- CPU time, elapsed time, peak memory, and the exit status or signal;
+- whether it comes from the sanitizer check.
 
 The run's own verdict is that of the first case that failed. It is
 Accepted when every case ran and passed.
@@ -261,9 +267,73 @@ out-of-bounds access, a use after free or undefined behaviour then stops
 the program, and the case is a Runtime Error with the sanitizer's report in
 its stderr.
 
+In C, the harness gives each array it hands the solution exactly its
+elements when it is built with AddressSanitizer, not the spare zeroed one
+that otherwise catches a write past the end. So ASan sees a read one past
+the end, `nums[numsSize]`, and reports it as a `heap-buffer-overflow`, as
+LeetCode's does; without ASan that read gets 0. A `char[]` keeps its NUL
+either way, so that it is also a string. C++ vectors hold exactly their
+elements anyway, and the library's bounds checks catch `nums[n]`.
+
 AddressSanitizer reserves a huge address space and uses far more memory
 than the program itself, so a sanitized run has no address-space limit and
 no memory verdict, and three times the time limit. Leak detection is off:
 a solution written for LeetCode doesn't free what it allocates, and
 neither does the harness. musl's gcc has no sanitizers; there the build
 fails with the compiler's message.
+
+### The sanitizer check
+
+LeetCode builds C and C++ solutions with AddressSanitizer and UBSan. A
+signed overflow that `-O2` folds away, a division by zero (which arm64
+doesn't trap), a buffer one byte short or a read one past an array's end
+can give right answers in a plain build, and fail there. So when every
+case of `lc submit` passes, it checks the solution: it builds it again
+with the sanitizers, as `--sanitize` does, and runs the same cases again.
+
+```
+Building solution.c (C, c11)
+Checking solution.c with the sanitizers
+
+solution.c:1: Runtime Error on case 3 of 22 with the sanitizers (killed by SIGABRT)
+  Input:    nums = [2,0,5,3,1,4]
+  Expected: 6
+  Stderr:
+    ==17202==ERROR: AddressSanitizer: heap-buffer-overflow on address ...
+    READ of size 4 at 0x603000001c78 thread T0
+        #0 0x000104eb4990 in missingNumber solution.c:5
+    ...
+```
+
+- A case that fails in the check takes the place of its result, and the
+  submission gets its verdict. That is mostly a Runtime Error with the
+  sanitizer's report, but can be a Wrong Answer: ASan fills what `malloc`
+  returns with `0xbe` bytes (its first 4 KiB), so a solution that reads
+  memory it never wrote can answer differently.
+- **Running out of time doesn't count** in the check: programs built with
+  the sanitizers are slower (1.5 to 4 times, measured on full-size cases),
+  and the first run judged the time. The check has the limits of
+  `--sanitize`: three times the time limit and no memory limit.
+- The time and memory reported, and recorded as your best time, are the
+  first run's.
+- **Where the check can't run,** it is skipped and `lc` says why:
+  `lc: note: not checked with the sanitizers: cc has none` (musl's gcc), or
+  `programs built with them don't run here (killed by SIGSEGV)` (ASan
+  can't start under some kernels' settings). `lc` finds this out once per
+  compiler, by building and running an empty program with the sanitizers,
+  and keeps the answer in `$XDG_CACHE_HOME/lcclone/sanitizers`; delete the
+  file to ask again. A solution that compiles, but not with the
+  sanitizers, is skipped the same way: `it doesn't build with them`.
+- ^C during the check cancels the submission, which isn't recorded.
+
+The check costs a second build, cached like the first, and a second run
+of the cases. Measured on an M4 Mac (Apple clang 21) and in a Linux VM on
+it (gcc 16): the build adds 20 to 50 ms in C and 80 to 120 ms in C++ on
+the Mac, 50 to 120 ms and 100 to 270 ms on Linux; rerunning 25 small cases
+adds about 0.2 s on macOS, where a program built with ASan takes about
+8 ms to start, and 30 ms on Linux.
+
+`lc test` has no check, to stay quick; `lc test --sanitize` runs with the
+sanitizers instead. `lc submit --sanitize` has none either: its only run
+is the one built with the sanitizers, without the memory verdict and with
+three times the time limit.

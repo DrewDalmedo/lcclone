@@ -477,3 +477,180 @@ int lc_std_resolve(lc_ctx *ctx, const lc_lang *lang, const char *want,
     lc_arena_free(&a);
     return rc;
 }
+
+/* ------------------------------------------------------------------ */
+/* Sanitizers                                                          */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Looks the compiler up in the sanitizer cache: 1 the sanitizers work, 0
+ * they don't (*why is the reason kept, in `a`), -1 not known yet. A line
+ * is "<id>\t+" or "<id>\t-\t<why>".
+ */
+static int cached_san(lc_arena *a, const lc_str *cache, const char *id,
+                      const char **why)
+{
+    const char *p = lc_str_cstr(cache), *end = p + cache->len;
+    size_t idlen = strlen(id);
+
+    while (p < end) {
+        const char *nl = memchr(p, '\n', (size_t)(end - p));
+        const char *le = nl ? nl : end;
+
+        if ((size_t)(le - p) > idlen + 1 && memcmp(p, id, idlen) == 0 &&
+            p[idlen] == '\t') {
+            const char *f = p + idlen + 1;
+
+            if (le - f == 1 && *f == '+')
+                return 1;
+            if (le - f > 2 && f[0] == '-' && f[1] == '\t') {
+                *why = lc_arena_strndup(a, f + 2, (size_t)(le - f - 2));
+                return *why ? 0 : -1;
+            }
+        }
+        p = le + (nl ? 1 : 0);
+    }
+    return -1;
+}
+
+/* Why a program didn't run: "killed by SIGSEGV", "exited with status 1". */
+static char *run_failure(lc_arena *a, const lc_run_result *r)
+{
+    const char *name = r->signal ? lc_signal_name(r->signal) : NULL;
+
+    if (name)
+        return lc_arena_printf(a, "killed by %s", name);
+    if (r->signal)
+        return lc_arena_printf(a, "killed by signal %d", r->signal);
+    return lc_arena_printf(a, "exited with status %d", r->exit_code);
+}
+
+/*
+ * Builds an empty program with the sanitizers, as --sanitize builds a
+ * solution, and runs it with `envp`. *why stays NULL when that works;
+ * else it is the reason, in `a`.
+ */
+static int probe_san(lc_ctx *ctx, const lc_lang *lang, const lc_compiler *cc,
+                     const char *dir, char *const *envp, lc_arena *a,
+                     const char **why)
+{
+    const char *src = lang->id == LC_LANG_CPP ? "int main() { return 0; }\n"
+                                              : "int main(void) { return 0; }\n";
+    lc_arena tmp = {NULL};
+    lc_run_spec spec;
+    lc_run_result r;
+    const char *args[5];
+    char **argv = NULL;
+    char *file, *exe, *dsym, *how;
+    int rc;
+
+    *why = NULL;
+    file = lc_arena_printf(&tmp, "%s/probe-san.%s", dir, lang->ext);
+    exe = lc_arena_printf(&tmp, "%s/probe-san-%s", dir, lang->name);
+    dsym = lc_arena_printf(&tmp, "%s/probe-san-%s.dSYM", dir, lang->name);
+    if (file && exe && dsym) {
+        args[0] = "-fsanitize=address,undefined";
+        args[1] = "-fno-sanitize-recover=all";
+        args[2] = "-o";
+        args[3] = exe;
+        args[4] = file;
+        argv = lc_compiler_argv(&tmp, cc, args, 5, NULL);
+    }
+    if (!argv) {
+        lc_arena_free(&tmp);
+        return lc_oom(ctx);
+    }
+    rc = lc_write_file_atomic(ctx, file, src, strlen(src));
+    if (rc != LC_OK)
+        goto done;
+
+    memset(&spec, 0, sizeof spec);
+    spec.path = argv[0];
+    spec.argv = argv;
+    spec.cwd = dir;
+    spec.wall_ms = PROBE_MS;
+    lc_run_result_init(&r);
+    rc = lc_run(ctx, &spec, &r);
+    if (rc == LC_OK && !(r.exited && r.exit_code == 0)) {
+        *why = lc_arena_printf(a, "%s has none", cc->cmd);
+        if (!*why)
+            rc = lc_oom(ctx);
+        lc_run_result_free(&r);
+        goto done;
+    }
+    lc_run_result_free(&r);
+    if (rc != LC_OK)
+        goto done;
+
+    memset(&spec, 0, sizeof spec);
+    spec.path = exe;
+    spec.envp = envp;
+    spec.cwd = dir;
+    spec.wall_ms = PROBE_MS;
+    lc_run_result_init(&r);
+    rc = lc_run(ctx, &spec, &r);
+    if (rc == LC_OK && !(r.exited && r.exit_code == 0)) {
+        how = run_failure(&tmp, &r);
+        *why = how ? lc_arena_printf(a, "programs built with them don't run "
+                                     "here (%s)", how)
+                   : NULL;
+        if (!*why)
+            rc = lc_oom(ctx);
+    }
+    lc_run_result_free(&r);
+done:
+    remove(file);
+    remove(exe);
+    lc_remove_tree(dsym);
+    lc_arena_free(&tmp);
+    return rc;
+}
+
+int lc_sanitizers_work(lc_ctx *ctx, const lc_lang *lang,
+                       const lc_compiler *cc, char *const *envp,
+                       lc_arena *a, const char **why)
+{
+    const char *dir = lc_cache_dir(ctx);
+    lc_str cache = LC_STR_INIT, path = LC_STR_INIT;
+    int rc;
+
+    *why = NULL;
+    if (!dir)
+        return LC_ERR_NOTFOUND;
+    rc = lc_mkdir_p(ctx, dir, 0777);
+    if (rc != LC_OK)
+        return rc;
+    if (lc_str_printf(&path, "%s/sanitizers", dir) != LC_OK)
+        return lc_oom(ctx);
+    rc = lc_read_file(ctx, path.data, LC_MIB, &cache);
+    if (rc == LC_ERR_NOMEM)
+        goto done;
+    if (rc != LC_OK)
+        lc_str_clear(&cache); /* missing or unreadable: start afresh */
+    rc = LC_OK;
+    if (cached_san(a, &cache, cc->id, why) >= 0)
+        goto done;
+
+    rc = probe_san(ctx, lang, cc, dir, envp, a, why);
+    if (rc != LC_OK)
+        goto done;
+    /* Remember it. A cache that can't be written only costs a probe the
+     * next time. */
+    if (cache.len > 0 && cache.data[cache.len - 1] != '\n')
+        lc_str_putc(&cache, '\n');
+    if (*why)
+        lc_str_printf(&cache, "%s\t-\t%s\n", cc->id, *why);
+    else
+        lc_str_printf(&cache, "%s\t+\n", cc->id);
+    if (cache.failed) {
+        rc = lc_oom(ctx);
+        goto done;
+    }
+    if (lc_write_file_atomic(ctx, path.data, cache.data, cache.len) ==
+        LC_ERR_NOMEM)
+        rc = lc_oom(ctx);
+done:
+    lc_str_free(&cache);
+    lc_str_free(&path);
+    return rc;
+}

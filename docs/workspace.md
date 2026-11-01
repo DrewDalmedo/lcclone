@@ -60,7 +60,10 @@ lc submit                   # every case, stopping at the first failure
   next to the solution (or the file given with `--case FILE`). Every case
   runs; the failures are shown at the end.
 - **`lc submit`** runs every case of the problem, the hidden ones too, and
-  stops at the first that fails, as LeetCode does.
+  stops at the first that fails, as LeetCode does. When they all pass, it
+  checks the solution with AddressSanitizer and UBSan, which LeetCode
+  builds with: it runs the cases again built with them, and a crash or a
+  sanitizer's report there fails the submission ([judging.md](judging.md#the-sanitizer-check)).
 - A directory with both `solution.c` and `solution.cpp` needs `--lang c`
   or `--lang cpp`.
 
@@ -158,7 +161,9 @@ in `runtime/`.
 **`--sanitize`** builds with AddressSanitizer and UndefinedBehaviorSanitizer
 (where the compiler has them), so out-of-bounds accesses, use after free
 and undefined behaviour become a Runtime Error with the sanitizer's report.
-See [judging.md](judging.md#sanitizers).
+See [judging.md](judging.md#sanitizers). `lc submit` does this by itself
+for an accepted solution; `lc test` doesn't, unless you give it
+`--sanitize`.
 
 ## Progress and history
 

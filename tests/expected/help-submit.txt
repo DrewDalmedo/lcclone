@@ -2,13 +2,16 @@
 usage: lc submit [<solution>] [--lang LANG] [--std STD] [--sanitize] [--json] [--color=WHEN]
 
 Build your solution and run it on every case of the problem, hidden
-ones included, stopping at the first that fails. <solution> is as
-for 'lc test'.
+ones included, stopping at the first that fails. When they all pass,
+check it with AddressSanitizer and UBSan, as LeetCode builds with
+them: run the cases again built with them, and fail on a crash or a
+sanitizer's report. <solution> is as for 'lc test'.
 
 Options:
   --lang LANG        c or cpp, when a directory has both solutions
   --std STD          the standard, as for 'lc test'
-  --sanitize         build with AddressSanitizer and UBSan
+  --sanitize         run only the build with the sanitizers (no
+                     memory limit, three times the time limit)
   --json             print JSON Lines: one object per event
   --color=WHEN       colour the output: auto (the default), always or
                      never
