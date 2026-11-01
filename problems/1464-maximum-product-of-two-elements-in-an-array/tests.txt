@@ -1,0 +1,86 @@
+# Maximum Product of Two Elements in an Array.
+
+@example The two largest numbers are 9 and 6: (9 - 1) * (6 - 1) = 40.
+[6,2,9,3]
+=> 40
+
+@example 10 occurs twice, at two different positions, so it can be paired with itself: 9 * 9 = 81.
+[3,10,2,10,4]
+=> 81
+
+@example Every pair includes a 1, and 1 - 1 = 0.
+[1,1,7]
+=> 0
+
+# Two entries, both as large as allowed: 999 * 999 needs more than 16 bits.
+[1000,1000]
+=> 998001
+
+# Two entries, both as small as allowed.
+[1,1]
+=> 0
+
+# Two entries, one of them 1000.
+[2,1000]
+=> 999
+
+# All ones.
+[1,1,1,1,1]
+=> 0
+
+# One large entry among ones scores nothing.
+[1,1000,1]
+=> 0
+
+# The largest value occurs once and can't be used twice: 49 * 6, not 49 * 49.
+[50,3,7]
+=> 294
+
+# Increasing order: each new largest pushes the old one to second place.
+[2,3,4,5,6]
+=> 20
+
+# Decreasing order.
+[9,8,4,2]
+=> 56
+
+# The largest entry is last and the second largest first.
+[7,1,2,3,11]
+=> 60
+
+# The first two entries are not in order, and a value between them comes next.
+[2,9,5]
+=> 32
+
+# The largest value twice, followed by a smaller one: 5 * 5, not 5 * 4.
+[6,6,5]
+=> 25
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[2,2]
+=> 1
+
+@gen 2 small
+[3,3,1,1,1,2]
+=> 4
+
+@gen 3 small
+[999,1,1000,2,2,999,999,1]
+=> 997002
+
+@gen 6 small
+[3,1,1,1,1,7,1]
+=> 12
+
+@gen 8 small
+[3,3,3,3,1,1,1,1]
+=> 4
+
+@gen 9 small
+[1,10,1,11,1,1,1]
+=> 90
+
+@gen 10 small
+[9,5,1,6,6,4,9,8]
+=> 64

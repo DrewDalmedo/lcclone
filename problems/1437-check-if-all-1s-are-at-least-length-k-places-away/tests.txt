@@ -1,0 +1,106 @@
+# Check If All 1's Are at Least Length K Places Away.
+
+@example The pulses at ticks 1, 5 and 11 have 3 and then 5 quiet ticks between them; the quiet ticks before the first pulse and after the last don't count.
+[0,1,0,0,0,1,0,0,0,0,0,1,0,0]
+3
+=> true
+
+@example The pulses at ticks 4 and 6 have only 1 quiet tick between them.
+[1,0,0,0,1,0,1,0,0,0,1]
+3
+=> false
+
+@example With k = 0, pulses may come on neighbouring ticks.
+[1,1,0,1]
+0
+=> true
+
+# The smallest input: a single pulse, with k = nums.length.
+[1]
+1
+=> true
+
+# No pulses at all.
+[0,0,0,0]
+4
+=> true
+
+# Exactly k quiet ticks between two pulses is enough...
+[1,0,0,0,1]
+3
+=> true
+
+# ...but k - 1 is not, though the two ticks are k apart.
+[1,0,0,0,1]
+4
+=> false
+
+# 300 quiet ticks between two pulses, for k = 300 and k = 301.
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+300
+=> true
+
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+301
+=> false
+
+# k = nums.length with two pulses.
+[0,1,0,1,0]
+5
+=> false
+
+# Pulses at both ends have nums.length - 2 quiet ticks between them: k one
+# more fails, k equal passes.
+[1,0,0,0,0,1]
+5
+=> false
+
+[1,0,0,0,0,1]
+4
+=> true
+
+# The first pulse is at tick 0, with fewer than k ticks before it.
+[1,0,0,1,0,0,1]
+2
+=> true
+
+# Only the last two pulses are too close.
+[1,0,0,0,1,0,0,0,1,0,0,0,1,0,1]
+3
+=> false
+
+# All ones, with k = 0.
+[1,1,1,1,1,1,1,1]
+0
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 5 small
+[0,1,0,0,0,1,0,1,1,0]
+1
+=> false
+
+@gen 6 small
+[0,1,0,0,1,0,0,0,0,0]
+3
+=> false
+
+@gen 12 small
+[0,0,1,0,1,0,1,0]
+1
+=> true
+
+@gen 21 small
+[0,0,1,0,0,0,0,1,0]
+4
+=> true
+
+@gen 31 small
+[0,1,0,0,0,1,0,0,0,0,0]
+4
+=> false
+
+@gen 37 small
+[0,0,1,0,0,0,1,0,0,0,0,1]
+3
+=> true

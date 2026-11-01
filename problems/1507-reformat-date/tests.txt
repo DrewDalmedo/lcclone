@@ -1,0 +1,95 @@
+# Reformat Date.
+
+@example September is month 9, and both it and the 1st get a leading zero.
+"1st Sep 2014"
+=> "2014-09-01"
+
+@example A two-digit month and day need no padding.
+"23rd Nov 1987"
+=> "1987-11-23"
+
+@example The 11th ends in th; February is month 2.
+"11th Feb 2000"
+=> "2000-02-11"
+
+# The earliest year allowed.
+"2nd Jan 1900"
+=> "1900-01-02"
+
+# The latest year allowed, on its last day.
+"31st Dec 2100"
+=> "2100-12-31"
+
+# Jun, not Jan or Jul, and a one-digit day ending in th.
+"9th Jun 1901"
+=> "1901-06-09"
+
+# Jul, and the first two-digit day.
+"10th Jul 2023"
+=> "2023-07-10"
+
+# Mar, on the 3rd.
+"3rd Mar 1999"
+=> "1999-03-03"
+
+# May, not Mar; the 13th ends in th.
+"13th May 2047"
+=> "2047-05-13"
+
+# Apr, on the 22nd.
+"22nd Apr 2010"
+=> "2010-04-22"
+
+# Aug, not Apr, on the 31st.
+"31st Aug 1969"
+=> "1969-08-31"
+
+# A leap day.
+"29th Feb 2000"
+=> "2000-02-29"
+
+# Oct, the first month with two digits, on the 12th.
+"12th Oct 2005"
+=> "2005-10-12"
+
+# The 21st ends in st; zeros inside the year stay.
+"21st Jan 2001"
+=> "2001-01-21"
+
+# The last day of a 30-day month.
+"30th Nov 1950"
+=> "1950-11-30"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"3rd Jul 2061"
+=> "2061-07-03"
+
+@gen 2 small
+"27th Sep 1900"
+=> "1900-09-27"
+
+@gen 3 small
+"22nd Nov 2100"
+=> "2100-11-22"
+
+@gen 4 small
+"12th Nov 2003"
+=> "2003-11-12"
+
+@gen 5 small
+"1st Feb 2100"
+=> "2100-02-01"
+
+@gen 6 small
+"11th Oct 2035"
+=> "2035-10-11"
+
+# Full size: any date in the range, drawn evenly.
+@gen 1
+"12th Jul 2061"
+=> "2061-07-12"
+
+@gen 2
+"23rd Sep 1952"
+=> "1952-09-23"

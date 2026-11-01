@@ -1,0 +1,122 @@
+# Water Bottles. The two inputs are numBottles, then numExchange.
+
+@example Drink 11 and recycle 9 of the empties for 3 more, keeping 2. Those 3 make 5 empties: recycle 3 for one more, keeping 2. That one makes 3 empties, enough for a last bottle: 11 + 3 + 1 + 1.
+11
+3
+=> 16
+
+@example After 20 bottles, 18 empties buy 3 more. Drinking them leaves 2 + 3 = 5 empties, one short of another trip.
+20
+6
+=> 23
+
+@example The machine wants 8 empties, but there are never more than 7.
+7
+8
+=> 7
+
+# One bottle can never be recycled into another.
+1
+2
+=> 1
+
+1
+100
+=> 1
+
+# numExchange equals numBottles: exactly one extra bottle.
+37
+37
+=> 38
+
+100
+100
+=> 101
+
+# numExchange is one more than numBottles: no trip at all.
+99
+100
+=> 99
+
+# numExchange = 2 gives the most bottles, 2 * numBottles - 1; 199 is the
+# largest answer.
+2
+2
+=> 3
+
+100
+2
+=> 199
+
+# Leftover empties must be kept: here 3 are left after the first trip and
+# complete the second one later.
+13
+5
+=> 16
+
+# numBottles is a multiple of numExchange - 1: the last bottle would need
+# a borrowed empty.
+12
+4
+=> 15
+
+# Many rounds of recycling, not just one.
+100
+3
+=> 149
+
+# numBottles = 100 with numExchange just above and just below half of it.
+100
+51
+=> 101
+
+100
+50
+=> 102
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+19
+18
+=> 20
+
+@gen 2 small
+17
+9
+=> 19
+
+@gen 3 small
+16
+2
+=> 31
+
+@gen 4 small
+4
+3
+=> 5
+
+@gen 5 small
+10
+3
+=> 14
+
+@gen 6 small
+2
+2
+=> 3
+
+# Full-size random cases.
+@gen 1
+100
+31
+=> 103
+
+@gen 2
+45
+30
+=> 46
+
+@gen 4
+24
+2
+=> 47

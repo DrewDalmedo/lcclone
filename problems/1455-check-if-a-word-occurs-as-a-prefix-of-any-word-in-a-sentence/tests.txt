@@ -1,0 +1,120 @@
+# Check If a Word Occurs As a Prefix of Any Word in a Sentence. Words are
+# numbered from 1, and -1 means that no word begins with searchWord.
+
+@example "sell" is the first word that begins with "se"; "seashells" does too, but comes later.
+"we sell seashells"
+"se"
+=> 2
+
+@example "go" is too short and "gopher" differs at its third letter; "gone" is searchWord itself.
+"go gopher gone"
+"gone"
+=> 3
+
+@example "main" is inside "remain" and "domain", but no word begins with it.
+"remain in the domain"
+"main"
+=> -1
+
+# The first word matches.
+"apple pie"
+"app"
+=> 1
+
+# Only the last word matches, with no space after it.
+"red green blue"
+"bl"
+=> 3
+
+# A single word, equal to searchWord.
+"hello"
+"hello"
+=> 1
+
+# A single word that is only the start of searchWord.
+"car"
+"cart"
+=> -1
+
+# A shorter word that is the start of searchWord, then a word that matches.
+"car carpet"
+"carp"
+=> 2
+
+# searchWord ends one word and sits inside the next, before the word that
+# begins with it.
+"begin spinach inch"
+"in"
+=> 3
+
+# searchWord is longer than every word.
+"a b c"
+"abc"
+=> -1
+
+# Several words begin with searchWord: the first one counts.
+"tea team tear"
+"tea"
+=> 1
+
+# 50 words, the most a sentence can hold, with the match in the last one.
+"a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a b"
+"b"
+=> 50
+
+# A word of 100 letters.
+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+"xxxxxxxxxx"
+=> 1
+
+# A word of 88 letters before a match of 10.
+"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq abcdefghij"
+"abcdefghij"
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"ab a bab"
+"aab"
+=> -1
+
+@gen 2 small
+"aab a ab a abc"
+"ab"
+=> 3
+
+@gen 3 small
+"b bab aab a bab ba"
+"ab"
+=> -1
+
+@gen 4 small
+"a aab"
+"abc"
+=> -1
+
+@gen 5 small
+"aab ab bab bab"
+"a"
+=> 1
+
+@gen 6 small
+"aab ba ba a"
+"a"
+=> 1
+
+# Full-size cases from gen.c: sentences of nearly 100 characters.
+@gen 6
+"aaabb ab acbb abbbc abbc cb cbbcc cbbcc cbbbcc cbbcc accbbcc aabbcc aabbcc aaabbcc abbc bbcca"
+"bbcc"
+=> 16
+
+@gen 20
+"a c a a a a a a a c c c a a a a c c c c c a c c c a c a c c c c a c a c a c c a c c a a c a a c c bc"
+"bc"
+=> 50
+
+@gen 24
+"b bc bcccbcac bcccbcaca bccc bcccbca bcccbcaca bcccbcaca bcccbc bcccb bcc bcccbcac bcccb bcccbcacab"
+"bcccbcacab"
+=> 14

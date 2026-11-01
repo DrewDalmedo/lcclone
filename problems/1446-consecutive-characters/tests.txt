@@ -1,0 +1,91 @@
+# Consecutive Characters.
+
+@example oo, kk and ee are the longest rows, two letters each.
+"bookkeeper"
+=> 2
+
+@example The last five letters are all e.
+"wheeeee"
+=> 5
+
+@example No letter is next to an equal one.
+"qwerty"
+=> 1
+
+# A single letter.
+"a"
+=> 1
+
+# The longest row is at the start.
+"dddcc"
+=> 3
+
+# The only repeat is at the very end.
+"abcdd"
+=> 2
+
+# Two letters taking turns.
+"abababab"
+=> 1
+
+# x is the most frequent letter, but its copies are apart.
+"xaxbxcxddd"
+=> 3
+
+# One letter in two rows split by another: the rows don't add up.
+"ccccdccc"
+=> 4
+
+# Several rows tied for longest.
+"ppqqrr"
+=> 2
+
+# 128 of one letter, past what a signed char can count.
+"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm"
+=> 128
+
+# 256 of one letter, one more than an unsigned char can count.
+"kccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdddddddddd"
+=> 256
+
+# The longest string allowed, all one letter.
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+=> 500
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"baa"
+=> 2
+
+@gen 2 small
+"aaabb"
+=> 3
+
+@gen 3 small
+"cbaaaaabbbaa"
+=> 5
+
+@gen 4 small
+"bbaaaaaa"
+=> 6
+
+@gen 5 small
+"bbaaaaaaab"
+=> 7
+
+@gen 6 small
+"bbbcccaaaa"
+=> 4
+
+# Full-size cases from gen.c: 500 letters.
+@gen 5
+"fffffffffffffffffffffffffffffffgggggggggghhhhhhhhhhtttttttttttttttttttttttttttttttttttttttjjjjjjjjjjjjjjjooooooooooooooooooooooooooooooooooooossssssssssssssssssssssssccccccccccccccccccccccccccccccgggggggggggffffffffffffffffffffffffxxxxxxxxxxxxllllllllllllllllllllllllllllllllllllllliiiiiiiiiiiimmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmiiiiiiijjjjjjjjjjjjjjjjjjjjjjjjjjjjjjuuuuppppppppppppppppppppuuuuuuuuuuuuuuuuuuuuuuuujjjjjjjjjjjjnnnnnnnnnttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
+=> 63
+
+@gen 6
+"wwwwwuuuuuuuuuuuujjjjjjjjjjjjjzzzzzzzzzzzzzzzzfffffffkkkkkkkkkkkkkkkkqqqqqqqqqqaaaaaaaaaabbbbqqqqqqqqqqqqqqqssssssssddddddddddddddvvvvvvvvvvlllllllllllllllllllxxxxxxxcccccccccccccccccccccllllllllllllllllllllnnnnnnnnnnnnnnhhhhhhhzzzzzzzzzzzzzzzssssslllllllldddddddddddddqqqqqqqqqqqqqqqqqqqddddddddddddddddffffffffffffffffffmmmmmmiiiiiiiiiiiuuuuuuuuuuuuuuuuuggggggggxxxxxxxxxxxxxxxxxxxxqqqqqqqqqqqqqqqqeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+=> 100
+
+@gen 10
+"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiibbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> 289

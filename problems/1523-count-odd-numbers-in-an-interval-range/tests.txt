@@ -1,0 +1,118 @@
+# Count Odd Numbers in an Interval Range. The two inputs are low, then high.
+
+@example Of the ten numbers 4 through 13, five are odd: 5, 7, 9, 11 and 13.
+4
+13
+=> 5
+
+@example The range holds just 21, which is odd.
+21
+21
+=> 1
+
+@example Both ends are even; 31, 33 and 35 lie between them.
+30
+36
+=> 3
+
+# The smallest ranges, at 0 and 1.
+0
+0
+=> 0
+
+1
+1
+=> 1
+
+0
+1
+=> 1
+
+# A single even number at the upper bound.
+1000000000
+1000000000
+=> 0
+
+# Both ends odd: 7, 9, 11, 13 and 15.
+7
+15
+=> 5
+
+# Odd low, even high: 9, 11, 13, 15, 17 and 19.
+9
+20
+=> 6
+
+# Two even ends 2 apart, with one odd number between them.
+2
+4
+=> 1
+
+# The widest ranges hold 5 * 10^8 odd numbers.
+0
+1000000000
+=> 500000000
+
+1
+1000000000
+=> 500000000
+
+1
+999999999
+=> 500000000
+
+# Near the top.
+999999999
+1000000000
+=> 1
+
+2
+999999998
+=> 499999998
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+29
+29
+=> 1
+
+@gen 2 small
+13
+13
+=> 1
+
+@gen 3 small
+3
+15
+=> 7
+
+@gen 4 small
+11
+20
+=> 5
+
+@gen 5 small
+4
+14
+=> 5
+
+@gen 6 small
+21
+29
+=> 5
+
+# Full-size random cases.
+@gen 1
+57526399
+57526399
+=> 1
+
+@gen 2
+587494940
+816164509
+=> 114334785
+
+@gen 3
+3
+999999999
+=> 499999999
