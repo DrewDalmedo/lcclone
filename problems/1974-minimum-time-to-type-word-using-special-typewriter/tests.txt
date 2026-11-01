@@ -1,0 +1,103 @@
+# Minimum Time to Type Word Using Special Typewriter.
+
+@example 3 notches from 'a' to 'd', 11 from 'd' to 'o', 8 from 'o' back to 'g', and 3 presses.
+"dog"
+=> 25
+
+@example Through the seam: 'a' to 'y' and back are 2 notches each, then 10 notches to 'k'; 14 notches and 3 presses.
+"yak"
+=> 17
+
+@example 'p' is 11 notches from 'a' going backwards past 'z' (15 forwards); the other two 'p's need only presses.
+"ppp"
+=> 14
+
+# One 'a': no turning, a single press.
+"a"
+=> 1
+
+# The letter opposite 'a' is 13 notches away either way.
+"n"
+=> 14
+
+# 'o' is 14 notches forwards but only 12 backwards, past 'z': the short way
+# round must be taken for every distance above 13, not only far ones.
+"o"
+=> 13
+
+# One notch backwards from 'a' reaches 'z' (not 25 forwards).
+"z"
+=> 2
+
+# Repeated letters cost one press each and no turning.
+"aaaa"
+=> 4
+
+# Neighbours across the seam: 'z' to 'a' is 1 notch, 'w' to 'b' is 5.
+"za"
+=> 4
+
+"wb"
+=> 11
+
+# A backwards move: in C, ('c' - 'e') % 26 is -2, not 24.
+"ec"
+=> 8
+
+# The first move starts at 'a', not at word[0], and each later move starts
+# at the letter just printed, not at 'a'.
+"mn"
+=> 15
+
+# The largest answer: 100 letters, each 13 notches from the one before.
+"nananananananananananananananananananananananananananananananananananananananananananananananananana"
+=> 1400
+
+# The whole alphabet, forwards and backwards: one notch per letter.
+"abcdefghijklmnopqrstuvwxyz"
+=> 51
+
+"zyxwvutsrqponmlkjihgfedcba"
+=> 52
+
+# Moves of 10, 4, 6 (through the seam), 9 (through the seam), 2 and 6.
+"quartz"
+=> 43
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"oxlsnnr"
+=> 56
+
+@gen 2 small
+"gqmse"
+=> 43
+
+@gen 3 small
+"ckcfhdwk"
+=> 54
+
+@gen 4 small
+"lamf"
+=> 45
+
+@gen 5 small
+"xmnzyx"
+=> 35
+
+@gen 6 small
+"mb"
+=> 25
+
+# Full-size cases from gen.c: 100 letters.
+@gen 1
+"pqqoqsssssrqrqprrprsrqpoqrrrprqqpnppnmkkiiiiiijlmllmlmkiiiikjlkkjljkjkiiiiijjjkjklmmnlmmlmommoomonnn"
+=> 205
+
+@gen 2
+"egqmsekulmznzvwecuyriadgwuqlzxshwqzaeidiwbhetxijzcxyrphhqdqursjewqicivkjwrqfysdmqxrsotighhwtocmabuul"
+=> 733
+
+@gen 3
+"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+=> 110

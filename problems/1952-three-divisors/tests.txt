@@ -1,0 +1,115 @@
+# Three Divisors.
+
+@example The band can form 1, 7 or 49 rows: exactly three ways.
+49
+=> true
+
+@example 1, 2, 3, 4, 6 and 12 rows all work: six ways.
+12
+=> false
+
+@example A single player can only form one row.
+1
+=> false
+
+# The smallest square of a prime.
+4
+=> true
+
+# A prime has only two divisors.
+3
+=> false
+
+# The largest prime below 10^4.
+9973
+=> false
+
+# Squares of composite numbers have more than three divisors.
+36
+=> false
+
+10000
+=> false
+
+# Higher powers of a prime: 2^3 has four divisors and 2^4 five.
+8
+=> false
+
+16
+=> false
+
+# A product of two different primes has four divisors.
+221
+=> false
+
+# The square of the prime 31.
+961
+=> true
+
+# 97^2, the largest prime square in range, and its neighbours.
+9409
+=> true
+
+9408
+=> false
+
+9410
+=> false
+
+# Squares of composites with no factor 2 or 3: 25^2 = 5^4, 49^2 = 7^4
+# and 91^2 = (7 * 13)^2. A primality test of the root that only tries 2
+# and 3 (or 2, 3 and 5) takes 25, 49 or 91 for a prime.
+625
+=> false
+
+2401
+=> false
+
+8281
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+169
+=> true
+
+@gen 2 small
+94
+=> false
+
+@gen 3 small
+51
+=> false
+
+@gen 8 small
+172
+=> false
+
+@gen 9 small
+5
+=> false
+
+@gen 10 small
+153
+=> false
+
+@gen 12 small
+81
+=> false
+
+@gen 14 small
+125
+=> false
+
+# Full-size cases from gen.c.
+@gen 8
+5572
+=> false
+
+@gen 11
+2197
+=> false
+
+@gen 19
+1849
+=> true

@@ -1,0 +1,128 @@
+# Reverse Prefix of Word.
+
+@example The first "n" ends the head "plan", which becomes "nalp"; the tail "et" stays.
+"planet"
+"n"
+=> "nalpet"
+
+@example "a" first turns up at index 1, so only "ba" is turned around; the later "a"s are in the tail.
+"banana"
+"a"
+=> "abnana"
+
+@example There is no "e" in the word, so it comes back unchanged.
+"rhythm"
+"e"
+=> "rhythm"
+
+# One letter, equal to ch or not.
+"q"
+"q"
+=> "q"
+
+"q"
+"w"
+=> "q"
+
+# ch is the first letter: the head is that letter alone, even though ch
+# comes back later.
+"seasons"
+"s"
+=> "seasons"
+
+# ch only at the end: the whole word turns around.
+"stream"
+"m"
+=> "maerts"
+
+# The head ends at ch itself, not one letter before or after it.
+"pqrstu"
+"r"
+=> "rqpstu"
+
+# A second ch right after the first one stays in the tail.
+"xyzzy"
+"z"
+=> "zyxzy"
+
+# The first ch decides, not the last one.
+"mississippi"
+"s"
+=> "simsissippi"
+
+# Every letter but ch.
+"zyxwvutsrqponlkjihgfedcba"
+"m"
+=> "zyxwvutsrqponlkjihgfedcba"
+
+# The same letter throughout, and one different letter at the end.
+"aaaa"
+"a"
+=> "aaaa"
+
+"bbbba"
+"a"
+=> "abbbb"
+
+# The first ch is at index 140, past what a signed char can count to.
+"abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijzyx"
+"z"
+=> "zjihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbajihgfedcbayx"
+
+# 250 letters with ch only at index 249: all of them turn around.
+"abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcz"
+"z"
+=> "zcbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacbacba"
+
+# 250 letters without ch.
+"qwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwer"
+"z"
+=> "qwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwertyqwer"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abccccb"
+"d"
+=> "abccccb"
+
+@gen 2 small
+"cbcca"
+"a"
+=> "accbc"
+
+@gen 3 small
+"bccbbcab"
+"c"
+=> "cbcbbcab"
+
+@gen 4 small
+"baba"
+"b"
+=> "baba"
+
+@gen 5 small
+"bbbaab"
+"b"
+=> "bbbaab"
+
+@gen 6 small
+"ab"
+"b"
+=> "ba"
+
+# Full size, 250 letters: the first ch past index 127, ch missing, ch only at
+# the end.
+@gen 1
+"zzimhlbigbeepzybgbvjsroajqcbkemfvpmuhbxrqsjslhngdakfbbzgzbrleudgskcvqbnxaygnndmdaicgsjuxjhajqxmctyppvgjfqxobgrczihazxcocsfnlqzrbqmvytifcnyfzmmtpdaltukuqegqocsfsjommkjqmqthgyjucskfpggfaqzkncmgqxkthxmgmqcyvudblvldbnzrjwgcisjhocrbqrsqpyoxpyfezaxraptjxbq"
+"w"
+=> "wjrznbdlvlbduvycqmgmxhtkxqgmcnkzqafggpfkscujyghtqmqjkmmojsfscoqgequkutladptmmzfyncfityvmqbrzqlnfscocxzahizcrgboxqfjgvppytcmxqjahjxujsgciadmdnngyaxnbqvcksgduelrbzgzbbfkadgnhlsjsqrxbhumpvfmekbcqjaorsjvbgbyzpeebgiblhmizzgcisjhocrbqrsqpyoxpyfezaxraptjxbq"
+
+@gen 2
+"rtqxxiuzabbybmsoagxaxhvydsciowocoznwqzklvhjifnahvquydbyqjsgjpkjusrizindrrwloiiosflpjzzscbzvxsafncsdjfswuavnprkfrwydrfyxwucgkzmhtvrzjasndsxxjsuzbzbwzhtzrzntshqyryjntwakkqubfrdtckxyzncolizmrihaynqvrmmfuwnfbvhbsbyfzxvakorghyhljzyualaupwhknfuxbthgdukobpu"
+"e"
+=> "rtqxxiuzabbybmsoagxaxhvydsciowocoznwqzklvhjifnahvquydbyqjsgjpkjusrizindrrwloiiosflpjzzscbzvxsafncsdjfswuavnprkfrwydrfyxwucgkzmhtvrzjasndsxxjsuzbzbwzhtzrzntshqyryjntwakkqubfrdtckxyzncolizmrihaynqvrmmfuwnfbvhbsbyfzxvakorghyhljzyualaupwhknfuxbthgdukobpu"
+
+@gen 5
+"uygjljinrdnjzotiniazlrnknaharyhoqmuwingmzudsbdmjdjccbyeusqzokvwhalfquxkqhuutnghvfvjwhcrwbddxbshrfkwrbubturkobyhhzvouxywsgjethhltoglqajanvxsuiqmurckvojumsrzukmeuzbddcxgsfuxzxatubgwhlunswlhoaroovhmsszjhdwowazomvscvhvejxrnmkgxuhtthrffeukgirsmmkncbrrswlp"
+"p"
+=> "plwsrrbcnkmmsrigkueffrhtthuxgkmnrxjevhvcsvmozawowdhjzssmhvooraohlwsnulhwgbutaxzxufsgxcddbzuemkuzrsmujovkcrumqiusxvnajaqlgotlhhtejgswyxuovzhhybokrutbubrwkfrhsbxddbwrchwjvfvhgntuuhqkxuqflahwvkozqsueybccjdjmdbsduzmgniwumqohyrahanknrlzainitozjndrnijljgyu"

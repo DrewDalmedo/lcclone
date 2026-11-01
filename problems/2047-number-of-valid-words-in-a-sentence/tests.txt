@@ -1,0 +1,105 @@
+# Number of Valid Words in a Sentence.
+
+@example The chunks are "buy", "2", "eggs,", "milk-tea", "and" and "jam."; all but "2", which holds a digit, are valid words. The extra spaces only separate chunks.
+"  buy 2 eggs,  milk-tea and jam. "
+=> 5
+
+@example Only "re-do" is valid. The other hyphens stand at the start or the end of a chunk, come twice, or have the mark right after them.
+"re-do -it it- a-b-c x-."
+=> 1
+
+@example "." and "!" are valid; "stop!." has two marks, ",go" has its mark first, and "r2d2" has digits.
+"stop!. ,go . r2d2 !"
+=> 2
+
+# A single one-letter chunk.
+"a"
+=> 1
+
+# A lone hyphen is not a valid word; a lone mark of each kind is.
+"- . ! ,"
+=> 3
+
+# A hyphen at the start, at the end, and just before the mark; then a
+# hyphen between letters, followed by a mark, which is fine.
+"-ox ox- ox-. ox-en."
+=> 1
+
+# Two hyphens, apart or side by side, each with a letter beside it.
+"a-b-c a--b"
+=> 0
+
+# Marks in the wrong place: first, in the middle, two at the end, before a
+# hyphen.
+".up up.on hey!! hi,. go,-on"
+=> 0
+
+# A digit anywhere spoils a chunk, even one of an otherwise valid shape.
+"1ab a1b ab1 a-1b a1-b ab-c5d. 7 0."
+=> 0
+
+# Whether one chunk is valid says nothing about the next.
+"a1 b c-d e-f-g h"
+=> 3
+
+# The last chunk, with no space after it, counts like any other.
+"go now"
+=> 2
+
+"go n0w"
+=> 1
+
+# Spaces at both ends of a single chunk.
+"   x   "
+=> 1
+
+# One chunk of 1000 characters.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb!"
+=> 1
+
+# 500 one-character chunks, all valid: a count kept in a byte would wrap.
+"a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g h i j k l m n o p q r s t u v w x y z ! . , a b c d e f g"
+=> 500
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+".1   !-b! aa-a  "
+=> 1
+
+@gen 2 small
+" a-a  a.!a  , ! b-.!"
+=> 3
+
+@gen 3 small
+"b-ba ! ,b  -b- ..,  a-a"
+=> 3
+
+@gen 4 small
+"b ,bb"
+=> 1
+
+@gen 5 small
+"! a- ab!  -.b"
+=> 2
+
+@gen 6 small
+"a! b! !  -a "
+=> 3
+
+@gen 7 small
+"a 1-a . b-b"
+=> 3
+
+# Full size, up to 1000 characters: a random mix of chunks and gaps; one
+# chunk of 1000 characters; 500 one-character chunks.
+@gen 1
+"  ,   nrloji pmcg-ldb  j,sx rpej-   eyjs  d  pk   0, ,r0.   cq, flpx   ldlkb   s c-,d8,z-  ubqb-rfqy,  l!4s,-   6!xcb   ypev.   uulkkq-bufgyz.   dhfqvi-j,  q11aqil   8dt!-4q   kyx   k0   ktbd, !8   jz,,pzk  ,  yf,   1o-!   uqfrm-ntb mca,   lfgt2,  opke!   jsvktz-gogle!   mfvum-toas 2mokzfd   cy9d1,   2bxu,h9! ezbu-rq,   .  ,e9p a23  wo-86  tzl-ddo.   ,maf9  catq-n.  3x-f   xcx4q  qrkre-f! ypvd-udqoa   08hm2!kw  y.24   pf  i-qkbues.  .stcv  pxctz-bbm!  npfclv,  mzab-scf!  3xeq2vgx   qn l5c1c v5mu   !5,wjvz9   ,d7y2   yzgxaesl  lxswx-skdjr  gdwr dzx-s   .6vf7c 0 fyy  j-an 2pwq1s2   ohee-swlv!  2v5bfjx  su  bruzvr   1.   ni n-mptk dfrcs-wsju 8-09x   .2n.q oq  mhdp-i   l-5   xrta-og.  ,t44q   db,!   kcm-a, h3e  xu  r  pxt41l5a lsei-yxbw!   3o g-yn   gr85o6,t x2mo7w66  w-km, d0-wwni1  .5  dzp  ptjru-w!   yc wuwnr-n, !f, opdd tssag   nwsh1  4bpokc  !  uz-gnrn  ql-t   zf-lolug.  72hjk   pe-f   wkrk-essten, jmv   1tt9c6o lvvb,  !   . w-b ob 2n6.t   jfzox-v yfy-kbsp   sfarr-am   ogap4  sh . 4"
+=> 79
+
+@gen 2
+"gegqmsekulmznzvwecuyriadgwuqlzxshwqza-idiwbhetxijzcxyrphhqdqursjewqicivkjwrqfysdmqxrsotighhwtocmabuulohgpwpzzjpmtmxzjuwdufssvfsbongkeawgcqfzcxwjmddvwsbginuhnndmgasnxhgqjnxlypvqqhzhhdwnoneahnbgtjkomhutpzglvrtssdsgbbfizmfeioebqjsjewwdbqzrhnkaznjvcsddxkwxizxxrthqgshsggozeuxcuhkhcldjrjaiwtmawkzsofrhsvngraciqvsdekpsgxtnwyyhjvfuzkxqrecpvvwqsndfssspkrkcwluivevxmacjmttamlgbqdcimsidemerncvjfmaqvbouyowgpsyqamybysplbjnwrjxjrjimjtssiedsmlsnwgwiunwsbuzhnimcyiindkiucdpojajkqacgkgtjtshbtahotzzmiqfpfkbdqkaearpejfudapjfdoeoexerfaxfedpcpmttjzlxmfqsirkmvjpnaqobcvjkseldqwmygdeduswjcpzzobfsaaexqdldqniljaplhrmkkmvsiiloxmvujfjhuimhghacrioymecwfccprgypdnxocjwzaramjkolcpoureqqiwwefxvlrtkfscmufelvtladhklbcitfckthudhegwgrvfzldsjkbsrufzpovjogsocrpxzzobobwwwdpirrbasxcqyrljcopzwcpjkeonqnwdwrzoegzowhqgoigpdfkjojjsxfgssdsigkqnnkblaaujnbcsolxbndlhjducwgwsrpygngbvyonjlixntukacmfyksuzhgzlxqtrbawedrcidotjzqsqamtydaapuhjkxsvqimnyysidswrmudbozvohpxpazxdoafdihgbqjwneiqcppwrjevdkaytbsizqlyhajxabmalizvbogxlgefifdwxulnfkxhpey."
+=> 1
+
+@gen 4
+" ! a 7 ! y ! . c z y c , , , . , b c , . x b - y z - c x - y 7 x - ! z z . c a ! z a z x x - z a b c b . - . ! y - b c 7 b , b - a y b y x 7 y . ! - a c 7 7 7 - b - a ! z ! z x x a a 7 - ! y - x z y 7 c - a . ! y z a - ! . y , c , y 7 y 7 7 y y 7 - b , a a - y z x , , b , 7 ! z z y , . c - x a a a c a b a c a . x ! , - a . x ! x x z x c y z a 7 z z . ! 7 - - c b c a b . - ! ! 7 z - x , b 7 , . z - - x . y , - . ! - a . b - . - a x 7 ! y z x c c a 7 x , 7 y b , , , , x 7 x , ! y - . z ! a x a 7 y z y y x - b - ! - 7 a 7 7 . - - a c - a . c , , y , z b . , - 7 . ! y x 7 a . c , y b y a - z b c ! a . a 7 , ! y z y - . - z 7 b z ! c ! ! y . a z y , - z ! - , z b y z c a c ! - z - . a 7 b , c , z 7 z ! a a ! , c a - a . 7 , ! 7 7 7 7 x - . 7 , . - 7 b y z - - c x ! a c - b b z 7 ! - c ! a 7 , , y c b , 7 y c x a a x x 7 x . - , z y y c b c a , . z x y b . , 7 7 y y ! , c y 7 . , a , y , . z x b a z , , b b 7 a z - a c a a 7 - x , , . , - . 7 z a ! a - y a ! c z . x ! 7 - b b 7 . - z ! , a c"
+=> 391

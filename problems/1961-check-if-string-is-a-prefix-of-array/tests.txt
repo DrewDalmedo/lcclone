@@ -1,0 +1,120 @@
+# Check If String Is a Prefix of Array.
+
+@example After the first three pieces the text is "sunflower"; the fourth piece isn't needed.
+"sunflower"
+["sun","flow","er","seed"]
+=> true
+
+@example The text is "pan" after one piece and "pancakes" after two; "pancake" would end inside the second piece.
+"pancake"
+["pan","cakes"]
+=> false
+
+@example All the pieces together give only "bluebi": the message ends before s is complete.
+"bluebird"
+["blue","bi"]
+=> false
+
+# The shortest s: the first word alone is s, and a word is left over.
+"x"
+["x","yz"]
+=> true
+
+# s stops one letter into a word.
+"abc"
+["ab","cd"]
+=> false
+
+# s is the start of the first word (comparing the whole word with s
+# reads past the end of s).
+"ca"
+["catalog"]
+=> false
+
+# s takes every word (k = words.length).
+"onetwothree"
+["one","two","three"]
+=> true
+
+# The words run out before s does, though all of them match.
+"onetwothreex"
+["one","two","three"]
+=> false
+
+# The right words in the wrong order.
+"redcar"
+["car","red"]
+=> false
+
+# s is made of words that are not at the front.
+"ij"
+["x","i","j"]
+=> false
+
+# Only the last letter differs.
+"hotdog"
+["hot","dot"]
+=> false
+
+# Only the first word differs.
+"hotdog"
+["pot","dog"]
+=> false
+
+# The same word several times in a row.
+"abab"
+["ab","ab","ab"]
+=> true
+
+# 100 words of 20 letters (2000 letters in all); s is the first 50 joined,
+# 1000 letters.
+"abcdefghijklmnopqrsthijklmnopqrstuvwxyzaopqrstuvwxyzabcdefghvwxyzabcdefghijklmnocdefghijklmnopqrstuvjklmnopqrstuvwxyzabcqrstuvwxyzabcdefghijxyzabcdefghijklmnopqefghijklmnopqrstuvwxlmnopqrstuvwxyzabcdestuvwxyzabcdefghijklzabcdefghijklmnopqrsghijklmnopqrstuvwxyznopqrstuvwxyzabcdefguvwxyzabcdefghijklmnbcdefghijklmnopqrstuijklmnopqrstuvwxyzabpqrstuvwxyzabcdefghiwxyzabcdefghijklmnopdefghijklmnopqrstuvwklmnopqrstuvwxyzabcdrstuvwxyzabcdefghijkyzabcdefghijklmnopqrfghijklmnopqrstuvwxymnopqrstuvwxyzabcdeftuvwxyzabcdefghijklmabcdefghijklmnopqrsthijklmnopqrstuvwxyzaopqrstuvwxyzabcdefghvwxyzabcdefghijklmnocdefghijklmnopqrstuvjklmnopqrstuvwxyzabcqrstuvwxyzabcdefghijxyzabcdefghijklmnopqefghijklmnopqrstuvwxlmnopqrstuvwxyzabcdestuvwxyzabcdefghijklzabcdefghijklmnopqrsghijklmnopqrstuvwxyznopqrstuvwxyzabcdefguvwxyzabcdefghijklmnbcdefghijklmnopqrstuijklmnopqrstuvwxyzabpqrstuvwxyzabcdefghiwxyzabcdefghijklmnopdefghijklmnopqrstuvwklmnopqrstuvwxyzabcdrstuvwxyzabcdefghijkyzabcdefghijklmnopqrfghijklmnopqrstuvwxy"
+["abcdefghijklmnopqrst","hijklmnopqrstuvwxyza","opqrstuvwxyzabcdefgh","vwxyzabcdefghijklmno","cdefghijklmnopqrstuv","jklmnopqrstuvwxyzabc","qrstuvwxyzabcdefghij","xyzabcdefghijklmnopq","efghijklmnopqrstuvwx","lmnopqrstuvwxyzabcde","stuvwxyzabcdefghijkl","zabcdefghijklmnopqrs","ghijklmnopqrstuvwxyz","nopqrstuvwxyzabcdefg","uvwxyzabcdefghijklmn","bcdefghijklmnopqrstu","ijklmnopqrstuvwxyzab","pqrstuvwxyzabcdefghi","wxyzabcdefghijklmnop","defghijklmnopqrstuvw","klmnopqrstuvwxyzabcd","rstuvwxyzabcdefghijk","yzabcdefghijklmnopqr","fghijklmnopqrstuvwxy","mnopqrstuvwxyzabcdef","tuvwxyzabcdefghijklm","abcdefghijklmnopqrst","hijklmnopqrstuvwxyza","opqrstuvwxyzabcdefgh","vwxyzabcdefghijklmno","cdefghijklmnopqrstuv","jklmnopqrstuvwxyzabc","qrstuvwxyzabcdefghij","xyzabcdefghijklmnopq","efghijklmnopqrstuvwx","lmnopqrstuvwxyzabcde","stuvwxyzabcdefghijkl","zabcdefghijklmnopqrs","ghijklmnopqrstuvwxyz","nopqrstuvwxyzabcdefg","uvwxyzabcdefghijklmn","bcdefghijklmnopqrstu","ijklmnopqrstuvwxyzab","pqrstuvwxyzabcdefghi","wxyzabcdefghijklmnop","defghijklmnopqrstuvw","klmnopqrstuvwxyzabcd","rstuvwxyzabcdefghijk","yzabcdefghijklmnopqr","fghijklmnopqrstuvwxy","mnopqrstuvwxyzabcdef","tuvwxyzabcdefghijklm","abcdefghijklmnopqrst","hijklmnopqrstuvwxyza","opqrstuvwxyzabcdefgh","vwxyzabcdefghijklmno","cdefghijklmnopqrstuv","jklmnopqrstuvwxyzabc","qrstuvwxyzabcdefghij","xyzabcdefghijklmnopq","efghijklmnopqrstuvwx","lmnopqrstuvwxyzabcde","stuvwxyzabcdefghijkl","zabcdefghijklmnopqrs","ghijklmnopqrstuvwxyz","nopqrstuvwxyzabcdefg","uvwxyzabcdefghijklmn","bcdefghijklmnopqrstu","ijklmnopqrstuvwxyzab","pqrstuvwxyzabcdefghi","wxyzabcdefghijklmnop","defghijklmnopqrstuvw","klmnopqrstuvwxyzabcd","rstuvwxyzabcdefghijk","yzabcdefghijklmnopqr","fghijklmnopqrstuvwxy","mnopqrstuvwxyzabcdef","tuvwxyzabcdefghijklm","abcdefghijklmnopqrst","hijklmnopqrstuvwxyza","opqrstuvwxyzabcdefgh","vwxyzabcdefghijklmno","cdefghijklmnopqrstuv","jklmnopqrstuvwxyzabc","qrstuvwxyzabcdefghij","xyzabcdefghijklmnopq","efghijklmnopqrstuvwx","lmnopqrstuvwxyzabcde","stuvwxyzabcdefghijkl","zabcdefghijklmnopqrs","ghijklmnopqrstuvwxyz","nopqrstuvwxyzabcdefg","uvwxyzabcdefghijklmn","bcdefghijklmnopqrstu","ijklmnopqrstuvwxyzab","pqrstuvwxyzabcdefghi","wxyzabcdefghijklmnop","defghijklmnopqrstuvw","klmnopqrstuvwxyzabcd","rstuvwxyzabcdefghijk"]
+=> true
+
+# The same words; s stops one letter before the end of the 50th word.
+"abcdefghijklmnopqrsthijklmnopqrstuvwxyzaopqrstuvwxyzabcdefghvwxyzabcdefghijklmnocdefghijklmnopqrstuvjklmnopqrstuvwxyzabcqrstuvwxyzabcdefghijxyzabcdefghijklmnopqefghijklmnopqrstuvwxlmnopqrstuvwxyzabcdestuvwxyzabcdefghijklzabcdefghijklmnopqrsghijklmnopqrstuvwxyznopqrstuvwxyzabcdefguvwxyzabcdefghijklmnbcdefghijklmnopqrstuijklmnopqrstuvwxyzabpqrstuvwxyzabcdefghiwxyzabcdefghijklmnopdefghijklmnopqrstuvwklmnopqrstuvwxyzabcdrstuvwxyzabcdefghijkyzabcdefghijklmnopqrfghijklmnopqrstuvwxymnopqrstuvwxyzabcdeftuvwxyzabcdefghijklmabcdefghijklmnopqrsthijklmnopqrstuvwxyzaopqrstuvwxyzabcdefghvwxyzabcdefghijklmnocdefghijklmnopqrstuvjklmnopqrstuvwxyzabcqrstuvwxyzabcdefghijxyzabcdefghijklmnopqefghijklmnopqrstuvwxlmnopqrstuvwxyzabcdestuvwxyzabcdefghijklzabcdefghijklmnopqrsghijklmnopqrstuvwxyznopqrstuvwxyzabcdefguvwxyzabcdefghijklmnbcdefghijklmnopqrstuijklmnopqrstuvwxyzabpqrstuvwxyzabcdefghiwxyzabcdefghijklmnopdefghijklmnopqrstuvwklmnopqrstuvwxyzabcdrstuvwxyzabcdefghijkyzabcdefghijklmnopqrfghijklmnopqrstuvwx"
+["abcdefghijklmnopqrst","hijklmnopqrstuvwxyza","opqrstuvwxyzabcdefgh","vwxyzabcdefghijklmno","cdefghijklmnopqrstuv","jklmnopqrstuvwxyzabc","qrstuvwxyzabcdefghij","xyzabcdefghijklmnopq","efghijklmnopqrstuvwx","lmnopqrstuvwxyzabcde","stuvwxyzabcdefghijkl","zabcdefghijklmnopqrs","ghijklmnopqrstuvwxyz","nopqrstuvwxyzabcdefg","uvwxyzabcdefghijklmn","bcdefghijklmnopqrstu","ijklmnopqrstuvwxyzab","pqrstuvwxyzabcdefghi","wxyzabcdefghijklmnop","defghijklmnopqrstuvw","klmnopqrstuvwxyzabcd","rstuvwxyzabcdefghijk","yzabcdefghijklmnopqr","fghijklmnopqrstuvwxy","mnopqrstuvwxyzabcdef","tuvwxyzabcdefghijklm","abcdefghijklmnopqrst","hijklmnopqrstuvwxyza","opqrstuvwxyzabcdefgh","vwxyzabcdefghijklmno","cdefghijklmnopqrstuv","jklmnopqrstuvwxyzabc","qrstuvwxyzabcdefghij","xyzabcdefghijklmnopq","efghijklmnopqrstuvwx","lmnopqrstuvwxyzabcde","stuvwxyzabcdefghijkl","zabcdefghijklmnopqrs","ghijklmnopqrstuvwxyz","nopqrstuvwxyzabcdefg","uvwxyzabcdefghijklmn","bcdefghijklmnopqrstu","ijklmnopqrstuvwxyzab","pqrstuvwxyzabcdefghi","wxyzabcdefghijklmnop","defghijklmnopqrstuvw","klmnopqrstuvwxyzabcd","rstuvwxyzabcdefghijk","yzabcdefghijklmnopqr","fghijklmnopqrstuvwxy","mnopqrstuvwxyzabcdef","tuvwxyzabcdefghijklm","abcdefghijklmnopqrst","hijklmnopqrstuvwxyza","opqrstuvwxyzabcdefgh","vwxyzabcdefghijklmno","cdefghijklmnopqrstuv","jklmnopqrstuvwxyzabc","qrstuvwxyzabcdefghij","xyzabcdefghijklmnopq","efghijklmnopqrstuvwx","lmnopqrstuvwxyzabcde","stuvwxyzabcdefghijkl","zabcdefghijklmnopqrs","ghijklmnopqrstuvwxyz","nopqrstuvwxyzabcdefg","uvwxyzabcdefghijklmn","bcdefghijklmnopqrstu","ijklmnopqrstuvwxyzab","pqrstuvwxyzabcdefghi","wxyzabcdefghijklmnop","defghijklmnopqrstuvw","klmnopqrstuvwxyzabcd","rstuvwxyzabcdefghijk","yzabcdefghijklmnopqr","fghijklmnopqrstuvwxy","mnopqrstuvwxyzabcdef","tuvwxyzabcdefghijklm","abcdefghijklmnopqrst","hijklmnopqrstuvwxyza","opqrstuvwxyzabcdefgh","vwxyzabcdefghijklmno","cdefghijklmnopqrstuv","jklmnopqrstuvwxyzabc","qrstuvwxyzabcdefghij","xyzabcdefghijklmnopq","efghijklmnopqrstuvwx","lmnopqrstuvwxyzabcde","stuvwxyzabcdefghijkl","zabcdefghijklmnopqrs","ghijklmnopqrstuvwxyz","nopqrstuvwxyzabcdefg","uvwxyzabcdefghijklmn","bcdefghijklmnopqrstu","ijklmnopqrstuvwxyzab","pqrstuvwxyzabcdefghi","wxyzabcdefghijklmnop","defghijklmnopqrstuvw","klmnopqrstuvwxyzabcd","rstuvwxyzabcdefghijk"]
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bbbbbabaa"
+["bb","bbb","ab","aaa"]
+=> false
+
+@gen 2 small
+"aa"
+["aa","a"]
+=> true
+
+@gen 3 small
+"aab"
+["aab"]
+=> true
+
+@gen 4 small
+"aba"
+["a","b","aa","aaa"]
+=> false
+
+@gen 5 small
+"ababb"
+["ab","a","b","ba","ba"]
+=> false
+
+@gen 6 small
+"abbabaaa"
+["ba","abb"]
+=> false
+
+# Random full-size cases: 100 words.
+@gen 1
+"ccccbbbcbcccabbabcaccabacbbbacbaaacbaabacabbbbcabbbcbacbccbaabbccccbcccbaccaacbbcaccacabacabbcacaaaababbacbbbabcccbbacaacacaaabbcabcbcbbcccacbaacccbcaccaacbbaccccbbabaccbaaabaabcacbcccacbaccaacabbccaacabbbccabbbccccbcabacbacacccaabbcacccbccacccccacbcbbabaaabcaabaccbbbccabaccaaccbbccccaabcacbbaacaccaaabaaaacccccaccbbbccaacabbbbcacbbbbbbabbbbccababababbaccbacabbbcbcccccbabacacbbcaaaaabcabcbccccbbbaaaacabbaccabacaabacacabccccccabcabaaacbaaccaccaabbbcbccbbbcbbbcacccabababccbccabcbcbaabaccbaabbabbcaacaaabcbccacaccaabcaababcaabbacbcccbacbcccbbacaccccbababbbbbbccbbcacaabcbcabbaaacacababcbccacabaacaacbacbcbcbcaabacbabbcaaccbaccbccaccccbaababbbcbcacaacaccabacabacacbcaacababbaabccaabacbcbacabacaccccbbcacabacbaaacacaccbaabbbacbcacbbaabaccbbbcbacacacccaaccabbbbbbbcbccbacccccbbaabbaacaaaaaaaacbaabcbacbaaabaaccbacaaabaabaabaacbcbabbacbbbbaaaccabccccabacbcababacababaccbbcaccbabcaacabaccaabcaaaababaaacacbccccbcbcbbcbccabcccacaacbaacbbbabaabacabbcaabbcbcbcbbaaccccbaccbabacccbaaacacabcacacbcacbcccabba"
+["ccccbbbcbccca","bbabcaccabac","bbbacbaaac","b","a","abacabbbbcabbbcba","cb","ccbaabbccccbc","ccbacc","aacb","bcaccacabacabbcacaa","aababba","cbbbabccc","bbacaacacaaabbcabcb","cbbcccacbaacccbcacca","acbbaccc","cbbabaccbaaabaabcac","bcccacba","cca","acabbccaa","cabbbccabbbccccbcaba","cb","acacccaabbcac","ccbccaccc","ccacbcb","bab","a","aabcaabaccbbbccabac","caacc","bbccccaabcacbbaac","accaaabaaaa","cccccaccbbbcc","aacabbbbca","cb","bbbbbabbbbcca","babababbaccbaca","bbbcbccc","cc","ba","bacacbbcaaaaabcabcb","ccccbbbaaaacabb","ac","cabacaabac","acab","ccccccabcabaa","acbaaccaccaabbbc","bccbbbcbbbcacccab","ababccbccabcbcbaa","baccbaabbabbcaacaa","abcbccacacca","abcaaba","bcaabbacbcccbacbccc","bbacaccccbababbb","bbbc","cbbcacaa","bcbcabbaaacacaba","bcbccacaba","acaacbacb","cbcbcaabacbabbcaaccb","accbccaccccbaa","babbbcbcacaa","ca","ccab","acabacacbcaacababb","aabccaabacbcb","acabacaccccbbcac","abacbaa","acacaccbaabb","bacbcacbbaa","baccbbbcbacac","acccaacca","bbbbbbb","cbccbacccccbb","aab","baacaaaaaaaac","b","aabcbacbaaab","aaccbacaaabaabaabaa","cbcbabbacbbbbaaaccab","ccccabacbcababacab","ab","accbbcaccbabcaaca","baccaabcaaaaba","baaacacbccccbcbcb","bcbccab","c","ccacaacbaa","c","bbbabaabaca","bbcaabbcbcb","cbb","aaccc","cbaccbabac","ccba","aacacabcaca","c","bcacbcccabbab","abcaaabaca","ccbaabacabba","c"]
+=> false
+
+@gen 2
+"bccaaabcaabbacbcccacaaaababcacaabcccbaacaccbbacccbbcccacacabbbbacbccbacabbbbcbaaacbabacbbacacabcacbbabccabbbcacabcbccaaabbbbccaaabbbcababcbccccabcabaccbcaabbbaaaaaababbcbcccbaccaaacccacbbcbcbbbbcabcacbbabbacbcccbcbcabbacbaabcccaabcaacabbcaabbbccbaccccccbccbbababcbcabbbbacbabbbccbccaabbacabacbbababcbbacabaccaaabbcbacbccacbcabbaaaabacabbbabbabaccbabacaaabcccaccbcabbabbcabaabaaccccaaaaaccabcacaaacababbbbbacbcccaccbbabcbcaabacbccabacacbcbbbbcacccacccababbacbbbacaaaaacbccbcbaccccbbccbccababbabbbacbaabbcbbcbbabacbbcccacbbabacbbbcacccccbbbccbacabcccabcbcbaacccbcbcccababcaabbacabaaaaabbcbcaabccacbbccbaaaacbcbaccaaccccbaababbbaacaacccccacaccabaacaaaaababcbcabaabcbccccacababbccccbcaabbbacaababcaabbbbcbaacbaacababbaabbcababaabbaaaaacccacacaaaccbbbbcccbcbbcbbababacbcbacaaabaacabbaacccabbababcabbbcbcaaaaccbcbacbccbaaaabbabbbbcccccaacbcbaabbaccbabbabaacacbccbacacbabbbaabbaacacaabcaccabbbbaaabcbbbbbaacbabccbcbcbbbbbbaaccbabcccbabbcacaacaacbaaaacaaccacbacabbaabcabaccaaabcaababccabcacacaacbababaabbaacb"
+["bccaaabcaabbacbcccac","aaaababcacaabcccbaac","accbbacccbbcccacacab","bbbacbccbacabbbbcbaa","acbabacbbacacabcacbb","abccabbbcacabcbccaaa","bbbbccaaabbbcababcbc","cccabcabaccbcaabbbaa","aaaababbcbcccbaccaaa","cccacbbcbcbbbbcabcac","bbabbacbcccbcbcabbac","baabcccaabcaacabbcaa","bbbccbaccccccbccbbab","abcbcabbbbacbabbbccb","ccaabbacabacbbababcb","bacabaccaaabbcbacbcc","acbcabbaaaabacabbbab","babaccbabacaaabcccac","cbcabbabbcabaabaaccc","caaaaaccabcacaaacaba","bbbbbacbcccaccbbabcb","caabacbccabacacbcbbb","bcacccacccababbacbbb","acaaaaacbccbcbaccccb","bccbccababbabbbacbaa","bbcbbcbbabacbbcccacb","babacbbbcacccccbbbcc","bacabcccabcbcbaacccb","cbcccababcaabbacabaa","aaabbcbcaabccacbbccb","aaaacbcbaccaaccccbaa","babbbaacaacccccacacc","abaacaaaaababcbcabaa","bcbccccacababbccccbc","aabbbacaababcaabbbbc","baacbaacababbaabbcab","abaabbaaaaacccacacaa","accbbbbcccbcbbcbbaba","bacbcbacaaabaacabbaa","cccabbababcabbbcbcaa","aaccbcbacbccbaaaabba","bbbbcccccaacbcbaabba","ccbabbabaacacbccbaca","cbabbbaabbaacacaabca","ccabbbbaaabcbbbbbaac","babccbcbcbbbbbbaaccb","abcccbabbcacaacaacba","aaacaaccacbacabbaabc","abaccaaabcaababccabc","acacaacbababaabbaacb","bbacbacccbabcbaacaaa","accacbaccabaabbbccba","ccccbbababcacabbbcbb","ababbccacbccbbcababa","cbcbbbcabaabcccabcaa","cbaacaaccbbbccacabbb","ccbacccaaacaabacaaac","bbaacabcbabcaaaabbbb","bcacbcbbcbccaaabcbaa","baabaacccacababcaaac","cbcacbbbaccccbcbbcca","acacaababbcbccabccac","cacbcaabbbbacbbbcaab","cabccacbbabacbaaacaa","ccbbabaccbaaabbacbcb","abbcaaaaabaccbccbccc","cbccbccbcaabbcabcacb","aabbcaacbccccaccbcac","aacacabacbbcbbacbbac","aaacbaabbbcabccaccca","bcacccbccaacbccaacca","bbcbbcbbabbbacbcabbc","abcbacbbbacbbaabbbcc","bccaaccabcbcaaccabbc","abcacabcbbbbcaaacbcc","bcbccaabacccbcaccbac","caabccccccbbcbcaabcb","babbbbaabbcccababbca","bacacbaabbbbcbabaccc","acbcccaaacaabaacbcca","cbccbbbacacaabcccaaa","acbbcabaabbbbabbabab","accbbbbbccccaccbacba","bcbbcbabaaacbcabcbca","caaababaaaabaaacacaa","abbcaabaabbbabaccccb","acbcccbbccaaaaccabaa","bcbcccacaccacbcacbbc","bcbcccabccbccacbbaab","aaaabcacacbababcaaba","cccacbbbbabaababbcba","bababcabccabbbaaacba","abbcbabcaabbcacbabca","baaaacabacbaccbcbaab","acccbccbbbbbccbbacbb","aaccbbbbbacbcacacacc","bccacbabaababbaccabc","cabaacaababbcabbacaa","ccabbaaaaaaabbabbabc","cbaaabcaacbbaababaca"]
+=> true

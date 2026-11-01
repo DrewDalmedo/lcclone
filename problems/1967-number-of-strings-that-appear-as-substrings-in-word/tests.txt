@@ -1,0 +1,113 @@
+# Number of Strings That Appear as Substrings in Word.
+
+@example "ana" and "ban" are stretches of "banana"; "nab" is not, and the letters of "bn" are not next to each other.
+["ana","nab","ban","bn"]
+"banana"
+=> 2
+
+@example "pa" turns up twice in "papaya", and each of its two entries counts once; "apa" and "ya" count too, but "yap" doesn't.
+["apa","pa","yap","pa","ya"]
+"papaya"
+=> 4
+
+@example The pattern is longer than the word.
+["seashells"]
+"sea"
+=> 0
+
+# The smallest inputs, not found.
+["b"]
+"a"
+=> 0
+
+# The whole word is found; the word with one more letter runs off its end.
+["hell","hello"]
+"hell"
+=> 1
+
+# Found at the very end and at the very start; "xz" has a letter between.
+["yz","wx","xz"]
+"wxyz"
+=> 2
+
+# Letters in the right order, but not next to each other, don't count.
+["tm","eam","tam"]
+"team"
+=> 1
+
+# Found three times, overlapping, but counted once.
+["aa"]
+"aaaa"
+=> 1
+
+# A search that doesn't step back after a partial match misses both.
+["aab","aaab"]
+"aaaab"
+=> 2
+
+["abac"]
+"ababac"
+=> 1
+
+# A pattern of 100 letters against a word of 1.
+["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","a"]
+"a"
+=> 1
+
+# Equal entries are each counted, found or not.
+["q","q","p","p","p"]
+"pp"
+=> 3
+
+# Every one of 100 entries is found.
+["ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab","ab"]
+"cab"
+=> 100
+
+# 100 patterns of 49 a's and a b, against 100 a's: each nearly matches
+# everywhere, and none is found.
+["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"]
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> 0
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["bcc"]
+"bccccbb"
+=> 1
+
+@gen 2 small
+["c","ccab","bc"]
+"bccaa"
+=> 2
+
+@gen 3 small
+["cabca","ccb","b","ccbbcaba","ccba"]
+"ccbbcaba"
+=> 3
+
+@gen 4 small
+["a","ac","ba","abac","ab"]
+"abaa"
+=> 3
+
+@gen 5 small
+["baabb","aaccacb"]
+"bbaaba"
+=> 0
+
+@gen 6 small
+["ba","bba","a","ab"]
+"bb"
+=> 0
+
+# Random full-size cases: 100 patterns, a word of 100 letters.
+@gen 1
+["abbbaabbbababaaabaaaaabbbbbba","abbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaa","bbbabbaaab","baaabbaaaabbbbbbbabbbabaaaaaabba","aabbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbab","bbababaaabaaaaaa","bbabbbaabbbababaaabaaaaabbbbbbbabbbabaa","aabbababaaabaaaaabbbbbbba","abbabbbbabaaaabbaaaabbbabbbbabbaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbab","abbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabb","bbbabbaaab","bbababbbabbbaabbbabaa","babbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbba","bbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbab","abbabaaaabaababbababbbabbbaabbbababaaabaaaaabbabbbbabbb","aaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbb","bbababbbabbbaabbbabaa","bbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaa","baaaaabbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabb","abbaaabbaaabbbaaabbbaaabbbbaabaabab","abbababbbabbbabbbbababaaabaaaaabbbbbbbabbbabaaaaaabbab","bbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbaba","aaabbabaaaabaababbababbbabbbaabbbabb","bbabaabaabbabababbabbbbbaaabbaabbbbabaaaaaaabbbabaaabababaabbaabbababbaaaabaaabaaabbaabbaaaaa","abbbaabbbababaaabaaaaabbbbbba","abb","babbababbbabbaaabbbababaaabaaaaa","bbaaababbaabbabbbbabbabbababbaaabaabbabaaabbaaaaaaaabaabbbabbaabbaba","bbbbbaabaabaaabbbbbbaa","abbabbbbabaaaabbaaabbbbabbbbabaaabb","bbbabbaaab","bbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbab","abbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbaba","bbbbbabbbaabaaaaabaabaabaaaababaaaabbbbaaaabaaba","aabbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbab","bbababbbabbbaabbbabaa","bbbabbaaab","bbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbab","abbbbabaaaabbaaaabbbabbbb","babbabbaaaabbbbbabbaaaabababaaabbbabbbaaababbababbaabbabaaabbbaababbbaabbbbbaabbba","b","aabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaab","bbbabbba","baaaabbaabaaabb","bbababbbabbbaabbbabaa","bbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaa","bbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaab","bbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaa","aaaabbbabbbbaaaaabbabaaaabaababbababbbabbbaabbbabab","baaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbab","abaaaabbaaaabbbabbbbabaaabbabaaaabaababbababb","abaababbababbbabbbaabbbababaaab","aabbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbab","aabaabbbabbababaabaabaaaabbab","babbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbaba","baaa","babbababbbabbbaabbbababaaabaaaaabb","abaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbab","bbaaaaab","bbbabaaaabbaaaabbbabbbbabaaabbabaaaabaabbbbababbbabbbaabbbababaaabaaaa","bbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaab","abbababbbabbbaabbbababaaabb","aaaabbbabbbbabaaabbabaaaabaababbababbbabbbaab","bbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbab","baaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaa","aabbaaaabbbabbbbabaaaababaaaabaababbababbbabbbaab","abbbababaaabaaa","abbbaab","abbbaabbbababaaabaaaaabbbbbba","bbaaababbaabbabbbbabbabbababbaaabaabbabaaabbaaaaaaaabaabbbabbaabbaba","babbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaa","abbbaabbbababaaabaaaaabbbbbbbabbbabaaaa","bbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabba","abaaaabaaaabbababbbabbbaabbbababaaabaaaaabbbbbbbabbba","baaaab","aabababbbaabbabbbaaabbbbabaabaaabbaaabbbbbbbbabaaaaaaabaabbaaba","baaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaa","aaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaab","bbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbabb","abbbababbbaaababbaaaabbaabbaabababbababaabbbbbbaaabaaababaab","abbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbb","bbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbabb","bbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaabbbbbbbbabbbabaaaaaabb","bbbabbababaa","babaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbb","baaaabbbabbbbabaaabbabaababaabab","bbbaaabbbabaabbbaaaabbabaaaabbaaabbabbbbbaabaaaabb","aabbbababbaaaaabaaaababbabbbbbbababaabbbbababaaaaaababbabaabba","abbbaababaaa","abbabbbbabaaaabbaaaabbbabbbbabbaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbab","baaababaaa","aabaabbbabbababaabaabaaaabbab","bbbabaaaabbaaaabababbbbabaaabbab","bbababbbabbbaabbbababaaabaaaaabbbbbbbabbb","bbababbbabbbaabbbabaa","aabbbababbaaaaabaaaababbabbbbbbababaabbbbababaaaaaababbabaabba","babbbbabaaaabbaaaabbbaabbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabba","aaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaaba","ababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaa","aaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabba"]
+"aabbabbbbabaaaabbaaaabbbabbbbabaaabbabaaaabaababbababbbabbbaabbbababaaabaaaaabbbbbbbabbbabaaaaaabbab"
+=> 42
+
+@gen 2
+["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaab","b","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaab","aaaaaaaaaab","aaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaab","aaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaab","aaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaab","aaaaaab","aaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaab","aaaaaaaa","aaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","b","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"]
+"aaaaaaaaaaaabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> 21

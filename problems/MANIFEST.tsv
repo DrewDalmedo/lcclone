@@ -499,37 +499,37 @@
 1925	count-square-sum-triples	Count Square Sum Triples	easy	no	plain	todo
 1929	concatenation-of-array	Concatenation of Array	easy	no	plain	todo
 1933	check-if-string-is-decomposable-into-value-equal-substrings	Check if String Is Decomposable Into Value-Equal Substrings	easy	yes	skip:premium	todo
-1935	maximum-number-of-words-you-can-type	Maximum Number of Words You Can Type	easy	no	plain	todo
+1935	maximum-number-of-words-you-can-type	Maximum Number of Words You Can Type	easy	no	plain	draft
 1939	users-that-actively-request-confirmation-messages	Users That Actively Request Confirmation Messages	easy	yes	skip:sql	todo
-1941	check-if-all-characters-have-equal-number-of-occurrences	Check if All Characters Have Equal Number of Occurrences	easy	no	plain	todo
-1945	sum-of-digits-of-string-after-convert	Sum of Digits of String After Convert	easy	no	plain	todo
-1952	three-divisors	Three Divisors	easy	no	plain	todo
-1957	delete-characters-to-make-fancy-string	Delete Characters to Make Fancy String	easy	no	plain	todo
-1961	check-if-string-is-a-prefix-of-array	Check If String Is a Prefix of Array	easy	no	plain	todo
+1941	check-if-all-characters-have-equal-number-of-occurrences	Check if All Characters Have Equal Number of Occurrences	easy	no	plain	draft
+1945	sum-of-digits-of-string-after-convert	Sum of Digits of String After Convert	easy	no	plain	draft
+1952	three-divisors	Three Divisors	easy	no	plain	draft
+1957	delete-characters-to-make-fancy-string	Delete Characters to Make Fancy String	easy	no	plain	draft
+1961	check-if-string-is-a-prefix-of-array	Check If String Is a Prefix of Array	easy	no	plain	draft
 1965	employees-with-missing-information	Employees With Missing Information	easy	no	skip:sql	todo
-1967	number-of-strings-that-appear-as-substrings-in-word	Number of Strings That Appear as Substrings in Word	easy	no	plain	todo
-1971	find-if-path-exists-in-graph	Find if Path Exists in Graph	easy	no	plain	todo
-1974	minimum-time-to-type-word-using-special-typewriter	Minimum Time to Type Word Using Special Typewriter	easy	no	plain	todo
+1967	number-of-strings-that-appear-as-substrings-in-word	Number of Strings That Appear as Substrings in Word	easy	no	plain	draft
+1971	find-if-path-exists-in-graph	Find if Path Exists in Graph	easy	no	plain	draft
+1974	minimum-time-to-type-word-using-special-typewriter	Minimum Time to Type Word Using Special Typewriter	easy	no	plain	draft
 1978	employees-whose-manager-left-the-company	Employees Whose Manager Left the Company	easy	no	skip:sql	todo
-1979	find-greatest-common-divisor-of-array	Find Greatest Common Divisor of Array	easy	no	plain	todo
-1984	minimum-difference-between-highest-and-lowest-of-k-scores	Minimum Difference Between Highest and Lowest of K Scores	easy	no	plain	todo
-1991	find-the-middle-index-in-array	Find the Middle Index in Array	easy	no	plain	todo
-1995	count-special-quadruplets	Count Special Quadruplets	easy	no	plain	todo
-2000	reverse-prefix-of-word	Reverse Prefix of Word	easy	no	plain	todo
-2006	count-number-of-pairs-with-absolute-difference-k	Count Number of Pairs With Absolute Difference K	easy	no	plain	todo
-2011	final-value-of-variable-after-performing-operations	Final Value of Variable After Performing Operations	easy	no	plain	todo
-2016	maximum-difference-between-increasing-elements	Maximum Difference Between Increasing Elements	easy	no	plain	todo
-2022	convert-1d-array-into-2d-array	Convert 1D Array Into 2D Array	easy	no	plain	todo
+1979	find-greatest-common-divisor-of-array	Find Greatest Common Divisor of Array	easy	no	plain	draft
+1984	minimum-difference-between-highest-and-lowest-of-k-scores	Minimum Difference Between Highest and Lowest of K Scores	easy	no	plain	draft
+1991	find-the-middle-index-in-array	Find the Middle Index in Array	easy	no	plain	draft
+1995	count-special-quadruplets	Count Special Quadruplets	easy	no	plain	draft
+2000	reverse-prefix-of-word	Reverse Prefix of Word	easy	no	plain	draft
+2006	count-number-of-pairs-with-absolute-difference-k	Count Number of Pairs With Absolute Difference K	easy	no	plain	draft
+2011	final-value-of-variable-after-performing-operations	Final Value of Variable After Performing Operations	easy	no	plain	draft
+2016	maximum-difference-between-increasing-elements	Maximum Difference Between Increasing Elements	easy	no	plain	draft
+2022	convert-1d-array-into-2d-array	Convert 1D Array Into 2D Array	easy	no	plain	draft
 2026	low-quality-problems	Low-Quality Problems	easy	yes	skip:sql	todo
-2027	minimum-moves-to-convert-string	Minimum Moves to Convert String	easy	no	plain	todo
+2027	minimum-moves-to-convert-string	Minimum Moves to Convert String	easy	no	plain	draft
 2032	two-out-of-three	Two Out of Three	easy	no	unordered	draft
-2037	minimum-number-of-moves-to-seat-everyone	Minimum Number of Moves to Seat Everyone	easy	no	plain	todo
-2042	check-if-numbers-are-ascending-in-a-sentence	Check if Numbers Are Ascending in a Sentence	easy	no	plain	todo
-2047	number-of-valid-words-in-a-sentence	Number of Valid Words in a Sentence	easy	no	plain	todo
-2053	kth-distinct-string-in-an-array	Kth Distinct String in an Array	easy	no	plain	todo
-2057	smallest-index-with-equal-value	Smallest Index With Equal Value	easy	no	plain	todo
-2062	count-vowel-substrings-of-a-string	Count Vowel Substrings of a String	easy	no	plain	todo
-2068	check-whether-two-strings-are-almost-equivalent	Check Whether Two Strings are Almost Equivalent	easy	no	plain	todo
+2037	minimum-number-of-moves-to-seat-everyone	Minimum Number of Moves to Seat Everyone	easy	no	plain	draft
+2042	check-if-numbers-are-ascending-in-a-sentence	Check if Numbers Are Ascending in a Sentence	easy	no	plain	draft
+2047	number-of-valid-words-in-a-sentence	Number of Valid Words in a Sentence	easy	no	plain	draft
+2053	kth-distinct-string-in-an-array	Kth Distinct String in an Array	easy	no	plain	draft
+2057	smallest-index-with-equal-value	Smallest Index With Equal Value	easy	no	plain	draft
+2062	count-vowel-substrings-of-a-string	Count Vowel Substrings of a String	easy	no	plain	draft
+2068	check-whether-two-strings-are-almost-equivalent	Check Whether Two Strings are Almost Equivalent	easy	no	plain	draft
 2072	the-winner-university	The Winner University	easy	yes	skip:sql	todo
 2073	time-needed-to-buy-tickets	Time Needed to Buy Tickets	easy	no	plain	todo
 2078	two-furthest-houses-with-different-colors	Two Furthest Houses With Different Colors	easy	no	plain	todo
