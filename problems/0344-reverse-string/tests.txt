@@ -1,0 +1,83 @@
+# Reverse String. check: param s, so each expected output is s after the call.
+
+@example Odd length: the middle "d" stays where it is, the others swap in pairs.
+["c","o","d","e","r"]
+=> ["r","e","d","o","c"]
+
+@example Even length: every character moves. Case and symbols are kept as they are.
+["X","y","1","!"]
+=> ["!","1","y","X"]
+
+@example A palindrome reads the same backwards, so s does not change.
+["n","o","o","n"]
+=> ["n","o","o","n"]
+
+# A single character.
+["z"]
+=> ["z"]
+
+# A single space.
+[" "]
+=> [" "]
+
+# Two characters.
+["a","b"]
+=> ["b","a"]
+
+# Every character is the same.
+["k","k","k"]
+=> ["k","k","k"]
+
+# A double quote, a space and a backslash (escaped in the literals).
+["\"","a"," ","\\"]
+=> ["\\"," ","a","\""]
+
+# The lowest and the highest printable characters.
+[" ","~"]
+=> ["~"," "]
+
+# Digits and punctuation.
+["1","2",".","3","4"]
+=> ["4","3",".","2","1"]
+
+# A palindrome with a space in the middle.
+["a","b"," ","b","a"]
+=> ["a","b"," ","b","a"]
+
+# Mixed case.
+["A","b","C","d","E","f"]
+=> ["f","E","d","C","b","A"]
+
+# Nearly a palindrome: only the two ends differ.
+["r","a","c","e","c","a","x"]
+=> ["x","a","c","e","c","a","r"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["a","b","b","a","b","b","b"]
+=> ["b","b","b","a","b","b","a"]
+
+@gen 2 small
+["1","d","D",")","q"]
+=> ["q",")","D","d","1"]
+
+@gen 3 small
+["7","7","\"","Z","\\"," ","\"","a"]
+=> ["a","\""," ","\\","Z","\"","7","7"]
+
+@gen 4 small
+[" ","\"","a"," "]
+=> [" ","a","\""," "]
+
+@gen 5 small
+["Z","\""," "," ","\""," "]
+=> [" ","\""," "," ","\"","Z"]
+
+@gen 6 small
+["a","b"]
+=> ["b","a"]
+
+@gen 7 small
+[";","p",">","e","v","J"]
+=> ["J","v","e",">","p",";"]
+

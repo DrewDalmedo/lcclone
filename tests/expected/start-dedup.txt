@@ -1,0 +1,4 @@
+--- stdout
+@TMP@/ws/0016-dedup/solution.c
+--- stderr
+--- exit 0

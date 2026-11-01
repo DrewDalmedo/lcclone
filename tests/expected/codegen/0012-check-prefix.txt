@@ -1,0 +1,50 @@
+== C stub
+int removeElement(int* nums, int numsSize, int val) {
+
+}
+== C prototype
+int removeElement(int* nums, int numsSize, int val)
+== C harness
+/* lc's harness for problem 12 (check-prefix). */
+int main(void)
+{
+    lc_rt_read_input();
+    int numsSize;
+    int* nums = lc_read_int_array(&numsSize);
+    int val = lc_read_int();
+    lc_rt_end_input();
+    long long lc_ret = removeElement(nums, numsSize, val);
+    lc_check_int_end("removeElement", "nums", nums, numsSize);
+    lc_rt_param = "nums";
+    lc_rt_check_prefix("removeElement", "nums", lc_ret, numsSize);
+    lc_write_int_array("removeElement", nums, (int)lc_ret);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+class Solution {
+public:
+    int removeElement(vector<int>& nums, int val) {
+
+    }
+};
+== C++ prototype
+int Solution::removeElement(vector<int>& nums, int val)
+== C++ harness
+// lc's harness for problem 12 (check-prefix).
+int main()
+{
+    lc_rt_read_input();
+    std::vector<int> nums;
+    lc_get(nums);
+    int val{};
+    lc_get(val);
+    lc_rt_end_input();
+    Solution *lc_sol = new Solution();
+    long long lc_ret = lc_sol->removeElement(nums, val);
+    lc_rt_check_prefix("removeElement", "nums", lc_ret, (long long)nums.size());
+    nums.resize((size_t)lc_ret);
+    lc_put(nums);
+    lc_rt_flush();
+    return 0;
+}

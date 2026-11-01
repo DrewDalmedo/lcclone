@@ -22,8 +22,9 @@ can be checked line
 by line. It has
 emphasis, strong
 emphasis inside
-emphasis, code
-spans, a plain link
+emphasis,
+code spans, a plain
+link
 (https://example.com/docs),
 a link with bold and
 code

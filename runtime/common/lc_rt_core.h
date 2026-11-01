@@ -290,6 +290,16 @@ LC_RT void lc_rt_put_string(const char *s, size_t len)
     lc_rt_put(s, len);
 }
 
+/* `check: prefix`: the count k that `fn` returned must fit the array
+ * `param`, which has `size` elements after the call. */
+LC_RT void lc_rt_check_prefix(const char *fn, const char *param, long long k,
+                              long long size)
+{
+    if (k < 0 || k > size)
+        lc_rt_fail("%s returned %lld, but %s has %lld element%s", fn, k,
+                   param, size, size == 1 ? "" : "s");
+}
+
 /* Writes the result on fd 3. Called last thing in main(). */
 LC_RT void lc_rt_flush(void)
 {

@@ -22,9 +22,10 @@ scraping, so nothing is copied from it.
    cheap to write, and **`gen.c`**, which makes random cases.
 3. **Write `tests.txt`**: the examples (`@example`), hand-written edge
    cases (an empty input, a single element, extreme values, duplicates),
-   random cases (`@gen`), and a few cases at the limits of the
-   constraints, so that a slow solution runs out of time. Leave out the
-   expected results (`=> ...`) if you like.
+   random cases (`@gen`), and, when the constraints are small, a few
+   cases at their limits, so that a slow solution runs out of time (big
+   ones come with milestone M7; see [Generated cases](#generated-cases)).
+   Leave out the expected results (`=> ...`) if you like.
 4. **Run `lc check --regen`**: it makes the `@gen` cases with `gen.c` and
    works out every expected result with `ref`.
 5. **Run `lc check`**, and fix what it finds: it builds the stubs, runs
@@ -81,7 +82,10 @@ It prints one line per input, in the order of the signature's parameters
 (then the `hidden:` ones), each a literal as in `tests.txt`. `small` asks
 for a case small enough for `brute` to work out quickly; otherwise make a
 full-size one, up to the problem's constraints. Every case `gen` makes
-must keep to the constraints, since `ref` may rely on them.
+must keep to the constraints, since `ref` may rely on them. Full-size
+cases are what catch a solution that is right but too slow, so make some
+of them slow for a naive method too: no duplicate to find early, or the
+answer at the far end. The seed can pick the shape.
 
 `lc` builds `gen.c` with `runtime/gen/lc_gen.h` in front of it (so it
 needs no `#include`s: the usual C headers are there) and a `main()` after
@@ -137,8 +141,10 @@ what `gen.c` makes (after `gen.c` changed), so the file and the generator
 can't drift apart. To `lc test` and `lc submit` it is a case like any
 other.
 
-Full-size cases can be large: 10^5 numbers are about half a megabyte of
-`tests.txt`.
+Full-size cases can be large: 10^5 numbers are half a megabyte to a
+megabyte of `tests.txt`. So for now a pack stores them only when its
+constraints are small. Milestone M7 makes the big ones when a solution is
+judged (`docs/PLAN.md` §6.4).
 
 ## lc check --regen
 
@@ -172,11 +178,18 @@ or every pack of the problem directory. For each pack:
    room for slower machines and other correct solutions);
 5. every `@gen` case is what `gen.c` makes;
 6. `ref` and `brute` give the same results on 300 small random cases from
-   `gen.c` (`--count` and `--seed` change that).
+   `gen.c` (`--count` and `--seed` change that), as the problem's
+   `compare:` mode judges them: under `unordered 0` they may list a result
+   in different orders.
 
 A problem that needs something `lc` can't judge yet (a binary tree, say)
 has only its `problem.md` and `tests.txt` checked; it counts as "not
-judged yet", not as a failure.
+judged yet", not as a failure. A function that returns `void` and has no
+`check:` (see [problem-format.md](problem-format.md#check)) is different:
+it can never be judged as it is, so `lc check` reports an error at its
+`signature:` line. When `ref` or `brute` fails a case, a reason the
+harness gave (such as a count that doesn't fit the array) is in the
+message.
 
 What `lc check` finds is printed as `file:line: error: message` lines, so
 editors can jump to it, with the input and the outputs below a failed

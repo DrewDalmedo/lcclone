@@ -1,0 +1,7 @@
+--- stdout
+@TMP@/regen/ip/0015-inplace/tests.txt: note: --regen: rewrote tests.txt: 2 expected results, 0 generated cases
+0015-inplace: ok (3 cases; ref.c slowest N ms; agrees with brute.c on 10 random cases)
+
+Checked 1 pack: 1 ok, 0 not judged yet, 0 failed
+--- stderr
+--- exit 0

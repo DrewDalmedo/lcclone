@@ -1,0 +1,4 @@
+--- stdout
+@TMP@/ws/0015-merge/solution.cpp
+--- stderr
+--- exit 0

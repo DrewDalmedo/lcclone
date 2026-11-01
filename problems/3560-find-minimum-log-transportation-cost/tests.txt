@@ -1,0 +1,137 @@
+# Find Minimum Log Transportation Cost. Inputs are n, m and k.
+
+@example The log of 9 is too long. Cutting it into 6 and 3 costs 18; 5 and 4 would cost 20.
+9
+4
+6
+=> 18
+
+@example Both logs are at most 5 long, so each goes on a truck as it is.
+3
+5
+5
+=> 0
+
+@example Here the second log is the long one: 11 becomes 7 and 4, for 28.
+2
+11
+7
+=> 28
+
+# The smallest inputs.
+1
+1
+2
+=> 0
+
+# Both logs exactly k long: no cut, since k itself fits.
+100000
+100000
+100000
+=> 0
+
+# One more than k: the cheapest cut takes off a piece of length 1.
+8
+3
+7
+=> 7
+
+100001
+100000
+100000
+=> 100000
+
+# The smallest k, with a log of 2k: the only allowed cut is in the middle.
+2
+4
+2
+=> 4
+
+3
+2
+2
+=> 2
+
+# Halves are not the cheapest: 8 and 2 cost 16, but 5 and 5 would cost 25.
+10
+3
+8
+=> 16
+
+# The largest possible cost, 10^10, with the long log first and then second.
+200000
+1
+100000
+=> 10000000000
+
+100000
+200000
+100000
+=> 10000000000
+
+# Costs past 2^31 - 1 that aren't the maximum.
+150000
+99999
+100000
+=> 5000000000
+
+99999
+170001
+99999
+=> 7000129998
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+4
+1
+5
+=> 0
+
+@gen 2 small
+1
+4
+3
+=> 3
+
+@gen 3 small
+3
+2
+2
+=> 2
+
+@gen 4 small
+6
+2
+5
+=> 5
+
+@gen 5 small
+11
+4
+6
+=> 30
+
+@gen 6 small
+2
+3
+3
+=> 0
+
+# Random full-size cases.
+@gen 1
+30042
+3446
+79222
+=> 0
+
+@gen 2
+44077
+108017
+100000
+=> 801700000
+
+@gen 3
+125933
+77850
+100000
+=> 2593300000

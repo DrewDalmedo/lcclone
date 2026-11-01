@@ -8,7 +8,8 @@
 
 /*
  * types.c: the type table, and the problem.md fields built on it:
- * `signature:`, `hidden:` and `compare:` (docs/problem-format.md).
+ * `signature:`, `hidden:`, `check:` and `compare:`
+ * (docs/problem-format.md).
  */
 
 #include <stdio.h>
@@ -199,8 +200,9 @@ static const char *const reserved[] = {
     "long", "main", "mutable", "namespace", "new", "noexcept", "not",
     "not_eq", "nullptr", "operator", "or", "or_eq", "private", "protected",
     "public", "register", "reinterpret_cast", "requires", "restrict",
-    "return", "short", "signed", "sizeof", "static", "static_assert",
-    "static_cast", "stderr", "stdin", "stdout", "struct", "switch",
+    "return", "returnColumnSizes", "returnSize", "short", "signed",
+    "sizeof", "static", "static_assert", "static_cast", "stderr", "stdin",
+    "stdout", "struct", "switch",
     "template", "this", "thread_local", "throw", "true", "try", "typedef",
     "typeid", "typename", "typeof", "typeof_unqual", "union", "unsigned",
     "using", "virtual", "void", "volatile", "wchar_t", "while", "xor",
@@ -329,6 +331,51 @@ int lc_parse_params(lc_arena *a, const char *p, size_t n, const char *what,
     return LC_OK;
 }
 
+/* 1 if `name` is `base` followed by `suffix`. */
+static int is_named(span name, const char *base, const char *suffix)
+{
+    size_t nb = strlen(base), ns = strlen(suffix);
+
+    return name.n == nb + ns && memcmp(name.p, base, nb) == 0 &&
+           memcmp(name.p + nb, suffix, ns) == 0;
+}
+
+/*
+ * The generated C code names the function and its parameters as written,
+ * and an array parameter's size `<name>Size` (and a 2D one's row sizes
+ * `<name>ColSize`), so none of these names may be another's.
+ */
+static int check_c_names(span fname, const lc_param *params, size_t np,
+                         const char *what, lc_str *err)
+{
+    size_t i, k;
+
+    for (i = 0; i < np; i++)
+        if (span_eq(fname, params[i].name))
+            return fail(err, "%s: '%.*s%s' is both the function's name and "
+                        "a parameter's", what, QUOTE(fname));
+    for (i = 0; i < np; i++) {
+        if (params[i].type.dims == 0)
+            continue;
+        for (k = 0; k <= np; k++) {
+            span other = k < np ? mkspan(params[k].name,
+                                         strlen(params[k].name))
+                                : fname;
+
+            if (is_named(other, params[i].name, "Size"))
+                return fail(err, "%s: '%.*s%s' can't be used as a name, as "
+                            "lc's C code gives it to the size of '%s'",
+                            what, QUOTE(other), params[i].name);
+            if (params[i].type.dims == 2 &&
+                is_named(other, params[i].name, "ColSize"))
+                return fail(err, "%s: '%.*s%s' can't be used as a name, as "
+                            "lc's C code gives it to the row sizes of '%s'",
+                            what, QUOTE(other), params[i].name);
+        }
+    }
+    return LC_OK;
+}
+
 int lc_parse_sig(lc_arena *a, const char *p, size_t n, const char *what,
                  lc_sig *out, lc_str *err)
 {
@@ -367,6 +414,9 @@ int lc_parse_sig(lc_arena *a, const char *p, size_t n, const char *what,
 
     rc = lc_parse_params(a, open + 1, (size_t)(close - open - 1), what,
                          &params, &np, err);
+    if (rc != LC_OK)
+        return rc;
+    rc = check_c_names(name, params, np, what, err);
     if (rc != LC_OK)
         return rc;
     out->name = lc_arena_strndup(a, name.p, name.n);
@@ -525,4 +575,87 @@ int lc_parse_compare(const char *p, size_t n, const lc_type *result,
     }
     *out = c;
     return LC_OK;
+}
+
+/* ------------------------------------------------------------------ */
+/* check:                                                              */
+/* ------------------------------------------------------------------ */
+
+static int is_node_kind(lc_kind k)
+{
+    return k == LC_T_LIST || k == LC_T_TREE || k == LC_T_NARY;
+}
+
+int lc_parse_check(const char *p, size_t n, const lc_sig *sig,
+                   lc_result_check *out, lc_str *err)
+{
+    span s = trim(mkspan(p, n)), rest, mode, name, extra;
+    char tname[LC_TYPE_NAME_MAX];
+    const lc_param *pr = NULL;
+    lc_result_check c;
+    size_t i;
+
+    lc_str_clear(err);
+    memset(&c, 0, sizeof c);
+    mode = first_word(s, &rest);
+    if (mode.n == 0)
+        return fail(err, "check: empty value (expected 'param NAME' or "
+                    "'prefix NAME')");
+    if (span_eq(mode, "param"))
+        c.mode = LC_RESULT_PARAM;
+    else if (span_eq(mode, "prefix"))
+        c.mode = LC_RESULT_PREFIX;
+    else
+        return fail(err, "check: unknown mode '%.*s%s' (expected param or "
+                    "prefix)", QUOTE(mode));
+    name = first_word(rest, &extra);
+    if (name.n == 0)
+        return fail(err, "check: %.*s needs the name of a parameter, e.g. "
+                    "'%.*s nums'", (int)mode.n, mode.p, (int)mode.n, mode.p);
+    if (extra.n > 0)
+        return fail(err, "check: unexpected '%.*s%s' after '%.*s%s'",
+                    QUOTE(extra), QUOTE(name));
+    if (!sig)
+        return fail(err, "check: needs a signature");
+    for (i = 0; i < sig->nparams; i++)
+        if (span_eq(name, sig->params[i].name)) {
+            pr = &sig->params[i];
+            c.param = i;
+            break;
+        }
+    if (!pr)
+        return fail(err, "check: '%.*s%s' is not a parameter of the "
+                    "signature", QUOTE(name));
+
+    lc_type_name(sig->ret, tname);
+    if (c.mode == LC_RESULT_PARAM && sig->ret.kind != LC_T_VOID)
+        return fail(err, "check: param needs a function that returns void, "
+                    "not %s", tname);
+    if (c.mode == LC_RESULT_PREFIX &&
+        (sig->ret.kind != LC_T_INT || sig->ret.dims != 0))
+        return fail(err, "check: prefix needs a function that returns int "
+                    "(the count), not %s", tname);
+    lc_type_name(pr->type, tname);
+    if (is_node_kind(pr->type.kind))
+        return fail(err, "check: lists and trees can't be checked yet, but "
+                    "'%s' is %s", pr->name, tname);
+    if (c.mode == LC_RESULT_PARAM && pr->type.dims == 0)
+        return fail(err, "check: param needs an array such as int[] or "
+                    "char[][], but '%s' is %s", pr->name, tname);
+    if (c.mode == LC_RESULT_PREFIX && pr->type.dims != 1)
+        return fail(err, "check: prefix needs a one-dimensional array such "
+                    "as int[], but '%s' is %s", pr->name, tname);
+    *out = c;
+    return LC_OK;
+}
+
+const lc_type *lc_sig_result_type(const lc_sig *sig,
+                                  const lc_result_check *check)
+{
+    if (!sig)
+        return NULL;
+    if (check && check->mode != LC_RESULT_RETURN &&
+        check->param < sig->nparams)
+        return &sig->params[check->param].type;
+    return &sig->ret;
 }

@@ -640,9 +640,10 @@ int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
         vals[i] = *v;
     }
     if (c->expected) {
+        const lc_type *rt = lc_result_type(p);
+
         rc = lc_value_parse(ctx, pool,
-                            sig && sig->ret.kind != LC_T_VOID ? &sig->ret
-                                                              : NULL,
+                            rt && rt->kind != LC_T_VOID ? rt : NULL,
                             c->expected, strlen(c->expected), expected);
         if (rc != LC_OK)
             return case_error(ctx, p, c, "expected output", rc);

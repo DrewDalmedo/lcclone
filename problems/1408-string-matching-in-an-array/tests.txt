@@ -1,0 +1,104 @@
+# String Matching in an Array. compare: unordered 0; the expected answers
+# list the words in the order they appear in words.
+
+@example tor and or hide in storm, and rest in forest. or also hides in tor and forest, but is listed once.
+["storm","tor","or","rest","forest"]
+=> ["tor","or","rest"]
+
+@example lan is a run of planet; pnt takes letters of planet that aren't next to each other.
+["planet","pnt","lan"]
+=> ["lan"]
+
+@example No word appears inside another.
+["sun","moon","star"]
+=> []
+
+# A single word.
+["a"]
+=> []
+
+# A chain: a hides in ab, and ab in abc.
+["abc","ab","a"]
+=> ["ab","a"]
+
+# The word comes after the only word it hides in.
+["hello","ell"]
+=> ["ell"]
+
+# Hiding at the start, in the middle and at the end of a word.
+["keyboard","key","boa","ard","board"]
+=> ["key","boa","ard","board"]
+
+# Overlapping occurrences.
+["ababa","aba","bab"]
+=> ["aba","bab"]
+
+# A matcher that skips ahead after a partial match misses this one.
+["aaab","aab"]
+=> ["aab"]
+
+# A partial match that runs off the end of the longer word.
+["abc","bcd"]
+=> []
+
+# Words of the same length never hide in each other.
+["abc","bca","cab"]
+=> []
+
+# Words of one letter.
+["q","w","qw","e"]
+=> ["q","w"]
+
+# Hiding in two words, one before it and one after it: listed once.
+["mnop","no","pqno"]
+=> ["no"]
+
+# The same letters in reverse order don't count.
+["stop","pots","top"]
+=> ["top"]
+
+# The longest words: 29 letters hiding in 30.
+["abcdefghijklmnopqrstuvwxyzabcd","zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz","bcdefghijklmnopqrstuvwxyzabcd"]
+=> ["bcdefghijklmnopqrstuvwxyzabcd"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["bb","bba","abaa"]
+=> ["bb"]
+
+@gen 2 small
+["ba","a","aa","aaa","aaaaa"]
+=> ["a","aa","aaa"]
+
+@gen 3 small
+["a","aa","aaab","aaaba","aaa","bbbba"]
+=> ["a","aa","aaab","aaa"]
+
+@gen 4 small
+["aabaa","aa"]
+=> ["aa"]
+
+@gen 5 small
+["a","ba","cccaa","acbac"]
+=> ["a","ba"]
+
+@gen 6 small
+["aaca","abccc","bccc","babba"]
+=> ["bccc"]
+
+@gen 7 small
+["abaaa","baa","aabaa","a"]
+=> ["baa","a"]
+
+@gen 8 small
+["ab","cca","b"]
+=> ["b"]
+
+# Full-size random cases: 100 words of up to 30 letters (a to c, then a to z).
+@gen 9
+["abbccbaabbbccaaabc","cbbcabbcccbcabbcbcbccac","aaaabaacabababaccbcabaaaccaabc","cbca","bcc","aabcbbcaaabcbbaabc","cbaccbccacccbbaaccbcbaccab","bcab","cbbcabbcccbcab","bcbaaaaaacaaacbaaaaacbc","aabbbcbcccaaacbacacabbaccacaab","bcbababbacac","baccacccbcbacbabcbacbcbbcbb","aaaaacc","abccabccabbccabaccccabacbcccb","cbbaaccacbaccbbbaaabbbbcaaab","caaacbacbbcacbacbbc","aacaaacbaaaaacbcc","cbccbcaacbac","aaccaabc","aabbabaaaabcccaaaab","bacabcaaa","abccabccabbccabaccccabacbcccbc","cabbbcbaaccacc","bacacbabaacbbabbbbbcbaccbbcc","bcaaaabcabacbccccbac","aaabaacabababaccbcabaaaccaabcb","bbbcbaaaaaacaaacbaaaaacbcca","bccbcaabbbabbcb","aaccbcbaccab","bac","caba","bbc","cbaa","a","bbabbccbaab","cabcccacbabc","cbcaacbcbbbcacacacaacabca","bcbbcabba","cbabaacbbabbbbbcbaccbb","cbb","cabcacabccabac","acabbaac","acaccbaaabacacac","baccacccbcbacbabcbacbcb","aaaacacacbcaaaabcabacbccccbacb","ccaaababbbacbbcaabb","acaca","bcaaabaabccbaababba","abbbcbccc","cbcbbccbbcaaacc","cbababaccbcabccbccbbaaabcccacc","aaccc","ac","cbacbaaaacab","acbacbaa","abbba","abaccaccabbabbaaaccaabcc","aabc","ca","bbbbcbaaaaaacaaacbaaaaacbccaca","cabbabbbaaaccbaaabcaca","babaacaababcbcacbbbccb","abccbcbababbacac","baa","aaccaaacbacacacb","aabbbcbcccaaacbacacabbac","bcb","bb","baccacccbcbacbabcbbababbcccc","babbaaaccbbbbbbcc","bccbaa","accacccbcbacbabc","bccbbccba","acbbcbbacabcbacbcaabba","acbaccbacacbcc","ccaaac","bccbaabbbccaa","bcabbaaccbcbaccabbab","acbacabccaabbccccacbaacccaaacb","aaa","bccabccbbccbccbacabcc","aaacacacbcaaaabcabacbccccbacb","cbc","aabccacbccacacbba","c","aaabaacabababaccbcabaaaccaabc","bcaaacbacbccbaac","bbcaaab","bacababbbabcaabaaabaabbcc","bacac","caaccacaaaabacabaccbcbcacab","cababcccaabccacccba","bccb","cbaabccbaaacacbcbccabccbaacab","baaa","bcccac","aacabaababacabacc","b","ccbcbcacaaccaabcccbaacccabb"]
+=> ["cbca","bcc","bcab","cbbcabbcccbcab","bcbaaaaaacaaacbaaaaacbc","bcbababbacac","abccabccabbccabaccccabacbcccb","aacaaacbaaaaacbcc","aaccaabc","bcaaaabcabacbccccbac","bbbcbaaaaaacaaacbaaaaacbcca","aaccbcbaccab","bac","caba","bbc","cbaa","a","cbabaacbbabbbbbcbaccbb","cbb","baccacccbcbacbabcbacbcb","acaca","abbbcbccc","aaccc","ac","abbba","aabc","ca","baa","aabbbcbcccaaacbacacabbac","bcb","bb","bccbaa","accacccbcbacbabc","ccaaac","bccbaabbbccaa","aaa","aaacacacbcaaaabcabacbccccbacb","cbc","c","aaabaacabababaccbcabaaaccaabc","bbcaaab","bacac","bccb","baaa","bcccac","b"]
+
+@gen 13
+["bprfmcfpmzhxwknexqkzhlnmxzehsh","mrok","skmtyzciwgvkxyqqrtwddnojta","ylvfxhsngg","qmvgwepjkhbqfzdoqlhhfma","suayzqpqbrvqjeiqwhwyddaxlgmhb","swbtestzolenrpgfyatcbtjzuoywo","r","xwf","lplbpllstalapnxggrumhsmgz","tnnyhibqqpukckhdsyteggcax","yihwka","uoywor","ddax","glcorhlbcdrjmwvhqenvctfksunz","mjtemeeyrhalcdxupdjul","rctvyakeswivxbgjpcijememymv","ionpkobiclyohfdtmrrlgacorgz","erqlazuwkfjtlismlhsyaghldojdwf","dscynkeegbmnpafxjmotdto","uoywo","dievekciwabzezdryafaqpwd","uoofqjsjncixpepm","vrxicehjvlddaxvov","uqbvobymljrtiukrmhvyucaxeiafzy","lrjwdkvuexsnrfhpgjh","graouykxayimaervnpklfnmfsglhtk","mhfpxdshjwnpbhcgnvt","qjsjncixpepm","mugjupwlozcormqerxywbohf","kxejtrdjzhbdmomorsqgelbfvzcqs","pmfngglhudvrxicehjvlddaxvov","ffnbmyrxubzbpvqbmrdxi","zp","f","bhhtmfngeiiwdastcv","zfawjxajldoiddebuuqdosccxxnpnr","dz","mrlvymgzccqnarysfcizlgyasm","buuqdosccxxnpnr","mrlvymgzccqnarysfcizlgya","rsortbijikkdbnf","nvctfksun","wjvrxicehjvlddaxvov","jxemhfujljzcsylkpvn","lcjsagxrpnjgwigriyz","djul","iavywdbtbjbvnklrwxpfdtrcqkvgjp","apnxggrumhsm","ocnsosjxemhfujljzcsylkpvnu","jmvpvnxjyqjsjncixpepmizvvgv","ipxdkemtttnisayik","efm","umh","k","ibg","fvbvtnhosenbndzbfwhjfi","kit","dafurrrhntofnbemopkjmrqvexd","zxswwsgeymdhubmgmdpxoqxwhon","dlbyiyoilyamroktimpceuxcubzdl","grumh","e","mwjvrxicehjvlddaxvovxmfjvrmtf","ylbldummjdnpdqu","nwmtypccbuuqdosccxxnpnrjrhiyrz","ac","xkbktonjqtzzivreeht","mfngglhudvrxic","qbvobymljrtiukrmhvyucaxeia","muznjydiixanwdauezzibgnwbtydeu","bfkilr","glh","hqenvctfks","kgraouykxayimaervnpklfnmfsglht","wehbnbavgizisdber","hfpxdshjwnpb","bpkited","drjmwvhqenvctfksunz","qemawerwojaivkjxzlnydm","x","gtyqavvsgoinarkjvjkqxyxhvwqk","ipfkztqrcpemhfpxdshjwnpbhcgnvt","a","qlazuwkfjtlismlhsyaghldojdwf","ylckikfuochxwfexkzbyqaz","qenvctfksun","jgqhpldfxuncqitcycacn","dvwqagibbktbs","kdpijgqhpldfxuncqitcycacnl","vrmhgibbuuqdosccxxnpnrsqolmmfo","axvqkbmyirhelmzmbheddzsf","bhqekklqpkzjgkdwanhnpmjrq","te","graouykxayimaervnpklfnmfsglht","yybhzufsjfaeydsz","typccbuuqdosccxxnpnrjrhiyr","fiaapnxggrumhsmr","rwojaivk","aefime"]
+=> ["mrok","r","xwf","ddax","uoywo","vrxicehjvlddaxvov","mhfpxdshjwnpbhcgnvt","qjsjncixpepm","f","dz","buuqdosccxxnpnr","mrlvymgzccqnarysfcizlgya","nvctfksun","wjvrxicehjvlddaxvov","jxemhfujljzcsylkpvn","djul","apnxggrumhsm","umh","k","ibg","kit","grumh","e","ac","mfngglhudvrxic","qbvobymljrtiukrmhvyucaxeia","glh","hqenvctfks","hfpxdshjwnpb","drjmwvhqenvctfksunz","x","a","qlazuwkfjtlismlhsyaghldojdwf","qenvctfksun","jgqhpldfxuncqitcycacn","te","graouykxayimaervnpklfnmfsglht","typccbuuqdosccxxnpnrjrhiyr","rwojaivk"]

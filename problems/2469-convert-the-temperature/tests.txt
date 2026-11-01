@@ -1,0 +1,80 @@
+# Convert the Temperature. The result is [kelvin, fahrenheit]; compare
+# defaults to float 1e-5 for doubles.
+
+@example 12.5 + 273.15 = 285.65, and 12.5 * 1.80 + 32.00 = 54.5.
+12.5
+=> [285.65,54.5]
+
+@example Water freezes at 0 degrees Celsius: 273.15 kelvin and 32 degrees Fahrenheit.
+0
+=> [273.15,32.0]
+
+@example 100.25 * 1.80 = 180.45, plus 32 is 212.45.
+100.25
+=> [373.4,212.45]
+
+# The largest temperature.
+1000
+=> [1273.15,1832.0]
+
+# One hundredth of a degree: the Fahrenheit value has three decimals.
+0.01
+=> [273.16,32.018]
+
+# Just below the bound.
+999.99
+=> [1273.14,1831.982]
+
+# 9 / 5 in integer arithmetic would give 37 here instead of 41.
+5
+=> [278.15,41.0]
+
+# Two decimals.
+36.67
+=> [309.82,98.006]
+
+# A whole number of degrees.
+37
+=> [310.15,98.6]
+
+# Half a degree.
+0.5
+=> [273.65,32.9]
+
+# One decimal.
+451.7
+=> [724.85,845.06]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+56
+=> [329.15,132.8]
+
+@gen 2 small
+20.2
+=> [293.34999999999997,68.36]
+
+@gen 3 small
+21.4
+=> [294.54999999999995,70.52]
+
+@gen 4 small
+50.6
+=> [323.75,123.08]
+
+@gen 5 small
+88.6
+=> [361.75,191.48]
+
+@gen 6 small
+93
+=> [366.15,199.4]
+
+# Full-size random cases.
+@gen 7
+845.11
+=> [1118.26,1553.198]
+
+@gen 8
+417.62
+=> [690.77,783.716]

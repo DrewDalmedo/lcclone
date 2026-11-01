@@ -244,6 +244,22 @@ typedef struct lc_compare {
                          the arrays at nesting level k (0 = outermost) */
 } lc_compare;
 
+/* What a solution's result is (`check:`). */
+typedef enum {
+    LC_RESULT_RETURN = 0, /* what the function returns (the default) */
+    LC_RESULT_PARAM,      /* `check: param NAME`: the function returns void,
+                             and NAME after the call is the result */
+    LC_RESULT_PREFIX      /* `check: prefix NAME`: the function returns a
+                             count k, and the first k elements of NAME are
+                             the result */
+} lc_result_mode;
+
+typedef struct lc_result_check {
+    lc_result_mode mode;
+    size_t param; /* LC_RESULT_PARAM and LC_RESULT_PREFIX: the parameter's
+                     index in the signature */
+} lc_result_check;
+
 /* ------------------------------------------------------------------ */
 /* Problems                                                            */
 /* ------------------------------------------------------------------ */
@@ -283,6 +299,11 @@ typedef struct lc_problem {
     const lc_param *hidden;   /* the parsed `hidden:` inputs */
     size_t nhidden;
     /*
+     * What the result is: what the function returns, or with `check:` a
+     * parameter after the call (lc_result_type gives its type).
+     */
+    lc_result_check check;
+    /*
      * How results are compared: the `compare:` field, or by default exact,
      * except that a result made of doubles defaults to a tolerance of 1e-5.
      */
@@ -317,6 +338,14 @@ const lc_problem *lc_problem_find(lc_ctx *ctx, const char *key);
 
 /* Value of a header field, or NULL if the header has no such key. */
 const char *lc_problem_field(const lc_problem *p, const char *key);
+
+/*
+ * The type of a solution's result, which expected outputs are written in:
+ * the return type (possibly void), or with `check:` the type of the
+ * parameter checked (for `check: prefix`, its first k elements, so the
+ * same array type). NULL when the problem has no signature.
+ */
+const lc_type *lc_result_type(const lc_problem *p);
 
 /* 1 if the problem has this tag (exact match), else 0. */
 int lc_problem_has_tag(const lc_problem *p, const char *tag);
@@ -446,8 +475,9 @@ int lc_value_match(lc_ctx *ctx, const lc_compare *cmp,
 /*
  * Parses a case's literals: the inputs against the signature's parameters
  * and then the `hidden:` inputs, and the expected output against the
- * return type. Without a signature, or when it returns void, values are
- * parsed without a type. *args points to an array of c->nargs values, and
+ * result's type (lc_result_type: the return type, or with `check:` the
+ * checked parameter's). Without a signature, or for a void return without
+ * `check:`, values are parsed without a type. *args points to an array of c->nargs values, and
  * everything lives in `pool`. Errors name the file, the case's line and
  * the input, e.g.
  * ".../tests.txt:12: target: column 1: expected int, got a string".
@@ -1003,7 +1033,8 @@ typedef struct lc_check_report {
  * passes every case; the cases marked @gen are what gen.c makes; and,
  * with brute.c and gen.c, ref and brute agree on opts->count small random
  * cases. With opts->regen, tests.txt is rewritten first. A problem lc
- * can't judge yet still has its tests.txt checked.
+ * can't judge yet still has its tests.txt checked, and so does one whose
+ * function returns void with no `check:`, which is an error.
  *
  * Findings arrive as LC_EV_FINDING events as they are found, with build
  * events; the runs themselves send none. What is wrong with the pack is a

@@ -1,0 +1,36 @@
+== C stub
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+void reorderList(struct ListNode* head) {
+
+}
+== C prototype
+void reorderList(struct ListNode* head)
+== C harness
+error: problem 14 (void-list): ListNode parameters are not supported yet
+== C++ stub
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    void reorderList(ListNode* head) {
+
+    }
+};
+== C++ prototype
+void Solution::reorderList(ListNode* head)
+== C++ harness
+error: problem 14 (void-list): ListNode parameters are not supported yet

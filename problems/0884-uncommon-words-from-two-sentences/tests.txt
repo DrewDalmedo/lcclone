@@ -1,0 +1,110 @@
+# Uncommon Words from Two Sentences. compare: unordered 0 accepts the words
+# in any order; the expected answers below list them in the order they
+# first appear, s1 before s2.
+
+@example "the" occurs twice in s1, and "cat" once in each sentence; every other word occurs once in the two together.
+"the cat sat on the mat"
+"a cat ran"
+=> ["sat","on","mat","a","ran"]
+
+@example Every word occurs once in each sentence, so none is uncommon.
+"same words here"
+"here same words"
+=> []
+
+@example "x" and "xy" are different words, each occurring once.
+"x"
+"xy"
+=> ["x","xy"]
+
+# Single words, the same.
+"a"
+"a"
+=> []
+
+# A word twice in one sentence and absent from the other is not uncommon.
+"hi there hi"
+"bye"
+=> ["there","bye"]
+
+# Once in each sentence is not uncommon either.
+"moon"
+"moon sun"
+=> ["sun"]
+
+# Every word differs from every other: all are uncommon.
+"ab cd"
+"ef gh ij"
+=> ["ab","cd","ef","gh","ij"]
+
+# Identical sentences.
+"one two three"
+"one two three"
+=> []
+
+# Prefixes and suffixes of a word are other words.
+"car cart art"
+"carts ar"
+=> ["car","cart","art","carts","ar"]
+
+# The repeats are all in s2.
+"lone"
+"dup dup lone"
+=> []
+
+# A word three times across both sentences.
+"x y x"
+"x z"
+=> ["y","z"]
+
+# Ten one-letter words in each sentence; only a and k are not shared.
+"a b c d e f g h i j"
+"j i h g f e d c b k"
+=> ["a","k"]
+
+# Longest sentences: one word of 200 letters, and the word b 100 times.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+"b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b b"
+=> ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"a ba abc abc"
+"abc"
+=> ["a","ba"]
+
+@gen 2 small
+"aa ba"
+"aa a a a"
+=> ["ba"]
+
+@gen 3 small
+"ba"
+"aa"
+=> ["ba","aa"]
+
+@gen 4 small
+"ba ab ba a"
+"ba a"
+=> ["ab"]
+
+@gen 5 small
+"b b ba ab ab"
+"ab ab ba ab aa"
+=> ["aa"]
+
+@gen 6 small
+"ab ba"
+"aa abc"
+=> ["ab","ba","aa","abc"]
+
+# Full size: both sentences nearly 200 characters long.
+@gen 1
+"bh dd dd abaga bh ea abaga dd gec d bh ab fdc dd ab fggehac agfg e d ae dgfhbc c d behhhgf ae fdc dad eddd deddfb eddd agfg cfcb behhhgf fdc ea cfcb ae gec e db ab agfg ab ab ae dfa dad bh dgfhbc bh"
+"ab e ab fe cdcf dfa deddfb c bh dgfhbc eddd ae eddd dd abaga fggehac d d fdc gcgec ea db behhhgf dd dfa d ae cfcb abaga gcgec ea dd ae fggehac e bh abaga dd ceef behhhgf fe cfcb d dfa dd abaga dfa dd"
+=> ["cdcf","ceef"]
+
+@gen 2
+"egheb fafg aaeeacc b dafc hb haehah cbdd baabgfa hd gcfdgbc cbeaca fff dfcaf abhb ddab cbdd dd fdhcf ahaahg ahaahg fdhcf abhb g haehah bbchea fa edebgh g aaeeacc egheb hfchg cbdd fa cgccd fa hb hgeah"
+"g dfgcf gce egheb dfgcf cbdd cbeaca adhaah ceca dghdbfh g g fafg dg dfgcf dfcaf ebh d fafg d ebh dg baabgfa egheb ad dg egheb dd fff fa cgccd d eggbceb ceca hd g aaeeacc gfhed hccfbdb aaeeacc hb"
+=> ["b","dafc","gcfdgbc","ddab","bbchea","edebgh","hfchg","hgeah","gce","adhaah","dghdbfh","ad","eggbceb","gfhed","hccfbdb"]

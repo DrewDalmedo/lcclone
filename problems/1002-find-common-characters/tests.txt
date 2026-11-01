@@ -1,0 +1,89 @@
+# Find Common Characters. compare: unordered 0 accepts the letters in any
+# order (each repeated as often as it is common); the expected answers
+# below list them in alphabetical order.
+
+@example Each word has three a's and one b; n occurs twice in banana and bandana but once in cabana.
+["banana","bandana","cabana"]
+=> ["a","a","a","b","n"]
+
+@example k is the only letter in all three words, and kite has one.
+["kayak","yak","kite"]
+=> ["k"]
+
+@example sky and moon have no letter in common.
+["sky","moon"]
+=> []
+
+# A single word: every one of its letters, repeats included.
+["letter"]
+=> ["e","e","l","r","t","t"]
+
+# The smallest input.
+["z"]
+=> ["z"]
+
+# Frequent in most words, but once in one: common once.
+["aaaa","aaa","a","aa"]
+=> ["a"]
+
+# A letter missing from just one word is not common.
+["abc","abc","ab","abc"]
+=> ["a","b"]
+
+# Identical words: all their letters.
+["moose","moose","moose"]
+=> ["e","m","o","o","s"]
+
+# Every two words share a letter, but no letter is in all three.
+["ab","bc","ca"]
+=> []
+
+# Anagrams share every letter.
+["listen","silent","enlist"]
+=> ["e","i","l","n","s","t"]
+
+# The fewest a's and the fewest b's are in different words.
+["aabbb","ababab","bbbaa"]
+=> ["a","a","b","b","b"]
+
+# Words of 100 letters: 50 a's and 50 b's in each.
+["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","abababababababababababababababababababababababababababababababababababababababababababababababababab"]
+=> ["a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b","b"]
+
+# 100 words, each with one to three m's and one n.
+["mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn","mmn","mmmn","mn"]
+=> ["m","n"]
+
+# Every letter of the alphabet.
+["abcdefghijklmnopqrstuvwxyz","zyxwvutsrqponmlkjihgfedcba"]
+=> ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["ccccb","bc","cc","aab"]
+=> []
+
+@gen 2 small
+["ccaaa","caabb"]
+=> ["a","a","c"]
+
+@gen 3 small
+["cbb"]
+=> ["b","b","c"]
+
+@gen 4 small
+["baab","b","acccab","bb"]
+=> ["b"]
+
+@gen 5 small
+["cd","cbdc","cbbc","caca","abd"]
+=> []
+
+@gen 6 small
+["bcdab","adcb"]
+=> ["a","b","c","d"]
+
+# Full size: 100 words of 100 letters.
+@gen 1
+["ghcicchehiecccgdhhghfdciaeafchebgfhddafgbdaigeaiaehhbideeeibdffhbfceaabeciicbfhiibgfchgdcefhfafcgcde","digbhcacdgdgahabhdifbhbdbiicehegidacafddahbfghcbccebcfigcegaiicbfaciahacebgffifcebdhdiieadgedaecdide","cffacbgcfcdcacabhffdgacahbbifaeheiifcbcaeabihhdfgffcdabecgficihfcdffigccdihfhdbdefgggaefgdhafceeefcg","hafbiagifabhfcicggbcafebdafgdfiaggbgddaicffcidccehecidgafdehehfdfchcehhbegebeeffdhhdbaeabeacfbgidchb","bfhcffhicibdceafacbbfdadgabfabihhifffhebdgadfgbbiaffcdeaiadbdiggfahecffcffdbfgbdaeaibgdifdifadhbhcab","cchehfehhfafffaeaaegbcibfiahihcegaahdffhddebdheiagfadbghcbfcacdicgdgbiddeghbcdghhachcichdcbififeeaca","ififhgedbeefeebiffbbfgiadcbihfdbbgddcdcahgbhihcfacdeaagcggcbgcbhchcbfaghafbahhfagfchddffbfiaiiicbgde","egbhbcefgigdhcgiccgeagidhdcgfhiddfgbabheaabcfaahgchfbidcdegidfifchbigchdhdibdabdcgigffhagehchaieigch","hgddbdifbbecbdigigafccddcidgeebebbhdchcfbacffcchheaghheagiggdgdddaciehddechgchgddhfdgcfbgfdadbddbage","agbfeibgeeaieehedgacfdebccffgbgcbfdeaegiahhabcdcfheidfieahfdgcgihgiiadhfaaddeadeaaafdceiiicechchgbib","figeffhfidfgdiegaeigbhegegdediagbbiggebfbfhicbbgggiccafedfibahdigffbdiaafdfdbcafdhcfeigihfccgbbgbadb","iggdegfgicihgghdighegdihbefdgdgibfcfacabccedhdbheeehebafdeebbdiidehebbgbdbdadceiegddccddgigcbfcbecig","bdchaedfhhafggaafagcdgigcaaabhcbicehadhghbibachcggiehhbicdaebgcgbghfegegdhefgbaacgdffebfaedhcigdegic","dfgahheeacgaeddiiihbbghghgeeaibaihhicbehbbeibfgdfgbbbdddacgahbdbghfhfgeegehdgfadfiegaaeifccffcegddfb","agihabfibgicdfhegbagiddafhidbfaafeacfdghaicecaeaddddighgdiibgghibhcfdebdedgfhcbdfefgebfbicbbcffgidgc","bebdccaggcfeebbghfidgeaebdhfibgdhbighbceaiiidcdcedacidfdefhahidhefbhbbfbafiegghhbaghebhbiefggdbhgdid","faegcbdchhbbeabbfagedbghgebhhfhaaigbghcacaegacchehgcfeafdgcbfhahbhecihaeeafbegifhgicgggcabcdhcdbdfhd","chdbgahfdgfafdfefcfhbdeieghhdeahieicfaedbdidehdhehhgbbbdaefdabefhdgdbaafbhgabaigeagfeabcefgfceaigcbd","hadiahchddbbhaabebgiibaihidhffdaecehieadbccefhcddgfggcdhcbiiaaficehaiafdeifdeebbgiibecaaccccabgfhiec","ahbabdgbibaebbgcgbidhdfddicdfbdgihbafgdahgababbibhffgfhidhcdiicieefifgighiehabaicdfihidihfhagadcifci","aeeeibabbegidaadgcdiahdhdefhdcaadgdhaheagbhdeebdgbecaceabhbfaggacfiiidbcgacadhceegfcciabicieigfbfdab","aeccdceibbghfgfggaeieffbbbecefafhiefihdbahgfdcigbbgheichcdaecbafiacidgiiiagccbeiifdideahfdadiccggfcd","dgfegiihhcgihgfieibihcfgfhdfigieciciaifideahiiebffebhbihciabicfbdheaedfhccbccfhhchchggdeagbgaciddefi","hccdefacgaafecgdfdgfiidbaefggbdddbcdicaebgahbdgiidgchfbbghehiafdggdceihfedaichdeidgcfagffcgighigdcii","afcaedcbbghhfcedeeeeidcdbddccabfaaahedgifcdigeecdhhedigfafifcgfiiceidaeghffadcaaaebehbddacgfabcddfih","eihabccebciaefdachhbicadhadbdidhgeebabhiigggafdfaefcafiaffdefafbfidbhchedfhgaehefeiheiihdffdeebhbhhg","hfbgadbhbihccfhiiifbeadcdihbiggfahgibefedcbbcifdedbegdfgcgbgddeedefaebfebiacfcbhgicfhaehicfgicgddghe","ebbchghaaaibfffhbbcdfggbdgbggiaghdhiebfebfgacfafdggibafbffhfhhfiaiifgcddffgddiaeidhbaiihdihifeedbdig","bgbbcdbdacagdghbcfidcieachagieadceiibdgceggeigeibdgdcbigdbfidcahaiiicaaegfbccbcebgfiiehbehededceahbg","efbhgfbihhbdiahihcifgfdcdihhaghcgdggbhbiageacaahdiaebfbaccfcdbgfghbibgahciigaideebggdggdacgcbddgdifd","iedccgdchbbiieeecgddacgghfbecachghaibachbbecbeeddagheighdeageabfibicdcibddcfcedghddcidgcegihigegahab","ifgeaebeddhabbiifggbaaghhgaehfehgicbbdaicifeaehdgihbhbffebcaidddbfheafaeghdgbficeabidebggceighhhdbia","hbgbfdihhgghgeiaegggedfighdciaaibfgfchiggcfdcggbigbeihidgciagaibgaddiibabgdcahiihiihfibaicdcfibdgcfg","dfbahicicbcgbgigedfdaecfdbdbhaeaaifaafgdidbggghaaiedahgiahdgcgeegidehfaefbigiegicgbgfhaeiggihiahcede","aidhdchcaiaccidicdcdihcicibbgbidaghfeegccbghhegfeicffeecacabgeghggiehcabefibefigdaebgffbieigefdhihhd","hcdfbefdebdihdifdgcbeacibceiiefbgciiefbdcdgeiidbehffeabfdhbfabfdcefficdeaheibcfachbfiheadadhggccdbcg","acaehhfbihghaffegfbeiahfechdahcbceacghcbichbddcaaffegegchcfhdaffhaigeegicfiaidfdiahgffhageaghbegaghd","hffeiidedeeeabbccbfdaidabefghdbbgbbcicfdehheggeedhdbacibfghaefdhdadgebgeaihiecifchiicgibfghhffagbecf","bcaghcbibecbheihgfiaggfcicgcddhhgbfbcedgghdhcfefddiefhhgabhhghefheffdgiiaacdafbghbhbgfhbcdebcbdegdcg","eefecagcghighhdcdeibhcegifbghdahdbcbhcgddbdabdehebfihfbefefafafeibciigefahhdbbeiheccdefchgbhhifhhida","babhahfahgbcieggaaacaaefaiedhhdiccficgdbfdifdcchfcaifcahiiiaeeigafediiaefieachefeachaabfhhiiibbeadee","hbeagbdgagdcigbcifagggiibbaedgcihhdbbhahhcbhdgehffagfaccfegdahgbfigaedhecaafdafihcabcdgigfebfhadebdb","ahbhhbhfgdibhceggddafibeghfcfdahagdcdcfafbhaidichifihbgecgahecbigegdfehcgcgdfcibddeficdedcdfgidbhgga","iiaidddheeegfciceiaadbfghdabcgfciafedddhedgbeiecgfcihebefdghggcghgdedcfbhdehdgceadgdbcacciaiihahbfbc","gccfacdddbbfcfegdefeiigbebfcdbadfffahfcbiccebdbdgfdaficebffchgbhfffaideaedeecaidiagcfhebghgdgadfcegd","ihbbbcbacgibeagiciefabefediebgbbifefcecccaabeeeacaihgggccfaedaageiaciicfgfcbfdbhbchbfadadcdihcedcabd","ceabaffeedccecbidhgghgeiachegaiccdbgidfifhhfhhggaadgbbadcgfabffaicieceiiaabfacagacehdidhadidafhhdeif","fbccbeefagbgfechggghcacfaebgafciedgaadcehhbhigbddgcffbaaaedbdhhdeciaieaicafdeiefhihbaaidbcecbegcieda","gefaddfcfhfddehhfacgbgagfaicigcchcacfffhibgifiiiafdigcdiifabedidabefhhbedfgfidccfegaagbhdbagbddieiid","ceggahffbffedhehgdfdigbgibcdfaidhagcheffgdafgcdigbiacidbagbbbhgahbfeedighfdddeibhbfghaighgfiiaficihh","bibdgdegdaaehibfghagiiibeigfbgaihebeifhiahdfeaafebehhabhdiabbiiaiibhbdafihabfigebhdhefgdbfgaddfgdggd","ighfabeaebbcbaagdffeaccbaegdgbdffeecdgdgcefcfdbhbffbhedhbihibeefciiaegadcbbhfehabhcbcfeicdhaibfbdgif","ccfgbeahgighbhhhieabbhbhhecebeaigbhecdhcifcihhdibaacdegbcdeffebcihhcicdabfiefiabichachggdbbbdgahcefd","dhibgabfbiaihhfcafeiiaheghiabafecacbgbaiadeegbaecedgfheccdhbbhhhhhhhfhdgcgddgcchiedifbcfbebehdhibafi","icdidcgddbgdiaafhhciafcciicdeahhcagagfaadhcddhibiaaaieafedeiebbhghhechehbbggfcehffecdegiecidcggbgbfe","cdhcdgbbibdfaeabgigfehdiafhaaacdhadicdegabeifgeihggidaifahebcbcgfachhbbbbghedciabdabbeahiifcgbfcefcf","dfagfieffghdgebidbadhbdhdcbaagegdciefigfddggbdgdfcchcgiehhigcbcdfidfbcachddbffiedefcdiheegbhaddadiea","acgeacbbiiggbfbfeggaheibbbcfhhbcdhebcgcfbaefhfggbidgbabidfegaaafeabadiahgcagigcibhbchcfecebeaihfcfgf","adcdhfefdhiiebbhabibhdcdaddaibdfbgghhabfahfcfibhicicigaaiehccbaafgchdgbcagaiffgeadaaahccdiacdcdhfibg","dhgdchcehdghbabbfiibdgfdgicgbgfifaiaigiiccieebbfgicihddefedgdffibheedbbbbigicdbahadbhcheiafebgfgegab","dbeiefgiegfcggaadcbaeafcdfgcgicihadgabbcecaaifffihadbehdhddgdaegebbaeiihchigidbedigfaffcdeabafhhddhb","ggdgeaigcafgigaifdbbiiiaadbfadhfeaghbhchbdgicdaiihcgfccbiaafhfabedeheidbgiggeiebbbiafbffcgaaheefebgf","cehegchihfbbcfgdeebadahhafeifheacfdfhhfeceacgfhfhcbgbgadfciaifbibfihfeheaabhdfadgedahbabcbdaifdigbcf","beciheighggicgigagfggighiachbcgfdcbdhebciddhcbebdagihaicdiifbfacagfbeiiciggdfeggdficbbeghbbcgcbfaicg","fhgdaddfgifaceaecfeaafiddfeihgdebhdgeigagdhccehgbegihcigceccgehbegaagfeebbfdbefhbecbbaehegiidcaihfcg","hfaeiaebdifbdacfadghbdbcahdagbidfbhfafdgfeacbdbcdeffgiaacfefiiidfhbfacfbfhidfbgfeabddafbhfebihaedaca","ficbdfhgccbfaffeaacbddidfecbcaddeccfbcegfafgbffbdcebegehagfffiiddecfagihhfafgdggiiahbahiagbiegfdbedh","fciegacciicahedfidechgffdbhebdiccgffggbiefgabachafdhihgccegcfbbciieebghiedididbcghhbcfadgifggifdiiib","ececahdhafchfbbbeeffefiddcaaaigeefcifeaaeffeifebgadacgffcgdabibdaggbhbefafbhgfibgidaedigegbacbeehfeh","hfhbdfhdebbbahbedageegcfidegiabhcifficigefiidieebbababacefihddegacehddfbcgghbbgbgifaggbchiecbehcigcg","fhdbhieadgdagibhfgcabhbiecdbhiaddgahfghegccgfdagcfiehcghhehaidbahgdddiigicdeahggbfgdfcdhhiafifbgafcf","fcfdbeebhbccbfffagchifgcheahaceiccieidgghbabihfibhfbbacddgiehdfchghahdaifebfagbcffggadfhbeeeagacicef","cdeicdcdccgiaggegigahffbcfdfcdagdffhcaheghbdibcdeiehbeeehiabegeadffhfhgehechaicibcbdbeibbadhgdiciefc","aicgfgiedfacebbaaighgfgidabfifdccceagehhhhdcgafeaedbefiiccicefhicdigfhgihfbcbgicacaedcigeaggabeefgbh","dhcbaaeggbhedbfhefaefbdhdbccdggedbibhgidafiaacahacbiadihbfhhgiicdbceghgicgadgbfehdgeidaiieihaceadfge","chdhgeihiabageddcieeiihibbccdgieefhffidhceahehfghccafaciiebfabaiafieiigdfggbdaddifdbeeciedeegieheiab","eefcfcahidfbgiiifbegageaheacgbfaffcghiiffbfbdggacffebhdeigdgbdehgegcfifbiefgfddgffeieggafdcggigfaefb","hahccecdedahaiccahcifhifihbahcdfadcghcbaceafegdaaciafeehcdhhagieceghbebefgbfgiceaaaciidfhfdgehgcghfc","cdicfdahebbcdgghcagcbgdaahedgefegiagcghadghfbdeiafdcccbhhecgifihgfchbedbbceggaabgdhfiefheeeigdbedbff","aaebaibicdggcfaidghecaeeeiiihaadidbhefgidfedihicgahdgdbcadaabdbibicecighgbfiaedgheecbdbbgbhccihcehga","higcddfcigdfhacgecfibhebgbbabfbhaggbiededbbegahaieaadaheabbgibibbcbhhbfifcifegiedhcibdfbbcaedgfbachi","dcfhgiidghhggecgdchafghgcafiiedahebahacbhgghfffcgcbifdcebdbbcbebcdabfcaefgfgbcidbbcaiceiacdgbcgcafhe","ficeghchiddhbcedfegffedbfdfaeidhbcfcifafchdeadfeeagcifficbcafhdagfcaaddcigbefciafggbeghbcbbciafdigfg","ccihibcffeihhahghacebdegfheefdfafhehdafgiacfaafageaiiihfbicaeaghiagafadgifidcfdfeagfbdidafggbbcbifeg","hcageecccciibibfdafdiadbcfegbhfgdiabhbbebibfdcbcacieigibhbigcgeibichadgiifbgigcbbabheebfdhedadddahai","heffbffcicacbgdigbhifhgafiigdaiddbiahfdbidebgagiiihgbchadihegiiigfeiedbachceciabcibbhffgcgbbbghgggcg","bfbbbebechfgifagieiddcgfcegbicdacaggbchafhidiaegifcgcecdhafgbhgbfcbcfadbicabiefigbebfgbbedahcdcbbabf","eifdghgibfiggbgbidfdgbghbfacehbafigbcidceebadffbbbgabicaaccdbchdbiiahdiebdhiaaghbhhdhdaefehfigdbbcff","eeaidfichcaiafcahgedafdhhcadiddhfeddfdiddcadehbbidebedahibbfahiaihedbfbcbdhhgbfhgifaegedfiigegiddhig","hcegbhefagbabeebdfghaaggahbehedghaadacagiihegedbefgcgageciiaafhhhheghfiaafaccdgdddfigfbhcdeafgfedacd","aebafhefafagdicgfedciedgefabggbdgifcbhabgfagidehibigfaefhhhhghhgdiabhhghbhdgehbechihgeibgedcbffeiecc","dgiccaaibddgheigbfhhhfedecdheaaiicacahhiacddhiadbhahhhfifabifgihadhcbhhegcdcbgbbfafhefehcfdiehhagcgg","icheaieifaghfieahacecaebbbdicbgffiaffhiefaecehbfbgeiefccafggidcdhidhbddgecdhgbdcgacfdbgbaeeiceggdeab","adhiebfhhcdiebdcghbfdfhebbachdcaabicicgdbbhheibhbfcihafchcceaffieedcefcbachedediebghaahbfhcgfbdacgif","hhidhgfcgdbgiecefdebbaighccieafhbabghibgcecedihdgffgbbgdcedfebfaaecfcgfiaddeedecehfabacidcacaacgbbef","adcdibicgdggdfifeihecaabdhdghbhdfhcehehdhedifecedfdheefhhcheeiidbaahfhbgbgifgdgidbhgggabiabachfihdic","iggaeibfccifeiicecdcciebhcghdhdhhbfbhaecdhiifebgfbhfbibgaibdcdgifiedggaagghgiibcieafhddbaffhibebiehd","bagfigihihbfffecbgcedihgcdadbaciafaheeggcghdbbefcfaecidchabheidbbgehdiichedbfbbgebbffhgciaffedcgdbeh","gbbffcebdbibhbihbbgfbhgiaihbadigfceacehihfgiigaffgbcbbdgacffhabddhcifchbaieebfadabaceeiaigbehgigdccd","eccghdbgacebgccdeghfggcigdfbchebhbhicafdfhchahehciddagcfhedggcadcheibbdaiacgihgbgbgddaifgecfebaicedh"]
+=> ["a","a","a","a","b","b","b","b","b","d","d","d","d","e","e","e","e","f","f","f","g","g","g","g","g","h","h","h","h","h","i","i","i","i"]

@@ -360,7 +360,7 @@ static int check_result(judge_run *jr, const lc_value *expected,
         lc_str_puts(&jr->why, "exited without returning a result");
         return jr->why.failed ? LC_ERR_NOMEM : LC_OK;
     }
-    rc = lc_wire_decode(jr->ctx, pool, &jr->p->sig->ret, text, res->len,
+    rc = lc_wire_decode(jr->ctx, pool, lc_result_type(jr->p), text, res->len,
                         &pos, &got);
     if (rc == LC_ERR_NOMEM)
         return rc;
@@ -516,13 +516,16 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
         return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s) has no "
                             "signature, so it can't be judged", p->id,
                             p->slug);
-    if (p->sig->ret.kind == LC_T_VOID)
-        return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): judging a "
-                            "function that returns void is not supported "
-                            "yet", p->id, p->slug);
     if (p->compare.mode == LC_CMP_CHECKER)
         return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): compare: "
                             "checker is not supported yet", p->id, p->slug);
+    if (lc_result_type(p)->kind == LC_T_VOID) {
+        char why[LC_VOID_REASON_MAX];
+
+        lc_codegen_void_reason(p, why);
+        return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): %s",
+                            p->id, p->slug, why);
+    }
     if (ncases == 0)
         return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s) has no "
                             "test cases to run", p->id, p->slug);
@@ -722,6 +725,22 @@ char *lc_dir_of(lc_arena *a, const char *path)
     return lc_arena_strndup(a, path, slash == path ? 1 : (size_t)(slash - path));
 }
 
+void lc_add_harness_reason(lc_str *why, int exit_code, const char *err)
+{
+    const char *line = NULL, *p;
+
+    if (exit_code != LC_HARNESS_FAIL || !err)
+        return;
+    for (p = err; *p; p++)
+        if ((p == err || p[-1] == '\n') && strncmp(p, "lc: ", 4) == 0)
+            line = p + 4;
+    if (!line)
+        return;
+    p = strchr(line, '\n');
+    lc_str_printf(why, ": %.*s", (int)(p ? (size_t)(p - line) : strlen(line)),
+                  line);
+}
+
 int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
                 const char *cwd, const lc_case *c, const lc_hooks *hooks,
                 lc_arena *a, const char **out, lc_verdict *verdict,
@@ -774,10 +793,12 @@ int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
         goto done;
     }
     v = lc_classify(&lim, &r, why);
+    if (v == LC_RUNTIME_ERROR && r.exited)
+        lc_add_harness_reason(why, r.exit_code, lc_str_cstr(&r.err));
     res = lc_str_cstr(&r.result);
     if (v == LC_VERDICT_NONE) {
-        rc = lc_wire_decode(ctx, pool, &p->sig->ret, res, r.result.len, &pos,
-                            &got);
+        rc = lc_wire_decode(ctx, pool, lc_result_type(p), res, r.result.len,
+                            &pos, &got);
         if (rc == LC_ERR_NOMEM)
             goto done;
         if (rc != LC_OK) {

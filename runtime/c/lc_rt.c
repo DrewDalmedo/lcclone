@@ -6,8 +6,12 @@
  * malloc'ed, so a solution may modify or keep what it is given.
  *
  * Writers take the solution's function name, for the message when what
- * the solution returned can't be written, such as a NULL array.
+ * the solution returned can't be written, such as a NULL array. For a
+ * problem solved in place (check:), the harness sets lc_rt_param to the
+ * parameter being written, and the messages speak of it instead.
  */
+
+static const char *lc_rt_param;
 
 /* ------------------------------------------------------------------ */
 /* Scalars                                                             */
@@ -88,6 +92,8 @@ LC_RT void lc_write_char(const char *fn, char v)
 
 LC_RT void lc_write_string(const char *fn, const char *s)
 {
+    if (!s && lc_rt_param)
+        lc_rt_fail("%s left a NULL string in %s", fn, lc_rt_param);
     if (!s)
         lc_rt_fail("%s returned a NULL string", fn);
     lc_rt_put_string(s, strlen(s));
@@ -112,8 +118,12 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
  *   T **lc_read_N_array2(int *size, int **colSizes)
  *   void lc_write_N_array(fn, T *a, int size)
  *   void lc_write_N_array2(fn, T **a, int size, int *colSizes)
+ *   void lc_check_N_end(fn, param, T *a, int size)
  * Arrays get one zeroed element more than they hold, so a char array is
- * also a NUL-terminated string.
+ * also a NUL-terminated string. lc_check_N_end, called after the solution
+ * returns, fails when that element is no longer all zero bits: the
+ * solution wrote past the end of the array, which LeetCode reports as a
+ * heap buffer overflow.
  */
 #define LC_RT_ARRAYS(N, T)                                                 \
     LC_RT T *lc_read_##N##_array(int *size)                                \
@@ -157,9 +167,15 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
             lc_rt_fail("%s did not set *returnColumnSizes", fn);           \
         lc_rt_put_ll(n);                                                   \
         for (i = 0; i < n; i++) {                                          \
+            if (colSizes[i] < 0 && lc_rt_param)                            \
+                lc_rt_fail("%s set %sColSize[%d] to %d", fn, lc_rt_param,  \
+                           i, colSizes[i]);                                \
             if (colSizes[i] < 0)                                           \
                 lc_rt_fail("%s set (*returnColumnSizes)[%d] to %d", fn, i, \
                            colSizes[i]);                                   \
+            if (!a[i] && colSizes[i] > 0 && lc_rt_param)                   \
+                lc_rt_fail("%s left %s[%d] NULL, but its size is %d", fn,  \
+                           lc_rt_param, i, colSizes[i]);                   \
             if (!a[i] && colSizes[i] > 0)                                  \
                 lc_rt_fail("%s returned NULL as row %d, whose size is %d", \
                            fn, i, colSizes[i]);                            \
@@ -167,6 +183,15 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
             for (j = 0; j < colSizes[i]; j++)                              \
                 lc_write_##N(fn, a[i][j]);                                 \
         }                                                                  \
+    }                                                                      \
+    LC_RT void lc_check_##N##_end(const char *fn, const char *param, T *a, \
+                                  int n)                                   \
+    {                                                                      \
+        T zero;                                                            \
+        memset(&zero, 0, sizeof zero);                                     \
+        if (memcmp(&a[n], &zero, sizeof zero) != 0)                        \
+            lc_rt_fail("%s wrote past the end of %s (%s[%d])", fn, param,  \
+                       param, n);                                          \
     }
 
 LC_RT_ARRAYS(int, int)

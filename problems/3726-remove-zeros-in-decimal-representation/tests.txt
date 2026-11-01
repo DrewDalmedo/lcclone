@@ -1,0 +1,93 @@
+# Remove Zeros in Decimal Representation.
+
+@example Erasing the three zeros of 4005060 leaves 4, 5 and 6.
+4005060
+=> 456
+
+@example 987 has no zero, so it stays as it is.
+987
+=> 987
+
+@example The zeros at the end go too, not only the one in the middle.
+100200
+=> 12
+
+# A single digit.
+6
+=> 6
+
+# A single trailing zero.
+10
+=> 1
+
+# The largest n: a 1 and fifteen zeros.
+1000000000000000
+=> 1
+
+# The largest n with no zero.
+999999999999999
+=> 999999999999999
+
+# Zeros alternating with ones.
+101010101010101
+=> 11111111
+
+# Past 2^31 - 1 with no zero, and with two zeros at the end.
+2147483648
+=> 2147483648
+
+4294967300
+=> 42949673
+
+# A long run of zeros between the first and last digit.
+500000000000007
+=> 57
+
+# Runs of zeros of different lengths.
+120034000560
+=> 123456
+
+908070605040302
+=> 98765432
+
+# One zero in the middle of fifteen digits.
+123456789012345
+=> 12345678912345
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+8908800
+=> 8988
+
+@gen 2 small
+20100
+=> 21
+
+@gen 3 small
+90000075
+=> 975
+
+@gen 4 small
+7010
+=> 71
+
+@gen 5 small
+200070
+=> 27
+
+@gen 6 small
+86
+=> 86
+
+# Random full-size cases.
+@gen 1
+793593000870495
+=> 79359387495
+
+@gen 2
+301009054039300
+=> 31954393
+
+@gen 3
+1000000000000000
+=> 1

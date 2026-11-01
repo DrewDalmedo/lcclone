@@ -1,0 +1,12 @@
+--- stdout
+Building tests/fixtures/judge/0015-merge/past.c (C, c11)
+
+tests/fixtures/judge/0015-merge/past.c:1: Runtime Error on case 1 of 3 (exited with status 70)
+  Input:    a = [1,3,5,0,0], m = 3, b = [2,4], n = 2
+  Expected: [1,2,3,4,5]
+  Stderr:
+    lc: merge wrote past the end of a (a[5])
+
+Runtime Error: 0/3 cases passed
+--- stderr
+--- exit 1

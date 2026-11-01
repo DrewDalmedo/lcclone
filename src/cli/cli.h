@@ -251,6 +251,9 @@ typedef struct cli_wrap {
 void cli_wrap_begin(cli_wrap *w, lc_str *out, int color, size_t width,
                     const char *first, const char *rest);
 void cli_wrap_text(cli_wrap *w, unsigned style, const char *s, size_t n);
+/* Text that is never broken at its blanks, such as a code span: it joins
+ * the pending word, so `1 <= n <= 10^5` stays on one line. */
+void cli_wrap_word(cli_wrap *w, unsigned style, const char *s, size_t n);
 void cli_wrap_break(cli_wrap *w); /* hard line break */
 /* Ends the last line (writing at least one line) and frees the wrapper's
  * memory. Returns LC_OK or LC_ERR_NOMEM. */

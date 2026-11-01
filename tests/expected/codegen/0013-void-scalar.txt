@@ -1,0 +1,19 @@
+== C stub
+void ping(int n) {
+
+}
+== C prototype
+void ping(int n)
+== C harness
+error: problem 13 (void-scalar): ping returns void and has no array parameter, so it has no result to judge
+== C++ stub
+class Solution {
+public:
+    void ping(int n) {
+
+    }
+};
+== C++ prototype
+void Solution::ping(int n)
+== C++ harness
+error: problem 13 (void-scalar): ping returns void and has no array parameter, so it has no result to judge

@@ -1,0 +1,32 @@
+--- 0015-merge/solution.cpp
+class Solution {
+public:
+    void merge(vector<int>& a, int m, vector<int>& b, int n) {
+
+    }
+};
+--- 0015-merge/cases.txt
+# Your own cases for 15. Merge. 'lc test' runs them after the examples.
+#
+# A case is one line per input, in this order:
+#
+#   a  int[]
+#   m  int
+#   b  int[]
+#   n  int
+#
+# then, if you like, a line '=> expected result'. Without it, the expected
+# result comes from lc's reference solution. Leave a blank line between
+# cases. Values are written as in the examples: 7, [1,2,3], "text",
+# true, 2.5. Lines starting with '#' are comments.
+#
+# The result here is a after the call (merge returns nothing), so
+# write the expected result as the new value of a.
+#
+# For example:
+#
+# [1,3,5,0,0]
+# 3
+# [2,4]
+# 2
+# => [1,2,3,4,5]

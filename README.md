@@ -12,7 +12,7 @@ compiler.
 
 ## Status
 
-Milestones **M0** to **M5** are in.
+Milestones **M0** to **M5** are in, and **M6** is under way.
 
 - **M0:** the core library (`liblc.a`), the problem pack loader, the
   statement markdown parser, and the `lc list` and `lc show` commands, both
@@ -46,12 +46,19 @@ Milestones **M0** to **M5** are in.
   list, and one key adds a failed case to `cases.txt`. It is built on
   `lc --json`. See
   [docs/workspace.md](docs/workspace.md#neovim-and-other-editors).
+- **M6** (under way): every Easy problem that is a plain function. The
+  harness feature it needs is in: `check:`, for problems solved in place,
+  where the array the function changes (or its first k elements) is the
+  answer, as in Move Zeroes or Remove Duplicates from Sorted Array. See
+  [docs/problem-format.md](docs/problem-format.md#check). The first batch
+  of problems is in: every in-place, bits, floating-point and any-order
+  problem, 34 in all. The plain ones, about 630, follow in batches.
 
-Eleven problems are included: 1, 9, 14, 20, 70, 104, 121, 190, 643, 744
-and 867. All but 104 can be judged; binary trees, linked lists, design
-problems and the like come in later milestones (`docs/PLAN.md` section 9).
-`problems/MANIFEST.tsv` lists every LeetCode Easy problem: 974, of
-which 751 are in scope.
+45 problems are included. All but 104 can be judged; binary trees, linked
+lists, design problems and the like come in later milestones
+(`docs/PLAN.md` section 9). `lc list` shows them, and
+`problems/MANIFEST.tsv` lists every LeetCode Easy problem: 974, of which
+751 are in scope. `lc stats --manifest` shows how far the set is.
 
 ## Building
 

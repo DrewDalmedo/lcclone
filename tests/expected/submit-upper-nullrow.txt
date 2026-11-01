@@ -1,0 +1,12 @@
+--- stdout
+Building tests/fixtures/judge/0018-upper/nullrow.c (C, c11)
+
+tests/fixtures/judge/0018-upper/nullrow.c:1: Runtime Error on case 1 of 3 (exited with status 70)
+  Input:    grid = [["a","B"],["c","d"]]
+  Expected: [["A","B"],["C","D"]]
+  Stderr:
+    lc: upper left grid[0] NULL, but its size is 2
+
+Runtime Error: 0/3 cases passed
+--- stderr
+--- exit 1
