@@ -1,0 +1,103 @@
+# Increasing Decreasing String.
+
+@example Up: a, b, n. Down: n, a. Up: the last a.
+"banana"
+=> "abnnaa"
+
+@example Up: x, y, z. Down: z again (its second copy, taken right at the turn), then y.
+"zyzxy"
+=> "xyzzy"
+
+@example The letters are all different, so the first upward pass takes every one, in alphabetical order.
+"zebra"
+=> "aberz"
+
+# A single letter.
+"q"
+=> "q"
+
+# Two copies of one letter: the downward pass takes the second right after
+# the upward pass took the first.
+"kk"
+=> "kk"
+
+# One letter only: every pass takes a single copy.
+"ppppppp"
+=> "ppppppp"
+
+# All 26 letters, from z down: one upward pass sorts them.
+"zyxwvutsrqponmlkjihgfedcba"
+=> "abcdefghijklmnopqrstuvwxyz"
+
+# Two letters, two of each: up a, b; down b, a.
+"baba"
+=> "abba"
+
+# The turn at the bottom: the downward pass ends on a, and the next upward
+# pass starts with a again.
+"baaa"
+=> "abaa"
+
+# Four a's, four z's and one m: up a, m, z; down z, a; up a, z; down z, a.
+"zzaazmzaa"
+=> "amzzaazza"
+
+# Uneven counts (i 4, m 1, p 2, s 4): the letters run out at different
+# passes, so later passes skip over gaps.
+"mississippi"
+=> "impsspiissi"
+
+# Only m is left for the last four passes.
+"mmbmmam"
+=> "abmmmmm"
+
+# 258 copies of e with one a and two z's: a count kept in a byte would
+# wrap around.
+"zeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeaeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeez"
+=> "aezzeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+
+# The longest input: one letter 500 times.
+"wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+=> "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bddbhhhhb"
+=> "bdhhdbbhh"
+
+@gen 2 small
+"yzzxxxy"
+=> "xyzzyxx"
+
+@gen 3 small
+"aaazzz"
+=> "azzaaz"
+
+@gen 4 small
+"zaaz"
+=> "azza"
+
+@gen 5 small
+"bbaabaabac"
+=> "abcbaabbaa"
+
+@gen 6 small
+"bb"
+=> "bb"
+
+@gen 7 small
+"hd"
+=> "dh"
+
+# Full size: 500 letters (shape picked by the seed).
+@gen 1
+"zaazazzzzzzzzaazzaaazaaaaaazaazzazzzazzzaaazzazzzazazazzaazazaaazazzzzzzzazzazzaazzazzaazaaazazaazzzazzzazzaazaaazzaaazazzzzzzzazzzzaazzazaazzzzazaazzzazazzzzzzaazazzzaaaazzzzzazzzzaazaazaazzazaazzzazzzzazzzzzaazzaazzzazzaazazzazzazzazaazzaazazazazazaaazzzzaazazzzzzaaazazzzazzaazazzzzazazaaaaaazzaazzaazazzzzzazazzzazaazaazzazzzzzaazzzzzzzzzaaazzzazaazzzazaaaazzaaaazzzazzzzzzzazaazzazzazzzzazzazazazzzzaazzzazaazzzzzazzaaazaaaaazzzzzzaaaazazzazzzzzazzzzaazzzzzzzaaazzzzazzaazaazazzzazzzzazazzaaazaz"
+=> "azzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzaazzazzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+
+@gen 2
+"eeiaeueseeemmceeebeeeeeeeeeeieqeseeeeeeeeqeiejeeueeeeqeeeeexheeeeeeeeewieeeeeeeedeeeeeeeeeeeeeebeeeeeeeeeeeoeeeoeeeeeeeeeeeeeleeeeqeeeyeeeeeeeerfetemeweexeerweexgseeeepweeeeeeeeeeeeeeeaeeeeeeeeeqeeeeeeeeeeeeeeeeeeeeeeeeemeeqteeeeeeeeeleeeeeeecdeezeveyeeeeeeeeeeheeeeeeeeheeeeeeeeeeeekeeseeaewedeeereeeeeeeeueeeeeejeeezeeezeeeereeeeecdeeeeeeeqeegeeyeceeeeeeeeeeeeeezheeevnxeeeeeheeeeeeeeeekeeeeeeeeeeeeejeeeeeeeeeeeeieueeeeeeeeeeeeeeeezeeeeieseteeeeeeeeeeeheeeeeeeeeueeweeeeeeeeeeeeeequereeeeieeweeeee"
+=> "abcdefghijklmnopqrstuvwxyzzyxwvutsrqomlkjihgedcbaacdehijmqrstuwxyzzxwusrqmihedcehiqrsuwzwuqiheeiqwqeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+
+@gen 5
+"lqoaxtuwluimnskoifrqohrdtegudyzqovixxzfdxnavsfaevhoamzugekpehxnofcugxuhbvgjwmqhcyezjluweccvjccuyddvaanifyjpwjczugjztjbkzicjtlshsxotunothlobuuqyuhogfjkqtfrqtsqgiqlqblohclciveijlxcxtblgjthnkpzgfprqayhuwsbgzghdygdufrjxtgjmnvhnywlfodkallrbokwdkffynzgbgpbgpjhxqeoiofiqutpvgpggoaumuxfekrrwvyuhkqmivfkqpakuvdfgbnkgjvhefiajyraipsrzkroavipkrwczwwsqbtpnsdsvwlafdgimqsbyqfdvfdmpnyivvucpxepymayocmxmyiptbsooffpgtflrvhgulcuygfzpqbtvhktylcpbalhrhqmhaviyzfkijjijqxwpjqzwrqdszzqgobjbytofpnvnkjstfugwrspuruolznfikffeq"
+=> "abcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcbaabcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcbaabcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcbaabcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcbaabcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcbaabcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcbaabcdfghijklnopqrstuvwxyzzyxwvutsrqponlkjihgfdcbaabcdfghijklnopqrstuvwxyzzyvutrqpolkjihgfcbaabfghijklopqrtuvyzzyvutqpolkjihgffghijklopqtuvyyvuqpojihgffghijopquvvuqpojgffgoquuqgffgquugffgfff"

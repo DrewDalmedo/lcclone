@@ -1,0 +1,89 @@
+# Number of Steps to Reduce a Number to Zero.
+
+@example 11, 10, 5, 4, 2, 1, 0: six steps, three of them subtractions and three halvings.
+11
+=> 6
+
+@example Four halvings take 16 down to 1, and one subtraction takes 1 to 0.
+16
+=> 5
+
+@example The counter already shows 0.
+0
+=> 0
+
+# The smallest positive numbers.
+1
+=> 1
+
+2
+=> 2
+
+3
+=> 3
+
+# A power of two 2^p takes p halvings and one subtraction.
+1024
+=> 11
+
+524288
+=> 20
+
+# A run of p 1 bits, 2^p - 1, takes p subtractions and p - 1 halvings.
+1023
+=> 19
+
+524287
+=> 37
+
+# 19 of 20 bits set: the most steps any num up to 10^6 takes.
+983039
+=> 38
+
+786431
+=> 38
+
+# The largest num, and the one below it.
+1000000
+=> 26
+
+999999
+=> 31
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+46
+=> 9
+
+@gen 2 small
+12
+=> 5
+
+@gen 4 small
+34
+=> 7
+
+@gen 5 small
+9
+=> 5
+
+@gen 7 small
+62
+=> 10
+
+@gen 8 small
+19
+=> 7
+
+# Full size.
+@gen 2
+999840
+=> 27
+
+@gen 3
+435085
+=> 28
+
+@gen 5
+917503
+=> 38
