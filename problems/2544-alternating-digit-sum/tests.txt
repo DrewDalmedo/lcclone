@@ -1,0 +1,94 @@
+# Alternating Digit Sum.
+
+@example The first player takes 3 and 7, the second 1 and 2: (3 + 7) - (1 + 2) = 7.
+3172
+=> 7
+
+@example The first player takes 4 and the second takes 8, so the result is 4 - 8.
+48
+=> -4
+
+@example Both zeros go to the second player, who scores nothing: (6 + 5 + 4) - (0 + 0).
+60504
+=> 15
+
+# One digit: the first player takes it and the second gets nothing.
+1
+=> 1
+
+9
+=> 9
+
+# A zero after the leading digit.
+10
+=> 1
+
+# An even number of digits: the leading digit still goes to the first player,
+# so handing out the digits from the last one instead gives the wrong sign.
+12
+=> -1
+
+1234
+=> -2
+
+123456
+=> -3
+
+# Zeros at many places.
+1010101
+=> 4
+
+# The largest n has ten digits: 1 - 0 + 0 - ... - 0.
+1000000000
+=> 1
+
+# The largest result.
+909090909
+=> 45
+
+# The smallest result, with an even and an odd number of digits.
+19090909
+=> -35
+
+190909090
+=> -35
+
+# One digit repeated: an even count cancels out, an odd count leaves it.
+7777
+=> 0
+
+77777
+=> 7
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+9709399
+=> -4
+
+@gen 2 small
+966
+=> 9
+
+@gen 3 small
+19
+=> -8
+
+@gen 4 small
+18991000
+=> -6
+
+@gen 5 small
+19931136
+=> -5
+
+@gen 12 small
+1091
+=> 9
+
+@gen 7
+412882175
+=> 2
+
+@gen 8
+999011913
+=> 20

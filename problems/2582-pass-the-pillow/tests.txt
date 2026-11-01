@@ -1,0 +1,124 @@
+# Pass the Pillow. Inputs: n, then time.
+
+@example Still on its way out: chairs 1, 2, 3, 4, 5 at seconds 0 to 4.
+7
+4
+=> 5
+
+@example It reaches chair 6 at second 5 and comes back three chairs.
+6
+8
+=> 3
+
+@example A round trip takes 4 seconds, so it is back in chair 1 at second 8, and in chair 2 a second later.
+3
+9
+=> 2
+
+# The smallest input.
+2
+1
+=> 2
+
+# Two chairs: the pillow swaps between them, so an even time ends in
+# chair 1.
+2
+1000
+=> 1
+
+# Exactly one trip out: the far end.
+10
+9
+=> 10
+
+# One second after reaching chair n.
+10
+10
+=> 9
+
+# Back in chair 1 after a round trip of 2(n - 1) seconds, and a second
+# later (a period of 2n would get both wrong).
+10
+18
+=> 1
+
+10
+19
+=> 2
+
+# The longest row: chair 1000 at second 999, then one chair back.
+1000
+999
+=> 1000
+
+1000
+1000
+=> 999
+
+# Past chair 1 on the second trip out: a pillow that turns only at chair n
+# walks off the row.
+4
+7
+=> 2
+
+# Two turns so far: pausing a second at each end would leave it in chair 1.
+5
+9
+=> 2
+
+# Many bounces: 250 round trips of 4 seconds end in chair 1.
+3
+1000
+=> 1
+
+# 41 round trips of 24 seconds, then 12 seconds out and 4 back.
+13
+1000
+=> 9
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+2
+33
+=> 2
+
+@gen 2 small
+6
+6
+=> 5
+
+@gen 3 small
+8
+1
+=> 2
+
+@gen 6 small
+7
+30
+=> 7
+
+@gen 8 small
+8
+8
+=> 7
+
+@gen 9 small
+7
+36
+=> 1
+
+# Full size: up to 1000 chairs and 1000 seconds.
+@gen 1
+999
+1000
+=> 997
+
+@gen 2
+904
+904
+=> 903
+
+@gen 3
+345
+344
+=> 345

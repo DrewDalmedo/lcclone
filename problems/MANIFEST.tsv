@@ -620,38 +620,38 @@
 2460	apply-operations-to-an-array	Apply Operations to an Array	easy	no	plain	draft
 2465	number-of-distinct-averages	Number of Distinct Averages	easy	no	plain	draft
 2469	convert-the-temperature	Convert the Temperature	easy	no	float	draft
-2475	number-of-unequal-triplets-in-array	Number of Unequal Triplets in Array	easy	no	plain	todo
+2475	number-of-unequal-triplets-in-array	Number of Unequal Triplets in Array	easy	no	plain	draft
 2480	form-a-chemical-bond	Form a Chemical Bond	easy	yes	skip:sql	todo
-2481	minimum-cuts-to-divide-a-circle	Minimum Cuts to Divide a Circle	easy	no	plain	todo
-2485	find-the-pivot-integer	Find the Pivot Integer	easy	no	plain	todo
-2490	circular-sentence	Circular Sentence	easy	no	plain	todo
-2496	maximum-value-of-a-string-in-an-array	Maximum Value of a String in an Array	easy	no	plain	todo
-2500	delete-greatest-value-in-each-row	Delete Greatest Value in Each Row	easy	no	plain	todo
+2481	minimum-cuts-to-divide-a-circle	Minimum Cuts to Divide a Circle	easy	no	plain	draft
+2485	find-the-pivot-integer	Find the Pivot Integer	easy	no	plain	draft
+2490	circular-sentence	Circular Sentence	easy	no	plain	draft
+2496	maximum-value-of-a-string-in-an-array	Maximum Value of a String in an Array	easy	no	plain	draft
+2500	delete-greatest-value-in-each-row	Delete Greatest Value in Each Row	easy	no	plain	draft
 2504	concatenate-the-name-and-the-profession	Concatenate the Name and the Profession	easy	yes	skip:sql	todo
-2506	count-pairs-of-similar-strings	Count Pairs Of Similar Strings	easy	no	plain	todo
-2511	maximum-enemy-forts-that-can-be-captured	Maximum Enemy Forts That Can Be Captured	easy	no	plain	todo
-2515	shortest-distance-to-target-string-in-a-circular-array	Shortest Distance to Target String in a Circular Array	easy	no	plain	todo
-2520	count-the-digits-that-divide-a-number	Count the Digits That Divide a Number	easy	no	plain	todo
-2525	categorize-box-according-to-criteria	Categorize Box According to Criteria	easy	no	plain	todo
-2529	maximum-count-of-positive-integer-and-negative-integer	Maximum Count of Positive Integer and Negative Integer	easy	no	plain	todo
-2535	difference-between-element-sum-and-digit-sum-of-an-array	Difference Between Element Sum and Digit Sum of an Array	easy	no	plain	todo
-2540	minimum-common-value	Minimum Common Value	easy	no	plain	todo
-2544	alternating-digit-sum	Alternating Digit Sum	easy	no	plain	todo
-2549	count-distinct-numbers-on-board	Count Distinct Numbers on Board	easy	no	plain	todo
-2553	separate-the-digits-in-an-array	Separate the Digits in an Array	easy	no	plain	todo
+2506	count-pairs-of-similar-strings	Count Pairs Of Similar Strings	easy	no	plain	draft
+2511	maximum-enemy-forts-that-can-be-captured	Maximum Enemy Forts That Can Be Captured	easy	no	plain	draft
+2515	shortest-distance-to-target-string-in-a-circular-array	Shortest Distance to Target String in a Circular Array	easy	no	plain	draft
+2520	count-the-digits-that-divide-a-number	Count the Digits That Divide a Number	easy	no	plain	draft
+2525	categorize-box-according-to-criteria	Categorize Box According to Criteria	easy	no	plain	draft
+2529	maximum-count-of-positive-integer-and-negative-integer	Maximum Count of Positive Integer and Negative Integer	easy	no	plain	draft
+2535	difference-between-element-sum-and-digit-sum-of-an-array	Difference Between Element Sum and Digit Sum of an Array	easy	no	plain	draft
+2540	minimum-common-value	Minimum Common Value	easy	no	plain	draft
+2544	alternating-digit-sum	Alternating Digit Sum	easy	no	plain	draft
+2549	count-distinct-numbers-on-board	Count Distinct Numbers on Board	easy	no	plain	draft
+2553	separate-the-digits-in-an-array	Separate the Digits in an Array	easy	no	plain	draft
 2558	take-gifts-from-the-richest-pile	Take Gifts From the Richest Pile	easy	no	bits	draft
 2562	find-the-array-concatenation-value	Find the Array Concatenation Value	easy	no	bits	draft
-2566	maximum-difference-by-remapping-a-digit	Maximum Difference by Remapping a Digit	easy	no	plain	todo
-2570	merge-two-2d-arrays-by-summing-values	Merge Two 2D Arrays by Summing Values	easy	no	plain	todo
-2574	left-and-right-sum-differences	Left and Right Sum Differences	easy	no	plain	todo
-2578	split-with-minimum-sum	Split With Minimum Sum	easy	no	plain	todo
-2582	pass-the-pillow	Pass the Pillow	easy	no	plain	todo
-2586	count-the-number-of-vowel-strings-in-range	Count the Number of Vowel Strings in Range	easy	no	plain	todo
-2591	distribute-money-to-maximum-children	Distribute Money to Maximum Children	easy	no	plain	todo
-2595	number-of-even-and-odd-bits	Number of Even and Odd Bits	easy	no	plain	todo
-2600	k-items-with-the-maximum-sum	K Items With the Maximum Sum	easy	no	plain	todo
-2605	form-smallest-number-from-two-digit-arrays	Form Smallest Number From Two Digit Arrays	easy	no	plain	todo
-2609	find-the-longest-balanced-substring-of-a-binary-string	Find the Longest Balanced Substring of a Binary String	easy	no	plain	todo
+2566	maximum-difference-by-remapping-a-digit	Maximum Difference by Remapping a Digit	easy	no	plain	draft
+2570	merge-two-2d-arrays-by-summing-values	Merge Two 2D Arrays by Summing Values	easy	no	plain	draft
+2574	left-and-right-sum-differences	Left and Right Sum Differences	easy	no	plain	draft
+2578	split-with-minimum-sum	Split With Minimum Sum	easy	no	plain	draft
+2582	pass-the-pillow	Pass the Pillow	easy	no	plain	draft
+2586	count-the-number-of-vowel-strings-in-range	Count the Number of Vowel Strings in Range	easy	no	plain	draft
+2591	distribute-money-to-maximum-children	Distribute Money to Maximum Children	easy	no	plain	draft
+2595	number-of-even-and-odd-bits	Number of Even and Odd Bits	easy	no	plain	draft
+2600	k-items-with-the-maximum-sum	K Items With the Maximum Sum	easy	no	plain	draft
+2605	form-smallest-number-from-two-digit-arrays	Form Smallest Number From Two Digit Arrays	easy	no	plain	draft
+2609	find-the-longest-balanced-substring-of-a-binary-string	Find the Longest Balanced Substring of a Binary String	easy	no	plain	draft
 2614	prime-in-diagonal	Prime In Diagonal	easy	no	plain	todo
 2619	array-prototype-last	Array Prototype Last	easy	no	skip:javascript	todo
 2620	counter	Counter	easy	no	skip:javascript	todo

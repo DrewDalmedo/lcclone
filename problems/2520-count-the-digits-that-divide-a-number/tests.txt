@@ -1,0 +1,107 @@
+# Count the Digits That Divide a Number.
+
+@example 315 is a multiple of 3, of 1 and of 5, so all three digits get a tick.
+315
+=> 3
+
+@example 4422 is even, so both 2s get a tick, but 4422 % 4 is 2, so neither 4 does.
+4422
+=> 2
+
+@example 239 is not a multiple of 2, of 3 or of 9.
+239
+=> 0
+
+# The smallest num.
+1
+=> 1
+
+# 32 is not a multiple of 3, though the 3 left after dropping the last
+# digit is.
+32
+=> 1
+
+# 135 is a multiple of 3, though 13 is not.
+135
+=> 3
+
+# A repeated digit that divides num counts every time.
+2222
+=> 4
+
+# The three 3s get ticks; the 6 does not, as 3363 is odd.
+3363
+=> 3
+
+# Seven digits and no tick: odd, and its digit sum 17 is not a multiple
+# of 3.
+2233223
+=> 0
+
+# Both 5s get a tick, as num ends in 5; the 2 does not.
+525
+=> 2
+
+# Nine digits, all ticks.
+111111111
+=> 9
+
+# The largest num allowed, a multiple of 9.
+999999999
+=> 9
+
+# 888 is a multiple of 8, and so is 888888888.
+888888888
+=> 9
+
+# Nine digits and no tick: 999999998 is not a multiple of 9 or of 8.
+999999998
+=> 0
+
+# Only 9, 3 and 1: num is odd, doesn't end in 5, and leaves 3 over when
+# divided by 7.
+987654321
+=> 3
+
+# 98412 is a multiple of 3 and of 4 but not of 9 or of 8: the 9 and the
+# 8 get crosses, the 4, the 1 and the 2 ticks.
+98412
+=> 3
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+6662
+=> 1
+
+@gen 2 small
+56
+=> 0
+
+@gen 3 small
+6
+=> 1
+
+@gen 4 small
+6364
+=> 1
+
+@gen 5 small
+86928
+=> 4
+
+@gen 6 small
+55
+=> 2
+
+# Random full-size cases: nine digits.
+@gen 1
+551377368
+=> 5
+
+@gen 2
+961178952
+=> 5
+
+@gen 3
+622612122
+=> 9

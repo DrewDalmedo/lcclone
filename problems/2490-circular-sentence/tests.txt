@@ -1,0 +1,108 @@
+# Circular Sentence.
+
+@example keep ends with the p that pulse begins with, pulse ends with the e that elk begins with, and elk ends with the k that keep begins with.
+"keep pulse elk"
+=> true
+
+@example The words link up in order, but eagle ends with e, not with the n of night.
+"night tide eagle"
+=> false
+
+@example A single word that begins with N and ends with n; case counts.
+"Noon"
+=> false
+
+# A single letter begins and ends with itself.
+"x"
+=> true
+
+# A single word with two different letters.
+"ab"
+=> false
+
+# The only mismatch is the case of B and b.
+"taB bat"
+=> false
+
+# Capital letters that match exactly.
+"Ab bA"
+=> true
+
+# Each word begins and ends with the same letter, but the words don't link.
+"pop did"
+=> false
+
+# The words link, though no word begins and ends with the same letter.
+"ten nab bat"
+=> true
+
+# A one-letter word in the middle has to match on both sides.
+"ab b ba"
+=> true
+
+# Only the first link is broken.
+"ab c ca"
+=> false
+
+# Only the last link between two words is broken.
+"sun nod dim mat ops"
+=> false
+
+# The first and last letters match, but a link in the middle is broken.
+"spin nap rot toys"
+=> false
+
+# A one-letter last word: the link into it is broken, the closing link holds.
+"kiwi inn k"
+=> false
+
+# A one-letter first word whose link to the next word is broken.
+"t on nut"
+=> false
+
+# A one-letter last word that links on both sides.
+"kiwi ink k"
+=> true
+
+# 250 one-letter words, all the same: 499 characters.
+"z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z z"
+=> true
+
+# A single word of 500 letters, beginning and ending with Q.
+"QabababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababQ"
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"A Ab bbA"
+=> true
+
+@gen 2 small
+"Aaa"
+=> false
+
+@gen 3 small
+"ab aab bba aa"
+=> false
+
+@gen 4 small
+"ab b bA A"
+=> false
+
+@gen 5 small
+"ab ba"
+=> true
+
+@gen 6 small
+"A Aa"
+=> false
+
+# Full size.
+@gen 1
+"c c c c c c c c c c B c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c"
+=> false
+
+@gen 2
+"zzaaAyCAayyxCbczCAcaAaAbxbzazAAyzccyaACAczbyazCzbyczCAcxCxbbyBxzBCcyxzabbbycbaaxzbAbazbBxcACxyzAzybayczABBycxcAycBCzaAxbbbbcCxxaBybcaBxyCBzczCABzxbxCCBzxAbyyaAAxAxyxyyCBzCcBazCaxazzzAcByzBcbBBbcxyzAcybAbbAcBcCCyzBzabyaCyAxbzCzAxyzaACxbbcaayByzCbxcccczCbzzBBayAbzyzxbybBACyAbyBccBCzxAyBxzxBxcyyxyxBzybAcaBaCzaxaBBcbxCyzCAzBzxyBaAaABazAByBABbxBaczyxBxCAAAyCCzaCzbzxbBABycabxAbaazzCcAAAxACzAbCACaaACxBxbbBBbACbccCaCcbbabzyzAxbxCyccAbACACbcBbybCxzccazzcabxByAcbbyxCaxAxACbCCycbxcczcbBccyCcaBAyBabByACBAAz"
+=> true
+

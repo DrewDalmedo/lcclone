@@ -1,0 +1,100 @@
+# Find the Longest Balanced Substring of a Binary String.
+
+@example "0011" starts at index 1; the "01" at the end is shorter.
+"1001101"
+=> 4
+
+@example The three 0s are followed by a single 1, so only "01" fits.
+"000101"
+=> 2
+
+@example No 0 is followed by a 1, so only the empty substring is balanced.
+"110"
+=> 0
+
+# A single character.
+"0"
+=> 0
+
+"1"
+=> 0
+
+# All the 1s come before the 0s.
+"111000"
+=> 0
+
+# As many 0s as 1s, but only "01" in the middle is balanced.
+"1010"
+=> 2
+
+# More 0s than 1s after them, then a 0 that must be ignored.
+"0000110"
+=> 4
+
+# More 1s than the 0s before them.
+"0011111"
+=> 4
+
+# Three candidates, of lengths 2, 6 and 4: the best is in the middle.
+"0110001110011"
+=> 6
+
+# The count of 0s starts again after 1s: the two groups of 0s don't join.
+"01011"
+=> 2
+
+"0010111"
+=> 2
+
+# The best candidate ends the string.
+"0110000111"
+=> 6
+
+# The longest s, balanced as a whole.
+"00000000000000000000000001111111111111111111111111"
+=> 50
+
+# The longest s, with the 1s first.
+"11111111111111111111111110000000000000000000000000"
+=> 0
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"000111000"
+=> 6
+
+@gen 2 small
+"0000001"
+=> 2
+
+@gen 3 small
+"001110"
+=> 4
+
+@gen 4 small
+"0010"
+=> 2
+
+@gen 5 small
+"0110110101"
+=> 2
+
+@gen 8 small
+"0101011"
+=> 2
+
+@gen 9 small
+"1100010"
+=> 2
+
+@gen 2
+"00011000100000000000000000000011111111111111111101"
+=> 36
+
+@gen 6
+"00000000001111111111100111000000000000111111111000"
+=> 20
+
+@gen 7
+"01100000100000011001011000111110010010111101111000"
+=> 6

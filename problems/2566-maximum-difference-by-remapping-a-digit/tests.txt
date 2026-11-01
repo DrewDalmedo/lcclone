@@ -1,0 +1,100 @@
+# Maximum Difference by Remapping a Digit.
+
+@example Turning every 2 into a 9 gives 9794, the largest; turning every 2 into a 0 gives 0704 = 704, the smallest.
+2724
+=> 9090
+
+@example The leading 9 can't grow, so the largest turns the 5s into 9s: 9909; turning the 9 into a 0 gives 0505 = 505.
+9505
+=> 9404
+
+@example All three digits are the same: 999 is the largest and 000 = 0 the smallest.
+333
+=> 999
+
+# A single digit: always 9 against 0.
+1
+=> 9
+
+# The largest num: 1 -> 9 gives 900000000, which beats 0 -> 9 (199999999).
+100000000
+=> 900000000
+
+# All 9s: num is already the largest, and 0 is the smallest.
+99999999
+=> 99999999
+
+# The smallest result may be 0, and leading zeros count for nothing.
+10
+=> 90
+
+# Leading 9s are skipped for the largest, and the first other digit is a 0.
+99030
+=> 99909
+
+90000000
+=> 99999999
+
+# A leading 9, then 4: the 0s stay 0 in the largest result.
+94043
+=> 95050
+
+# Every copy of the chosen digit changes, spread out or side by side.
+12131
+=> 90909
+
+5512
+=> 9900
+
+# The smallest digit isn't the one to raise: 8 -> 9 beats 1 -> 9.
+8121
+=> 9000
+
+# The largest digit isn't the one to drop: 9 -> 0 gives 2010, but 2 -> 0
+# gives 0919 = 919.
+2919
+=> 9000
+
+# Eight digits, all different.
+98765432
+=> 91000000
+
+
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+4004
+=> 9009
+
+@gen 2 small
+9
+=> 9
+
+@gen 3 small
+99
+=> 99
+
+@gen 4 small
+941011
+=> 950000
+
+@gen 5 small
+709
+=> 900
+
+@gen 6 small
+99959
+=> 99949
+
+# Full size: eight digits.
+@gen 1
+77777777
+=> 99999999
+
+@gen 2
+38815500
+=> 90000000
+
+@gen 7
+99575777
+=> 99404000
