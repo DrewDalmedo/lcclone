@@ -1,0 +1,106 @@
+# Number of Valid Clock Times.
+
+@example The hour can be 02, 12 or 22, and the minute any of 40 to 49: 3 * 10 times.
+"?2:4?"
+=> 30
+
+@example The hour is one of 10 to 19, and the minute ends in 5 with a first digit from 0 to 5: 10 * 6 times.
+"1?:?5"
+=> 60
+
+@example An hour ending in 8 can only be 08 or 18 (28 is too late), and the minute is free: 2 * 60 times.
+"?8:??"
+=> 120
+
+# No '?' at all: the one time itself.
+"21:37"
+=> 1
+
+# Every digit hidden: all 1440 times of the day.
+"??:??"
+=> 1440
+
+# Hidden first hour digit before a 3: 03, 13 and 23.
+"?3:15"
+=> 3
+
+# Before a 4 only 04 and 14, since 24 is no hour.
+"?4:15"
+=> 2
+
+# The two ends of the range, 0 and 9.
+"?0:52"
+=> 3
+
+"?9:06"
+=> 2
+
+# Hidden second hour digit: after a 2 only 20 to 23, after a 0 or 1 all ten.
+"2?:30"
+=> 4
+
+"0?:30"
+=> 10
+
+"1?:00"
+=> 10
+
+# Both hour digits hidden: 24 hours, not 3 * 10.
+"??:47"
+=> 24
+
+# Minute digits alone: tens digit hidden (0 to 5), units digit hidden, both.
+"05:?9"
+=> 6
+
+"05:5?"
+=> 10
+
+"16:??"
+=> 60
+
+# Both halves partly hidden, so the counts multiply.
+"2?:?0"
+=> 24
+
+"??:?3"
+=> 144
+
+"?4:3?"
+=> 20
+
+"0?:??"
+=> 600
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"?6:5?"
+=> 20
+
+@gen 2 small
+"03:5?"
+=> 10
+
+@gen 4 small
+"13:09"
+=> 1
+
+@gen 6 small
+"?0:58"
+=> 3
+
+@gen 7 small
+"?0:??"
+=> 180
+
+@gen 8 small
+"1?:??"
+=> 600
+
+@gen 9 small
+"?4:0?"
+=> 20
+
+@gen 11 small
+"??:5?"
+=> 240

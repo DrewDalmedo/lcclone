@@ -1,0 +1,121 @@
+# Number of Common Factors.
+
+@example Tiles of side 1, 2, 3 or 6 fit both 18 and 24.
+18
+24
+=> 4
+
+@example Neighbouring numbers share no divisor but 1.
+14
+15
+=> 1
+
+@example On a square floor every divisor of 20 works: 1, 2, 4, 5, 10 and 20.
+20
+20
+=> 6
+
+# The smallest floor.
+1
+1
+=> 1
+
+# One side of 1.
+1
+1000
+=> 1
+
+# Neighbours at the top of the range.
+1000
+999
+=> 1
+
+# 840 has the most divisors of any number up to 1000.
+840
+840
+=> 32
+
+# Common divisors that pair up with themselves: gcd 961 = 31 * 31, gcd
+# 36 = 6 * 6 and gcd 4 = 2 * 2.
+961
+961
+=> 3
+
+252
+360
+=> 9
+
+4
+8
+=> 3
+
+# The smaller number divides the larger, so it counts itself: gcd 250.
+250
+1000
+=> 8
+
+# Neither divides the other: only 1, 2, 7 and 14 divide both.
+42
+28
+=> 4
+
+# A large shared factor: gcd 240.
+960
+720
+=> 20
+
+# Two different primes, and the same prime twice.
+997
+991
+=> 1
+
+997
+997
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+7
+14
+=> 2
+
+@gen 2 small
+21
+21
+=> 4
+
+@gen 3 small
+21
+11
+=> 1
+
+@gen 4 small
+46
+23
+=> 2
+
+@gen 5 small
+48
+12
+=> 6
+
+@gen 6 small
+10
+10
+=> 4
+
+# Full-size random cases.
+@gen 10
+918
+459
+=> 8
+
+@gen 18
+924
+504
+=> 12
+
+@gen 19
+525
+735
+=> 8

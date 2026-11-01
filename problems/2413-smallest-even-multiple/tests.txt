@@ -1,0 +1,84 @@
+# Smallest Even Multiple.
+
+@example 9 is odd, so the list goes on to 18, which is even.
+9
+=> 18
+
+@example 14 is already even, and it is the first entry of its own list.
+14
+=> 14
+
+@example The list for 1 is 1, 2, 3, ...; the first even entry is 2.
+1
+=> 2
+
+# The smallest even n is its own answer, not 4.
+2
+=> 2
+
+# The largest n, which is even.
+150
+=> 150
+
+# The largest odd n gives the largest result.
+149
+=> 298
+
+# Odd primes.
+3
+=> 6
+
+97
+=> 194
+
+# Powers of two.
+64
+=> 64
+
+128
+=> 128
+
+# Odd numbers with several factors.
+75
+=> 150
+
+135
+=> 270
+
+# Even, with an odd factor.
+90
+=> 90
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+51
+=> 102
+
+@gen 5 small
+32
+=> 32
+
+@gen 8 small
+122
+=> 122
+
+@gen 11 small
+139
+=> 278
+
+@gen 13 small
+27
+=> 54
+
+@gen 14 small
+48
+=> 48
+
+# Random full-size cases: n from the upper half of the range.
+@gen 1
+117
+=> 234
+
+@gen 2
+119
+=> 238

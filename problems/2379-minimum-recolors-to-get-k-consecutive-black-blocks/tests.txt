@@ -1,0 +1,120 @@
+# Minimum Recolors to Get K Consecutive Black Blocks.
+
+@example Repainting cell 1 makes cells 0 to 3 black; every other group of 4 holds two whites.
+"BWBBWWB"
+4
+=> 1
+
+@example Cells 1 to 3 are black already.
+"WBBBWW"
+3
+=> 0
+
+@example Every cell is white, so all 3 cells of any group need repainting.
+"WWWW"
+3
+=> 3
+
+# The smallest strips.
+"B"
+1
+=> 0
+
+"W"
+1
+=> 1
+
+# k is the whole strip: every white cell must be repainted.
+"WBWBW"
+5
+=> 3
+
+# k = 1: a single black cell anywhere is enough, here the last one.
+"WWWWB"
+1
+=> 0
+
+# The only black group is the last one, starting at n - k.
+"WBWWBBB"
+3
+=> 0
+
+# The only black group is the first one.
+"BBBWBWW"
+3
+=> 0
+
+# The best group lies in the middle, at start 3.
+"WWWBBWBWWW"
+4
+=> 1
+
+# Two runs of 2 one white apart beat the run of 3 at the start, which is
+# followed by six whites; the best group starts on a white and ends at the
+# last cell.
+"BBBWWWWWWBBWBB"
+6
+=> 2
+
+# The longest strip, all white, with k = 100.
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+100
+=> 100
+
+# 100 cells alternating, k = 99: only the second group, the last, holds
+# 49 whites; the first holds 50.
+"WBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWBWB"
+99
+=> 49
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"WWWWWWW"
+5
+=> 5
+
+@gen 2 small
+"BBBBB"
+4
+=> 0
+
+@gen 3 small
+"BBBBBBWB"
+1
+=> 0
+
+@gen 4 small
+"BBWB"
+3
+=> 1
+
+@gen 5 small
+"BBBBWW"
+4
+=> 0
+
+@gen 6 small
+"WW"
+1
+=> 1
+
+@gen 7 small
+"BBWBBW"
+3
+=> 1
+
+# Full size: 100 cells, in the shapes gen.c makes.
+@gen 1
+"BBWWBBBBBWWWWBBBBWWWWBBBBWBBWBBBBBBBWBBBWWWWBBBBWWWBBBWWWWWBBBBBWWWWWWBBBBBBWWWWBBBBBWWWWBBBBWWWWWWB"
+47
+=> 17
+
+@gen 2
+"WWWBBWWWWBWWWWWWWWWWBWBWWWBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+74
+=> 0
+
+@gen 4
+"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBBBBBBBBBBWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWBBBBBBBBWBBBBBBBBBB"
+20
+=> 2
