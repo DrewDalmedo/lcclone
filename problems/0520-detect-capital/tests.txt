@@ -1,0 +1,107 @@
+# Detect Capital.
+
+@example The first letter is a capital and no other letter is.
+"Marble"
+=> true
+
+@example Every letter is a capital.
+"QUIZ"
+=> true
+
+@example The first letter is small, so the K would have to be small too.
+"toKen"
+=> false
+
+# A single letter, in either case.
+"q"
+=> true
+
+"W"
+=> true
+
+# Two letters: a capital after a small first letter is the one bad shape.
+"Ab"
+=> true
+
+"aB"
+=> false
+
+# The only capital is the last letter: one capital is fine only at the start.
+"rivetS"
+=> false
+
+# Two capitals first, then a small letter, deep inside or at the very end.
+"CANyON"
+=> false
+
+"PLANKs"
+=> false
+
+# Two capitals, then small letters only: index 1 is the odd one out.
+"MArsh"
+=> false
+
+# A capital, a small letter, then capitals: index 1 is the odd one out.
+"GrOUND"
+=> false
+
+# A capital and a small letter first, then a capital deep inside or at the end.
+"SiLver"
+=> false
+
+"ButtoN"
+=> false
+
+# The longest words, of 100 letters: capitalised, and small but for the last.
+"Mlstbjpecgiqzdynkarvhowxfumlstbjpecgiqzdynkarvhowxfumlstbjpecgiqzdynkarvhowxfumlstbjpecgiqzdynkarvho"
+=> true
+
+"mlstbjpecgiqzdynkarvhowxfumlstbjpecgiqzdynkarvhowxfumlstbjpecgiqzdynkarvhowxfumlstbjpecgiqzdynkarvhO"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"Abba"
+=> true
+
+@gen 2 small
+"aA"
+=> false
+
+@gen 3 small
+"a"
+=> true
+
+@gen 4 small
+"BAqb"
+=> false
+
+@gen 5 small
+"BqZZq"
+=> false
+
+@gen 6 small
+"QB"
+=> true
+
+@gen 7 small
+"zb"
+=> true
+
+@gen 8 small
+"Zb"
+=> true
+
+# Full-size random cases: words of 100 letters.
+@gen 9
+"Ntzcjzveeqkeqzyzowpunpzldblvvqlkitfjgaazapqtwpcrugfgkctfgjgcvytfvjppdzfdmyqiwakwhjqdxkyfmrvqndgtevvr"
+=> true
+
+@gen 10
+"skIBgBFohuwCCyqvaeNcXOEplippbBqKnFshsNYmjNFpMulZzbPDVXNkCiZNuTExaCapAgwilqokyfyqwPYwtrzbHLPRmkjvWoKt"
+=> false
+
+@gen 11
+"UAtbaxjmregzuautjkgzkvikifmopxijfyvmaawszpxosgnibfbxwhlxiaogrhzgtwlxzyvfaxdcnxvpinadmjjritsqOjjisimq"
+=> false
+

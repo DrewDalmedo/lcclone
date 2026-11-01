@@ -125,44 +125,44 @@
 476	number-complement	Number Complement	easy	no	plain	draft
 482	license-key-formatting	License Key Formatting	easy	no	plain	draft
 485	max-consecutive-ones	Max Consecutive Ones	easy	no	plain	draft
-492	construct-the-rectangle	Construct the Rectangle	easy	no	plain	todo
-495	teemo-attacking	Teemo Attacking	easy	no	plain	todo
-496	next-greater-element-i	Next Greater Element I	easy	no	plain	todo
-500	keyboard-row	Keyboard Row	easy	no	plain	todo
+492	construct-the-rectangle	Construct the Rectangle	easy	no	plain	draft
+495	teemo-attacking	Teemo Attacking	easy	no	plain	draft
+496	next-greater-element-i	Next Greater Element I	easy	no	plain	draft
+500	keyboard-row	Keyboard Row	easy	no	plain	draft
 501	find-mode-in-binary-search-tree	Find Mode in Binary Search Tree	easy	no	tree	todo
-504	base-7	Base 7	easy	no	plain	todo
-506	relative-ranks	Relative Ranks	easy	no	plain	todo
-507	perfect-number	Perfect Number	easy	no	plain	todo
-509	fibonacci-number	Fibonacci Number	easy	no	plain	todo
+504	base-7	Base 7	easy	no	plain	draft
+506	relative-ranks	Relative Ranks	easy	no	plain	draft
+507	perfect-number	Perfect Number	easy	no	plain	draft
+509	fibonacci-number	Fibonacci Number	easy	no	plain	draft
 511	game-play-analysis-i	Game Play Analysis I	easy	no	skip:sql	todo
 512	game-play-analysis-ii	Game Play Analysis II	easy	yes	skip:sql	todo
-520	detect-capital	Detect Capital	easy	no	plain	todo
-521	longest-uncommon-subsequence-i	Longest Uncommon Subsequence I	easy	no	plain	todo
+520	detect-capital	Detect Capital	easy	no	plain	draft
+521	longest-uncommon-subsequence-i	Longest Uncommon Subsequence I	easy	no	plain	draft
 530	minimum-absolute-difference-in-bst	Minimum Absolute Difference in BST	easy	no	tree	todo
-541	reverse-string-ii	Reverse String II	easy	no	plain	todo
+541	reverse-string-ii	Reverse String II	easy	no	plain	draft
 543	diameter-of-binary-tree	Diameter of Binary Tree	easy	no	tree	todo
-551	student-attendance-record-i	Student Attendance Record I	easy	no	plain	todo
-557	reverse-words-in-a-string-iii	Reverse Words in a String III	easy	no	plain	todo
+551	student-attendance-record-i	Student Attendance Record I	easy	no	plain	draft
+557	reverse-words-in-a-string-iii	Reverse Words in a String III	easy	no	plain	draft
 559	maximum-depth-of-n-ary-tree	Maximum Depth of N-ary Tree	easy	no	nary	todo
-561	array-partition	Array Partition	easy	no	plain	todo
+561	array-partition	Array Partition	easy	no	plain	draft
 563	binary-tree-tilt	Binary Tree Tilt	easy	no	tree	todo
-566	reshape-the-matrix	Reshape the Matrix	easy	no	plain	todo
+566	reshape-the-matrix	Reshape the Matrix	easy	no	plain	draft
 572	subtree-of-another-tree	Subtree of Another Tree	easy	no	tree	todo
-575	distribute-candies	Distribute Candies	easy	no	plain	todo
+575	distribute-candies	Distribute Candies	easy	no	plain	draft
 577	employee-bonus	Employee Bonus	easy	no	skip:sql	todo
 584	find-customer-referee	Find Customer Referee	easy	no	skip:sql	todo
 586	customer-placing-the-largest-number-of-orders	Customer Placing the Largest Number of Orders	easy	no	skip:sql	todo
 589	n-ary-tree-preorder-traversal	N-ary Tree Preorder Traversal	easy	no	nary	todo
 590	n-ary-tree-postorder-traversal	N-ary Tree Postorder Traversal	easy	no	nary	todo
-594	longest-harmonious-subsequence	Longest Harmonious Subsequence	easy	no	plain	todo
+594	longest-harmonious-subsequence	Longest Harmonious Subsequence	easy	no	plain	draft
 595	big-countries	Big Countries	easy	no	skip:sql	todo
 596	classes-with-at-least-5-students	Classes With at Least 5 Students	easy	no	skip:sql	todo
 597	friend-requests-i-overall-acceptance-rate	Friend Requests I Overall Acceptance Rate	easy	yes	skip:sql	todo
-598	range-addition-ii	Range Addition II	easy	no	plain	todo
+598	range-addition-ii	Range Addition II	easy	no	plain	draft
 599	minimum-index-sum-of-two-lists	Minimum Index Sum of Two Lists	easy	no	unordered	draft
 603	consecutive-available-seats	Consecutive Available Seats	easy	yes	skip:sql	todo
 604	design-compressed-string-iterator	Design Compressed String Iterator	easy	yes	skip:premium	todo
-605	can-place-flowers	Can Place Flowers	easy	no	plain	todo
+605	can-place-flowers	Can Place Flowers	easy	no	plain	draft
 607	sales-person	Sales Person	easy	no	skip:sql	todo
 610	triangle-judgement	Triangle Judgement	easy	no	skip:sql	todo
 613	shortest-distance-in-a-line	Shortest Distance in a Line	easy	yes	skip:sql	todo
@@ -170,15 +170,15 @@
 619	biggest-single-number	Biggest Single Number	easy	no	skip:sql	todo
 620	not-boring-movies	Not Boring Movies	easy	no	skip:sql	todo
 627	swap-sex-of-employees	Swap Sex of Employees	easy	no	skip:sql	todo
-628	maximum-product-of-three-numbers	Maximum Product of Three Numbers	easy	no	plain	todo
+628	maximum-product-of-three-numbers	Maximum Product of Three Numbers	easy	no	plain	draft
 637	average-of-levels-in-binary-tree	Average of Levels in Binary Tree	easy	no	tree	todo
 643	maximum-average-subarray-i	Maximum Average Subarray I	easy	no	float	verified
-645	set-mismatch	Set Mismatch	easy	no	plain	todo
+645	set-mismatch	Set Mismatch	easy	no	plain	draft
 653	two-sum-iv-input-is-a-bst	Two Sum IV - Input is a BST	easy	no	tree	todo
-657	robot-return-to-origin	Robot Return to Origin	easy	no	plain	todo
-661	image-smoother	Image Smoother	easy	no	plain	todo
+657	robot-return-to-origin	Robot Return to Origin	easy	no	plain	draft
+661	image-smoother	Image Smoother	easy	no	plain	draft
 671	second-minimum-node-in-a-binary-tree	Second Minimum Node In a Binary Tree	easy	no	tree	todo
-674	longest-continuous-increasing-subsequence	Longest Continuous Increasing Subsequence	easy	no	plain	todo
+674	longest-continuous-increasing-subsequence	Longest Continuous Increasing Subsequence	easy	no	plain	draft
 680	valid-palindrome-ii	Valid Palindrome II	easy	no	plain	todo
 682	baseball-game	Baseball Game	easy	no	plain	todo
 693	binary-number-with-alternating-bits	Binary Number with Alternating Bits	easy	no	plain	todo

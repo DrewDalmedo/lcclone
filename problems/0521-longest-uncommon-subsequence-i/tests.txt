@@ -1,0 +1,124 @@
+# Longest Uncommon Subsequence I. -1 means no string is a subsequence of
+# exactly one of the two.
+
+@example "planet" is a subsequence of itself, and it is too long, by a letter, to be one of "plant". No 7-letter string is a subsequence of either.
+"plant"
+"planet"
+=> 6
+
+@example The same letters in another order. A 5-letter subsequence of "thing" can only be "thing" itself, so "night" is a subsequence of "night" alone. No 6-letter string is a subsequence of either.
+"night"
+"thing"
+=> 5
+
+@example The strings are identical, so a string is a subsequence of one of them exactly when it is a subsequence of the other.
+"echo"
+"echo"
+=> -1
+
+# Single letters, the same.
+"q"
+"q"
+=> -1
+
+# Single letters, different.
+"x"
+"y"
+=> 1
+
+# A letter, and the same letter twice.
+"m"
+"mm"
+=> 2
+
+# b is a prefix of a: comparing only the first 2 letters finds no
+# difference.
+"stone"
+"st"
+=> 5
+
+# a is a prefix of b.
+"ab"
+"abcd"
+=> 4
+
+# a is a suffix of b.
+"ring"
+"string"
+=> 6
+
+# The same length, one letter apart.
+"cold"
+"colt"
+=> 4
+
+# The longer string comes second, then first.
+"kiwi"
+"watermelon"
+=> 10
+
+"abcdefg"
+"xyz"
+=> 7
+
+# The longest strings: the same 100 letters; then the last letter
+# changed; then all but the last letter.
+"pqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzp"
+"pqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzp"
+=> -1
+
+"pqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzp"
+"pqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyza"
+=> 100
+
+"pqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyz"
+"pqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzpqrstuvwxyzp"
+=> 100
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"y"
+"zzzzyyy"
+=> 7
+
+@gen 2 small
+"bab"
+"aaaaa"
+=> 5
+
+@gen 7 small
+"abaaaba"
+"baaaaab"
+=> 7
+
+@gen 4 small
+"yxx"
+"xyx"
+=> 3
+
+@gen 5 small
+"kf"
+"kf"
+=> -1
+
+@gen 6 small
+"a"
+"ba"
+=> 2
+
+# Full-size cases from gen.c: equal strings of 100 letters, two of the
+# same length, and a subsequence of the other.
+@gen 1
+"yzzzzyyyzyzzzxxyyxyzxzzxyxzzyyyxzyxxxzxyxxzxyxzxyyyyzxyyyzyxzzyyzzyxxyyzzzzyzyzzyxzzyxxzyzyzxzzxzxyx"
+"yzzzzyyyzyzzzxxyyxyzxzzxyxzzyyyxzyxxxzxyxxzxyxzxyyyyzxyyyzyxzzyyzzyxxyyzzzzyzyzzyxzzyxxzyzyzxzzxzxyx"
+=> -1
+
+@gen 2
+"aaaaaaababbbbaaaaabaabaaaabbbabaabaaabaabbabbabbababbbbabaababaaaaaababababaabaabbaabaabbabaaaabaaba"
+"abbaaaaaabaaabaaaabaaababababbabaabaaabbabbbbbaaaaaaaaaaabbbbaabbbaaababbaaabaaaabaabaabbbabbaabbaab"
+=> 100
+
+@gen 3
+"ckcfhdwkiylnpjugrosugkjudwmkooecaeumuqbessgoatdizvxmaxlmdaxq"
+"ckcfhdwkiylnpjugrosugkjudwmkooecaeumuqbessgoatdizvxmaxlmdaxqkiuhxkaxgobusoeismxmlynjsnrtgtkgvpnxqqbe"
+=> 100
