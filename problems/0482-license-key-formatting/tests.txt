@@ -1,0 +1,112 @@
+# License Key Formatting.
+
+@example Without its dash and in capitals, the key is R2D2C3P0, 8 characters. Blocks of 3 from the right leave 2 for the first block.
+"r2d2-c3p0"
+3
+=> "R2-D2C-3P0"
+
+@example The 6 characters XYZ98W split evenly into blocks of 2, so the first block is full too. The old dashes play no part.
+"x-Y-z9-8w"
+2
+=> "XY-Z9-8W"
+
+@example Only dashes: nothing is left to put in a block.
+"---"
+4
+=> ""
+
+# The shortest key, a single dash.
+"-"
+1
+=> ""
+
+# A single character: one block and no dash, even with the largest k.
+"q"
+1
+=> "Q"
+
+"7"
+10000
+=> "7"
+
+# k = 1: a dash between every two characters.
+"m-0-n9"
+1
+=> "M-0-N-9"
+
+# Dashes at both ends and in runs.
+"--ab---c-d--"
+3
+=> "A-BCD"
+
+# Exactly k characters: one full block.
+"wx-yz"
+4
+=> "WXYZ"
+
+# One character more than k: the first block has just 1.
+"abcde"
+4
+=> "A-BCDE"
+
+# Already in the layout for this k, apart from the lowercase letters.
+"k-9x2b-7y4m"
+4
+=> "K-9X2B-7Y4M"
+
+# No dashes in s, and a length that is a multiple of k.
+"ABCDEFGHIJ"
+5
+=> "ABCDE-FGHIJ"
+
+# Dashes in the wrong places for this k are moved.
+"abc-defgh-i"
+4
+=> "A-BCDE-FGHI"
+
+# Only lowercase letters change: capitals and digits stay, 0 and 9
+# included.
+"zZ09aA"
+2
+=> "ZZ-09-AA"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"9Az"
+4
+=> "9AZ"
+
+@gen 2 small
+"Aaa9Z"
+5
+=> "AAA9Z"
+
+@gen 3 small
+"AzZa0zZaA00A"
+5
+=> "AZ-ZA0ZZ-AA00A"
+
+@gen 4 small
+"--Z-0a-9"
+2
+=> "Z0-A9"
+
+@gen 5 small
+"-Z0ZZz-ZAa"
+4
+=> "Z0ZZ-ZZAA"
+
+@gen 6 small
+"----------"
+2
+=> ""
+
+@gen 7 small
+"----------"
+10000
+=> ""
+
+@gen 8 small
+"-99"
+2
+=> "99"

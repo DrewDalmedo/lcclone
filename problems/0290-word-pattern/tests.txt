@@ -1,0 +1,157 @@
+# Word Pattern.
+
+@example m lines up with "tea" both times; n and o line up with "milk" and "coffee", two other words.
+"mnmo"
+"tea milk tea coffee"
+=> true
+
+@example The first two words are equal, but their letters, a and b, are not.
+"abc"
+"go go home"
+=> false
+
+@example Three words, but only two letters.
+"zz"
+"hi hi hi"
+=> false
+
+# One letter matches any single word, even one of 3000 letters.
+"r"
+"pqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrstpqrst"
+=> true
+
+# One letter and two words: too many words, though they are equal.
+"a"
+"go go"
+=> false
+
+# The first letters and words match, then a word is left over; and the
+# other way round, a letter is left over.
+"ab"
+"cat dog cat"
+=> false
+
+"aba"
+"cat dog"
+=> false
+
+# Words are compared whole: one is a prefix of the other, and two have
+# the same length and first letter.
+"ab"
+"tap tape"
+=> true
+
+"aa"
+"tip tap"
+=> false
+
+# Two words with the same letters in another order are still different
+# words.
+"pq"
+"stop pots"
+=> true
+
+# Letters and words are never compared with each other: x lines up with
+# "y" and y with "z", or x with "y" and y with "x".
+"xy"
+"y z"
+=> true
+
+"xy"
+"y x"
+=> true
+
+# The first letter repeats but the first word doesn't, and the other way
+# round.
+"aba"
+"x y z"
+=> false
+
+"abc"
+"x y x"
+=> false
+
+# One letter throughout; only the last word differs.
+"hhhhh"
+"so so so so no"
+=> false
+
+# 26 different letters; the last word repeats the first.
+"abcdefghijklmnopqrstuvwxyz"
+"oak ash elm fir yew bay box fig gum ivy kauri larch maple neem olive palm quince rowan sumac teak ulmo vine walnut xylem yucca oak"
+=> false
+
+# 300 letters using all 26, each with its own word.
+"mifhmeyhueptlpikaeiuzwwjfpvgbdynmuskmrjwnqdhrohyyosnbdrtflsdeskkclybnzozttprpipmuxrynolsptxayhufikoydwealnujewyuiurwwzypqhngrqbwhentxublnxeoqrjgszlonwapndmhepdgauncdqqewpfsbbkzecbxijaudjmgaeoukibwhsmdztglekynhzkajpmyjiwvumrcyjvqtdhwftwhnjkjfuajxwqyrlhdejekfatkidruautmxedtfploqadrwkkzahgciixrhruobtck"
+"tango papa mike oscar tango lima foxtrot oscar bravo lima whiskey alpha sierra whiskey papa romeo hotel lima papa bravo golf delta delta quebec mike whiskey charlie november india kilo foxtrot uniform tango bravo zulu romeo tango yankee quebec delta uniform xray kilo oscar yankee victor oscar foxtrot foxtrot victor zulu uniform india kilo yankee alpha mike sierra zulu kilo lima zulu romeo romeo juliett sierra foxtrot india uniform golf victor golf alpha alpha whiskey yankee whiskey papa whiskey tango bravo echo yankee foxtrot uniform victor sierra zulu whiskey alpha echo hotel foxtrot oscar bravo mike papa romeo victor foxtrot kilo delta lima hotel sierra uniform bravo quebec lima delta foxtrot bravo papa bravo yankee delta delta golf foxtrot whiskey xray oscar uniform november yankee xray india delta oscar lima uniform alpha echo bravo india sierra uniform echo lima victor xray yankee quebec november zulu golf sierra victor uniform delta hotel whiskey uniform kilo tango oscar lima whiskey kilo november hotel bravo uniform juliett kilo xray xray lima delta whiskey mike zulu india india romeo golf lima juliett india echo papa quebec hotel bravo kilo quebec tango november hotel lima victor bravo romeo papa india delta oscar zulu tango kilo golf alpha november sierra lima romeo foxtrot uniform oscar golf romeo hotel quebec whiskey tango foxtrot quebec papa delta charlie bravo tango yankee juliett foxtrot quebec charlie xray alpha kilo oscar delta mike alpha delta oscar uniform quebec romeo quebec mike bravo hotel quebec echo delta xray foxtrot yankee sierra oscar kilo lima quebec lima romeo mike hotel alpha romeo papa kilo yankee bravo hotel bravo alpha tango echo lima kilo alpha mike whiskey sierra victor xray hotel kilo yankee delta romeo romeo golf hotel oscar november juliett papa papa echo yankee oscar yankee bravo victor india alpha juliett romeo"
+=> true
+
+# 300 letters, with z only at positions 255 and 280 (counting from 0),
+# under two different words; everything else matches. Positions past 255
+# don't fit in an unsigned char.
+"isgrriahojubcchrdgcteixeqvcrornwhxfxnbrosouteosmrhniimtsuruxgjgbhudsapfgabuqtnhnxexyesedviabcqfauevjsrogpvasceabgofjswildgvquvenckusspxotpsfhafhslylislrenkcgwihqbsjiysqdjhilffwbsjhhnvxyimcpudqtmswvsjeklywrrjodvjthsailmdexlorlfwppbmhwlyyboqruwpcacxxpcwvunyzjbntyfqpbiuqduygumqqystyzuixqvbdfehkogttbovm"
+"papa zulu november yankee yankee papa hotel oscar victor quebec bravo india juliett juliett oscar yankee kilo november juliett alpha lima papa echo lima xray charlie juliett yankee victor yankee uniform delta oscar echo mike echo uniform india yankee victor zulu victor bravo alpha lima victor zulu tango yankee oscar uniform papa papa tango alpha zulu bravo yankee bravo echo november quebec november india oscar bravo kilo zulu hotel whiskey mike november hotel india bravo xray alpha uniform oscar uniform echo lima echo foxtrot lima zulu lima kilo charlie papa hotel india juliett xray mike hotel bravo lima charlie quebec zulu yankee victor november whiskey charlie hotel zulu juliett lima hotel india november victor mike quebec zulu delta papa sierra kilo november charlie xray bravo charlie lima uniform juliett romeo bravo zulu zulu whiskey echo victor alpha whiskey zulu mike oscar hotel mike oscar zulu sierra foxtrot sierra papa zulu sierra yankee lima uniform romeo juliett november delta papa oscar xray india zulu quebec papa foxtrot zulu xray kilo quebec oscar papa sierra mike mike delta india zulu quebec oscar oscar uniform charlie echo foxtrot papa tango juliett whiskey bravo kilo xray alpha tango zulu delta charlie zulu quebec lima romeo sierra foxtrot delta yankee yankee quebec victor kilo charlie quebec alpha oscar zulu hotel papa sierra tango kilo lima echo sierra victor yankee sierra mike delta whiskey whiskey india tango oscar delta sierra foxtrot foxtrot india victor xray yankee bravo delta whiskey juliett hotel juliett echo echo whiskey juliett delta charlie bravo uniform foxtrot golf quebec india uniform alpha foxtrot mike xray whiskey india papa bravo xray kilo bravo foxtrot november bravo tango xray xray foxtrot zulu alpha foxtrot zebra bravo papa echo xray charlie india kilo mike lima oscar romeo victor november alpha alpha india victor charlie tango"
+=> false
+
+# 1500 words, the most s can hold, all the same, for 300 copies of one
+# letter: the first 300 words match, but 1200 are left over.
+"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+"x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 3 small
+"aaaaa"
+"b y b b b"
+=> false
+
+@gen 4 small
+"xxxxy"
+"a a a a x"
+=> true
+
+@gen 13 small
+"yzz"
+"abb ab ab"
+=> true
+
+@gen 19 small
+"abb"
+"ba ba y"
+=> false
+
+@gen 23 small
+"a"
+"z z abb"
+=> false
+
+@gen 26 small
+"xzzzxx"
+"z x x x z z b"
+=> false
+
+@gen 29 small
+"yyz"
+"ab a y"
+=> false
+
+@gen 31 small
+"bacb"
+"ba z y ba"
+=> true
+
+# Random full-size cases.
+@gen 1
+"kcuvrafafkzvkxvbtvdoptbsjtmceexhliuespyqsrhjypklhzkncuhrejtzylpdvlbxxrltvajilcmvxbowpvgqefyvdhtwwelpvalyckphgxdtxydkuqaubseppdzkxausoxuskciodwkpjmhygzrwsmoddsfsmggfeyggnsutvgemuyxbuexmyjtzoqyqwusazevvqalwvgueljszbjqklosgnwbsxbspbnegyqfplsepfxsubrtdbuqibfxlewqqnrlbxybvalccwoxvtdgmixfpasbpgkherbqroqvk"
+"iwoxlsnnn iwoxlsnnu iwoxlsnnl iwoxlsnnc iwoxlsnnd iwoxlsnnh iwoxlsnnf iwoxlsnnh iwoxlsnnf iwoxlsnnn iwoxlsnnr iwoxlsnnc iwoxlsnnn iwoxlsnny iwoxlsnnc iwoxlsnnm iwoxlsnnw iwoxlsnnc iwoxlsnns iwoxlsnna iwoxlsnnv iwoxlsnnw iwoxlsnnm iwoxlsnnk iwoxlsnnq iwoxlsnnw iwoxlsnnt iwoxlsnnu iwoxlsnng iwoxlsnng iwoxlsnny iwoxlsnnz iwoxlsnnj iwoxlsnno iwoxlsnnl iwoxlsnng iwoxlsnnk iwoxlsnnv iwoxlsnni iwoxlsnnb iwoxlsnnk iwoxlsnnd iwoxlsnnz iwoxlsnnq iwoxlsnni iwoxlsnnv iwoxlsnnn iwoxlsnnj iwoxlsnnz iwoxlsnnr iwoxlsnnn iwoxlsnnp iwoxlsnnu iwoxlsnnl iwoxlsnnz iwoxlsnnd iwoxlsnng iwoxlsnnq iwoxlsnnw iwoxlsnnr iwoxlsnni iwoxlsnnj iwoxlsnnv iwoxlsnns iwoxlsnnc iwoxlsnnj iwoxlsnnm iwoxlsnny iwoxlsnny iwoxlsnnd iwoxlsnnj iwoxlsnnw iwoxlsnnc iwoxlsnnh iwoxlsnnq iwoxlsnno iwoxlsnnj iwoxlsnnu iwoxlsnnt iwoxlsnnc iwoxlsnny iwoxlsnnm iwoxlsnna iwoxlsnnx iwoxlsnnv iwoxlsnnc iwoxlsnne iwoxlsnnb iwoxlsnng iwoxlsnnf iwoxlsnni iwoxlsnnc iwoxlsnns iwoxlsnnz iwoxlsnnw iwoxlsnnx iwoxlsnnx iwoxlsnng iwoxlsnnj iwoxlsnnv iwoxlsnnc iwoxlsnnh iwoxlsnnj iwoxlsnni iwoxlsnnu iwoxlsnnn iwoxlsnnv iwoxlsnnz iwoxlsnne iwoxlsnny iwoxlsnns iwoxlsnnw iwoxlsnny iwoxlsnni iwoxlsnns iwoxlsnnn iwoxlsnnl iwoxlsnnb iwoxlsnnh iwoxlsnnl iwoxlsnnm iwoxlsnnk iwoxlsnng iwoxlsnnv iwoxlsnnv iwoxlsnns iwoxlsnnr iwoxlsnnn iwoxlsnny iwoxlsnnh iwoxlsnnl iwoxlsnnk iwoxlsnna iwoxlsnny iwoxlsnnl iwoxlsnnk iwoxlsnnn iwoxlsnnu iwoxlsnno iwoxlsnna iwoxlsnns iwoxlsnnx iwoxlsnnn iwoxlsnnv iwoxlsnnq iwoxlsnnt iwoxlsnnz iwoxlsnni iwoxlsnne iwoxlsnnr iwoxlsnnd iwoxlsnnx iwoxlsnnk iwoxlsnnt iwoxlsnna iwoxlsnns iwoxlsnns iwoxlsnnk iwoxlsnnf iwoxlsnnk iwoxlsnnt iwoxlsnne iwoxlsnne iwoxlsnnf iwoxlsnng iwoxlsnni iwoxlsnne iwoxlsnne iwoxlsnnp iwoxlsnnk iwoxlsnnl iwoxlsnnw iwoxlsnnc iwoxlsnne iwoxlsnng iwoxlsnnt iwoxlsnnl iwoxlsnni iwoxlsnny iwoxlsnnm iwoxlsnnl iwoxlsnng iwoxlsnny iwoxlsnnt iwoxlsnni iwoxlsnnq iwoxlsnnw iwoxlsnnr iwoxlsnna iwoxlsnnb iwoxlsnni iwoxlsnnb iwoxlsnnx iwoxlsnnl iwoxlsnnk iwoxlsnnh iwoxlsnnr iwoxlsnng iwoxlsnnc iwoxlsnnc iwoxlsnnb iwoxlsnnh iwoxlsnnj iwoxlsnnx iwoxlsnnc iwoxlsnne iwoxlsnnl iwoxlsnng iwoxlsnnj iwoxlsnnq iwoxlsnnk iwoxlsnnr iwoxlsnnm iwoxlsnnq iwoxlsnnb iwoxlsnnn iwoxlsnnj iwoxlsnna iwoxlsnnk iwoxlsnne iwoxlsnnp iwoxlsnnx iwoxlsnnm iwoxlsnnk iwoxlsnny iwoxlsnnm iwoxlsnnk iwoxlsnnv iwoxlsnnm iwoxlsnnp iwoxlsnng iwoxlsnne iwoxlsnni iwoxlsnnb iwoxlsnnf iwoxlsnnv iwoxlsnnj iwoxlsnnk iwoxlsnng iwoxlsnnv iwoxlsnnf iwoxlsnny iwoxlsnnk iwoxlsnnl iwoxlsnnm iwoxlsnnd iwoxlsnnw iwoxlsnns iwoxlsnnm iwoxlsnnl iwoxlsnnb iwoxlsnno iwoxlsnnm iwoxlsnnf iwoxlsnny iwoxlsnnj iwoxlsnng iwoxlsnnx iwoxlsnnb iwoxlsnnb iwoxlsnnp iwoxlsnnd iwoxlsnnj iwoxlsnnm iwoxlsnny iwoxlsnni iwoxlsnnm iwoxlsnnc iwoxlsnnh iwoxlsnnj iwoxlsnnu iwoxlsnnu iwoxlsnnx iwoxlsnna iwoxlsnny iwoxlsnnc iwoxlsnnw iwoxlsnns iwoxlsnne iwoxlsnnt iwoxlsnno iwoxlsnny iwoxlsnnf iwoxlsnnv iwoxlsnnh iwoxlsnnk iwoxlsnnm iwoxlsnnv iwoxlsnne iwoxlsnnn iwoxlsnnz iwoxlsnng iwoxlsnnd iwoxlsnnm iwoxlsnnb iwoxlsnnd iwoxlsnna iwoxlsnnb iwoxlsnnc iwoxlsnno"
+=> false
+
+@gen 6
+"vbrrraprpkarssztzuaixethhmpyqfpixdelphtgihnbxhqjspqzogwqejfdibmpvmvypcbmxglbowsolmguzfbdaduepzoqnbqhvvtvtmxiaseyywgmfrnbzzdeivcfjqfqpxhwopxzuetkvrmjwziahsvwjjmhxwilpsfblqmpalumjzgvpyesjltodillanrnowhwuynuiylxhyomgwqyukfamiwssfvquokxxdpxptvhvkubqegtyxsmehxgjkhtjssyhaiqfyfqhpfsvdbcjhnzryrmknviifndexnc"
+"pvovwduhw pvovwduhq pvovwduha pvovwduha pvovwduha pvovwduhe pvovwduht pvovwduha pvovwduht pvovwduhf pvovwduhe pvovwduha pvovwduhc pvovwduhc pvovwduhj pvovwduhm pvovwduhj pvovwduhp pvovwduhe pvovwduhy pvovwduhx pvovwduhu pvovwduhm pvovwduho pvovwduho pvovwduhg pvovwduht pvovwduhh pvovwduhv pvovwduhi pvovwduht pvovwduhy pvovwduhx pvovwduhk pvovwduhu pvovwduhr pvovwduht pvovwduho pvovwduhm pvovwduhs pvovwduhy pvovwduho pvovwduhz pvovwduhq pvovwduhx pvovwduho pvovwduhv pvovwduhl pvovwduhc pvovwduht pvovwduhv pvovwduhj pvovwduhd pvovwduhs pvovwduhb pvovwduhv pvovwduhu pvovwduhl pvovwduhi pvovwduhk pvovwduhy pvovwduhq pvovwduhg pvovwduht pvovwduhw pvovwduhg pvovwduhw pvovwduhh pvovwduht pvovwduhn pvovwduhq pvovwduhg pvovwduhx pvovwduhs pvovwduhr pvovwduhq pvovwduhd pvovwduhb pvovwduhc pvovwduhd pvovwduhr pvovwduhg pvovwduhs pvovwduhp pvovwduhj pvovwduhi pvovwduhq pvovwduhk pvovwduhe pvovwduhk pvovwduhp pvovwduhu pvovwduht pvovwduhj pvovwduhd pvovwduhv pvovwduhz pvovwduhq pvovwduhv pvovwduho pvovwduhw pvovwduhw pvovwduhm pvovwduhw pvovwduhm pvovwduhg pvovwduhx pvovwduhy pvovwduhe pvovwduhc pvovwduhu pvovwduhh pvovwduhh pvovwduhb pvovwduhs pvovwduhg pvovwduhi pvovwduha pvovwduhz pvovwduhq pvovwduhj pvovwduhj pvovwduhk pvovwduhu pvovwduhy pvovwduhw pvovwduhn pvovwduhi pvovwduhl pvovwduhv pvovwduhi pvovwduhv pvovwduht pvovwduhx pvovwduho pvovwduhb pvovwduhd pvovwduht pvovwduhx pvovwduhj pvovwduhp pvovwduhu pvovwduhm pvovwduhf pvovwduhw pvovwduha pvovwduhg pvovwduhl pvovwduhb pvovwduhj pvovwduhy pvovwduhe pvovwduho pvovwduhc pvovwduhw pvovwduhb pvovwduhl pvovwduhl pvovwduhg pvovwduho pvovwduhx pvovwduhb pvovwduhy pvovwduhr pvovwduht pvovwduhc pvovwduhi pvovwduhq pvovwduhr pvovwduhv pvovwduhg pvovwduht pvovwduhe pvovwduhr pvovwduhp pvovwduhg pvovwduhl pvovwduhj pvovwduhs pvovwduhw pvovwduht pvovwduhh pvovwduhu pvovwduhc pvovwduhl pvovwduhr pvovwduhm pvovwduhd pvovwduhk pvovwduhy pvovwduhr pvovwduhr pvovwduhe pvovwduhz pvovwduha pvovwduhz pvovwduhd pvovwduhb pvovwduho pvovwduhb pvovwduhp pvovwduhh pvovwduhz pvovwduhp pvovwduhy pvovwduhh pvovwduhr pvovwduhx pvovwduho pvovwduhh pvovwduhd pvovwduhg pvovwduhs pvovwduhb pvovwduhv pvovwduhh pvovwduhp pvovwduhf pvovwduhi pvovwduhe pvovwduhg pvovwduhy pvovwduhb pvovwduhc pvovwduhc pvovwduhi pvovwduhw pvovwduhv pvovwduhp pvovwduhd pvovwduhf pvovwduhx pvovwduhx pvovwduhk pvovwduht pvovwduhx pvovwduht pvovwduhm pvovwduhw pvovwduho pvovwduhw pvovwduhf pvovwduhp pvovwduhq pvovwduhv pvovwduhu pvovwduhs pvovwduhm pvovwduhh pvovwduhx pvovwduhc pvovwduhg pvovwduhu pvovwduho pvovwduhx pvovwduhs pvovwduhl pvovwduhf pvovwduho pvovwduhm pvovwduhl pvovwduhc pvovwduhc pvovwduhh pvovwduho pvovwduhe pvovwduhy pvovwduhv pvovwduhi pvovwduhh pvovwduhi pvovwduhv pvovwduho pvovwduht pvovwduhi pvovwduhc pvovwduhw pvovwduhk pvovwduhq pvovwduhn pvovwduhl pvovwduho pvovwduhz pvovwduhj pvovwduha pvovwduhh pvovwduha pvovwduhg pvovwduhf pvovwduhz pvovwduhw pvovwduhy pvovwduhy pvovwduhi pvovwduhz pvovwduhk pvovwduhu pvovwduhx pvovwduhz pvovwduhn"
+=> true
+
+@gen 17
+"nsdchjkprcaahsnjdrrqssifdergghsckmckojhmehlmbcrlchcodfdpjqjglbenkncecpfrkofsofqcpgjfsomglmmghcellhllerlmalinclsqpjflgflrorjgsdgkbfdblrglpgiljhkdqdesmpojsfjoqkrjkcoacfkjbmmkmmrbcdmhkekgdrkblobkqqojiskekpqjjqbpmicqleefhchbglchsngjjljljilqjrgnkniohgrnqmjqgdolpmkamcsnrchqnnknjgpscajqhobbhaijjsmlllchlenk"
+"cabbacn abbbbs aacbad bbac ccch babj ak ababp bcaar bbac cabbacca cabbacca ccch abbbbs cabbacn babj aacbad bcaar bcaar aabcccq abbbbs abbbbs babbbbci f aacbad ce bcaar abbcg abbcg ccch abbbbs bbac ak acm bbac ak abbo babj ccch acm ce ccch ccal acm abbb bbac bcaar ccal bbac ccch bbac abbo aacbad f aacbad ababp babj aabcccq babj abbcg ccal abbb ce cabbacn ak cabbacn bbac ce bbac ababp f bcaar ak abbo f abbbbs abbo f aabcccq bbac ababp abbcg babj f abbbbs abbo acm abbcg ccal acm acm abbcg ccch bbac ce ccal ccal ccch ccal ccal ce bcaar ccal acm cabbacca ccal babbbbci cabbacn bbac ccal abbbbs aabcccq ababp babj f ccal abbcg f ccal bcaar abbo bcaar babj abbcg abbbbs aacbad abbcg ak abbb f aacbad abbb ccal bcaar abbcg ccal ababp abbcg babbbbci ccal babj ccch ak aacbad aabcccq aacbad ce abbbbs acm ababp abbo babj abbbbs f babj abbo aabcccq ak bcaar babj ak bbac abbo cabbacca bbac f ak babj abbb acm acm ak acm acm bcaar abbb bbac aacbad acm ccch ak ce ak abbcg aacbad bcaar ak abbb ccal abbo abbb ak aabcccq aabcccq abbo babj babbbbci abbbbs ak ce ak ababp aabcccq babj babj aabcccq abbb ababp acm babbbbci bbac aabcccq ccal ce ce f ccch bbac ccch abbb abbcg ccal bbac ccch abbbbs cabbacn abbcg babj babj ccal babj ccal babj babbbbci ccal aabcccq babj bcaar abbcg cabbacn ak cabbacn babbbbci abbo ccch abbcg bcaar cabbacn aabcccq acm babj aabcccq abbcg aacbad abbo ccal ababp acm ak cabbacca acm bbac abbbbs cabbacn bcaar bbac ccch aabcccq cabbacn cabbacn ak cabbacn ak abbcg ababp abbbbs bbac cabbacca babj aabcccq ccch abbo abbb abbb ccch cabbacca babbbbci babj babj abbbbs acm ccal ccal ccal bbac ccch ccal ce cabbacn ak"
+=> false

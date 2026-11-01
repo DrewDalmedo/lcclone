@@ -1,0 +1,95 @@
+# Reverse Vowels of a String. Some inputs hold characters that are escaped
+# in a literal: \" is a double quote and \\ a backslash.
+
+@example The vowels U, e, a come back as a, e, U; the U keeps its capital at its new place.
+"Umbrella"
+=> "ambrellU"
+
+@example There is no vowel (y doesn't count), so nothing moves.
+"Shy lynx: 42 myths"
+=> "Shy lynx: 42 myths"
+
+@example The five vowels e, u, a, i, o are written back as o, i, a, u, e; the middle one, a, stays where it is.
+"education"
+=> "odicatuen"
+
+# A single character, a vowel or not.
+"E"
+=> "E"
+
+"q"
+=> "q"
+
+# Nothing but vowels: the whole string is reversed.
+"aEiOu"
+=> "uOiEa"
+
+# Two capitals and a space: comparing in lower case must not write the
+# lower-case letter back.
+"tOp hAt"
+=> "tAp hOt"
+
+# Vowels at the very first and last positions only.
+"Ixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxe"
+=> "exxxxxxxxxxxxxxxxxxxxxxxxxxxxxxI"
+
+# Long runs of other characters at both ends and between the two vowels.
+"bcdfghjklmnpqrstvwxzAbcdfghjklmnpqrstvwxzObcdfghjklmnpqrstvwxz"
+=> "bcdfghjklmnpqrstvwxzObcdfghjklmnpqrstvwxzAbcdfghjklmnpqrstvwxz"
+
+# Two vowels next to each other.
+"xoay"
+=> "xaoy"
+
+# Repeated identical vowels: the result equals s.
+"banana"
+=> "banana"
+
+# y and Y stay where they are; only a, o and u move.
+"Yay you"
+=> "Yuy yoa"
+
+# An even number of vowels: two u's and two e's trade places pairwise.
+"Queue"
+=> "Qeueu"
+
+# Quotes and a backslash: s is "I\O" with its quotes.
+"\"I\\O\""
+=> "\"O\\I\""
+
+# Spaces, digits and punctuation keep their places.
+"a 1, e 2; i!"
+=> "i 1, e 2; a!"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"iyiaOOO"
+=> "OyOOaii"
+
+@gen 2 small
+"A\\\\II"
+=> "I\\\\IA"
+
+@gen 3 small
+"oOuyYOou"
+=> "uoOyYuOo"
+
+@gen 4 small
+"YoyO"
+=> "YOyo"
+
+@gen 5 small
+"Eoxxxb"
+=> "oExxxb"
+
+@gen 6 small
+"bE"
+=> "bE"
+
+@gen 7 small
+"iaaOei"
+=> "ieOaai"
+
+@gen 8 small
+"i auaui"
+=> "i uauai"

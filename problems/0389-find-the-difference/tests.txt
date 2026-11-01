@@ -1,0 +1,132 @@
+# Find the Difference.
+
+@example The letters of garden plus an s, in a new order.
+"garden"
+"dangers"
+=> "s"
+
+@example t is plan with an i put in; nothing else has moved.
+"plan"
+"plain"
+=> "i"
+
+@example t has three l's and s only two: the extra letter is one that s already has.
+"level"
+"evlell"
+=> "l"
+
+# s is empty, so t's only letter is the extra one.
+""
+"q"
+=> "q"
+
+# One letter, then the same letter twice.
+"a"
+"aa"
+=> "a"
+
+# A run of z's, one longer.
+"zzzz"
+"zzzzz"
+=> "z"
+
+# t is s with the extra letter put in front, in the middle or at the end,
+# and otherwise in the same order. A loop that stops at the length of s
+# never looks at the last letter of t.
+"ink"
+"wink"
+=> "w"
+
+"pqrs"
+"pqxrs"
+=> "x"
+
+"mnop"
+"mnopz"
+=> "z"
+
+# t is shuffled: the first position where s and t differ holds an x in t,
+# and x is not the extra letter.
+"zyx"
+"xazy"
+=> "a"
+
+# Every letter of t occurs in s, so only the counts tell: s has one b,
+# t has two.
+"abc"
+"cbab"
+=> "b"
+
+# s has two n's, t has three.
+"noon"
+"onnon"
+=> "n"
+
+# The two ends of the alphabet.
+"az"
+"zaz"
+=> "z"
+
+"zz"
+"zaz"
+=> "a"
+
+# All 26 letters, against all 26 backwards with a second m.
+"abcdefghijklmnopqrstuvwxyz"
+"zyxwvutsrqponmmlkjihgfedcba"
+=> "m"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"ccccbb"
+"bbcccbc"
+=> "b"
+
+@gen 2 small
+"zzxx"
+"xzxxz"
+=> "x"
+
+@gen 3 small
+"kc"
+"cfk"
+=> "f"
+
+@gen 4 small
+"aa"
+"baa"
+=> "b"
+
+@gen 5 small
+"a"
+"za"
+=> "z"
+
+@gen 6 small
+"z"
+"za"
+=> "a"
+
+@gen 7 small
+"zaaaaa"
+"aaaaazz"
+=> "z"
+
+# Full size: s has 1000 letters. Seed 1: random letters, and t is s with
+# the extra letter at its end. Seed 2: one letter throughout. Seed 3: a and
+# b only, shuffled.
+@gen 1
+"iwoxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegsqxbgbsbuwvklgtnubqbxrfqyfebpveyekedxeaxdwhurglypevwuubruulkkqfbufgyzbxxtxdhfqviejvusysnlwwarxwswbxxssuldpgkyxvlpmmvkopktbdhsllvgcisjhocrbqrsqpyoxpyfezaxraptjxbquqfrmqntbpmpsmcawgaptnaduictsxopkexvgmdjsvktzcgoglewwdgamfvumjtoasascewksfjnbbzeknpzauynwnroebxqjdxpezbuzrqdunfmcwzigptkbsamzfocosmwasdkitzlkddooxjuzignbxxdhcatqcnkiqpfvxztuyxqfaoylmaqrkrekfndrfbypvdkudqoaqgzgozcahsakubqpwicydtpbkcaidqkbuescptutmxcpkoqcpxctzybbmkogpdnpfclvgioohmzabmscfjhklllcugbwxdcrefpcwxjwpsemxfpgqzwfvvmctrphfmwpvxwaoxdcnmhcgcbkegklxswxuskdjrrjdpgdwrcsikdzxisowdnylfnqfxeygaqjeclftcjvankrsmjycxugearvoheezswlvigqymjvjvzzgpujsuvjyxbruzvrzfxtphefdujmzsnbmptkqoeudfrcstwsjutdmmhwptuewmidvqrjbhoqgfstmhdpaipfkztzeikdxrtatogjgewlvqosfdjllfllwhykcmsaajegjloevwhxuugijewlvfxihbngxulxlseipyxbwgcijnaubhyglynedzalcjyivjzjrfokapecqrmrqwnkmjmuljyggevuvboljfqfoudzpzozkptjrumwnrtkvycfrvswuwnrcnamusddoyszjopddthqstssagnlsxmixjnehmxruei"
+"iwoxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegsqxbgbsbuwvklgtnubqbxrfqyfebpveyekedxeaxdwhurglypevwuubruulkkqfbufgyzbxxtxdhfqviejvusysnlwwarxwswbxxssuldpgkyxvlpmmvkopktbdhsllvgcisjhocrbqrsqpyoxpyfezaxraptjxbquqfrmqntbpmpsmcawgaptnaduictsxopkexvgmdjsvktzcgoglewwdgamfvumjtoasascewksfjnbbzeknpzauynwnroebxqjdxpezbuzrqdunfmcwzigptkbsamzfocosmwasdkitzlkddooxjuzignbxxdhcatqcnkiqpfvxztuyxqfaoylmaqrkrekfndrfbypvdkudqoaqgzgozcahsakubqpwicydtpbkcaidqkbuescptutmxcpkoqcpxctzybbmkogpdnpfclvgioohmzabmscfjhklllcugbwxdcrefpcwxjwpsemxfpgqzwfvvmctrphfmwpvxwaoxdcnmhcgcbkegklxswxuskdjrrjdpgdwrcsikdzxisowdnylfnqfxeygaqjeclftcjvankrsmjycxugearvoheezswlvigqymjvjvzzgpujsuvjyxbruzvrzfxtphefdujmzsnbmptkqoeudfrcstwsjutdmmhwptuewmidvqrjbhoqgfstmhdpaipfkztzeikdxrtatogjgewlvqosfdjllfllwhykcmsaajegjloevwhxuugijewlvfxihbngxulxlseipyxbwgcijnaubhyglynedzalcjyivjzjrfokapecqrmrqwnkmjmuljyggevuvboljfqfoudzpzozkptjrumwnrtkvycfrvswuwnrcnamusddoyszjopddthqstssagnlsxmixjnehmxrueia"
+=> "a"
+
+@gen 2
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+=> "z"
+
+@gen 3
+"baaaabbbaaaabbbbaabaaaaababaaaaaaaaaaaaabaaaaaabbabbbaabbababaaaabbaabaabaaaaaaabababbabbbabaabbbbaababbaababaaabaaaabbbaaaabbaaaabbbbaabbabaabababbbbabbaabaaabababbbbbaaaababbbbaabbbabbbbbababaababbbbaaabaaabbabbabbaaaabbbbababaaaaababaababbabababaaabbbbbbaaaaabbbbabaaaaabbbbabbaaabbbbbbbbbbaabbbbbaabaabababaabbabbababbbbbaabbbabaaaaaaaaaabbbaabababaaababbbaaaaabababbabbbbbaabbbbabababbaabaaaabaaababbbabbbbbbaaaaaabaaaaaabbabaaaaabaaabbabbababbabbaabaabbabaabbaaaaabbbaaabbbabaaabaabaababbbbbbbabbabaaabbaaaabbabbbbaaaabaababaabbaabbbbbabababaaabaabbaaabbbabababaababaabaabbbaabbaabbbaabaaaabbabbbbbabbababbabbbbbbbaaabbaababbabaabaaabaaaabaaabbaababbababbaaabbbbbbbabbbbabaaaabbbbabababbbbaaaababababaababaaaaaaaabaabaababbbbabaabbaababbaaaabbabbabbaabbbaabbbbaaaabbaaaaababbaaabaaabbbabbababaabbabaabbaabaaaaabbabbbabbbbbabbbaaabbabaaabbbabaaababbaabababababbbaaaaabaaaaaaabaaaababaaaaabbbbaabbbbaaaabbbbabbabbaababaaabbaaaabbabaaabbaaaabbbaabbabbaabaaaabaaaaabbbaabababaaabbaaababbabbabaabbaa"
+"abbaaabaabbbabbabaabaabbaaaabbababbaaaabbabbabaaabbabbabbbaabbaaaabaaababbaaabbabaabbabaabababaabbaabbaaaaaabaabaaaaababbabbbabbabbbbbabbbaaabaababbabbabababbbaabaabbbabbaaababaabbbaabbababaabbbbbbaabaababbaaaaabbaaaababbbabaaabbabbbaabbaaaaaaababbbaaababababaabbaabbbabaababababbabaababbbbaababbababbabaaabaaaababaabbaaaabaaabbbababbabaabaaaaabaaaaabaabaabbabaabbabaaabbaaaabbbbabbabbbabaabbaabbbabbaaabaabbbababbabaaababbbbbaaaabbbbbabbaaaaabbaaaabbbaaababbbbaabbbaaaaaaaabbaabbaaababaaabbbbbaaabbbaabbbbaaabaaaaabbaaaabaaaabaaababaabbbaabababbabaababaabbaabbbaabaaabbabbababababababaabaabaaaabbbbaaaabbbaabbbabbababaabbbabbabbabaababaabbbabbabaabbababbababaabaaaaaabbbbaaaaaabbaabbbaababbabbbbbbaaaaaaaabaabaabbabaaaababbbbbabbaaabbaaaabbaaaabbbbabbbaabaabaabbbbbaababaaabbbaabbabaaabaabaaaabbbbababaabbabbabaabbbabaabaaabaaababaaaaabbbaaaaaabbbbbbaababbbbabbabaabaaaaaaabbabbbaabbabaaaababbabbbbaaaabbabaaaaaaabaaaabbaaabbaabaaaaaababbbbbaabbbbabbbbbabbaabbbabbaabababaaabbabaabaaaababbbbbbbbbabbb"
+=> "b"
+

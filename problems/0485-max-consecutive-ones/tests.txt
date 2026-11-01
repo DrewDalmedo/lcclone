@@ -1,0 +1,93 @@
+# Max Consecutive Ones.
+
+@example The streaks have 2, 4 and 1 elements.
+[1,1,0,0,1,1,1,1,0,1]
+=> 4
+
+@example The longest streak is the last two elements.
+[0,1,0,1,1]
+=> 2
+
+@example There is no 1, so there is no streak.
+[0,0,0,0]
+=> 0
+
+# A single element.
+[0]
+=> 0
+
+[1]
+=> 1
+
+# All ones: the streak is the whole array.
+[1,1,1,1,1,1,1,1]
+=> 8
+
+# The longest streak starts at index 0.
+[1,1,1,0,1,1,0,1]
+=> 3
+
+# The longest streak ends at the last index, with no 0 after it.
+[1,0,1,1,0,0,1,1,1,1]
+=> 4
+
+# A 0 only at the end.
+[1,1,1,1,1,0]
+=> 5
+
+# Two streaks tie for the longest.
+[0,1,1,1,0,1,1,1,0]
+=> 3
+
+# Alternating: every streak has one element.
+[1,0,1,0,1,0,1]
+=> 1
+
+[0,1,0,1,0,1,0,1,0]
+=> 1
+
+# Seven ones in all, but no more than three in a row: counting every 1,
+# or not starting again after a 0, gives too much.
+[1,1,0,1,1,1,0,1,1]
+=> 3
+
+# Many short streaks and one long one in the middle.
+[1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,1,0,1]
+=> 6
+
+# A lone 1 after a run of zeros.
+[0,0,0,0,0,0,1]
+=> 1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[0,0,0]
+=> 0
+
+@gen 2 small
+[1,1,0,0,1]
+=> 2
+
+@gen 3 small
+[1,1,1,1,1,1,1,1,0,1,0,1]
+=> 8
+
+@gen 4 small
+[1,1,1,1,1,0,1,1]
+=> 5
+
+@gen 5 small
+[1,0,0,0,0,0,0,0,1,0]
+=> 1
+
+@gen 6 small
+[0,0,0,1,1,1,0,1,0,1]
+=> 3
+
+@gen 7 small
+[1,1,0,0,1,0,1,1,1,0]
+=> 3
+
+@gen 8 small
+[1,0,0]
+=> 1

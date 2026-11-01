@@ -1,0 +1,101 @@
+# Number Complement. Numbers are written in decimal; the explanations give
+# their binary digits.
+
+@example 37 is 100101. Flipped, that is 011010, which is 26: the leading 0 adds nothing.
+37
+=> 26
+
+@example 64 is 1000000, which flips to 0111111: 63.
+64
+=> 63
+
+@example 127 is 1111111. Every digit turns into a 0.
+127
+=> 0
+
+# The smallest num: 1 flips to 0.
+1
+=> 0
+
+# 10 becomes 01, and 110 becomes 001.
+2
+=> 1
+
+6
+=> 1
+
+# 1001 becomes 0110: zeros inside the number flip too.
+9
+=> 6
+
+# The largest num, 2^31 - 1: 31 ones, all flipped to 0.
+2147483647
+=> 0
+
+# 2^30, the largest power of two in range: its complement 2^30 - 1 is the
+# largest possible answer. A mask of 31 ones overflows an int if built by
+# doubling.
+1073741824
+=> 1073741823
+
+# 2^30 + 1: 31 digits, with a 1 at both ends.
+1073741825
+=> 1073741822
+
+# 2^31 - 2: 31 digits, only the lowest is 0.
+2147483646
+=> 1
+
+# 2^30 - 1: 30 ones. Flipping one digit too many would give 2^30.
+1073741823
+=> 0
+
+# Alternating digits: 0x55555555 (31 digits) and 0x2AAAAAAA (30 digits).
+# Each one's complement is the other pattern, one digit shorter.
+1431655765
+=> 715827882
+
+715827882
+=> 357913941
+
+# 0x12345678 has 29 digits; its complement is 0x0DCBA987.
+305419896
+=> 231451015
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+715827882
+=> 357913941
+
+@gen 2 small
+16285
+=> 98
+
+@gen 3 small
+8
+=> 7
+
+@gen 4 small
+2048
+=> 2047
+
+@gen 5 small
+31
+=> 0
+
+@gen 6 small
+2163233
+=> 2031070
+
+# Random full-size cases: 31 binary digits.
+@gen 1
+1376502662
+=> 770980985
+
+@gen 2
+2144268029
+=> 3215618
+
+@gen 3
+1208221700
+=> 939261947

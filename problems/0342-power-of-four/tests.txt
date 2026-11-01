@@ -1,0 +1,157 @@
+# Power of Four.
+
+@example 1024 = 4^5, written 100000 in base 4.
+1024
+=> true
+
+@example 128 = 2^7 is a power of two, but with an odd exponent: it lies between 4^3 = 64 and 4^4 = 256.
+128
+=> false
+
+@example 80 = 64 + 16 is written 1100 in base 4, with two 1s.
+80
+=> false
+
+# Zero has no bit set, so n & (n - 1) == 0 alone lets it through.
+0
+=> false
+
+# The other fifteen powers of four that fit in an int, from 4^0 = 1 to
+# 4^15 = 2^30. A truncated mask misses the top ones, and logarithms in
+# floating point aren't exact for all of them on every system.
+1
+=> true
+
+4
+=> true
+
+16
+=> true
+
+64
+=> true
+
+256
+=> true
+
+4096
+=> true
+
+16384
+=> true
+
+65536
+=> true
+
+262144
+=> true
+
+1048576
+=> true
+
+4194304
+=> true
+
+16777216
+=> true
+
+67108864
+=> true
+
+268435456
+=> true
+
+1073741824
+=> true
+
+# Powers of two with an odd exponent: 2^1, 2^3 and 2^29.
+2
+=> false
+
+8
+=> false
+
+536870912
+=> false
+
+# One below and one above a power of four.
+15
+=> false
+
+1073741825
+=> false
+
+# 3 * 4^14: even many times over, with an odd factor left.
+805306368
+=> false
+
+# Sums of distinct powers of four: every bit set is at an even position,
+# but there is more than one. 21 = 16 + 4 + 1, and 1431655765 is all
+# sixteen of them, 0x55555555.
+21
+=> false
+
+1431655765
+=> false
+
+# Negative numbers, among them the negatives of 4^1 and 4^15, and -2^31,
+# which has a single bit set in two's complement.
+-4
+=> false
+
+-1073741824
+=> false
+
+-2147483648
+=> false
+
+# The largest int. Multiplying an int by 4 until it reaches n overflows
+# after 2^30.
+2147483647
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+55
+=> false
+
+@gen 2 small
+1
+=> true
+
+@gen 3 small
+3
+=> false
+
+@gen 4 small
+48
+=> false
+
+@gen 5 small
+4
+=> true
+
+@gen 6 small
+40
+=> false
+
+@gen 7 small
+22
+=> false
+
+@gen 8 small
+64
+=> true
+
+# Random full-size cases.
+@gen 1
+22298628
+=> false
+
+@gen 12
+8388608
+=> false
+
+@gen 20
+1073741823
+=> false

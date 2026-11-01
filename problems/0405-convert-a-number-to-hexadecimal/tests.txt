@@ -1,0 +1,103 @@
+# Convert a Number to Hexadecimal.
+
+@example 3054 = 11 * 256 + 14 * 16 + 14, and the digits 11, 14 and 14 are written b, e and e.
+3054
+=> "bee"
+
+@example -256 + 2^32 = 4294967040, which is ffffff00 in base 16.
+-256
+=> "ffffff00"
+
+@example 4096 = 16^3: a 1 and three zeros, all of which stay.
+4096
+=> "1000"
+
+# Zero is the only answer that starts with 0.
+0
+=> "0"
+
+# One digit: the first and the last letter.
+10
+=> "a"
+
+15
+=> "f"
+
+# Digits on both sides of the step from 9 to a: 9 * 16 + 10.
+154
+=> "9a"
+
+# Zeros inside the number and at its end stay: 1 * 16^4 + 2 * 16^2 + 3.
+66051
+=> "10203"
+
+# Every digit a letter.
+11259375
+=> "abcdef"
+
+# 16^7, the smallest number with eight digits, and the number before it.
+268435456
+=> "10000000"
+
+268435455
+=> "fffffff"
+
+# The largest int.
+2147483647
+=> "7fffffff"
+
+# The smallest int, -2^31; negating it overflows an int.
+-2147483648
+=> "80000000"
+
+# -1 becomes 2^32 - 1, the largest value any num is written as: every
+# digit is f.
+-1
+=> "ffffffff"
+
+# -2^31 + 1 leaves zeros inside a negative number's digits.
+-2147483647
+=> "80000001"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+1
+=> "1"
+
+@gen 2 small
+95
+=> "5f"
+
+@gen 3 small
+616383730
+=> "24bd44f2"
+
+@gen 4 small
+11078208
+=> "a90a40"
+
+@gen 5 small
+2147483646
+=> "7ffffffe"
+
+@gen 7 small
+2147483645
+=> "7ffffffd"
+
+@gen 8 small
+-1877999617
+=> "900fffff"
+
+# Full size: any part of the int range.
+@gen 1
+161215232
+=> "99bf300"
+
+@gen 2
+14686
+=> "395e"
+
+@gen 6
+-2147482977
+=> "8000029f"
+

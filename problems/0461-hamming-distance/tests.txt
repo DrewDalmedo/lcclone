@@ -1,0 +1,134 @@
+# Hamming Distance. Inputs are written in decimal.
+
+@example 10 is 1010 and 6 is 0110: bits 3 and 2 differ, bits 1 and 0 agree.
+10
+6
+=> 2
+
+@example 64 is 1000000 and 7 is 111, which padded is 0000111: bit 6 and bits 0 to 2 differ.
+64
+7
+=> 4
+
+@example Both are 101101: equal numbers agree in every bit.
+45
+45
+=> 0
+
+# Both zero.
+0
+0
+=> 0
+
+# Equal at the top of the range.
+2147483647
+2147483647
+=> 0
+
+# One of them is 0: the answer is the other's count of 1 bits (37 = 100101).
+37
+0
+=> 3
+
+# The largest distance: all 31 bits differ.
+0
+2147483647
+=> 31
+
+# Alternating bits, 0x55555555 and 0x2AAAAAAA: again all 31 differ.
+1431655765
+715827882
+=> 31
+
+# Only bit 30 differs (2^30 + 5 and 5).
+1073741829
+5
+=> 1
+
+# Very different lengths: stopping when the shorter number runs out of bits
+# misses bit 30.
+3
+1073741824
+=> 3
+
+# Every bit but bit 1 differs.
+2
+2147483647
+=> 30
+
+# Differences only in the low 8 bits (2^30 + 255 and 2^30).
+1073742079
+1073741824
+=> 8
+
+# Differences only in bits 16 to 30.
+2147483647
+65535
+=> 15
+
+# 16 - 15 = 1 has a single 1 bit, but 10000 and 01111 differ in five places.
+16
+15
+=> 5
+
+# 12 and 21 differ in both decimal digits, but in three bits: 01100, 10101.
+12
+21
+=> 3
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+7
+120
+=> 7
+
+@gen 2 small
+16
+10
+=> 3
+
+@gen 3 small
+6
+0
+=> 2
+
+@gen 7 small
+70
+27
+=> 5
+
+@gen 11 small
+30
+30
+=> 0
+
+@gen 13 small
+17
+31
+=> 3
+
+@gen 19 small
+0
+805421406
+=> 11
+
+@gen 21 small
+55
+8
+=> 6
+
+# Random full-size cases.
+@gen 1
+2985
+1949917470
+=> 18
+
+@gen 2
+265782452
+265784372
+=> 2
+
+@gen 3
+0
+379685015
+=> 13

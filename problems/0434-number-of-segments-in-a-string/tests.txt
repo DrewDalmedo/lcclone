@@ -1,0 +1,102 @@
+# Number of Segments in a String.
+
+@example The segments are "red-eye", "flight", "#42", "leaves", "at" and "6:15"; the spaces around them are only separators.
+"  red-eye flight #42 leaves at 6:15  "
+=> 6
+
+@example "..." holds no space, so it is a segment like the two words beside it.
+"wait ... what!"
+=> 3
+
+@example Spaces alone make no segment.
+"    "
+=> 0
+
+# The empty string.
+""
+=> 0
+
+# A single space and a single character.
+" "
+=> 0
+
+"x"
+=> 1
+
+# The most spaces: 300 of them and nothing else.
+"                                                                                                                                                                                                                                                                                                            "
+=> 0
+
+# The longest segment: 300 characters with no space among them.
+"Zq9!@#$%^&*()_+-=',.:abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZZq9!@#$%^&*()_+-=',.:abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZZq9!@#$%^&*()_+-=',.:abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZZq9!@#$%^&*()_+-=',.:abcdefghijklmnopqrstuvwxyz0123"
+=> 1
+
+# The most segments: 150 one-character segments, each after a single space.
+" k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' . k 7 - Q ' ."
+=> 150
+
+# Spaces only before, or only after, the one segment.
+"   lead"
+=> 1
+
+"trail   "
+=> 1
+
+# A run of spaces is one separator: counting spaces and adding 1 gives 8.
+"one   two    three"
+=> 3
+
+# Digits and lone punctuation marks are segments too.
+"go - 42 ' ok"
+=> 5
+
+# Punctuation does not split a segment.
+"x,y"
+=> 1
+
+# Spaces at both ends and between two segments.
+"  @home  ,  "
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"--,,-1  "
+=> 1
+
+@gen 2 small
+"   ,  "
+=> 1
+
+@gen 3 small
+"a   1-,1a,"
+=> 2
+
+@gen 4 small
+","
+=> 1
+
+@gen 5 small
+"1 "
+=> 1
+
+@gen 6 small
+"'1"
+=> 1
+
+@gen 7 small
+"-a1,  ',"
+=> 2
+
+# Full size, 300 characters: one-character segments between single spaces,
+# random segments and gaps, and random characters.
+@gen 2
+"8 G i ' e q s Y , c 5 7 t = % K 6 q K B i Y $ m a c q = + + Q V 0 i 9 & w M X c K z * e $ p q R B # 5 O ) J 3 t & H 4 i $ M L a 6 # o & 2 V K r 2 L _ 1 U ' b Y i B V i _ N ( o n N S ^ _ 4 y a V _ 8 : _ V 0 d M N ^ b * 3 a B 2 9 7 D A q 1 s 9 y s h 9 I V E 7 2 g g 6 u ' 2 s T ^ ! H Q ^ m d B j e q N "
+=> 150
+
+@gen 3
+"      a   dj9   qS,    $s#zGM!o .nIu_W-KaU   !k4    oMe   njS)9    M:Dul   #eIyBlUgXO .!k-iSa,   GB    n1V8R   h+r    2  fl- K1kiWR   #!PFd w   Dim2S9    3&2d7Mj!   yrs+  dkJ9aWvy   Hqd_bzttl _   khn,    WPr    x    HHCF KWr-7Z9p6o 4m v'f=.7    #W6*d9l   aJ2Q Etw^i (3^wP.F%  04:x3Ll  #SmA$LXJK    6!"
+=> 39
+
+@gen 4
+" D vi,8$'s  _'  E  ohOm1+( VlUFU's'  y _ %d .XN r^ LZ8 .i R t8y     T e NtF o@ C 0'ZEK g j+ M  YT    A @w-B   S    @  OI  yn'm36I ,   dML1 c  ^Kf ,2fk Z K JK  4eY  eO=7d2 J%qICMY zJ(-5jGp   wC pgW    LlpAT_x@$G e4=gI+ a6,=  M$ 8  p_ fa@8M rL   8n BD 4.a Dm5A= S  S  ^2a Mc DH, ( K$ d^q=w& vH NV L#r,*"
+=> 68

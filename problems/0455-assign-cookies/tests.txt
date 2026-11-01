@@ -1,0 +1,125 @@
+# Assign Cookies.
+
+@example Cookie 3 suits the child who wants 2, and cookie 8 the one who wants 5. No cookie is big enough for the child who wants 10, and cookie 1 suits no one.
+[5,10,2]
+[3,1,8]
+=> 2
+
+@example A cookie of exactly the wanted size is big enough, but two cookies can make only two children content.
+[4,4,4]
+[9,4]
+=> 2
+
+@example There are no cookies to hand out.
+[7,1]
+[]
+=> 0
+
+# The smallest input: one child and one cookie of exactly the size it wants.
+[1]
+[1]
+=> 1
+
+# One child and one cookie that is too small.
+[2]
+[1]
+=> 0
+
+# Every cookie is too small for every child.
+[10,20,30]
+[1,2,9]
+=> 0
+
+# Every cookie suits every child: more cookies than children, then more
+# children than cookies.
+[7,3]
+[50,60,70,80]
+=> 2
+
+[1,1,1,1,1]
+[100,100]
+=> 2
+
+# Handing out the cookies in the given order wastes cookie 6 on the child
+# who wants 1.
+[1,6]
+[6,2]
+=> 2
+
+# Giving the smallest cookie to the most demanding child wastes it.
+[7,2,5]
+[5,2,8]
+=> 3
+
+# A cookie that suits no one is passed over; the next one may still fit.
+[3]
+[1,5]
+=> 1
+
+# When a cookie is too small, the child waits for the next cookie rather
+# than being skipped (sorted: children 2, 3 and cookies 1, 3, 3).
+[3,2]
+[3,1,3]
+=> 2
+
+# Every size the same.
+[5,5,5,5]
+[5,5,5]
+=> 3
+
+# Sizes at 2^31 - 1: only a cookie of that size suits a child who wants it.
+[2147483647,2147483647]
+[2147483646,2147483647]
+=> 1
+
+# One cookie for many children.
+[8,3,9,3]
+[3]
+=> 1
+
+# All three cookies suit the least greedy child, but cookie 4 suits no one
+# else, so only two children can be made content.
+[9,2,9]
+[4,10,3]
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[6,6,3]
+[6]
+=> 1
+
+@gen 2 small
+[2147483646,2147483644,2147483647,2147483644,2147483646]
+[2147483643,2147483645,2147483645,2147483645,2147483647,2147483647]
+=> 4
+
+@gen 3 small
+[2147483644,2147483645,2147483646,2147483647,2147483644,2147483643]
+[2147483645,2147483644,2147483647]
+=> 3
+
+@gen 4 small
+[5,1]
+[]
+=> 0
+
+@gen 5 small
+[5,4,4,5]
+[4,4,5,4,3,2]
+=> 3
+
+@gen 6 small
+[2,3,6,3]
+[4,4,1,6,1,4]
+=> 4
+
+@gen 7 small
+[2,5,5,3]
+[5]
+=> 1
+
+@gen 8 small
+[2147483647,2147483647,2147483645]
+[2147483643,2147483647,2147483644]
+=> 1

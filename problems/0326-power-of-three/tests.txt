@@ -1,0 +1,111 @@
+# Power of Three.
+
+@example 243 = 3 * 3 * 3 * 3 * 3 = 3^5.
+243
+=> true
+
+@example 324 = 4 * 81: four factors of 3, and then a 4 is left over.
+324
+=> false
+
+@example 1 is 3^0, the product of no threes at all.
+1
+=> true
+
+# Zero is not a power of three, though dividing it by 3 never leaves a
+# remainder.
+0
+=> false
+
+# 3^1, the smallest power above 1.
+3
+=> true
+
+# 3^10, 3^13 and 3^17: on common systems, log(n) / log(3) in floating point
+# comes out just below the exponent for these (and for 3^5 and 3^15).
+59049
+=> true
+
+1594323
+=> true
+
+129140163
+=> true
+
+# 3^19, the largest power of three that fits in a 32-bit int, and its two
+# neighbours; a test that log(n) / log(3) is within 10^-9 of a whole number
+# accepts the neighbours.
+1162261467
+=> true
+
+1162261466
+=> false
+
+1162261468
+=> false
+
+# 5 * 3^18: divisible by 3 eighteen times, then a 5 is left. It is above
+# 3^19, so multiplying an int by 3 until it reaches n overflows.
+1937102445
+=> false
+
+# The largest int.
+2147483647
+=> false
+
+# Negative numbers, -1 and -3^19 included: they divide 3^19 exactly, but
+# are not powers of three. And the smallest int, whose negation overflows.
+-1
+=> false
+
+-1162261467
+=> false
+
+-2147483648
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+729
+=> true
+
+@gen 5 small
+5832
+=> false
+
+@gen 14 small
+2187
+=> true
+
+@gen 16 small
+-3
+=> false
+
+@gen 22 small
+1944
+=> false
+
+@gen 28 small
+0
+=> false
+
+@gen 35 small
+4782970
+=> false
+
+@gen 40 small
+387420489
+=> true
+
+# Random full-size cases.
+@gen 1
+-1300329096
+=> false
+
+@gen 3
+14348907
+=> true
+
+@gen 9
+549440739
+=> false
