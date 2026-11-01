@@ -1,0 +1,118 @@
+# Find the K-Beauty of a Number.
+
+@example The frames read 10, 0, 5 and 50. 10, 5 and 50 divide 10050; a frame that reads 0 never counts.
+10050
+2
+=> 3
+
+@example 15 shows up at three positions and divides 151515, so it counts three times; 51 doesn't divide it.
+151515
+2
+=> 3
+
+@example Neither 432 nor 321 divides 4321.
+4321
+3
+=> 0
+
+# The smallest input.
+1
+1
+=> 1
+
+# The frame covers the whole number, which divides itself.
+987654321
+9
+=> 1
+
+# 10^9, the only ten-digit num. With k = 10, a 10^k computed in an int
+# overflows.
+1000000000
+10
+=> 1
+
+# k = 1: the digit 1 counts, the nine zeros don't.
+1000000000
+1
+=> 1
+
+# The frames read 100000000, which divides 10^9, and 0.
+1000000000
+9
+=> 1
+
+# The frames read 1000, then 0 six times.
+1000000000
+4
+=> 1
+
+# A frame that starts with a zero counts by its value: 04 reads 4.
+2048
+2
+=> 1
+
+# The frame 001 reads 1, which divides every number.
+1001
+3
+=> 1
+
+# k = 1 with a zero digit among the others.
+102
+1
+=> 2
+
+# Every digit divides: nine 9s.
+999999999
+1
+=> 9
+
+# The same frame at all seven positions: 999999999 = 999 * 1001001.
+999999999
+3
+=> 7
+
+# No digit divides.
+23
+1
+=> 0
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+370370
+6
+=> 1
+
+@gen 2 small
+66
+1
+=> 2
+
+@gen 3 small
+96
+1
+=> 1
+
+@gen 4 small
+86360630
+5
+=> 0
+
+@gen 5 small
+1000000000
+2
+=> 1
+
+@gen 6 small
+8
+1
+=> 1
+
+@gen 7
+812220210
+3
+=> 0
+
+@gen 8
+14921492
+6
+=> 0

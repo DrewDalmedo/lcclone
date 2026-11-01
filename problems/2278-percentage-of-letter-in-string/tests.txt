@@ -1,0 +1,117 @@
+# Percentage of Letter in String.
+
+@example "l" is 3 of the 8 characters, 37.5 percent; the half is cut off.
+"parallel"
+"l"
+=> 37
+
+@example There is no "e" in the string.
+"rhythm"
+"e"
+=> 0
+
+@example 2 of 3 is 66.67 percent, which gives 66, not 67.
+"wow"
+"w"
+=> 66
+
+# One character, equal to letter or not.
+"q"
+"q"
+=> 100
+
+"q"
+"z"
+=> 0
+
+# letter fills a string of the greatest length.
+"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+"y"
+=> 100
+
+# letter only at the start (12.5 percent) or only at the end (16.67).
+"pqqqqqqq"
+"p"
+=> 12
+
+"vvvvvh"
+"h"
+=> 16
+
+# 98 of 99 is 98.99 percent: still 98.
+"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"
+"r"
+=> 98
+
+# Exact percentages that c / n * 100 in double or float arithmetic, cast
+# to int, gets one too low: 29, 53, 57, 58 and 59 of 100, and 29 of 50.
+"rnrertrenneeredneeeeletstslsenldeeennntrdseerssserrrtdedenrrelettersnennneerreleetrnlnetrdtdnrsrttts"
+"e"
+=> 29
+
+"bbwopoocboabbwopboowooobaooomppoopobowbmopoowmocooopopoopoooooboobbpoowoaoaooooooopooacoopwoaoowpaco"
+"o"
+=> 53
+
+"iqxiiixiiqiiiiiiiikiiiiyxiiqqkiiiqiiqiyykiyizqixkiiziyixziqiiixiziiyziixkyyzyixkiqiiqiiixiiikiiyqiii"
+"i"
+=> 57
+
+"uuuuuuughuuuvuugfuvuufuuuujjuuvuuggufujuujuhjuuuhfuvffuguujuhjuuguuhugfuufvjhvuuufhugvuufhuuuvuuuuuu"
+"u"
+=> 58
+
+"ccacaadaadacaccbaabaabbdbadaacadaabbdaadcadaadcaaaaaadaadaabbaaaadaaacabaacaaacacabaacaaaaaadcbcaaaa"
+"a"
+=> 59
+
+"mmhsssnnssssmmssssshssssnmhmhmsnmsssmssshsshsshnss"
+"s"
+=> 58
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abccccb"
+"d"
+=> 0
+
+@gen 2 small
+"cbcca"
+"a"
+=> 20
+
+@gen 3 small
+"bccbbcab"
+"c"
+=> 37
+
+@gen 4 small
+"baba"
+"b"
+=> 50
+
+@gen 5 small
+"bbbaab"
+"b"
+=> 66
+
+@gen 6 small
+"ab"
+"b"
+=> 50
+
+# Full-size cases from gen.c: 90 to 100 letters.
+@gen 1
+"wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+"w"
+=> 100
+
+@gen 2
+"eepeeeeeeeteeejeeeeeeeeeseeegkeweeefeeeeeeeeeeeeeieeeeeemgeeexeeejnelepeeeeeeeeeeeeeeeegeeeoeeeeeeel"
+"e"
+=> 81
+
+@gen 3
+"jtkctapykarwoygfxzusmrzaammhqxbastvmfoolszyjzbbulxuyrgyubgrclpxrvokyajslnnnmwtdtkttjlnmlsnsypurvzrgo"
+"q"
+=> 1

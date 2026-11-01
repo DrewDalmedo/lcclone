@@ -1,0 +1,131 @@
+# Count Prefixes of a Given String.
+
+@example "s", "su", "sun" and "sunny" are prefixes of "sunny"; "un" is inside it but not at its start, and "sunk" differs at its last letter.
+["sun","s","sunny","su","un","sunk"]
+"sunny"
+=> 4
+
+@example "mo" is listed twice and counted twice, and "m" counts too; "moon" starts with "moo" but is longer, so it is not a prefix of it.
+["mo","mo","moon","m"]
+"moo"
+=> 3
+
+@example "am" and "m" sit at the end of "lam", not at its start, and "lamb" is longer than "lam".
+["am","lamb","m"]
+"lam"
+=> 0
+
+# The smallest input, a match.
+["z"]
+"z"
+=> 1
+
+# The smallest input, no match.
+["z"]
+"y"
+=> 0
+
+# s of one letter: only that letter counts, as often as it is listed.
+["a","b","a","aa"]
+"a"
+=> 2
+
+# s itself counts; s with one more letter doesn't.
+["planet","planets","plane"]
+"planet"
+=> 2
+
+# Words that match s except at their last letter.
+["pond","poni","pon"]
+"pony"
+=> 1
+
+# Words whose first and last letters agree with s but a middle letter
+# differs.
+["slam","sta","spa","stamp","stump"]
+"stamp"
+=> 2
+
+# Words that begin with s are not prefixes of it, unless equal to it.
+["tree","trees","treetop","tr"]
+"tree"
+=> 2
+
+# Pieces of s that are not at its start, one of them at its end.
+["ight","night","ni","t","igh"]
+"night"
+=> 2
+
+# s has 10 letters, and all 10 of its prefixes are listed among near misses.
+["wande","wanderlust","w","wandering","wanderlu","wan","anderlust","wand","wanderlus","wa","wanderl","wanderer","wander"]
+"wanderlust"
+=> 10
+
+# Every word is a prefix.
+["k","ki","kit","kite","ki"]
+"kite"
+=> 5
+
+# A word of 10 letters against s of one letter.
+["aaaaaaaaaa","a"]
+"a"
+=> 1
+
+# 256 copies of one prefix, and one other word: a count kept in one byte
+# wraps to 0.
+["ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","xo","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox","ox"]
+"oxen"
+=> 256
+
+# 1000 words, the most there can be, and every one a prefix.
+["b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be","b","be"]
+"bee"
+=> 1000
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["bb","bb","baa","bb","baa","bb","a"]
+"b"
+=> 0
+
+@gen 2 small
+["b","abb","a","b","b"]
+"a"
+=> 1
+
+@gen 3 small
+["abb","a","b"]
+"a"
+=> 1
+
+@gen 4 small
+["b","b","b"]
+"aa"
+=> 0
+
+@gen 8 small
+["abab","abaa","ab","abaa"]
+"abab"
+=> 2
+
+@gen 6 small
+["babba","b"]
+"bab"
+=> 1
+
+@gen 7 small
+["baaab","baa","aabba","baaaab","baaab","baaab","b"]
+"baaa"
+=> 2
+
+# Full-size random cases, 1000 words of up to 10 letters: a mix of
+# prefixes, near misses and copies; and near misses only.
+@gen 1
+["bbabbbbaa","bbabbbbabb","ba","bbabbbbaa","bbabbbbabb","bbb","bbabbbbaa","bbabbbb","bba","bbabbbba","bbb","bbaa","bbb","bbaa","bbabbb","bbabbba","bbabbbbabb","ba","bbabbbbab","bbabbbbaa","bbabbba","bbb","babb","baa","bba","bbabbbb","bbabbbbaba","bbabbbbb","bbabbba","b","bbabbba","bbaba","abb","bbaba","a","ba","ba","bbabbbbaa","bba","baaa","bbabbbb","b","bbabbbbaba","bbabbb","bbaba","ba","b","bbabbbb","bbabbbbb","bbabbbbaba","bbabbba","abbaa","bb","a","bbabbbbabb","aab","bbabba","bbb","bbabbbbb","bbabbbbaa","ab","bbaa","bbaba","bbabbba","bbabbbbab","bbabbbbb","bbabbbbaa","bbaa","bbb","bbabba","ab","bbaa","baa","bbabbbbabb","bbab","bbaba","aab","bbabbbbaa","bbabbbbaa","abaaa","bbabbba","abaaa","bbabbb","bbabbbbb","abaab","bbabbbbaba","bbabbbbaa","b","bbabbbbaba","a","bbabbbbab","a","aa","bbaba","bbabbbbaa","bba","bbabbbbaa","bbb","babb","abb","ba","bba","bbabbba","bbabbbbb","bbabbba","ba","ba","bbabbba","bbb","bbabbbbaa","aa","abbaa","aab","a","bbabbbbaa","ba","bbabb","a","bbabbbbab","bb","bbabbbbabb","baa","bbb","bbabbbba","ba","bbabba","bbb","abbaa","bbabbbbb","bbabbb","bbabbbbaa","bbabbbbb","bbabb","bbabbbbb","bbb","baa","bbabbba","aa","bbbaa","bbaba","bbab","bbb","bbb","abbaa","bbabbbbab","a","aab","ba","bbabba","bbb","bbaba","bbaa","bbaa","aba","bbb","a","bbabbb","abb","bbaa","bbb","bbabbb","a","bb","bbaa","bbabba","bbabbb","bbabbbbaa","bbabbba","b","bbb","bbabba","ba","b","bbabba","bbabb","bbb","bbaba","ba","bbaa","bbb","bbabbbbabb","bbabbb","b","bba","b","bbabbba","bbabbbbabb","aab","bbabb","bab","bbabb","aaba","bba","a","baaba","bbabbbbb","ba","bbabba","baaa","bbb","bbb","bbabbbbb","bbabbba","bab","bbabba","bbabbbbb","ba","bbb","bbabbbba","a","ab","bb","bbabbbbaa","bbabbbbabb","bb","bbabba","bbabba","bbabbbbaa","bbaba","bbabbb","bbab","bbabbbbaa","a","abb","bbabbbbb","bbabbba","ba","bbabbb","bbaba","ab","bbab","b","a","aabb","bba","bbabbbbabb","bbabbbbaa","baa","bbabbbbaba","bbabbbbaba","bbb","bbaa","bbab","bbabbb","bba","bbb","bbb","bbab","bbabbbbaa","bab","bbabbbbabb","aab","bab","a","bbabbba","bbabbbbaba","a","babb","bbaa","bbabbbbab","bbab","bbaa","b","bba","bbaba","bbab","bbaa","b","bbaba","bbabba","bbb","ba","bbabbbbb","bbabbbbb","ba","bbabbbbaba","a","bbabbbba","bbb","ab","bbabbbbaa","bbabbbb","bbabba","bbabbba","a","bbabb","bbab","ba","bb","bbabbbbab","bbabbbb","abaab","bbabbbbaba","bbabbbbaa","bbab","bbb","bbabbba","bba","bbabbbbb","bbaa","bbabba","a","a","ba","baaa","abab","bbaba","bbb","ababb","bbabbbbaa","bbabba","bbaba","bbabbbbabb","bb","b","bbabbbba","aaabb","ba","bbabbbb","bbabbbbabb","bbb","a","bbabba","bbaba","b","aaabb","bbabbbb","bb","a","bbabbbbabb","bbaa","bbabbbbb","a","bbaa","b","bbaba","babb","bbabbbb","a","baa","bbabbbbaa","bbbaa","bbabbba","bbabb","bbabbbbb","ababb","bbabbbbb","bbabbbbaa","bbbb","bbabbbb","bbabbbba","bbabba","ababa","ab","ba","bbaba","bbabbbb","bbabbbbaba","bbabba","bbabbbbaba","bba","bbaa","b","bbab","bbabbbbb","bbb","bbaba","aaaa","bbabba","ba","b","bbaba","ab","bbabbbbabb","bbabbb","bbabb","bbabb","bbabb","bbabbbbabb","bbaa","bbabbbb","b","bbabbbbab","a","bbabbb","aab","a","bbabb","baa","bbaba","bba","bbaa","abba","bbabbbbabb","bbabb","abbb","bbabbba","bbabba","b","ba","bbaa","aaabb","bbabbb","bbabbbbb","bbabbbb","bbabbbbb","a","a","bba","bbb","a","bbabb","aaa","abb","bbabb","aabb","bbabbbbaba","bbabba","bbabbbba","bbabbbbabb","ba","ba","bbabbb","bbabbba","bbabbbbabb","bbaba","abb","bbaba","bbabbbb","ba","bbabb","ba","abbaa","bbaa","bb","a","b","bbaba","a","b","bba","bb","a","bab","bbabbb","bbaab","bbab","bbabbbbb","bbabba","bbabbbb","bbabbbba","bbaba","bbabbbbabb","a","bbba","bbabbbb","bbabbbba","bbabbbbabb","aabba","bbabbbba","bbabb","bbabbbbaa","bbaa","bb","bba","bb","bba","bbab","a","bbabba","bbabbbbabb","bbabbbb","bbaa","ab","bbabbbba","bbabbbbaba","bbabbbbabb","bbaba","bbabbba","bbabbba","a","bbabbba","bbab","bab","bbabbbbabb","aa","b","bab","bbabbbbb","bbabbbbabb","ab","b","bbabbbba","bbabb","bbabbbbab","bbabbbbaba","bbabbbbabb","abbaa","ba","bbabbba","a","bba","bb","bbabbba","a","ba","bba","bbabbbbb","bab","bbabba","bbaba","bbabbbbaba","bbabbba","ba","ba","bbabb","bbabbbb","bbb","ba","bbabbbbb","bba","a","bbabbbbabb","bbabbbbaa","bba","bb","ba","bbabbbbb","bbab","ba","bbabbbbb","ba","bbaa","bbb","a","bbabbba","aab","aba","bbabba","babaa","bbabbbbb","bbabbbbaba","b","a","bbabba","bbabbbba","a","bbabbbbaba","bbb","aabb","bbabbbb","bbabbba","a","a","bbabbbbabb","aa","bbabba","abb","b","a","bbab","bbabbbbb","bbaa","ba","ba","abbbb","bbb","bbabbbbb","baa","ab","a","ba","baaab","bbabbba","bbabbbba","a","bbb","bbaa","aaaa","bbb","bbabbba","bbabbbba","bbabbbba","bbabbbbabb","baa","aab","ba","bbaa","bbabbbbab","a","bbabbbbaa","bbabbbbabb","bbabbbbab","bbab","bbabbbbabb","a","bbabbb","bbabb","bbb","bbaba","bbabba","bbabbbba","aaa","bbaa","bbaa","bbabba","bbabbbbaba","bbabbbbabb","b","bbabbba","bb","ba","bbabba","bbabbbba","bbabb","ba","bbb","bbabba","bbabbbbb","babaa","abbaa","bbabb","bbabbbbb","bbb","aaa","bbaba","bbabbbbaba","ba","bbabbbbb","b","bbb","bbabbbba","ba","bbaa","aabaa","bbabba","aabab","bbaa","baa","bbaba","bbb","bbaba","bbaa","bbabbbbb","a","bbaba","bbabba","b","bbaa","bbabba","bbabbbbabb","bbabbbbb","bbabbb","a","bb","bbabbbbaa","aaab","a","a","bbabba","ba","bbaba","ba","bbabbbbb","baa","bbabbbbabb","bbaba","ba","bbabbb","bbabba","bbabbbbaba","ababa","bbabbba","bbb","a","bbabbba","bbabbbba","bbaba","bbabb","bbabbbbaa","a","b","a","ba","bbabb","bb","bbabbbbb","bbabbbbaba","abbbb","ab","bbabbbbb","b","babb","bbabbbbabb","a","bbaa","bbab","bba","a","bbabba","bbabbbbab","bbb","bbb","bbabbbbaa","bbabbbb","bbabbba","bbabbbb","bbabbb","abbb","b","bbabba","bbabbbbaa","ba","bbabbbba","a","bbabbbbaa","bbb","bba","bbab","bbaba","bba","bbabbbbab","bbabbbbaa","bbabbba","bbabbbbaba","bbaba","a","bbabbbbb","bbabbbbaa","bbabbbbb","ba","bbabbbbaba","ab","bb","aa","bbb","ababb","b","bbabb","ba","bbabbbbab","ba","bbabbbb","bbabbbbaba","bbabbbbb","bbabbbbabb","aab","aab","b","bbabbbbaba","bbabbbbaa","bbb","bbb","abab","bbabbba","bbaa","a","bbbab","bbabba","bbabb","bbabbbbabb","ba","bbabbbb","bbabbb","bbabbba","bb","a","b","bbabbbbb","ba","bbabbbbb","baba","bbabbbba","bbabbbbb","bba","bbabbbba","bbabba","aab","bbabba","bbb","bbaa","bbabbbbaa","bbabbbbabb","bbabbbb","bbbb","aaba","bbaa","a","aa","b","bbabbbbabb","bbabbbbaba","bbabbbbb","bbaba","bbb","bbabbbbb","a","bbab","bbaba","bbabbbbabb","aabaa","a","bbabba","bbabba","bbaa","bbb","aabab","aaaa","bbabbbbabb","b","bbabbbbabb","bbabbba","bbabbba","bbabbbbaba","bb","abbb","bbb","bbabbbbaa","bba","bbabbbb","bbabbbbaba","b","bbab","bbaa","bbabba","a","a","bbb","bbb","bbabbbbaa","bbabbbbaa","bbabbba","bbabbbbabb","bbabbbb","bbabbbbaa","bbaa","a","a","bbabbbbabb","ab","babab","bbabba","ba","ba","ba","aabba","bbabbbbaa","b","bbabbbbaa","bbabbbbb","bb","bbabbba","bb","bbabbbbaa","ba","bbabba","bbba","bbabba","bbabbbb","bbabbbbaba","bbabbbbaba","a","bbabbbbb","baa","bbabbb","a","a","bbabbbb","bb","a","bbabbbbab","b","bbb","a","bb","bbaa","baa","bb","bbabbbbabb","bbabbbbaba","b","bbabbbbabb","ba","ba","a","bbbaa","bbabbbbaa","aaabb","bb","bbabbb","ba","bbabbbbab","ab","babaa","bbaa","bbab","ab","bbabbbbab","bb","bbabbba","bbaba","bb","bbabbbbaa","bbabbbbb","aaaa","bbabbbba","bbabbbbaa","bbabba","bbabbbbaba","bbabbba","bbabbbba","abb","bbabbbbabb","bbabbbbaba","babb","aaba","bbbbb","bbabb","a","bbaa","bbabbbbaba","bbb","b","bbabbbbab","bbabbba","bbabba","ba","bbbbb","bbabbbbabb","a","bbaa","aaabb","bbabba","bbb","ba","bbaab","bbb","bbaba","bba","bbabbbbb","ab","bbabbbbaa","bbb","bbabb","bbabbbbaa","bbabbba","a","bbabbbbaa","bbabbbb","bbabba","ababb","bbabba","a","bba","bbaba","bbabbbbb","a","bbabbbbaba","ab","bbb","bbabbba","bb","bbaa","babb","bbabbbba","bbb","ba","aa","ba","bbab","bbabbbb","bbabbbbb","aab","bbabb","bbabbbbaa","bbabbbbab","bbabbba","bbaba","a","b","bbabbbbb","ba","bbabbba","bbba","ba","bbabb","bbabbbbaba","a","a","a","a","bbb","b","bba","bbabba","ba","bbabbba","a","aaba","bbaa"]
+"bbabbbbaba"
+=> 287
+
+@gen 3
+["aabbbaab","aabba","aaa","aabbbaaaaa","aabba","aabbbaaab","aabba","b","aabba","aabbbaaaaa","b","aabba","aabbbaab","aabbbab","aabbbaaab","aaa","aabbbaaab","ab","aabba","aabbbab","aabbbaab","aabba","ab","aaba","aabbbaaab","aabba","ab","aabbbaaab","aabbbaaab","aabbbaab","aabba","aaa","aabba","aabbbaaaaa","ab","aabbbaaab","aaba","aabbbb","ab","aabbbaab","aabbbaaaaa","ab","b","aaba","aabbbab","aabbbaaab","aabbbaaaaa","aabba","aabba","aabbbb","aabbbab","ab","aaba","aabba","aabba","aaa","aabbbaab","aaa","aabbbab","aaa","aaba","aabba","aabbbb","aabbbb","aabbbaaab","aabbbaab","aaba","aaa","aabbbaab","aabbbaaaaa","aabbbaab","aaba","aaa","aabbbb","aabba","aabbbb","aabbbaab","aabbbaab","b","aabbbb","aabbbaab","aaa","aabbbaaab","aabbbaaaaa","aaa","aabbbaaaaa","aabbbaaab","aabbbab","aabbbb","aabbbaaab","aabbbaab","aaba","b","aaa","b","aabba","aabbbab","aabbbb","aabbbb","aabbbaab","aaa","aabbbab","aabba","aabbbab","b","aabbbaaab","aabbbaaab","aabbbb","ab","aabbbaaab","aabbbab","aaa","ab","b","aabbbaaaaa","b","ab","b","aaa","ab","aabbbb","aabbbaab","aabbbb","aaba","aabbbaaab","aabbbaaab","aabbbab","aabbbaaaaa","aabbbaaab","aabbbaaab","aabbbaaaaa","aabbbaaaaa","aaba","b","ab","aabbbab","aabbbaaab","aaba","aabbbab","aabbbaaaaa","ab","b","aabba","aabbbaaaaa","aaba","aabbbaab","aaa","aabbbb","aaba","aabbbaab","ab","aabbbab","aabbbab","aabbbb","aabbbaab","aabbbaaab","aabbbaaab","aabba","aabbbb","ab","ab","b","aaba","aaba","aabbbab","aabbbb","aabbbb","aaba","aabbbab","aabbbaaaaa","aabba","aabbbb","b","b","aaa","aaba","b","aabbbab","aabbbaab","aaa","aabbbb","aaba","ab","aabbbb","aaba","aaa","aaba","aabbbaaab","aabbbaaaaa","aaa","aabbbaaab","aabbbaab","aabba","aaa","aabbbb","aabbbab","aabbbab","aabba","aaa","ab","ab","ab","aabbbaaaaa","b","aabbbab","aabba","ab","aabbbb","aaba","aabbbaab","aaba","aabbbab","aabbbaab","aabbbab","aabbbab","aabbbb","aabbbb","b","aaba","b","aaba","ab","b","aaba","aabbbaaab","aabba","aaa","aabbbab","aabbbab","aabbbaaaaa","aabbbaab","aaba","aabbbb","b","aabbbaaaaa","aabbbb","aabbbb","aabba","aabbbaab","aaa","b","b","aabbbab","aaba","aabba","aabbbaaab","b","ab","aabbbaaaaa","aabba","ab","aabbbab","aabbbaab","aabbbaab","aabba","aabbbab","aabbbaaaaa","aaba","aabbbaaab","b","aabbbaab","aabbbaaab","aabbbaaab","aaa","aabbbaaab","aabba","ab","aaba","b","aabbbaaab","aabbbab","aabbbaaaaa","aabbbaab","aabbbaaab","aabbbb","aabbbb","aabba","aaba","aaba","ab","aabbbaab","aabbbaaab","b","ab","aabbbb","aabbbaaab","aabbbb","aabbbb","ab","aaba","aabbbaab","b","aabba","aabbbaaab","aabbbaaaaa","aabbbaaab","aabbbaaaaa","aabbbab","aabbbab","ab","aabbbaab","b","ab","aabbbaab","aabbbaab","aabba","aaba","b","ab","aaa","aaba","aabbbaaaaa","aabbbaab","aabbbb","ab","aabbbaab","aaa","aabbbaab","aabbbab","aaba","aabbbaaab","ab","aabbbb","aabbbb","ab","aabbbb","aabbbab","aabbbab","aabba","b","aabbbaaaaa","aabbbaaab","aabbbaab","aabbbaaab","aabbbab","aaba","ab","aabbbab","aabbbaaab","aabbbaaab","aabba","aabbbaaab","b","aabbbaab","aabbbaaab","aabbbaaab","aaa","b","aaa","aabbbaaab","aaba","b","aabbbb","aabba","aabbbab","aabbbaab","aabbbaaaaa","aabbbaab","b","aaa","aaba","aaa","aabbbaab","aabba","aaba","aabbbaaab","ab","ab","aabbbaaaaa","aabbbaab","aaba","aaa","aabba","aaba","aabbbaab","aabbbaab","aabbbaab","aabbbab","aabbbaaaaa","aabbbaab","aaba","aaba","aabba","aabbbab","ab","aaba","aabbbaaaaa","aabbbaaaaa","aabbbb","ab","aaba","aabbbaaaaa","aabbbaaaaa","ab","aabba","b","aaba","b","aabbbab","aabbbaaab","aabbbab","aabbbaab","aabbbaaab","aaba","aaba","b","ab","aaa","aabbbaaab","aabba","aaa","b","aabbbaab","aabbbaaab","aabbbaaab","aabbbab","b","aabbbaaab","aaa","aabba","b","aabbbaab","b","aabbbaaaaa","aabba","aabba","aaba","aabbbab","aabbbaaaaa","aabba","aabbbaaaaa","aabbbaaab","b","aabbbaaaaa","ab","ab","aabbbab","b","aabba","aabbbb","aaba","aabbbaaaaa","aaba","aabbbb","aabbbb","ab","aabbbab","aabbbaaaaa","aabbbb","b","aabbbb","aabbbab","aabbbaab","aabbbab","aabbbaaab","aabbbaaaaa","aabbbaab","ab","aabbbab","aabbbaaaaa","aabba","aabbbb","aabbbab","aabbbaaab","ab","ab","aabbbaab","aabbbaaaaa","aabbbaaab","aaba","aabbbb","aaba","aabbbb","aabba","ab","aabba","aaa","aabbbb","b","aabba","aabbbaaaaa","aabbbaab","aaa","aabbbaaab","aabbbb","aabbbb","aabbbaaab","aabba","aabbbab","b","aabbbab","aabbbaaaaa","aaa","aabbbab","aaba","b","aabbbb","aabbbaab","aabbbaaab","b","aabba","aabbbab","aaa","aabbbaab","aabbbab","aabbbaaab","aabbbaaaaa","aabbbaaaaa","aabbbaab","aabbbaab","ab","aabbbab","aabbbaab","aabbbaab","aabbbab","aabbbaaab","b","aabbbaaab","aaa","aabbbaaab","aabbbb","aabbbab","aaba","aabbbaab","aabbbaab","aaa","aabba","aabbbaaab","aabba","aabbbaaaaa","aabbbaaaaa","aabba","aabbbab","b","aabbbb","aabbbaab","aaa","aabbbab","b","aabbbb","aabbbaaaaa","aabbbaaaaa","aabbbaaaaa","aaa","aabba","aabbbaaaaa","aabbbaaab","aabbbaab","aabbbaaab","aabbbab","ab","b","ab","aabbbb","ab","aabbbaab","ab","aaa","b","aabbbab","aabbbaaab","aaa","aabbbab","aabbbab","aabbbab","aaba","b","aabbbb","aabbbb","aaa","aabbbaaaaa","aabbbaaab","ab","aaa","aaba","aabba","b","b","aaba","aaba","aabbbb","aaba","ab","aabbbaaaaa","aabbbaab","aabba","aabbbb","b","aabbbab","aabbbb","aabbbab","aaba","aabbbaab","aabbbab","aaa","aabbbaaaaa","b","aabbbab","aabba","aaa","ab","aabbbb","ab","b","aaba","aabbbaab","b","ab","aabbbab","aabba","aabbbaab","aabbbb","ab","aaba","aabba","aaa","ab","aabbbaaaaa","aabbbaab","aabbbaab","aabbbb","aabbbaaaaa","ab","aabba","aabba","aabbbab","aaa","aabba","b","aaba","ab","aabbbaaaaa","aabbbaaab","ab","aabbbab","aaba","ab","ab","aabbbb","aaa","aabbbaab","aaba","aabbbaab","aabbbaaaaa","b","aaba","aabbbaab","aaba","aabbbab","aabbbaab","aaba","aabba","aabbbb","aabba","aabbbb","aaba","ab","b","ab","b","aabbbab","b","ab","aabbbab","aabbbab","ab","aaba","aabbbb","aaba","ab","aabbbaaaaa","aaba","aabbbaaaaa","aabba","aabba","aabbbaab","aaa","aabbbaaab","aaa","ab","aabbbb","aabbbb","ab","aabba","aabbbb","aabbbb","aabba","aabba","b","aabba","aabbbb","ab","ab","aabbbaaab","ab","aabba","aabbbaab","ab","aabbbb","aabbbaaab","aaba","aaba","b","aabbbb","b","aabbbaaaaa","aabbbaaaaa","ab","aabbbaaab","ab","aabbbaaaaa","aabbbaaab","aabbbb","aaa","aabbbaaaaa","aaba","ab","aaba","aabbbab","aaba","ab","aabba","aabbbaaaaa","aabbbb","aabba","aabbbb","aabbbaaaaa","aabbbaaaaa","aabbbaab","b","aabba","aabbbaaab","b","aabbbaaab","aabba","aabbbb","aabbbaab","aaa","aabbbaaab","b","aaa","aabbbaaab","aaa","aabbbaab","aabbbb","b","aabbbaaab","aaba","aabba","aabba","b","aaba","ab","aaba","aabbbaab","aabba","aaa","aabbbaaaaa","aabbbb","aabba","aaa","aaa","aaba","aaa","aabbbaaaaa","aabbbb","aabbbaaab","ab","aabbbb","aaba","aabbbaab","aabbbb","aabbbb","aabbbb","aabbbaaaaa","aabbbaab","aabbbab","aabbbab","ab","aabbbaaab","aaba","aaa","aabbbab","aaa","b","aabba","aaa","ab","aabba","b","aaba","aaa","ab","aabbbaaaaa","aaba","aabbbaab","aaa","aabbbab","aabbbb","aaba","aabbbb","aaba","aabba","b","aaa","aaa","aaba","aabbbaab","aabbbaaaaa","aabbbaaab","aaa","aabbbaaaaa","aabbbaaaaa","ab","aabbbab","aabba","ab","aabbbb","aabbbaaaaa","aaba","b","aabbbaab","b","b","aabbbaab","aaba","aabbbaaaaa","aabba","aabbbaab","aabbbaab","aaba","aabbbb","aaa","aaa","aabba","aabbbb","aaba","b","aaba","ab","aabbbab","ab","aaba","aabbbaaaaa","aaba","aabbbab","aabbbab","aabbbb","aabbbaaaaa","aaba","aabba","aabbbaaab","aabbbb","b","aabbbaaaaa","b","aabbbaaab","b","ab","aabbbb","aabbbaaab","aabbbaaaaa","aabba","aabbbaaab","aabbbaaab","ab","aabbbab","aabba","ab","aabbbaaaaa","aabbbab","aabbbab","aabba","b","aabbbaab","aabbbb","aaa","aabba","aabbbb","aabbbaaab","aabbbb","aabbbb","aaa","aabbbaaab","aabbbab","aabba","aabbbb","aaba","aabbbaaaaa","ab","b","aaba","aabbbab","aabbbab","aabbbb","aaba","ab","b","aabba","aabbbaaab","aaba","b","aaba","ab","aaa","aabbbaaab","aabbbaaaaa","aabba","ab","aabbbaaab","aabba","ab","aaba","aaba","aaa","aabbbaab","ab","aabbbaab","aabba","aabbbb","aaa","aabbbaaaaa","aabbbab","b","b","aaba","aabbbab","aaba","aabbbaaaaa","ab","b","aabba","aabbbab","aabbbaaab","aabbbab","aabba","b","aabbbab","aabbbab","ab","ab","aabba","aabbbaaaaa","ab","aaba","aaba","aabbbb","aabbbb","aabbbaab","aabbbb","aabbbab","aaa","aabbbaaaaa","aaa","aabbbaab","b","aabbbab","aaba","b","aabbbb","aabbbaab","aabbbaab","aaba","aabbbaaaaa","aabbbab","aabbbaab","aaba","aaba","aabba","aabbbaab","aabba","aabbbaaab","aaba","aabbbb","aabbbaaaaa","aabbbaaaaa","aabbbaaaaa","aabba","aaa","aabbbaaaaa","aaa","aabbbb","aabba","ab","ab","aabbbb","b","aabbbb","aabbbaaab","aabbbab","aabbbb","aabba","b","aabbbaab","aabbbaab","aabba","aabbbaaab","aabbbb","aabbbab","aabbbb"]
+"aabbbaaaab"
+=> 0

@@ -1,0 +1,133 @@
+# Minimum Number of Operations to Convert Time.
+
+@example The gap is 2 hours 37 minutes: two 60-minute presses, two 15-minute presses, one 5-minute press and two 1-minute presses.
+"08:20"
+"10:57"
+=> 7
+
+@example 13:50 to 14:05 is only 15 minutes, a single press.
+"13:50"
+"14:05"
+=> 1
+
+@example The clock is already right.
+"06:06"
+"06:06"
+=> 0
+
+# The longest gap, 23 hours 59 minutes: 23 + 3 + 2 + 4 presses.
+"00:00"
+"23:59"
+=> 32
+
+# Gaps of exactly one button: 1, 5 (across the hour) and 60 minutes.
+"17:44"
+"17:45"
+=> 1
+
+"09:55"
+"10:00"
+=> 1
+
+"22:13"
+"23:13"
+=> 1
+
+# Four minutes take four presses of the 1-minute button.
+"05:00"
+"05:04"
+=> 4
+
+# 14 minutes: two 5-minute and four 1-minute presses.
+"12:31"
+"12:45"
+=> 6
+
+# The minutes go down while the hour goes up: 08:50 to 11:05 is 2 hours
+# 15 minutes, not 3 hours less 45 minutes.
+"08:50"
+"11:05"
+=> 3
+
+# "08" and "09" are decimal, not octal. The gap is 59 minutes: 15 x 3,
+# 5 x 2 and 1 x 4.
+"08:09"
+"09:08"
+=> 9
+
+# Same minutes, different hours.
+"03:27"
+"21:27"
+=> 18
+
+# 45 minutes: three 15-minute presses (without that button, nine 5s).
+"16:15"
+"17:00"
+=> 3
+
+# 04:01 to 07:00 is 2 hours 59 minutes, which takes every button.
+"04:01"
+"07:00"
+=> 11
+
+# Both at the last minute of the day.
+"23:59"
+"23:59"
+=> 0
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"06:06"
+"07:10"
+=> 5
+
+@gen 2 small
+"18:20"
+"18:40"
+=> 2
+
+@gen 3 small
+"06:10"
+"21:50"
+=> 19
+
+@gen 4 small
+"05:22"
+"18:59"
+=> 18
+
+@gen 5 small
+"22:01"
+"23:17"
+=> 3
+
+@gen 6 small
+"12:09"
+"13:19"
+=> 3
+
+@gen 7 small
+"12:14"
+"13:47"
+=> 6
+
+@gen 8 small
+"03:31"
+"03:43"
+=> 4
+
+# Random full-size cases.
+@gen 2
+"00:00"
+"23:56"
+=> 29
+
+@gen 9
+"05:33"
+"12:02"
+=> 13
+
+@gen 10
+"11:12"
+"20:35"
+=> 14

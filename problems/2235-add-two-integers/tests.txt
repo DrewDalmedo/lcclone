@@ -1,0 +1,107 @@
+# Add Two Integers.
+
+@example 23 + 48 = 71.
+23
+48
+=> 71
+
+@example A negative and a smaller positive number give a negative total: -37 + 15 = -22.
+-37
+15
+=> -22
+
+@example Opposite numbers cancel out.
+-9
+9
+=> 0
+
+# Both zero, and one of them zero.
+0
+0
+=> 0
+
+0
+-100
+=> -100
+
+100
+0
+=> 100
+
+# The largest and the smallest totals.
+100
+100
+=> 200
+
+-100
+-100
+=> -200
+
+# Opposite extremes, in both orders.
+100
+-100
+=> 0
+
+-100
+100
+=> 0
+
+# Mixed signs: a positive and a negative total.
+-1
+2
+=> 1
+
+1
+-2
+=> -1
+
+# Totals just outside the range of an 8-bit signed char (-128 to 127).
+64
+64
+=> 128
+
+-64
+-65
+=> -129
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+-84
+82
+=> -2
+
+@gen 2 small
+100
+-99
+=> 1
+
+@gen 3 small
+0
+100
+=> 100
+
+@gen 4 small
+-100
+1
+=> -99
+
+@gen 5 small
+18
+-61
+=> -43
+
+@gen 6 small
+100
+34
+=> 134
+
+# Full size: anywhere in the range.
+@gen 1
+61
+-34
+=> 27
+
+@gen 2
+-48
+-98
+=> -146

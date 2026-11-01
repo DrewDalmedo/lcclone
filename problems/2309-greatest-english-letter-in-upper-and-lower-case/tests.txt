@@ -1,0 +1,110 @@
+# Greatest English Letter in Upper and Lower Case. An answer of "" means
+# that no letter is doubled.
+
+@example B, E and T each appear in both forms, and T comes last in the alphabet of the three; z, the last letter of s, has no capital.
+"bTeBtEz"
+=> "T"
+
+@example Q, F, O and X appear only as capitals, and u, i, c and k only as small letters.
+"QuickFOX"
+=> ""
+
+@example Three capitals and one small l still make L doubled; a and m appear only as small letters.
+"LLLlama"
+=> "L"
+
+# A single letter.
+"a"
+=> ""
+
+"Q"
+=> ""
+
+# Only A is doubled, with the capital first.
+"Aa"
+=> "A"
+
+# Z is doubled, and so is B; the answer is not the last character.
+"zAbZcB"
+=> "Z"
+
+# Every letter in both forms.
+"ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba"
+=> "Z"
+
+# Every letter of the alphabet once, each in one form only: the capitals
+# G, I, J, M, N, P and U, the other 19 small.
+"JUMPINGzebrasvxdftchkloqwy"
+=> ""
+
+# The greatest letter in s has only its capital form; B is doubled.
+"ZZZZbBm"
+=> "B"
+
+# D is doubled first and M last, while reading s from the left; X is the
+# answer, and k, the last character, has no capital.
+"dDmxXMk"
+=> "X"
+
+# Many copies of one form and one of the other.
+"wwwwwwW"
+=> "W"
+
+# 256 small q's: a count kept in an unsigned char comes back to 0, which
+# would leave B as the answer.
+"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqBbQ"
+=> "Q"
+
+# 128 small x's: a count kept in a signed char turns negative.
+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxXcC"
+=> "X"
+
+# 1000 letters: 512 capital T's, one t, 486 small a's and one A.
+"TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTtaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaA"
+=> "T"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"zzb"
+=> ""
+
+@gen 2 small
+"ATzkA"
+=> ""
+
+@gen 3 small
+"AzyYaByzyYaA"
+=> "Y"
+
+@gen 4 small
+"ZYAZAZYB"
+=> ""
+
+@gen 5 small
+"wWwwwwwwww"
+=> "W"
+
+@gen 6 small
+"bbgYaDMMBg"
+=> "B"
+
+@gen 7 small
+"YZBZAAabZy"
+=> "Y"
+
+@gen 8 small
+"pOH"
+=> ""
+
+# Full size: 1000 letters.
+@gen 1
+"UTUfLbwfpAcAbUOwMeiyOUxwpgDqJgAApNggyssMLJezqizkzrLwMieJDbAkJxVksbVhNhbkyUyAMfMOJfDfkJhzUAAOLzqJygDbhbxJcgUwNwwUcVVVbwhewwrwpDkgJxUsDciJzMVkVkgOrUqqATAATbzAMyqwMDOqDiyAsUyfVTxhyTgsiyywAiqgOzikNezVAhLssApUeczJVJMAfysgffNDyiDiVhbixfLckqLOpciNppqbLhNkxxbOUTOMxDiqcbAqcssiLMcqwNfDMekcycqbMiUNzyJggwLxJAMbihhhqpkJDLVryriecVVONJgLrezefNTrebMLqieUwqxcsNsAiMbxcJwcLpskcysphLpbhsgUOpbMrDfVcOpJgALJVhgbhciyJpTfOMxxihJkfkrccMqgrgJhqqAepqiVOqAUbxcbOcVVUkDefkheOisArbDygesTrbLrkOJbiyAeMhzVcsJMzcwiVDgqNeJfgyLrzMxLesyyUgwcpDxAzzgOLbyhzMAxqkLrrkgsONfLLpwepcAUiOcDJerxAeeDUDJwqMJpzyLszUfzkkrTcxfsUyLeLOfsMfhkqikLexzrpJVVxxkffeVArUTMOipbxywVqxLAyLpgVALqzVxhirDbxAxUcUOzOqbgDbcLDqezfNibVLVeTVeDihUsqqOwrVyJOLTxDkJDpwNxMhfxTNyrprfxxOrczJkbiqLksNbqgOVTsykwVweUDAqAJqzybfhyJNADDybxTkJNcTswAxhfsLqrkMyMxyAUkUOcbTwVeMfVUMUVzqNrxycMsyMxzzqsLpTiwwzULsNhhTOezJAVeVzzbDypkTsrLThcDAwDybMLhszcOiOsVDMzArOVyJkzTVLzOOTfOMkwyhyUOcUfwfcJzAsgbwrwVhxDLiUspqhyexxfysAfxDbxxAxVpDwDipexDzVVepNAzNfgNUykcwczkeypppDpOViTcyszksygfLVbDifDhxwx"
+=> ""
+
+@gen 3
+"ErIMjKFlrvIDIjpKQEXGvItEXwtsBXDanXrXBpnlCCjsppFBpQpDIpXlYpXppCsMpnppXvIjptFMprCpYCawtsppEwjppCFBEUjppnppzErppjtpUQpDBYtIpUBFnMMMppDFvEpBppQFYpnpXEpsGnIXsllnpppFsUprQpIUpIGpYtYEDjspjBXKYpsBEUaXtpGlhYaUpXtQtsQpnXhKzppDprtQptKppppKEXjspppCXrppElapQpDtpKGMEnvptpYaKlUUnpIEEljavDCssvpwBpXppzYvpCpppwpBMBrrMQBEpDUYEplsGvnGppCBFppswpBpGKtpjppGpnIpQpwIpIFCpFttDIjlnpwpzzUpQtlaapXpplGpQChptFtzGpCrppEKzCIGpppCCUsplUpKwQnXGGDpnjppKQoGtwBMvQrapnjMjaBpsnpFYpwppwFjCDnsanzMXpGEXXMjshXlaFpaUpQsvFptGpKlXwjDwhYpnQUthahptppIBjpEjDDlGwBppClCKrpzhpKQpEajDIppvXFspUtDspppppBppCGsppzjppGpGGptBpppXGnppXptQslnFsKYppXlpXBtUBpspppBjCKYpasBppaIDvphzKpaBKDGKDMrpvMpvQItBpBYpFBppnnBplXnKXrprGBtlXFpnppnhppDInrpYPzhpIsspwaBpOpsMvFtYatpMpssaGpnpnwXhUpQppjGUMXzGDspppvYEpsCzpUYnDBDQXpzpBljlppItGavXazGGvYGrhChhahpjpXEQppMXCvYppFhGwprwpDUaKIQBpplFrpjGpEwnUppChparphjQpltCCvlIwpYGItlpppapGpBFlpEUpFpntKEppIppXEMKnjtppltppwrXYGpppDYYXtpGlpvpptKBhppYYvKYpMpvQwnKnlvUvYjYEFpjjzFlEYKCpYpInpwaztaMDGIjMGwXDFXjMjMQDEppMpYGXKCjppsDXpIaEYa"
+=> "P"
+
+@gen 4
+"iCwCCCCTOQCCCCpCXCCgCdwYCCpluCCYCCCgCCCCnQnJCERCduCKuCnCCCVCCCRRFCRCwZCCJMgQClCCCpChCCCCCChCMCKCCTQwhaChCCCCCOiuYMCZCCCuCCCOTiCCCCYaCCQECKCCihOYCwChCCcCFCKwCYwCCMpCiCdQCdVCCSVTgRQCCpZCZuCCOYCCwCCFCZFiZiOCVaEaCCCVRCMOCCQOhCCCCCdnwpEFiCFCOCClpVCKCCFCiKRCCCCCXQgCCCSCCiECCCCOCCFCCCCCMCSCECCCCCgCZCCCCCCuiVCnCCTCJuCCCuCQCCCdCCaCiCJChZCCCXXCiCCnChiCCCKCCpiCMTCpVCRRCCCCQXCCFapCCXYYZCnCChXCOSlpCuCSlwCCuEpVCCCCCCCOCCwhaQOiCCCCECuCCCdZCCCCZpCQFCTKCTSZCChCFCCCCTCXJXChhCFauTCCwCCpCanhVCCCCCCYdCCCCCCCCCFCCCClCiQECTKCCMChFYYaCFudCCCRCESpCECCCwVCCCRCCCCCgVCKOCCJRCCVMCFCCCCCFCCCdOKCXCCCCaYwSJCCaBQSCCCTKQZaZCCCCCCnCpKCCCwCCJQCCYMOauKChCXCCCCOCnCYdhCMCCVEXCCCCnCKQCCnVaXCJuCECKhCCOOCnwCQCCihCCCpXCuCCRCulEQSCCYCCCCCpYQCCTugdCCCCnCCaOCpXXCwhihJCdCCgMECCKCgdCCCECZYCTXClhwCpwCYCCCCXYChCCCQCiTFCSCRgKiCCCCCCZTCiCCMpCYwCnCCgCCCCRaCCuCCCahiCCaCCwTXTCYCVCKSaCYlCCCZCCCCCCCZCCCCMdCCwCpRFCuCQCCJTCMCaCCCZCTCCnECFuZCXKwXCCCpduuhCOCCbCCCCChCCCiCSdCCCCpCCCiECCZTilOMpYCClCCCCQJCClCnhCCCCCnClCCCCdQiCCCCCCCCwCZCVOOpQCCQCdEO"
+=> "C"

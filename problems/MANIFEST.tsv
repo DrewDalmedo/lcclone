@@ -559,34 +559,34 @@
 2194	cells-in-a-range-on-an-excel-sheet	Cells in a Range on an Excel Sheet	easy	no	plain	draft
 2200	find-all-k-distant-indices-in-an-array	Find All K-Distant Indices in an Array	easy	no	plain	draft
 2205	the-number-of-users-that-are-eligible-for-discount	The Number of Users That Are Eligible for Discount	easy	yes	skip:sql	todo
-2206	divide-array-into-equal-pairs	Divide Array Into Equal Pairs	easy	no	plain	todo
-2210	count-hills-and-valleys-in-an-array	Count Hills and Valleys in an Array	easy	no	plain	todo
+2206	divide-array-into-equal-pairs	Divide Array Into Equal Pairs	easy	no	plain	draft
+2210	count-hills-and-valleys-in-an-array	Count Hills and Valleys in an Array	easy	no	plain	draft
 2215	find-the-difference-of-two-arrays	Find the Difference of Two Arrays	easy	no	unordered	draft
-2220	minimum-bit-flips-to-convert-number	Minimum Bit Flips to Convert Number	easy	no	plain	todo
-2224	minimum-number-of-operations-to-convert-time	Minimum Number of Operations to Convert Time	easy	no	plain	todo
+2220	minimum-bit-flips-to-convert-number	Minimum Bit Flips to Convert Number	easy	no	plain	draft
+2224	minimum-number-of-operations-to-convert-time	Minimum Number of Operations to Convert Time	easy	no	plain	draft
 2229	check-if-an-array-is-consecutive	Check if an Array Is Consecutive	easy	yes	skip:premium	todo
 2230	the-users-that-are-eligible-for-discount	The Users That Are Eligible for Discount	easy	yes	skip:sql	todo
-2231	largest-number-after-digit-swaps-by-parity	Largest Number After Digit Swaps by Parity	easy	no	plain	todo
-2235	add-two-integers	Add Two Integers	easy	no	plain	todo
+2231	largest-number-after-digit-swaps-by-parity	Largest Number After Digit Swaps by Parity	easy	no	plain	draft
+2235	add-two-integers	Add Two Integers	easy	no	plain	draft
 2236	root-equals-sum-of-children	Root Equals Sum of Children	easy	no	tree	todo
-2239	find-closest-number-to-zero	Find Closest Number to Zero	easy	no	plain	todo
-2243	calculate-digit-sum-of-a-string	Calculate Digit Sum of a String	easy	no	plain	todo
-2248	intersection-of-multiple-arrays	Intersection of Multiple Arrays	easy	no	plain	todo
-2255	count-prefixes-of-a-given-string	Count Prefixes of a Given String	easy	no	plain	todo
-2259	remove-digit-from-number-to-maximize-result	Remove Digit From Number to Maximize Result	easy	no	plain	todo
-2264	largest-3-same-digit-number-in-string	Largest 3-Same-Digit Number in String	easy	no	plain	todo
-2269	find-the-k-beauty-of-a-number	Find the K-Beauty of a Number	easy	no	plain	todo
-2273	find-resultant-array-after-removing-anagrams	Find Resultant Array After Removing Anagrams	easy	no	plain	todo
-2278	percentage-of-letter-in-string	Percentage of Letter in String	easy	no	plain	todo
-2283	check-if-number-has-equal-digit-count-and-digit-value	Check if Number Has Equal Digit Count and Digit Value	easy	no	plain	todo
-2287	rearrange-characters-to-make-target-string	Rearrange Characters to Make Target String	easy	no	plain	todo
-2293	min-max-game	Min Max Game	easy	no	plain	todo
-2299	strong-password-checker-ii	Strong Password Checker II	easy	no	plain	todo
+2239	find-closest-number-to-zero	Find Closest Number to Zero	easy	no	plain	draft
+2243	calculate-digit-sum-of-a-string	Calculate Digit Sum of a String	easy	no	plain	draft
+2248	intersection-of-multiple-arrays	Intersection of Multiple Arrays	easy	no	plain	draft
+2255	count-prefixes-of-a-given-string	Count Prefixes of a Given String	easy	no	plain	draft
+2259	remove-digit-from-number-to-maximize-result	Remove Digit From Number to Maximize Result	easy	no	plain	draft
+2264	largest-3-same-digit-number-in-string	Largest 3-Same-Digit Number in String	easy	no	plain	draft
+2269	find-the-k-beauty-of-a-number	Find the K-Beauty of a Number	easy	no	plain	draft
+2273	find-resultant-array-after-removing-anagrams	Find Resultant Array After Removing Anagrams	easy	no	plain	draft
+2278	percentage-of-letter-in-string	Percentage of Letter in String	easy	no	plain	draft
+2283	check-if-number-has-equal-digit-count-and-digit-value	Check if Number Has Equal Digit Count and Digit Value	easy	no	plain	draft
+2287	rearrange-characters-to-make-target-string	Rearrange Characters to Make Target String	easy	no	plain	draft
+2293	min-max-game	Min Max Game	easy	no	plain	draft
+2299	strong-password-checker-ii	Strong Password Checker II	easy	no	plain	draft
 2303	calculate-amount-paid-in-taxes	Calculate Amount Paid in Taxes	easy	no	float	draft
-2309	greatest-english-letter-in-upper-and-lower-case	Greatest English Letter in Upper and Lower Case	easy	no	plain	todo
-2315	count-asterisks	Count Asterisks	easy	no	plain	todo
-2319	check-if-matrix-is-x-matrix	Check if Matrix Is X-Matrix	easy	no	plain	todo
-2325	decode-the-message	Decode the Message	easy	no	plain	todo
+2309	greatest-english-letter-in-upper-and-lower-case	Greatest English Letter in Upper and Lower Case	easy	no	plain	draft
+2315	count-asterisks	Count Asterisks	easy	no	plain	draft
+2319	check-if-matrix-is-x-matrix	Check if Matrix Is X-Matrix	easy	no	plain	draft
+2325	decode-the-message	Decode the Message	easy	no	plain	draft
 2329	product-sales-analysis-v	Product Sales Analysis V	easy	yes	skip:sql	todo
 2331	evaluate-boolean-binary-tree	Evaluate Boolean Binary Tree	easy	no	tree	todo
 2335	minimum-amount-of-time-to-fill-cups	Minimum Amount of Time to Fill Cups	easy	no	plain	todo

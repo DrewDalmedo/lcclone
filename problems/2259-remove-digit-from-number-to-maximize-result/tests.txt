@@ -1,0 +1,133 @@
+# Remove Digit From Number to Maximize Result.
+
+@example Erasing the first 7 leaves 437, and erasing the second leaves 473.
+"4737"
+"7"
+=> "473"
+
+@example Erasing the first 2 brings the 8 to the front; erasing the second leaves 2883.
+"28283"
+"2"
+=> "8283"
+
+@example Every choice leaves 777.
+"7777"
+"7"
+=> "777"
+
+# The smallest input; the only copy is first.
+"12"
+"1"
+=> "2"
+
+# A 9 is never followed by a larger digit, so the last 9 is erased.
+"91929"
+"9"
+=> "9192"
+
+# The first copy is followed by a smaller digit, the second by a larger one.
+"4246"
+"4"
+=> "426"
+
+# The first copy is followed by a larger digit; erasing the last is worse.
+"3837"
+"3"
+=> "837"
+
+# A run of copies followed by a smaller digit, then a copy followed by a
+# larger one: erasing inside the run is worse.
+"66568"
+"6"
+=> "6658"
+
+# A run of copies followed by a smaller digit, then a copy at the end.
+"7737"
+"7"
+=> "773"
+
+# No copy is followed by a larger digit, and smaller digits lie between
+# the copies: the last copy is erased.
+"8381"
+"8"
+=> "831"
+
+# digit is 1.
+"1121"
+"1"
+=> "121"
+
+# The only copy is the last digit.
+"98765"
+"5"
+=> "9876"
+
+# 100 digits. The two candidates first differ at their 31st digit, beyond
+# what any integer type or a double can tell apart; the first copy wins.
+"9999999999999999999999999999994577777777777777777777436666666666666666666666666666666666666666666666"
+"4"
+=> "999999999999999999999999999999577777777777777777777436666666666666666666666666666666666666666666666"
+
+# 100 digits. The candidates first differ at their 51st digit; the last
+# copy wins.
+"1111111111111111111111111111111111111111111111111121111111111111111111121111111111111111111111111111"
+"2"
+=> "111111111111111111111111111111111111111111111111112111111111111111111111111111111111111111111111111"
+
+# 100 copies of 3.
+"3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333"
+"3"
+=> "333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"8787"
+"7"
+=> "887"
+
+@gen 2 small
+"332334"
+"3"
+=> "33234"
+
+@gen 3 small
+"2222212"
+"2"
+=> "222221"
+
+@gen 4 small
+"878"
+"8"
+=> "87"
+
+@gen 5 small
+"88887"
+"8"
+=> "8887"
+
+@gen 6 small
+"12111"
+"1"
+=> "2111"
+
+@gen 7 small
+"66776"
+"6"
+=> "6776"
+
+# Full-size random cases, 100 digits: digit 9; digits no larger than 2
+# except for a 3 near the end; and digits from 1 to 9.
+@gen 1
+"9999889999899999988899989989998999999999888998999999989998988999988898899999899999899989999989899899"
+"9"
+=> "999988999989999998889998998999899999999988899899999998999898899998889889999989999989998999998989989"
+
+@gen 3
+"2222211221111112112222122222222222211121222222111211212121222122221222121222211211222122211122122311"
+"2"
+=> "222221122111111211222212222222222221112122222211121121212122212222122212122221121122212221112212311"
+
+@gen 4
+"1687582538885288587818862858485738358818888348728828164587188545188888685884888185855887588328978836"
+"8"
+=> "168758253888528858781886285848573835881888834872882816458718854518888868588488818585588758832978836"
