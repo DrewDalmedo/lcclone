@@ -1,0 +1,132 @@
+# Rotate String.
+
+@example Starting at the d at index 3 reads d, e, r, and then l, a, d from the front.
+"ladder"
+"derlad"
+=> true
+
+@example The same five letters, but the circle read from the l gives "lonme", not "lemon".
+"melon"
+"lemon"
+=> false
+
+@example Every rotation of "aaa" is "aaa"; "aa" is a letter short.
+"aaa"
+"aa"
+=> false
+
+# goal is s itself: no letter moves. No other start would give "plum".
+"plum"
+"plum"
+=> true
+
+# Single letters.
+"q"
+"q"
+=> true
+
+"q"
+"r"
+=> false
+
+# Starting one letter in, and one letter before the end.
+"wheel"
+"heelw"
+=> true
+
+"wheel"
+"lwhee"
+=> true
+
+# goal starts with c, which occurs twice in s; only the second c works.
+"cocoa"
+"coaco"
+=> true
+
+# s backwards: the same letters in an order no rotation gives.
+"stop"
+"pots"
+=> false
+
+# goal is shorter than s, though its letters run in the circle's order.
+"stone"
+"nest"
+=> false
+
+# goal is longer than s, though it reads around the circle and a bit more.
+"mo"
+"mom"
+=> false
+
+# A periodic s: several starts give the same rotation.
+"xyzxyz"
+"zxyzxy"
+=> true
+
+# A rotation except for its last letter.
+"orbit"
+"bitoq"
+=> false
+
+# One letter repeated, with one letter changed.
+"zzzz"
+"zzaz"
+=> false
+
+# The longest strings: goal is the rotation starting at index 63.
+"roprtmnnoqpazbutoznyasbyxwkcjqcinifaipvkstippydugzyemnmimqidseozhayzvwehempzlkpbyepjjfgvmymbzrgnyscy"
+"zhayzvwehempzlkpbyepjjfgvmymbzrgnyscyroprtmnnoqpazbutoznyasbyxwkcjqcinifaipvkstippydugzyemnmimqidseo"
+=> true
+
+# 99 letters read around the circle from index 37: one short of a rotation.
+"roprtmnnoqpazbutoznyasbyxwkcjqcinifaipvkstippydugzyemnmimqidseozhayzvwehempzlkpbyepjjfgvmymbzrgnyscy"
+"pvkstippydugzyemnmimqidseozhayzvwehempzlkpbyepjjfgvmymbzrgnyscyroprtmnnoqpazbutoznyasbyxwkcjqcinifa"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"b"
+"b"
+=> true
+
+@gen 2 small
+"aaa"
+"aaa"
+=> true
+
+@gen 3 small
+"bbbbb"
+"bbbb"
+=> false
+
+@gen 4 small
+"ababa"
+"abaac"
+=> false
+
+@gen 5 small
+"aa"
+"aa"
+=> true
+
+@gen 6 small
+"abab"
+"baba"
+=> true
+
+# Full-size cases from gen.c: lengths 100 and 99, a rotation with one letter changed, and a rotation.
+@gen 3
+"bcababbabaaaaaccbabaccccbaacabaccbcababbabaaaaaccbabaccccbaacabaccbcababbabaaaaaccbabaccccbaacabaccb"
+"baacabaccbbcababbabaaaaaccbabaccccbaacabaccbcababbabaaaaaccbabaccccbaacabaccbcababbabaaaaaccbabaccc"
+=> false
+
+@gen 4
+"uiqjnhhlpafolcnmqrclvbcsaewlywhvkimwindqadmrsqtvlbpvtqyscqgvktgimhhqaivadhofycqwlrdbmjltperxwsktnqso"
+"tqyscqgvktgimhhqaivadhofycqwlrdbmjltperxwsktnqsouiqjnhhlpafolcnmqrclvbcsaewlywhvkimwindqadmrsqtvlbpu"
+=> false
+
+@gen 6
+"nahifdcpubjovascvhikqafjmfvpvtlivpabsjsnvebvcfckspftdirarmdosfkcojodjfnfsdfuurhqbenvvnhlmgmevmclsfel"
+"gmevmclsfelnahifdcpubjovascvhikqafjmfvpvtlivpabsjsnvebvcfckspftdirarmdosfkcojodjfnfsdfuurhqbenvvnhlm"
+=> true
+

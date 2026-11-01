@@ -1,0 +1,105 @@
+# Unique Morse Code Words.
+
+@example ye and tan make the same signal (-.--. for both); sun and dot make two others.
+["ye","sun","tan","dot"]
+=> 3
+
+@example The two copies of go make one signal; og makes another (-----. against --.---).
+["go","go","og"]
+=> 2
+
+@example tt and m both make --; t makes -, which is shorter and so different.
+["t","tt","m"]
+=> 2
+
+# A single word.
+["zebra"]
+=> 1
+
+# One word, four times.
+["wow","wow","wow","wow"]
+=> 1
+
+# Each signal is the start of the next one, but no two are equal.
+["e","i","s","h"]
+=> 4
+
+# an and p both make .--., na and x both make -..-: equal lengths, equal numbers of dots and dashes.
+["an","na","p","x"]
+=> 2
+
+# Four different words, all making the one signal ---
+["tm","mt","o","ttt"]
+=> 1
+
+# The longest signals, 48 symbols: 12 letters with 4-symbol codes.
+["bcfhjlpqvxyz","zyxvqplhjfcb","bcfhjlpqvxyz"]
+=> 2
+
+# Pairs of words with no letter in common and the same signal; each letter of
+# the alphabet is in one of these pairs, so a mistake in any code splits a pair.
+# canal and texture make one signal, and gird and zeal another.
+["canal","gird","texture","zeal"]
+=> 2
+
+# agree and jib make one signal, and squeaky and vntfpmw another.
+["agree","squeaky","jib","vntfpmw"]
+=> 2
+
+# hawky and sfopm make one signal, and axes and with another.
+["hawky","axes","sfopm","with"]
+=> 2
+
+# 100 words, 100 different signals: every pair of 10 letters with 4-symbol codes.
+["bb","bc","bf","bh","bj","bl","bp","bq","bv","bx","cb","cc","cf","ch","cj","cl","cp","cq","cv","cx","fb","fc","ff","fh","fj","fl","fp","fq","fv","fx","hb","hc","hf","hh","hj","hl","hp","hq","hv","hx","jb","jc","jf","jh","jj","jl","jp","jq","jv","jx","lb","lc","lf","lh","lj","ll","lp","lq","lv","lx","pb","pc","pf","ph","pj","pl","pp","pq","pv","px","qb","qc","qf","qh","qj","ql","qp","qq","qv","qx","vb","vc","vf","vh","vj","vl","vp","vq","vv","vx","xb","xc","xf","xh","xj","xl","xp","xq","xv","xx"]
+=> 100
+
+# 100 different words of the all-dot letters e, i, s and h: a signal is just a number of dots.
+["h","is","hsi","she","ihh","ies","eii","hhse","hssh","hihs","hiei","heie","shih","ssss","sihi","siee","seeh","ihis","issi","iihe","iehh","iees","ehii","esse","eish","eehs","eeei","hhhie","hhsih","hhiss","hhehi","hheee","hsheh","hssis","hsisi","hsehe","hihhh","hihes","hisii","hiise","hiesh","hehhs","hehei","hesie","heiih","heess","shhhi","shhee","shseh","shiis","shesi","sshhe","ssshh","ssses","ssiii","ssese","sihsh","sishs","sisei","siiie","sieih","sehss","seshi","sesee","seieh","seeis","ihhsi","ihshe","ihihh","ihies","iheii","ishse","isssh","isihs","isiei","iseie","iihih","iisss","iiihi","iiiee","iieeh","iehis","iessi","ieihe","ieehh","ieees","ehhii","ehsse","ehish","ehehs","eheei","eshie","essih","esiss","esehi","eseee","eiheh","eisis","eiisi","eiehe"]
+=> 15
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["is","gumg","rkn","aaw","gumg","gumg","gueg"]
+=> 5
+
+@gen 2 small
+["a","a","a","a","amaa"]
+=> 2
+
+@gen 3 small
+["m","m","mii"]
+=> 2
+
+@gen 4 small
+["ddi","awa","rq","ddi","aiad","ddda","aai"]
+=> 5
+
+@gen 5 small
+["mhe","zs"]
+=> 1
+
+@gen 6 small
+["et","a"]
+=> 1
+
+@gen 7 small
+["oh","e","e","ehh","s","m","o"]
+=> 6
+
+@gen 8 small
+["omd","ooi","ttoti","uod"]
+=> 2
+
+# Full size: 100 words.
+@gen 1
+["jllvzqqqvcvf","phqypjvxlzbq","llyqjbvchbxf","phqypjvxlzbq","phqypjvxlzbq","pcplhjqjqlhy","qlyblzqjlfcp","jqvfvfjzczzq","lvqhhfcfyfpv","hzpqbzpjcfhf","hpxpchqcbvlj","chyffvycqbvh","llyqjbvchbxf","jqvfvfjzczzq","bxyqfxyvjzlj","chyffvycqbvh","vblqpxvvzqlh","zxqxfcyblzff","jqhjbvzqbppq","hyfblhcfvfxl","xfflbvhvhccl","hxhfpyyclvbq","ylfvljfxcpcv","jhzpzzzhxjyv","lvfzclzplffp","fbvczcpqbjvh","hpqfphqpvlcj","fzhjpvjlbbvz","jyzlvfxxyvpv","ybbfpxlzhhxy","hhhvvvzvlhvv","qyzlxxblhyqc","zplzyvjqjjqh","qyjvlhyjpypy","yqpflqhvxzjy","ljlvvczzlchf","xvbzjjfhxhhx","llyqjbvchbxf","qfqyvvzfyycp","bpzhcclxvllx","pzpbypfhpfhj","zffvfzbcvpjp","qxzybbflbvzp","jjclbcfzycjv","jclpllfhqbpj","qlzqlfxqvyfj","bxyhvvyhhqyh","qvbblphqpcvc","qfqyvvzfyycp","zhfzpppqlhbj","yqzhbycxlqlf","chljvvlzjcpz","vfzvjbyhqjjz","jjzzlqczhvhb","yfyfxcqppbvx","bcxcylqvfbfp","bbxzhbzqbzyq","jzyvhpjpvchj","vpxffqxpffyv","hlllzyhbqjbc","ylclpzhxczxz","lbcxblpqblxv","lbbvpyhccjph","vzpxcbfqfqzb","bjblxvlllqyf","lyxjhzqbbqhf","zhfvyxhccfcp","qfpvcqppbchz","ccqzyhfbfbbf","lppzlbpqyqcy","ybljvzqhzfzz","jqyhxcjypxvx","bbpbxxfvcqbb","fqbzqpxpqfbx","zchzbbpcpbjh","cbpqfjljpqqp","yycjhhpllhjc","cbpqfjljpqqp","zhqbljlxcxjp","qfqyvvzfyycp","cpqvbzlcyfpv","qbcvppfhljbv","xbczhxhbjxbj","bhzblyfzzzyl","lqpyfjvlpjvv","vzxvhxzchhjz","hlllzyhbqjbc","jxqhhjhvhpjy","bbcjzcfqffqc","phfzlxfjhvzy","yhvhllybfhbl","fpqzhzpjfvqf","lqzlvhjypcxb","lqzlvhjypcxb","xpyblhzlfcbp","blbcqxbvjqcz","hbhfyfvfxfhj","vqbypyycycqc","bvpjyyjhflpc","qcjhyhjbpplc"]
+=> 89
+
+@gen 2
+["qmsek","qmsek","qzft","gmbrt","qzft","idi","qmeva","rphhq","qtbaa","vkj","ltbhuk","otigh","t","qzft","hgpwp","jp","otigh","matbrt","qzft","ngkeawg","qtnvet","aizsspt","yekujte","qmift","ahn","tjk","t","uh","tssdsgbb","qzft","f","qmsek","bsbepdle","kaznjvcs","ttzzie","fs","ggoze","qmift","t","ltbhuk","tnoift","t","mwbrt","qtbeta","sppptn","fuzkxqrecpvv","qzft","yrtfmtn","ivevx","emerncvjfm","mjhk","qzert","ysplbjnw","mjhnt","hzzqn","qzft","qzert","qzft","qzft","qgva","qzert","cgkgtjt","mjhtet","mazft","dhdeucfi","eoexe","qzert","mjhk","mfqs","kmvjpnaq","emerncvjfm","yrnrmg","ded","oxbi","selizt","n","audihata","x","ntncrttg","qtbrt","vco","nxocjw","qzik","oure","gohta","kfsc","qmsek","lvt","d","ebae","tnohk","fuzkxqrecpvv","fzldsjkbsr","qttiert","zzobobwwwd","qtnvet","basxcqyrljco","qzft","ntmeftqcja","qzft"]
+=> 34
+
+@gen 5
+["kfbgv","tgjxoposqcw","fwxblhi","oiqjlujp","sjwntew","isgtjqg","uqufb","mofnhrhwzkhz","ipqdglqqfop","yvdpoy","ygyzmankod","ckwzcgaaccr","lvvv","eqbuxforkqj","oiib","qxuatbsnmate","fzjbkog","kxjff","lvonwldrhwat","opprflfjyu","abkapvnhk","rjvt","asggv","fuxgu","ynlyuuaexgsu","jtigzadoxdi","bzcsowa","tzikucb","zuyfpseilppu","hpjadsqenkif","xglhfth","sizrpq","prsr","mdyzl","lrvdewa","knfock","nunxurmv","gvxejff","oszkgribuf","vccwiybstii","pltfw","tqjmcgtqmix","bdyqgnfoqze","ghqyvqzripu","zfpkgpkoy","vgfujajqcc","tyncphbqs","vouqlxky","hktch","tavjiaqiq","jymyqzvkx","wfxkdo","jvvugvutbx","dpkadvwzoi","qjstnkopq","xqyztgeo","hiolpbcolejj","mmvukyelhgk","mvaqqjxu","htpegz","lqahi","awvfxplcmbv","hdwfbvadv","ywbdegokr","yzyawo","bcirq","iyceg","bxlqsoiwpkkt","mqtydb","ojyakuznnf","iltaaem","iruglmtigze","onjjnu","lcld","xmwi","usijznftattq","zlxrjx","dkrvgw","xllrmob","wwbvka","mrslbwftv","vxopwjjkbh","lzcuezqs","flqbrxomgt","xsmqn","blnb","vlxayptrxdk","tivrr","exdnz","nbourelvks","bukpcb","jmuc","pywtgvhumk","wjgvqnlbr","ltlbreslp","usga","nvdyl","rliduqvlpdi","wddifq","toovrhfmf"]
+=> 100

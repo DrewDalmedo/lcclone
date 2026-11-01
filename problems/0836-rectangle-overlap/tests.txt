@@ -1,0 +1,154 @@
+# Rectangle Overlap.
+
+@example Both plots contain the 2 by 2 square from (4, 2) to (6, 4).
+[1,1,6,4]
+[4,2,9,7]
+=> true
+
+@example The plots meet along the line x = 2 from y = 0 to y = 3, which has no area.
+[-3,0,2,5]
+[2,-1,4,3]
+=> false
+
+@example A wide plot and a tall one cross in the 4 by 2 region from (-2, -1) to (2, 1), though no corner of either lies inside the other.
+[-5,-1,5,1]
+[-2,-6,2,6]
+=> true
+
+# Sharing a whole side, or part of one, is not overlapping: rec2 lies to
+# the east, west, north and south of rec1. rec1's four coordinates all
+# differ, so that reading an x coordinate where a y one belongs changes
+# the answer.
+[2,-3,7,1]
+[7,-3,9,1]
+=> false
+
+[2,-3,7,1]
+[-1,-1,2,4]
+=> false
+
+[2,-3,7,1]
+[3,1,5,6]
+=> false
+
+[2,-3,7,1]
+[0,-8,9,-3]
+=> false
+
+# Meeting at a single corner point: rec1's north-east, north-west,
+# south-west and south-east corners.
+[2,-3,7,1]
+[7,1,9,4]
+=> false
+
+[2,-3,7,1]
+[-1,1,2,5]
+=> false
+
+[2,-3,7,1]
+[-2,-6,2,-3]
+=> false
+
+[2,-3,7,1]
+[7,-5,8,-3]
+=> false
+
+# The smallest overlap: a 1 by 1 square at rec1's north-east corner.
+[2,-3,7,1]
+[6,0,11,8]
+=> true
+
+# One plot inside the other: rec2 well inside rec1, and rec1 inside rec2
+# with two sides in common.
+[-10,-10,10,10]
+[-1,2,3,4]
+=> true
+
+[2,0,5,3]
+[0,0,5,9]
+=> true
+
+# Two identical plots, as large as allowed: their widths add up to
+# 4 * 10^9, and their shared area is 4 * 10^18.
+[-1000000000,-1000000000,1000000000,1000000000]
+[-1000000000,-1000000000,1000000000,1000000000]
+=> true
+
+# The shared region is 46341 by 46341, an area larger than 2^31 - 1.
+[10,20,46351,46361]
+[0,0,100000,100000]
+=> true
+
+# Apart along both axes: the gaps along x and along y are both 5, but
+# there is no shared region.
+[-8,-9,-4,-2]
+[1,3,6,7]
+=> false
+
+# Overlapping by a width of 1 at x = -10^9; a float can't tell -10^9 and
+# -999999999 apart.
+[-1000000000,-7,-999999999,3]
+[-1000000000,-2,1000000000,1]
+=> true
+
+# Overlapping by a width of 1 along the whole height of the range.
+[-1000000000,-1000000000,1,1000000000]
+[0,-1000000000,1000000000,1000000000]
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[-3,2,2,3]
+[-1,-2,3,3]
+=> true
+
+@gen 2 small
+[-1,-1,0,0]
+[-3,-3,-2,2]
+=> false
+
+@gen 3 small
+[-2,0,3,2]
+[1,-1,2,0]
+=> false
+
+@gen 4 small
+[1,1,3,2]
+[0,-3,2,2]
+=> true
+
+@gen 5 small
+[0,0,2,1]
+[-2,1,0,3]
+=> false
+
+@gen 6 small
+[2,0,3,1]
+[0,-2,2,0]
+=> false
+
+@gen 7 small
+[1,1,2,2]
+[-1,-2,3,-1]
+=> false
+
+@gen 8 small
+[-3,-3,3,1]
+[-2,-1,1,1]
+=> true
+
+# Full size: coordinates anywhere from -10^9 to 10^9.
+@gen 1
+[926070828,444078030,927334230,495178663]
+[870564846,-344471127,927516289,746701303]
+=> true
+
+@gen 3
+[-159427728,-924475474,654540926,903287717]
+[654540926,-743668179,730957206,496879680]
+=> false
+
+@gen 4
+[-803420638,-871497435,-87265208,-772666663]
+[903926341,-772666664,984334038,718471474]
+=> false

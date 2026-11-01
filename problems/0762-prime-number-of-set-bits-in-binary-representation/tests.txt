@@ -1,0 +1,139 @@
+# Prime Number of Set Bits in Binary Representation. Inputs are left, then
+# right, in decimal.
+
+@example 28 = 11100 (three 1s), 31 = 11111 (five) and 33 = 100001 (two) win; 29 and 30 have four 1s and 32 = 100000 has one.
+28
+33
+=> 3
+
+@example 3, 5 and 6 have two 1s each and 7 = 111 has three; 1, 2, 4 and 8 have a single 1.
+1
+8
+=> 4
+
+@example One ticket, 10000000000, with a single 1.
+1024
+1024
+=> 0
+
+# The smallest range: 1 alone, whose one 1 is not a prime count.
+1
+1
+=> 0
+
+# Only powers of two.
+1
+2
+=> 0
+
+# Two 1s: 2 is prime.
+3
+3
+=> 1
+
+# Both ends win and the number between them doesn't: 31 = 11111 and
+# 33 = 100001. Testing x itself for primality would count 31 but not 33.
+31
+33
+=> 2
+
+# 65535 has sixteen 1s, 65536 one and 65537 = 2^16 + 1 two. A count that
+# only looks at the low 16 bits, or a 16-bit x, misses 65537.
+65535
+65537
+=> 1
+
+# Twelve 1s (8190, not prime), thirteen (8191, prime), then 8192 = 2^13.
+8190
+8192
+=> 1
+
+# 262142 = 2^18 - 2 has seventeen 1s, a prime, and 262143 = 2^18 - 1 has
+# eighteen, which isn't. A list of primes that stops at 13 or 16 misses
+# 17.
+262142
+262144
+=> 1
+
+# Nineteen 1s, the most a number up to 10^6 can have: 983039 = 2^20 - 1 -
+# 2^16. A table of primality by count needs 20 entries.
+983039
+983039
+=> 1
+
+# The widest range, right at the top.
+989999
+1000000
+=> 3755
+
+# The widest range, from 1.
+1
+10001
+=> 4252
+
+# The count reaches 128 here, too many for a signed char counter, and 256
+# in the next case, too many for an unsigned char.
+1
+214
+=> 128
+
+1
+457
+=> 256
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+917496
+917511
+=> 8
+
+@gen 2 small
+41
+61
+=> 12
+
+@gen 5 small
+131071
+131084
+=> 11
+
+@gen 8 small
+786413
+786423
+=> 5
+
+@gen 11 small
+524277
+524286
+=> 5
+
+@gen 16 small
+124
+139
+=> 11
+
+@gen 25 small
+510
+513
+=> 1
+
+@gen 26 small
+65522
+65542
+=> 9
+
+# Random full-size cases: 10001 numbers each.
+@gen 1
+564847
+574847
+=> 2919
+
+@gen 3
+294851
+304851
+=> 2879
+
+@gen 8
+45572
+55572
+=> 2850

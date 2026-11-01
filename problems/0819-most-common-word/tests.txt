@@ -1,0 +1,149 @@
+# Most Common Word.
+
+@example really and good occur three times each, whatever their capitals; really is banned, which leaves good.
+"Really good. Really, really GOOD; good!"
+["really"]
+=> "good"
+
+@example The apostrophes split can't and won't, so t occurs twice, but t is banned and stop is left on top.
+"can't stop, won't stop"
+["t"]
+=> "stop"
+
+@example Yes and YES are the same word, and the answer is written in lower case.
+"Yes. YES? No!"
+[]
+=> "yes"
+
+# A single word, a capital letter.
+"W"
+[]
+=> "w"
+
+# Marks split words even without a space.
+"ab.cd.cd"
+[]
+=> "cd"
+
+# An apostrophe splits too: the words are ox, en, ox, en and ox.
+"ox'en ox'en ox"
+[]
+=> "ox"
+
+# Every case of BOOM is the same word, and the banned entry boom rules them all out.
+"BOOM boom Boom pow pow"
+["boom"]
+=> "pow"
+
+# Hush, HUSH and hush are one word, three times; counted apart, each would lose to wait.
+"Hush HUSH hush, wait wait"
+[]
+=> "hush"
+
+# The last word ends the paragraph, with no separator after it.
+"one two two"
+[]
+=> "two"
+
+# Separators before the first word, repeated between words, and after the last.
+"  !!hey,, you;  you. "
+[]
+=> "you"
+
+# Banning ab leaves abc and a alone.
+"abc abc a ab ab ab"
+["ab"]
+=> "abc"
+
+# A 13-letter word whose first 10 letters are a banned entry; it is not banned.
+"Strawberryjam strawberry STRAWBERRYJAM pie"
+["strawberry"]
+=> "strawberryjam"
+
+# 100 banned entries, the listed twice and most of them not in the paragraph.
+"The cat and the dog, and the cat; a bird and a fish."
+["arukiih","bsksxw","cc","clu","cnaawukke","czxqol","df","dumjdashhj","eawgxrwwzu","eem","ehgfcskun","fejlewj","fekwdo","fqkb","frwn","fv","gc","gezthvj","ghwgehfq","grwoyunokb","gxzjse","hidurzrso","hnkehv","hwirbketfi","hythd","iib","iqnbhufggy","ira","isqzn","iyg","jegpzxps","jhxajfweqp","jpqbx","jud","kcxpozsg","krjrgqzdls","kuu","kyyrvlk","lcdmijmgie","lf","the","lh","llqjkxco","lqkdllcadk","mmmqofh","mokvqshx","mqhvgih","msi","nokvfxnpfb","nuekt","nxzicul","nypib","ob","omcvn","otlzcp","pjf","pmbu","pynkkjcp","pyr","qcbnqk","qhbzuyco","qlm","qpkhonhgw","qtiguifjyi","qzrrugelku","rurmppgefe","sgydjfgmi","st","sthdhcefe","svedyoklya","syi","and","the","sysvvioaw","tbdohr","tddxeszrn","tjtipriaup","tocpnct","tqtzbxrn","trlgng","tsoiqyb","ttdezwqetu","uwgpoamcf","vpnkchjesp","vwfex","wrvumkdoie","xapkgdfh","xbcyaw","xgezs","ximuulpvl","xiokmv","xiopnpgwpv","xzkjsg","yibtrla","ynimhhwk","ynkbx","yq","zgzo","zunm","a"]
+=> "cat"
+
+# hi occurs 257 times, past what a byte can count.
+"hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi hi yo yo"
+[]
+=> "hi"
+
+# 500 one-letter words: z 300 times, y 200 times.
+"z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z z y z y z"
+[]
+=> "z"
+
+# One word of 1000 letters.
+"AbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAbAb"
+[]
+=> "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab"
+
+# 326 different words; the winner, fw, is the last new word and occurs three times.
+"rb.wv!lu,fz bo!cc?ff wy.hv mi!cd?co.za,yz kk,iu?x'ej'zc'om r!wd!i;ww iq be;yk.zu?rl;b,wo xb!u?fn ho yh se?ea!sv,fi qo!vi;ab?wj!sj,oe!cp?xz rt la ze qj!h'vf!sr au,or?rq;fl mb,yu.rw ba'ld nn?ph.wi?tt e qk vx.ue?bu jo.gp he,ak.qh!yy si'bq fm'qv.ss np yo?up db cf?td?id qt!ek;gr di no?qw tb.em,yc;zr rv ev.ei ri sq gs a;tp qy el,yl?mz,kc!xa;qu;vw!rr tr?xo ez ga'ot o'gg fx'hy?lq vo ji xx;xe.jw jr?yt pb nq ex.k rn,oa.pt?lh.ib tk lr!pz?is!zl,cs'av,uq da,ou uc nj mj lj oi bw,kg.rj z;et.wn,cz.eb'gc jf?ag eo;xn qp.hm.y.iv!xm gt;lz!gn.jh fb'zn vq;xl'pl!yv?yf?m,kf;tl,gk yg?qf,wa sg.at,ct?jn ng.oz vc?ma'dq.tg ig.fc!ud en.ll!by,me'bm'pq,rg!jm;kw,vm'oq!s'xu;tc?as'yw,to ew?aa;g.mw'nm'op!tf.t.c.wu.mt fv zq!ms sl dw!zz.mn wk,ie ay!kx?st;ao!ns'kj'ki,xf'tx ih'tn,l.cu!kn?zx f qz pk;lb qq!lv ic?kl j!hb n cy ls mu'xh w;ug ku jd!fe'gj'xy ia d,lg hh;dg'vb,ai wg pc'gl!vz'ny?ii fg!rf mo?ul!p?ty jg fq v,nb zh gh'dx?qg!sy os;ts'vu'ta.px;zd fa;un aj bs,vj;zi q!pp;rp!fw fw fw"
+[]
+=> "fw"
+
+# 300 different words, and the winner, q, comes first and occurs three times:
+# a count of different words kept in a byte wraps after 256 and loses it.
+"Q'q Q a'c y r m b!n;g.o?h?u,v's d p't k i w,x z'j!e f.l oy?wz'qq!yl qf wt;vm.td,et vl'qx xs!zb ez cf'eb,gu os'lj;kx!oh ts lc.xm.eq ke?ie rh,nr tp id;lx!lq nb;qi ld dj,hx sp!ba'lg.jr do ah.ob;ag?fp xr!tq.jt wo el wn,ql gg hy bs?hk ee pp ty ea uh?fd,iq,ho'gd hh gt iu'ov.us;qm gx mv lr rl qz vb ur!ft aa yi.ep jq,zt qp gb mj bf,sg cl ir;kg en ai,aj,fz hl!wf.mp,wd,tl gq sl cj?mx,zj;yn mm'rq.ga iz'br sk mt hc qc!sf;hq cy bo'ei;ar?pt!lh ss,un.uc!yq fb'yg?ue.pw.nn.uk dr!dl!az,gn po dn hf?dq?at ij ef!jb dc jc ck,pu;cs ec?pz ow!tj au,co!io sq;bt?sw?xg'bw'fv xz hr.jx'zw tt sa'ii gm?nx!wy!sv xv.dx'yk.ra mh!oe wj;tn ej.xw,mg!ci yr'bb!yh!mu nl,bk yy ub?qo hz'yo?ac ed sy rx vh vp,ht?xu gy.ua,hj wc?ha!af,pr jl va ns cd,kq mr;sr zx vw aw dk'rg bu?da,eu av ou lp bg lz um zg rv xj'mz zf?lk nq pd ky ud yp hg?am.ff.er vt mi cg;pb ia,dg dm?om ok'cz py?na jn.hm fa zd,by.vu?uu.uo;ni fi;og"
+[]
+=> "q"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"?C ab  A .a c,ab  c.abc'AbC C "
+["abc"]
+=> "c"
+
+@gen 2 small
+"b b b ab"
+[]
+=> "b"
+
+@gen 3 small
+"c,c'c"
+[]
+=> "c"
+
+@gen 4 small
+" ,ab.b abc;Abc Aa!b aa;ab  B"
+[]
+=> "b"
+
+@gen 5 small
+" 'a ab;?ab A? aa aa  abc ba ba Aa.ba a aa;abc ba' abc?Ab ab;"
+["b","ab","aa"]
+=> "ba"
+
+@gen 6 small
+"abc a,.Abc a a  A"
+["abcb"]
+=> "a"
+
+@gen 7 small
+"AA! ba ba'aa'ba  "
+["aa"]
+=> "ba"
+
+@gen 8 small
+" abC .ab  ab AB,abc AB  abc' "
+["acbc","abc"]
+=> "ab"
+
+# Full size, close to 1000 characters: many different words, 99 banned entries, and counts past 255.
+@gen 2
+"de cb;zZ wr es.Pu tv!RQ k?DC Mq nP'fl JH?xh rv,sm;wb'xl mn.ug dN yr sj,uQ.LN cr ra ds cD ek'Tt ru,pu.u Mh,ka eZ Xu,nk Lz;Sm'ep x;mh,cq?nv.gV;KR MW ou E Xl xc'tl;pn JS fi gb Ex ye yp.EG xa Vv MW Sz?Rt,mp'in;Rt?wj;Iy wc a QN!ns,el Fk Pi,hK rf Mz,sx WS'de'Ws ZE?es VY DS Hj HG LU?HE ei tf'xl,Ru lm gi;qS.MG ek v rs gi ku!Wt E;PR!Tx!EI ye;ve?QR,dl,hk hd ez?Sh ii vv?uq vb lo yq wm na!u!sz Wd WB.ty.EH MV.fj il Ll?kb uF zj,ns ah xv.dj wj'dd Ep;EL kh?k!fn;ln,lr,sT xg vi IY vH Ys!oz xq!Wr px?nb vh xf qs ja dn'wt Nc ii xv?em VZ?rk,fi j rd.ps'mz?tn Mp mv;wh AA;Qx RQ.rd Tx?Ny vz cz wg Zk'wg pz.PN mQ cb,cr Je jy nc gz kr!xu on,Fo;wy mt!dj PS'fz Mg xq lo pi hp np;rA'rg rv vo zk hp A,AN pz NK qx kl p uf'cq.WC ys AZ;Ka xo Hz JE DL.JI ah!Mr mi?xg ou Vo!wx oi ik?ST sa RF;Ji lm!il FO eg ss!sw WL!ma xo hh xa LP!fn!TD gz wx ma ik,lp?wh eh,tB?SJ.oi sx dc'am!Ss Ff;qn LQ!ig kq qr lj zp hj?na!he;Az,fx Ja.em x XH mt hz ng rB xc FZ FS tv Dd gn HD vC,rg!gb jy wf pl lz;kl tf Cu dT nx;ip cd!hg Vb,ty VC.Mr fl ha?fx FF"
+["tb","tf","vc","nc","ez","cu","pl","ek","gi","ps","ru","gz","ka","rq","rk","u","wy","wt","lp","xq","zz","ug","wh","sm","vz","dj","am","cr","hd","ou","az","sh","ws","ep","gb"]
+=> "xl"
+
+@gen 4
+"?cdaddcbded Cbbbcdaecbe.cacB Cdaddcbded!cecdddaacbe!cacb cd CDeadadCCbC,becd ddcaeaabac,adbedccbaa!bedbbcaabec CACB baDEADdeaD.BEEbdDcddAE caacebd!dbdecaaec daaccecac adBeDCCBaA bebedcbbbae c CdEAdAdCcBC'ddcaeaabac dccdbeb CDdDB?CBad CDECADeAdD'Eccacbbbaec?cDECADeAdD cECddDaAcbE bEBEdCBBbae,ecbcbcdbc,beaecdcda dbbdDcceEAcd,aebdccd bEDe Bede aaaeabeccd adbedccbaa Cdbab cbad?ec CACB cdecadeadd cacb,cacb dbbddcceeacd aaaeabeccd'c cdAddCbDeD badeaddead daedebbbb.ec'dcccbadbadce BDCDAB beebddcddae.Bdcdab EcCaCBbbaEC b,beaecdcda EBCDcB cecdddaacbe cbad b!daedebbbb caCb!bac cacb bdcdab!bedbbcaabec?bb,cbbbcdaecbe b.becd cdddb aebdccd!cAcb ab!dbdecaaec cAcb!ECCacbbbaeC Caacebd'dcccbadbadce,Cdbab CDBaB cacb caacebd ebcdcb;DaaCcecAc;dccdbeb CDEADADCCBC!dbdECaaec!dcccbadbadce,dcccd c daedebbbb?ab Ec.cD aAAeabEcCd cacb?dbbddcceeacd!cd.BEbedCBbBAE.ddcaeaabac cbbbCdAecBE EBcDCB!ecbcbcdbc,becd bac?beaecdcda daaccecac beebddcddae dccdbeb Ecbcbcdbc dcccd bac bedbbcaabec,BB aeBDcCD?ab!cdddb dcccd Bede'Bb"
+["aaaeabecc","bdcdabe","bdcdabe","daaccecace","dcccbadbad","cbbbcdaecb","ebcdc","dccdbebe","iewuvvohlo","q","cdaddcbde","lziiip","dcccde","ec","cdaddcbded","iewuvvohlo","bdcdabe","rihknhk","yjhkwpk","adbedccba","dbdecaaece","uhmjjdeae","bed","dbdecaae","shxv","qbkpp","fy","cbade","bace","lziiip","bdcdabe","zdskx","nydk","syzxev","caacebde","bec","ebcdcbe","beaecdcd","w","bdcdabe","bebedcbbba","dccdbebe","b","iaieaixkgw","bec","kwurdvzmq","cdbabe","kwurdvzmq","iewuvvohlo","cdaddcbded","zzdmk","cdba","bedbbcaabe","wcbtrfx","avdnycz","ijea","beebddcdda","cdddbe","q","lziiip","oqg","cdba","cde","csppebm","dccdbebe","ebcdc","t","cdaddcbded","cdaddcbded","mbois","kefentt","aed","tdbpc","ikzseof","cbad","badeaddead","bedbbcaabe","bed","bec","bebedcbbba","dbdecaae","ylpnok","f","bdcdabe","bdcda","pun","lziiip","lr","daedebbbbe","dcccbadbad","aebdcc","pcyyjr","a","nwwu","cdba","yjlptp","cbad","badeaddea","dccdbebe"]
+=> "cacb"
+
+@gen 6
+"K?k!u t .k k!k;t.k u k k T;u k k,k K k;K k?k T u u K'k U K!k t,u.u k K;t?u U k T K u!k u u!t?t K,U!t k k u k K k K?U;k;t,K T k k t!k?k t t K,k t?k k t.t k!k.K u t K u.t!k T't t u'T k!K,k,U u u t K?U,K u K K U;t k T!k k t?T t,k!k.k T u.k k k'k k u k.K;k K T u.U k.u,k k t K?K k,u,t,U,u!k t'u K;k k k;u;t u!u k k k.k k't k k,U?t U!k'k t,U.U,k'u k k k T.t k k k K!k;u?k K;u t k k k k k,T,k?u?k k K u t k.t,u;k.k U K K'k T t?k k,k k k k K'U k.t.K K k k?k.k k k k!U k K.t k k u K't k;u;k'K u k U?K k K t!u U,t t;k!k k'K?K t k'K,t U k!k u t'K k.t,k k,k,t K,t.K u t,K k'u k,k.u U t k,t;t k?k'u u;k k!u k k K.t?T k k K,k K k k'k T k,k;u k K t t U k K k K K.k?u k k u'u t t k K K?K K t'K t k,k u'k?u k t k u!u k!K,k.k t!T u k;t u t T!K k t u k k?K!u!K k u U t;k K't t T k k K k?K k.t K k K;K k.K t k.k!u'u'K K k k T k k'k k k'k k t T k k k u k,t k U k t,k t'k u'u t,K.k k K t.k K u't u!k;K U!k;k?k,k k k k?k'k k k K k t k'U'u K;k k k'u K K,k!k k T k t U T.u.u?k!t u T'K K U!U.k.k't K k?K'u u.T,k K,U.u k.t t,u"
+["ue","xlwnkhizx","mqodlfxmzi"]
+=> "k"

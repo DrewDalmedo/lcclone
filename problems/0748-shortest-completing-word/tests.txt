@@ -1,0 +1,118 @@
+# Shortest Completing Word.
+
+@example The plate asks for two t's and a k. trek and tusk have one t each; of the other three, kitty is the shortest.
+"TK 42 T"
+["kitten","trek","takeout","kitty","tusk"]
+=> "kitty"
+
+@example ore, rye and her each hold an r and an e in three letters; ore comes first.
+"0R 5e"
+["oak","ore","rye","her","free"]
+=> "ore"
+
+@example P and p together ask for two p's. pea has only one, and pup is the shortest word with two.
+"Pp 3"
+["pea","apple","pup","puppy"]
+=> "pup"
+
+# The smallest plate: one upper-case letter, and a single word.
+"Z"
+["z"]
+=> "z"
+
+# Digits and spaces around the only letter are skipped.
+" 5 j  "
+["jam","j"]
+=> "j"
+
+# r and R add up to two r's, so red is one short.
+"rR"
+["red","error","rare"]
+=> "rare"
+
+# A later, shorter word beats an earlier, longer one; of the two shortest, the first wins.
+"ab"
+["absorb","bat","cab"]
+=> "bat"
+
+# The first shortest word is not at index 0, and a copy of it comes later.
+"N0 o"
+["moon","on","no","nod","on"]
+=> "on"
+
+# Thirty words, each with a w, alternating four and three letters: the first
+# three-letter word, owl, wins. A sort by length that isn't stable loses it.
+"W 4"
+["town","owl","swan","awe","wolf","mow","crow","raw","wind","wit","glow","two","snow","few","wave","cow","work","low","worm","new","wise","dew","west","jaw","wood","paw","wren","saw","whip","yew"]
+=> "owl"
+
+# A shorter word with one s too few loses to the longer ones.
+"ss 2S"
+["moss","mosses","stress"]
+=> "mosses"
+
+# Seven copies of one letter.
+"eEeEeee"
+["eeeeee","teepeeseeee","eeeeeee"]
+=> "eeeeeee"
+
+# A plate without letters: every word completes it.
+"1 2 3 4"
+["ghost","ox","by","me"]
+=> "ox"
+
+# The first and last letters of the alphabet; the only completing word has 15 letters.
+"Za 7"
+["zoo","alpha","standardization"]
+=> "standardization"
+
+# 257 words: only the last one, at index 256, has two h's.
+"Hh"
+["h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","h","hh"]
+=> "hh"
+
+# 1000 words: each but the last lacks one of a, b, c, d and e.
+"Ab1 Cde"
+["ebckd","ecdatps","dbega","raebcrh","dubpsca","kbcphed","escad","fjdfbzae","qkmbace","adcvb","ecdsbl","cywiead","abdtep","bucea","obkpacud","boecds","laced","ebagd","bckexa","xabdrc","bwokedc","acdewy","dbeaif","fegascb","biwacvxd","bwced","scegadhu","grbexad","eaboc","baondc","cdgbev","tdzwecaq","bjyuade","bahceouv","dxaycb","ercbd","deqac","aovdeb","bjauepc","tcxdiyab","decrzb","ceqda","dzabe","kcbgae","ibkhocda","bdefcny","evaidc","ulaedb","atecbm","caubdzk","bgzdec","dqceilwa","aegdb","cyeab","dilckiab","yebfdc","ecajd","keabd","pabce","calojsdb","zbcdqne","echpadn","kaeuldby","kzcelba","acdbtjj","mebcd","qadce","daubesf","eahujbci","aidcbfs","igbdvecj","edzcsla","webda","pacebrt","ondvabc","bwtedctm","qaecd","ubdasnxe","aclxzpeb","acbld","dcebhk","ehwnaxdc","emrzudba","pmbaecmh","fbdvjac","djciebo","jdefzanc","aebld","bamhejkc","bdchaq","bludyeck","eufaucpd","xnebrdaz","crpbatme","cbsda","bdjlvec","gadce","wdxbeam","egpcba","cwdabui","bdcse","ladeqc","drabegn","vajqebc","dubca","dkxpbce","ycdfyeag","badfe","aebzc","bdcpa","ubnixcde","jczjadje","nzbdeqa","ucbea","ricsxdba","bdesnckg","dkjixeca","bqwedvan","acemqbs","hdfcbat","delbwmc","ecaqdfho","vaexdb","fabeco","dbckqaf","djceb","eadcf","ubdahet","cgrevab","doacb","ncbed","auedcsg","ebamd","ceaob","mrdawbc","clebd","atrqdeco","skjdjeba","cabije","bdsaqc","ibdecq","feoaocd","edkoiba","nbaengci","uqdabqcy","etdoxcb","vdzeqac","abdei","abonnelc","fixbcda","zzycebd","uyakcdje","badez","ezobcxza","bacmtd","xbcoed","cedxa","ebahd","ckasbe","vvcgbnda","wlubedc","maendnc","eqbfzvda","earobc","docsrab","ebcdt","cedla","ahudesb","jecab","cdavb","kxebxcdu","dwaexc","odeba","lzcybae","ahcpbd","decbsz","dcnaeq","zaduejob","ebcaullr","adbtic","jbewdc","axvcyxed","edbfvza","pbqhcega","dlbacy","bcend","eagydc","bvugapde","yaebc","czdban","eucbyd","fjeafcd","xdabe","ezxcnab","cdbma","vbdce","cyeda","febdasr","iawuecbg","lcvbudau","deubc","qckelad","yebdahz","muaecb","bazmudc","bckduez","pedca","fezakbd","placeztb","bdurac","wbciedz","ayfdcej","aedboy","efkcba","doabc","bzcde","awedcj","deiwtatb","ebacs","tcvaldb","edbzlc","uecdga","udeba","cabueqv","jcdtbqxa","dbyncefk","etacds","tibedap","atebc","azucbvqd","cdbev","daecfmxh","aeisbd","emcbqma","pfwdabc","rjcodefb","aedclf","evfdbta","aloebcu","abgtdc","lybredc","craeid","eblad","jgbtcae","dacbmogg","bcned","fcudaxe","biakedn","baceus","dcaqbln","zcdeqfb","evfcdat","epazxdb","tbeca","bdfsgac","yzubevcd","laedc","daebw","lecahb","cbdmazjf","edsbco","oxaevcd","eiudbyja","paqbec","drpcbaik","bqcde","dtxncafe","ldxabeq","efcbram","dcbra","cegdb","cdeao","eoanbsd","tbpeksca","dcaby","eckdb","rdmoheca","dzbnrae","cfbae","ocjodkab","eblcdkm","jcead","seatbdp","nbkacfhe","sdcvbax","dbqsce","uawxuedc","aebrd","lbhjcea","zsdcbaj","kdcbe","pxapced","udbhae","fzycyeba","cdbka","durbyhec","aeyictpd","nggleabd","zycbaqie","kcabd","mbwtecsd","edanc","baezd","bavhetcs","lcaiblhd","bndec","dpzkecfa","asredb","epcab","kpbadpc","cobwqdeg","mdaec","abdet","scsegba","vcabmxd","edbcqhr","dehca","elsdaibl","ynbace","klacdqub","gcbzdeq","cajvfdoe","mmadefbu","bkeica","ctsdab","dxxbec","raczkhde","iaefdbov","fhbaec","csbadkpz","ewigodbc","dcklae","avybehdh","eafbc","djbac","dqfcebr","ldejiacw","hkdabe","beanc","dacqorb","bepxcds","ezaidc","adbxeg","ecxba","jadbfc","helbcd","aefdrc","admbe","mfbacerg","cbdkans","mpkdcbe","adycezqz","dvsebap","anecb","dcoabyz","dbvcjgie","aefgdch","jlhkbeda","cabtke","aubdwoc","dbucoexo","idceapz","ebjavdr","nelbzrac","watdcrbl","cegbjd","dzaec","javbdyxe","hacefpbg","hcadmb","ucdbe","zdcae","duraeb","xbehac","badncof","decbj","iadechp","edbiap","ahbscew","whdcabv","nedboc","cnuaedy","bfewdkpa","ebqac","acidhtby","becid","dqcean","ajdbe","ckqbeaj","jdbca","vdebsc","ecagd","vdjyabe","uabcyeg","cmybda","cdgovbe","cdakmmve","vdierba","boeca","ubaydc","djetbc","jecda","adegbu","jcfbvwae","dcyatmrb","jdbec","fyedac","mbvedams","bcxiae","adcblzsf","biced","egfadcs","aubkde","acvekb","bdaincl","cbfdzqew","ldcaej","ldebayr","oaebycz","dcwmba","bcved","aecfsozd","ubaedo","cbneawu","csydba","dbvgce","aywcned","gexadb","eblac","mbxacdf","cibedu","dfhcmeai","edmab","nebac","qdwascbs","scedbwu","leadc","qgvbeamd","hbace","dhbcgqa","ecbdhm","rcedyxa","ieblqda","pxsetcab","adbpc","deqycujb","decla","dyveaqbg","ckbae","aczobmd","ylbdoec","ceadr","bedsa","yacbue","zgbdacs","jcbyoefd","andce","sbyaeyjd","ecxabo","yalcbd","edfycxbs","ecpad","dbpekja","byacer","doxacbxk","decwvyb","eacgjd","odkbxea","usbacefg","dgwhgabc","xckdveby","vmavxedc","fdbaoeql","qoabcel","dacpb","descfb","oycedola","bidovea","axbec","cgdabvqu","cwqbed","aicehgdm","xfkedba","nbcaqtel","cdabx","nqcdebwz","afjfcdge","adtble","rcibaeui","bdnaxc","vicntdeb","cdiare","twesmdba","vegabc","ldabohtc","dncubel","seacpd","uudnaqbe","becam","ctdab","udbhecno","ejioydca","fsbades","jaebvc","bnwcda","cbzfzdye","rhdcpafe","daybe","kctbueja","wbrdavc","bdcgerr","pevcdna","maefbd","ejcbak","cudllvba","cblde","ovsaedjc","bxeload","bcyae","odabc","dbcygte","cetfdgaz","vaopebd","kheabc","bacds","bcsdei","eviaqkcd","jdjebpa","bcate","dablc","ycnmxbed","cqsaedt","qledalb","eazcobyx","afcdb","ekcxbtd","aieicd","jebda","zciqbea","uqzhcdab","iebnjdpc","pcaferdw","bvaemd","aebcw","vbdcan","uecbd","dacqe","dbejfla","ibrenauc","dayblc","nnbdce","dmcean","brtraed","arubce","abrrdrc","ucpedb","haetcd","bejadop","sabce","icduzba","bcdne","dacej","dabez","abkefcj","madcb","cwldegbz","fdpevac","beladp","fwucfeba","opbaysdc","xbedcp","cyeda","ameplbd","anebcm","dbapc","odbecfp","eckadzkv","nebyad","zeascgbt","fgdvcab","fgcdeb","eavndzc","ndbstea","uaceb","dbsca","cgbdleyy","emdocjaq","eqxabd","eabcww","bxcdyvas","cepdtb","wadckeup","ebydawkx","bnhfeaco","bduac","dscnbe","dtrchae","ybdae","eoacbyk","sbacdy","bfdpejcs","cevsadg","akdkbern","txbckaeq","dbcyah","hebcdn","cdaek","bhajyde","naebcnfn","cvbad","gecubdk","gadecml","agebd","piheabc","dimcba","ehdhcb","wzaochde","rjeaydb","bjmace","xalbdcj","ydbec","dpeacfm","edbsa","ctukbega","bioacnds","cjjdertb","wkcduea","nbade","caejhbl","cabdlhj","btecudmp","zeatdcf","embgduha","tecabjk","daucb","dlpbceom","ceajgd","dbneaz","taecsbg","akwbcd","ydhcbreu","avxdcxei","aehsbd","aepycbml","qaksdbc","ecwbd","euacd","eladbr","aebiic","cdabm","kzdzcobe","degacgw","deamxb","elsbca","fdzabc","ecdkb","oexdxauc","zjbxiead","cbtea","byaqcmgd","cedzhb","dnazjcew","dtneuba","hcabmxe","afcbd","ecgdbf","csiaeid","afbde","qbyseac","dycba","njehbcxd","aehdc","dneab","oaebc","wjrbdcqa","cftdbqre","ejdca","ebaud","zalbxfce","dravbhc","bdhjjmec","drmerqac","ekdkaib","nrebkcat","dabcng","bkycxed","dapmec","bendras","hicbae","bzdac","yedrcb","cedtnag","dbeiar","bvehamzc","rdcab","decbm","arclkde","vmeabd","abceupnw","vakcdbsr","ekcxndb","ruayhecd","dbrae","btcyaoei","btuqacd","gdekcwb","natdec","twavdeb","czabevxq","cdzblxla","kbeudmcu","oicfeady","vesadb","lreblcia","aijbcdg","dkeihcb","daegc","adubemm","auoeboc","mgcabd","rcsebkd","csualdue","daebo","cnebra","ayfybgcd","eikgcbdn","deacx","uaedb","wabeqc","cxadb","dnhbnce","adxec","bednak","acbte","dabsc","dcbekx","hazzeduc","hauduepb","cojbhaez","clavnlbd","cebud","kydaketc","fdwearby","bcpvaeg","aybdmc","cdebk","ecsmpxda","egakybfd","cheba","vcbudaks","ybecljld","ncaesd","ihadefbx","beacr","acdbp","cbedt","lcdaewhi","ejadb","basec","adiicb","cdibeo","vdjeca","enabhud","elcbiat","bdscna","wdzcbexg","adecr","zbdseav","bcraeg","dxaxbrcm","cbdeq","aeftcrd","qdxzvbae","cbrexapi","dcfboa","yvbqedc","aehycxd","fsbdeax","coaettlb","zcbavdul","debcj","vcdnmea","eubjidax","ebixacl","fgdcab","bcted","earcysd","dejajb","waebc","bckad","fbdcie","xedscarl","ezdab","aicteb","dkabcfwz","dibkce","gkedcray","zeoabkvd","ejaurbc","cqadbk","fbedcp","clkadkeq","eqbda","rcaezb","dcabjyyz","dysceb","calesspd","avbhde","avebcx","banqxtdc","dcebhxs","reqdiacp","beqda","eacbh","dbcaz","kecrdpb","cfdmea","dyebag","xcebaqh","adbcv","fqdceb","wdyecasm","eadgb","mcjbreat","cvmzbadv","ezdbc","dlcgae","ghoalbde","oaecpbko","dgfcpba","cedvb","cdaigye","ezadssb","bhchea","acmdsb","dcegzbg","plarecdk","fdbea","ooabcmeq","bfuksdca","bcdle","quefcaud","dpaeb","jeabc","cdlba","decyb","syeydcaf","yofbadef","qbsvneac","bxajcdkg","cxdbe","enacdt","dahteb","cazbe","cwbvuad","vbecvd","cjjaed","eardtbv","ebamcp","uadbc","cewdbp","dsczeag","bysrkaed","egxcab","tcbqviad","yubdxce","geadocz","bwaedgi","aecxbj","nhcakdlb","cxbxped","dpacez","eavlbd","aecqbgoq","djaucfb","cweqbdi","acewd","dabsgex","cyawbqe","dgbaqmgc","dycbe","cppudae","nebodawx","axejbuoc","xbcodaj","bjdzlcre","vkcedai","edpblkan","aqecb","uabcdvq","bcged","cvzdae","zbead","cbweopaj","adcbr","cbdye","cadeog","awbvude","abeqc","tctdba","ceubd","drvesacw","ydbape","kbaeoc","dkacb","ebdck","dcoaesq","dajbpe","aembc","acdbjzx","evbdcr","doafezsc","vbpdae","ceaftrb","cbdat","condyeb","ledac","kdatebs","cbeyqaz","avdbc","bedfclmh","rdacew","ebpda","embac","jcbpavdq","bdcemhs","gdlace","ezmpdahb","pacboxe","cibasdfr","dbqeyc","fcead","qaebisd","coaembu","ukabcd","deycb","midmace","vedab","jbeac","uwracdbn","bfcxydie","eamlicid","bdfae","ybcena","acbdnl","qbdkuecj","ceyad","fbadse","labec","dtchba","brdec","cljeqjda","qiadbe","ocbyoae","nbqtacd","obcedoi","xeacdo","bwetdau","sckbeav","dbqscxqa","cdeukhbo","dqaugce","baqemd","bekacuu","dbacj","ecdbry","ahecd","uaebdf","auykcneb","udmibca","ibcdem","acevd","nndhaegb","canybse","gadcb","bycdriek","eckda","bdsaepqi","kcaeb","btzcad","qdbcqye","aieczdum","wedab","eajbqc","hwaldcb","dcelbp","ygedcpra","tsoeibda","bjcleywa","aidbycs","bewdwc","ecsdhray","edaxb","wecabr","sxbcda","bcdstoej","jodmecia","bxaeomdq","vebapcu","dbeac"]
+=> "dbeac"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"fVf "
+["vff"]
+=> "vff"
+
+@gen 2 small
+"5d21"
+["d","dd","dd","ddd","dd"]
+=> "d"
+
+@gen 3 small
+"t408d7"
+["ttztz","zzd","dt"]
+=> "dt"
+
+@gen 4 small
+"D4"
+["d","s","s","ogos"]
+=> "d"
+
+@gen 5 small
+"w"
+["w"]
+=> "w"
+
+@gen 6 small
+"95z5FZz"
+["fzzfzf","fzzfzf"]
+=> "fzzfzf"
+
+@gen 7 small
+"ggg7GG3"
+["ggggg","gggg","gggggg","ggggbg","ggggbg","gggg","ggggggg","ggggg"]
+=> "ggggg"
+
+@gen 8 small
+"b N24"
+["bzbz","nz","zbbb","nz","bzbb","nn","nbb","bbbb"]
+=> "nbb"

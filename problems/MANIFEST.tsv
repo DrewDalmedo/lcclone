@@ -180,41 +180,41 @@
 671	second-minimum-node-in-a-binary-tree	Second Minimum Node In a Binary Tree	easy	no	tree	todo
 674	longest-continuous-increasing-subsequence	Longest Continuous Increasing Subsequence	easy	no	plain	draft
 680	valid-palindrome-ii	Valid Palindrome II	easy	no	plain	todo
-682	baseball-game	Baseball Game	easy	no	plain	todo
-693	binary-number-with-alternating-bits	Binary Number with Alternating Bits	easy	no	plain	todo
-696	count-binary-substrings	Count Binary Substrings	easy	no	plain	todo
-697	degree-of-an-array	Degree of an Array	easy	no	plain	todo
+682	baseball-game	Baseball Game	easy	no	plain	draft
+693	binary-number-with-alternating-bits	Binary Number with Alternating Bits	easy	no	plain	draft
+696	count-binary-substrings	Count Binary Substrings	easy	no	plain	draft
+697	degree-of-an-array	Degree of an Array	easy	no	plain	draft
 700	search-in-a-binary-search-tree	Search in a Binary Search Tree	easy	no	tree	todo
 703	kth-largest-element-in-a-stream	Kth Largest Element in a Stream	easy	no	design	todo
-704	binary-search	Binary Search	easy	no	plain	todo
+704	binary-search	Binary Search	easy	no	plain	draft
 705	design-hashset	Design HashSet	easy	no	design	todo
 706	design-hashmap	Design HashMap	easy	no	design	todo
-709	to-lower-case	To Lower Case	easy	no	plain	todo
-717	1-bit-and-2-bit-characters	1-bit and 2-bit Characters	easy	no	plain	todo
-724	find-pivot-index	Find Pivot Index	easy	no	plain	todo
-728	self-dividing-numbers	Self Dividing Numbers	easy	no	plain	todo
-733	flood-fill	Flood Fill	easy	no	plain	todo
+709	to-lower-case	To Lower Case	easy	no	plain	draft
+717	1-bit-and-2-bit-characters	1-bit and 2-bit Characters	easy	no	plain	draft
+724	find-pivot-index	Find Pivot Index	easy	no	plain	draft
+728	self-dividing-numbers	Self Dividing Numbers	easy	no	plain	draft
+733	flood-fill	Flood Fill	easy	no	plain	draft
 734	sentence-similarity	Sentence Similarity	easy	yes	skip:premium	todo
 744	find-smallest-letter-greater-than-target	Find Smallest Letter Greater Than Target	easy	no	plain	verified
-746	min-cost-climbing-stairs	Min Cost Climbing Stairs	easy	no	plain	todo
-747	largest-number-at-least-twice-of-others	Largest Number At Least Twice of Others	easy	no	plain	todo
-748	shortest-completing-word	Shortest Completing Word	easy	no	plain	todo
+746	min-cost-climbing-stairs	Min Cost Climbing Stairs	easy	no	plain	draft
+747	largest-number-at-least-twice-of-others	Largest Number At Least Twice of Others	easy	no	plain	draft
+748	shortest-completing-word	Shortest Completing Word	easy	no	plain	draft
 760	find-anagram-mappings	Find Anagram Mappings	easy	yes	skip:premium	todo
-762	prime-number-of-set-bits-in-binary-representation	Prime Number of Set Bits in Binary Representation	easy	no	plain	todo
-766	toeplitz-matrix	Toeplitz Matrix	easy	no	plain	todo
-771	jewels-and-stones	Jewels and Stones	easy	no	plain	todo
+762	prime-number-of-set-bits-in-binary-representation	Prime Number of Set Bits in Binary Representation	easy	no	plain	draft
+766	toeplitz-matrix	Toeplitz Matrix	easy	no	plain	draft
+771	jewels-and-stones	Jewels and Stones	easy	no	plain	draft
 783	minimum-distance-between-bst-nodes	Minimum Distance Between BST Nodes	easy	no	tree	todo
-796	rotate-string	Rotate String	easy	no	plain	todo
+796	rotate-string	Rotate String	easy	no	plain	draft
 800	similar-rgb-color	Similar RGB Color	easy	yes	skip:premium	todo
-804	unique-morse-code-words	Unique Morse Code Words	easy	no	plain	todo
-806	number-of-lines-to-write-string	Number of Lines To Write String	easy	no	plain	todo
+804	unique-morse-code-words	Unique Morse Code Words	easy	no	plain	draft
+806	number-of-lines-to-write-string	Number of Lines To Write String	easy	no	plain	draft
 812	largest-triangle-area	Largest Triangle Area	easy	no	float	draft
-819	most-common-word	Most Common Word	easy	no	plain	todo
-821	shortest-distance-to-a-character	Shortest Distance to a Character	easy	no	plain	todo
-824	goat-latin	Goat Latin	easy	no	plain	todo
-830	positions-of-large-groups	Positions of Large Groups	easy	no	plain	todo
-832	flipping-an-image	Flipping an Image	easy	no	plain	todo
-836	rectangle-overlap	Rectangle Overlap	easy	no	plain	todo
+819	most-common-word	Most Common Word	easy	no	plain	draft
+821	shortest-distance-to-a-character	Shortest Distance to a Character	easy	no	plain	draft
+824	goat-latin	Goat Latin	easy	no	plain	draft
+830	positions-of-large-groups	Positions of Large Groups	easy	no	plain	draft
+832	flipping-an-image	Flipping an Image	easy	no	plain	draft
+836	rectangle-overlap	Rectangle Overlap	easy	no	plain	draft
 844	backspace-string-compare	Backspace String Compare	easy	no	plain	todo
 859	buddy-strings	Buddy Strings	easy	no	plain	draft
 860	lemonade-change	Lemonade Change	easy	no	plain	draft
