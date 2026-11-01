@@ -1,0 +1,140 @@
+# Divide a String Into Groups of Size k.
+
+@example Rows of 4: "sunf", "lowe", then "r" and three copies of fill.
+"sunflower"
+4
+"z"
+=> ["sunf","lowe","rzzz"]
+
+@example 6 letters make exactly two rows of 3, so fill is never used.
+"pebble"
+3
+"q"
+=> ["peb","ble"]
+
+@example One row of 5 cells holds both letters; fill pads it even though it is a letter of s.
+"ox"
+5
+"o"
+=> ["oxooo"]
+
+# The smallest input.
+"m"
+1
+"a"
+=> ["m"]
+
+# k = 1: every letter is a row of its own.
+"dog"
+1
+"z"
+=> ["d","o","g"]
+
+# k equals the length: one full row.
+"river"
+5
+"y"
+=> ["river"]
+
+# k = 2 divides the length.
+"toasts"
+2
+"b"
+=> ["to","as","ts"]
+
+# k is one less than the length: the last row has a single letter.
+"lamp"
+3
+"e"
+=> ["lam","pee"]
+
+# fill equals the last letters of s; nothing is removed.
+"baa"
+2
+"a"
+=> ["ba","aa"]
+
+# One letter in a row of 100 cells: 99 copies of fill.
+"q"
+100
+"w"
+=> ["qwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"]
+
+# 100 letters, k = 99: the second row has one letter and 98 copies of fill.
+"mapleleafwindowsillcopperkettlegardenhosebluebirdsnowdriftlanterncobblestonepaperkitemarblestaircase"
+99
+"z"
+=> ["mapleleafwindowsillcopperkettlegardenhosebluebirdsnowdriftlanterncobblestonepaperkitemarblestaircas","ezzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"]
+
+# 100 letters, k = 100: one row, no fill.
+"thequickbrownfoxjumpsoverthelazydogthequickbrownfoxjumpsoverthelazydogthequickbrownfoxjumpsoverthela"
+100
+"a"
+=> ["thequickbrownfoxjumpsoverthelazydogthequickbrownfoxjumpsoverthelazydogthequickbrownfoxjumpsoverthela"]
+
+# 100 letters, k = 7: 14 full rows, then 2 letters and 5 copies of fill.
+"thequickbrownfoxjumpsoverthelazydogthequickbrownfoxjumpsoverthelazydogthequickbrownfoxjumpsoverthela"
+7
+"k"
+=> ["thequic","kbrownf","oxjumps","overthe","lazydog","thequic","kbrownf","oxjumps","overthe","lazydog","thequic","kbrownf","oxjumps","overthe","lakkkkk"]
+
+# 100 letters, k = 1: 100 rows.
+"mapleleafwindowsillcopperkettlegardenhosebluebirdsnowdriftlanterncobblestonepaperkitemarblestaircase"
+1
+"m"
+=> ["m","a","p","l","e","l","e","a","f","w","i","n","d","o","w","s","i","l","l","c","o","p","p","e","r","k","e","t","t","l","e","g","a","r","d","e","n","h","o","s","e","b","l","u","e","b","i","r","d","s","n","o","w","d","r","i","f","t","l","a","n","t","e","r","n","c","o","b","b","l","e","s","t","o","n","e","p","a","p","e","r","k","i","t","e","m","a","r","b","l","e","s","t","a","i","r","c","a","s","e"]
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"ccccbbb"
+3
+"c"
+=> ["ccc","cbb","bcc"]
+
+@gen 2 small
+"ccaaa"
+3
+"b"
+=> ["cca","aab"]
+
+@gen 3 small
+"cbb"
+1
+"c"
+=> ["c","b","b"]
+
+@gen 4 small
+"baa"
+10
+"b"
+=> ["baabbbbbbb"]
+
+@gen 5 small
+"ba"
+2
+"a"
+=> ["ba"]
+
+@gen 6 small
+"bc"
+9
+"c"
+=> ["bcccccccc"]
+
+# Full-size random cases.
+@gen 7
+"rwmwuuybzyadqtjemovrbvruktoazgvzfzwvxlxeeycilflgmcdamqtferudhceomdocwzbqzjq"
+15
+"u"
+=> ["rwmwuuybzyadqtj","emovrbvruktoazg","vzfzwvxlxeeycil","flgmcdamqtferud","hceomdocwzbqzjq"]
+
+@gen 8
+"evehitrxrfnztkitjucyhwyjtjkftcli"
+52
+"a"
+=> ["evehitrxrfnztkitjucyhwyjtjkftcliaaaaaaaaaaaaaaaaaaaa"]
+
+@gen 14
+"qihrujqyevvlvuveqxdgfjuwrguvtxdrhjncbcvrxkpzazghkhkxtmdcexcqfwtrxwztizxiiwipdorchbrlimrezgujennsodhj"
+48
+"y"
+=> ["qihrujqyevvlvuveqxdgfjuwrguvtxdrhjncbcvrxkpzazgh","khkxtmdcexcqfwtrxwztizxiiwipdorchbrlimrezgujenns","odhjyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"]

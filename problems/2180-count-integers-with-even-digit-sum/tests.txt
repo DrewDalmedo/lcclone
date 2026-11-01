@@ -1,0 +1,98 @@
+# Count Integers With Even Digit Sum.
+
+@example The blue doors are on houses 2, 4, 6, 8, 11 and 13.
+13
+=> 6
+
+@example Six blue doors up to house 13 (as in Example 1), then houses 15, 17, 19 and 20; house 21 adds up to 3.
+21
+=> 10
+
+@example 49 of the houses 1 to 99 get a blue door; house 100 adds up to 1, so it doesn't.
+100
+=> 49
+
+# The smallest street: house 1 has an odd total.
+1
+=> 0
+
+# The last house counts when its total is even.
+2
+=> 1
+
+# Single digits: just the even numbers.
+9
+=> 4
+
+# 10 adds up to 1, so the count stays at 4 (10 / 2 would say 5).
+10
+=> 4
+
+# 11 adds up to 2.
+11
+=> 5
+
+# Odd num, even total (1 + 9 = 10).
+19
+=> 9
+
+# Just past the first hundred: 101 adds up to 2.
+101
+=> 50
+
+# A multiple of 10 with an odd total (2 + 1 + 0 = 3).
+210
+=> 104
+
+# 500 adds up to 5.
+500
+=> 249
+
+# The largest answer, reached at 998, 999 and 1000; 1000 is the only
+# four-digit house number, with total 1.
+998
+=> 499
+
+999
+=> 499
+
+1000
+=> 499
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+7
+=> 3
+
+@gen 2 small
+99
+=> 49
+
+@gen 3 small
+851
+=> 425
+
+@gen 4 small
+363
+=> 181
+
+@gen 5 small
+2
+=> 1
+
+@gen 6 small
+10
+=> 4
+
+# Full-size random cases.
+@gen 1
+943
+=> 471
+
+@gen 2
+908
+=> 453
+
+@gen 3
+974
+=> 487

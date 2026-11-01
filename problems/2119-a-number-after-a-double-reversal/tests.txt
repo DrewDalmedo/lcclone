@@ -1,0 +1,98 @@
+# A Number After a Double Reversal.
+
+@example 2051 flips to 1502, which flips back to 2051.
+2051
+=> true
+
+@example 730 flips to 037, that is 37, and 37 flips to 73.
+730
+=> false
+
+@example Zeros in the middle stay put: 60405 flips to 50406 and back to 60405.
+60405
+=> true
+
+# Zero flips to zero both times.
+0
+=> true
+
+# Single digits.
+1
+=> true
+
+9
+=> true
+
+# The smallest and the largest multiples of 10 (10^6 flips to 1, then to 1).
+10
+=> false
+
+1000000
+=> false
+
+# Several zeros at the end, all lost in the first flip.
+4500
+=> false
+
+900000
+=> false
+
+# Zeros right after the first digit and right before the last.
+100001
+=> true
+
+105
+=> true
+
+# Not a palindrome: one flip changes the number, two bring it back.
+12
+=> true
+
+# The largest value that doesn't end in 0, and the one just below it.
+999999
+=> true
+
+999990
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 3 small
+2000
+=> false
+
+@gen 4 small
+8810
+=> false
+
+@gen 12 small
+4084
+=> true
+
+@gen 13 small
+6
+=> true
+
+@gen 15 small
+6900
+=> false
+
+@gen 22 small
+379
+=> true
+
+@gen 30 small
+7001
+=> true
+
+# Full-size cases: six digits, or 10^6.
+@gen 8
+500113
+=> true
+
+@gen 9
+154084
+=> true
+
+@gen 10
+1000000
+=> false

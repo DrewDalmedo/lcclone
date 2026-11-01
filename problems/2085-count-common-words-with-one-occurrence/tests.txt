@@ -1,0 +1,121 @@
+# Count Common Words With One Occurrence.
+
+@example "green" is once in each list; "blue" is twice in words1, and "red" and "pink" are each in one list only.
+["red","blue","green","blue"]
+["blue","green","pink"]
+=> 1
+
+@example Every word is once in each list, in another order.
+["sun","moon","star"]
+["star","moon","sun"]
+=> 3
+
+@example "ox" is repeated in words1, so it is not paired.
+["ox","ox"]
+["ox"]
+=> 0
+
+# Single words.
+["a"]
+["a"]
+=> 1
+
+["a"]
+["b"]
+=> 0
+
+# No word in common.
+["aa","bb","cc"]
+["dd","ee"]
+=> 0
+
+# Once in words1 but twice in words2.
+["cat","dog"]
+["dog","cat","cat"]
+=> 1
+
+# Three times in words1 and once in words2: counting pairs of positions
+# would give 3 for "hi".
+["hi","hi","hi","yo"]
+["hi","yo"]
+=> 1
+
+# Repeated in both lists.
+["x","x","y"]
+["x","x","y"]
+=> 1
+
+# Twice in one list and absent from the other: two occurrences in all,
+# but not one in each list.
+["pq","pq"]
+["rs"]
+=> 0
+
+# Prefixes and near misses are different words.
+["ab","abc","abd","b"]
+["abc","a","abd","bb"]
+=> 2
+
+# Words of 30 letters that differ only in the last letter.
+["abcdefghijklmnopqrstuvwxyzabcd","abcdefghijklmnopqrstuvwxyzabce"]
+["abcdefghijklmnopqrstuvwxyzabce","abcdefghijklmnopqrstuvwxyzabcf"]
+=> 1
+
+# Lists of very different sizes.
+["solo"]
+["a","b","solo","c","d","e","f","g"]
+=> 1
+
+# 257 copies of "w" in words1 and of "v" in words2, each once in the other
+# list: an 8-bit count reads 257 as 1. Only "q" is paired.
+["w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","w","q","v"]
+["w","q","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v","v"]
+=> 1
+
+# 300 different words, the same in both lists in reverse order: more than
+# an 8-bit counter holds.
+["aa","ab","ac","ad","ae","af","ag","ah","ai","aj","ak","al","am","an","ao","ap","aq","ar","as","at","au","av","aw","ax","ay","az","ba","bb","bc","bd","be","bf","bg","bh","bi","bj","bk","bl","bm","bn","bo","bp","bq","br","bs","bt","bu","bv","bw","bx","by","bz","ca","cb","cc","cd","ce","cf","cg","ch","ci","cj","ck","cl","cm","cn","co","cp","cq","cr","cs","ct","cu","cv","cw","cx","cy","cz","da","db","dc","dd","de","df","dg","dh","di","dj","dk","dl","dm","dn","do","dp","dq","dr","ds","dt","du","dv","dw","dx","dy","dz","ea","eb","ec","ed","ee","ef","eg","eh","ei","ej","ek","el","em","en","eo","ep","eq","er","es","et","eu","ev","ew","ex","ey","ez","fa","fb","fc","fd","fe","ff","fg","fh","fi","fj","fk","fl","fm","fn","fo","fp","fq","fr","fs","ft","fu","fv","fw","fx","fy","fz","ga","gb","gc","gd","ge","gf","gg","gh","gi","gj","gk","gl","gm","gn","go","gp","gq","gr","gs","gt","gu","gv","gw","gx","gy","gz","ha","hb","hc","hd","he","hf","hg","hh","hi","hj","hk","hl","hm","hn","ho","hp","hq","hr","hs","ht","hu","hv","hw","hx","hy","hz","ia","ib","ic","id","ie","if","ig","ih","ii","ij","ik","il","im","in","io","ip","iq","ir","is","it","iu","iv","iw","ix","iy","iz","ja","jb","jc","jd","je","jf","jg","jh","ji","jj","jk","jl","jm","jn","jo","jp","jq","jr","js","jt","ju","jv","jw","jx","jy","jz","ka","kb","kc","kd","ke","kf","kg","kh","ki","kj","kk","kl","km","kn","ko","kp","kq","kr","ks","kt","ku","kv","kw","kx","ky","kz","la","lb","lc","ld","le","lf","lg","lh","li","lj","lk","ll","lm","ln"]
+["ln","lm","ll","lk","lj","li","lh","lg","lf","le","ld","lc","lb","la","kz","ky","kx","kw","kv","ku","kt","ks","kr","kq","kp","ko","kn","km","kl","kk","kj","ki","kh","kg","kf","ke","kd","kc","kb","ka","jz","jy","jx","jw","jv","ju","jt","js","jr","jq","jp","jo","jn","jm","jl","jk","jj","ji","jh","jg","jf","je","jd","jc","jb","ja","iz","iy","ix","iw","iv","iu","it","is","ir","iq","ip","io","in","im","il","ik","ij","ii","ih","ig","if","ie","id","ic","ib","ia","hz","hy","hx","hw","hv","hu","ht","hs","hr","hq","hp","ho","hn","hm","hl","hk","hj","hi","hh","hg","hf","he","hd","hc","hb","ha","gz","gy","gx","gw","gv","gu","gt","gs","gr","gq","gp","go","gn","gm","gl","gk","gj","gi","gh","gg","gf","ge","gd","gc","gb","ga","fz","fy","fx","fw","fv","fu","ft","fs","fr","fq","fp","fo","fn","fm","fl","fk","fj","fi","fh","fg","ff","fe","fd","fc","fb","fa","ez","ey","ex","ew","ev","eu","et","es","er","eq","ep","eo","en","em","el","ek","ej","ei","eh","eg","ef","ee","ed","ec","eb","ea","dz","dy","dx","dw","dv","du","dt","ds","dr","dq","dp","do","dn","dm","dl","dk","dj","di","dh","dg","df","de","dd","dc","db","da","cz","cy","cx","cw","cv","cu","ct","cs","cr","cq","cp","co","cn","cm","cl","ck","cj","ci","ch","cg","cf","ce","cd","cc","cb","ca","bz","by","bx","bw","bv","bu","bt","bs","br","bq","bp","bo","bn","bm","bl","bk","bj","bi","bh","bg","bf","be","bd","bc","bb","ba","az","ay","ax","aw","av","au","at","as","ar","aq","ap","ao","an","am","al","ak","aj","ai","ah","ag","af","ae","ad","ac","ab","aa"]
+=> 300
+
+# 1000 different words in each list, 1400 different words in all, 600 of
+# them in both lists: a lookup table with room for only 1024 words fills up.
+["aaa","amz","azy","aal","ank","baj","aaw","anv","bau","abh","aog","bbf","abs","aor","bbq","acd","apc","bcb","aco","apn","bcm","acz","apy","bcx","adk","aqj","bdi","adv","aqu","bdt","aeg","arf","bee","aer","arq","bep","afc","asb","bfa","afn","asm","bfl","afy","asx","bfw","agj","ati","bgh","agu","att","bgs","ahf","aue","bhd","ahq","aup","bho","aib","ava","bhz","aim","avl","bik","aix","avw","biv","aji","awh","bjg","ajt","aws","bjr","ake","axd","bkc","akp","axo","bkn","ala","axz","bky","all","ayk","blj","alw","ayv","blu","amh","azg","bmf","ams","azr","aae","and","bac","aap","ano","ban","aba","anz","bay","abl","aok","bbj","abw","aov","bbu","ach","apg","bcf","acs","apr","bcq","add","aqc","bdb","ado","aqn","bdm","adz","aqy","bdx","aek","arj","bei","aev","aru","bet","afg","asf","bfe","afr","asq","bfp","agc","atb","bga","agn","atm","bgl","agy","atx","bgw","ahj","aui","bhh","ahu","aut","bhs","aif","ave","bid","aiq","avp","bio","ajb","awa","biz","ajm","awl","bjk","ajx","aww","bjv","aki","axh","bkg","akt","axs","bkr","ale","ayd","blc","alp","ayo","bln","ama","ayz","bly","aml","azk","bmj","amw","azv","aai","anh","bag","aat","ans","bar","abe","aod","bbc","abp","aoo","bbn","aca","aoz","bby","acl","apk","bcj","acw","apv","bcu","adh","aqg","bdf","ads","aqr","bdq","aed","arc","beb","aeo","arn","bem","aez","ary","bex","afk","asj","bfi","afv","asu","bft","agg","atf","bge","agr","atq","bgp","ahc","aub","bha","ahn","aum","bhl","ahy","aux","bhw","aij","avi","bih","aiu","avt","bis","ajf","awe","bjd","ajq","awp","bjo","akb","axa","bjz","akm","axl","bkk","akx","axw","bkv","ali","ayh","blg","alt","ays","blr","ame","azd","bmc","amp","azo","aab","ana","azz","aam","anl","bak","aax","anw","bav","abi","aoh","bbg","abt","aos","bbr","ace","apd","bcc","acp","apo","bcn","ada","apz","bcy","adl","aqk","bdj","adw","aqv","bdu","aeh","arg","bef","aes","arr","beq","afd","asc","bfb","afo","asn","bfm","afz","asy","bfx","agk","atj","bgi","agv","atu","bgt","ahg","auf","bhe","ahr","auq","bhp","aic","avb","bia","ain","avm","bil","aiy","avx","biw","ajj","awi","bjh","aju","awt","bjs","akf","axe","bkd","akq","axp","bko","alb","aya","bkz","alm","ayl","blk","alx","ayw","blv","ami","azh","bmg","amt","azs","aaf","ane","bad","aaq","anp","bao","abb","aoa","baz","abm","aol","bbk","abx","aow","bbv","aci","aph","bcg","act","aps","bcr","ade","aqd","bdc","adp","aqo","bdn","aea","aqz","bdy","ael","ark","bej","aew","arv","beu","afh","asg","bff","afs","asr","bfq","agd","atc","bgb","ago","atn","bgm","agz","aty","bgx","ahk","auj","bhi","ahv","auu","bht","aig","avf","bie","air","avq","bip","ajc","awb","bja","ajn","awm","bjl","ajy","awx","bjw","akj","axi","bkh","aku","axt","bks","alf","aye","bld","alq","ayp","blo","amb","aza","blz","amm","azl","bmk","amx","azw","aaj","ani","bah","aau","ant","bas","abf","aoe","bbd","abq","aop","bbo","acb","apa","bbz","acm","apl","bck","acx","apw","bcv","adi","aqh","bdg","adt","aqs","bdr","aee","ard","bec","aep","aro","ben","afa","arz","bey","afl","ask","bfj","afw","asv","bfu","agh","atg","bgf","ags","atr","bgq","ahd","auc","bhb","aho","aun","bhm","ahz","auy","bhx","aik","avj","bii","aiv","avu","bit","ajg","awf","bje","ajr","awq","bjp","akc","axb","bka","akn","axm","bkl","aky","axx","bkw","alj","ayi","blh","alu","ayt","bls","amf","aze","bmd","amq","azp","aac","anb","baa","aan","anm","bal","aay","anx","baw","abj","aoi","bbh","abu","aot","bbs","acf","ape","bcd","acq","app","bco","adb","aqa","bcz","adm","aql","bdk","adx","aqw","bdv","aei","arh","beg","aet","ars","ber","afe","asd","bfc","afp","aso","bfn","aga","asz","bfy","agl","atk","bgj","agw","atv","bgu","ahh","aug","bhf","ahs","aur","bhq","aid","avc","bib","aio","avn","bim","aiz","avy","bix","ajk","awj","bji","ajv","awu","bjt","akg","axf","bke","akr","axq","bkp","alc","ayb","bla","aln","aym","bll","aly","ayx","blw","amj","azi","bmh","amu","azt","aag","anf","bae","aar","anq","bap","abc","aob","bba","abn","aom","bbl","aby","aox","bbw","acj","api","bch","acu","apt","bcs","adf","aqe","bdd","adq","aqp","bdo","aeb","ara","bdz","aem","arl","bek","aex","arw","bev","afi","ash","bfg","aft","ass","bfr","age","atd","bgc","agp","ato","bgn","aha","atz","bgy","ahl","auk","bhj","ahw","auv","bhu","aih","avg","bif","ais","avr","biq","ajd","awc","bjb","ajo","awn","bjm","ajz","awy","bjx","akk","axj","bki","akv","axu","bkt","alg","ayf","ble","alr","ayq","blp","amc","azb","bma","amn","azm","bml","amy","azx","aak","anj","bai","aav","anu","bat","abg","aof","bbe","abr","aoq","bbp","acc","apb","bca","acn","apm","bcl","acy","apx","bcw","adj","aqi","bdh","adu","aqt","bds","aef","are","bed","aeq","arp","beo","afb","asa","bez","afm","asl","bfk","afx","asw","bfv","agi","ath","bgg","agt","ats","bgr","ahe","aud","bhc","ahp","auo","bhn","aia","auz","bhy","ail","avk","bij","aiw","avv","biu","ajh","awg","bjf","ajs","awr","bjq","akd","axc","bkb","ako","axn","bkm","akz","axy","bkx","alk","ayj","bli","alv","ayu","blt","amg","azf","bme","amr","azq","aad","anc","bab","aao","ann","bam","aaz","any","bax","abk","aoj","bbi","abv","aou","bbt","acg","apf","bce","acr","apq","bcp","adc","aqb","bda","adn","aqm","bdl","ady","aqx","bdw","aej","ari","beh","aeu","art","bes","aff","ase","bfd","afq","asp","bfo","agb","ata","bfz","agm","atl","bgk","agx","atw","bgv","ahi","auh","bhg","aht","aus","bhr","aie","avd","bic","aip","avo","bin","aja","avz","biy","ajl","awk","bjj","ajw","awv","bju","akh","axg","bkf","aks","axr","bkq","ald","ayc","blb","alo","ayn","blm","alz","ayy","blx","amk","azj","bmi","amv","azu","aah","ang","baf","aas","anr","baq","abd","aoc","bbb","abo","aon","bbm","abz","aoy","bbx","ack","apj","bci","acv","apu","bct","adg","aqf","bde","adr","aqq","bdp","aec","arb","bea","aen","arm","bel","aey","arx","bew","afj","asi","bfh","afu","ast","bfs","agf","ate","bgd","agq","atp","bgo","ahb","aua","bgz","ahm","aul","bhk","ahx","auw","bhv","aii","avh","big","ait","avs","bir","aje","awd","bjc","ajp","awo","bjn","aka","awz","bjy","akl","axk","bkj","akw","axv","bku","alh","ayg","blf","als","ayr","blq","amd","azc","bmb","amo","azn"]
+["apk","bgt","byc","bcz","bui","azf","bqo","avl","bmu","arr","bja","caj","bfg","bwp","bbm","bsv","axs","bpb","aty","blh","aqe","bhn","byw","bdt","bvc","azz","bri","awf","bno","asl","bju","cbd","bga","bxj","bcg","btp","aym","bpv","aus","bmb","aqy","bih","bzq","ben","bvw","bat","bsc","awz","boi","atf","bko","apl","bgu","byd","bda","buj","azg","bqp","avm","bmv","ars","bjb","cak","bfh","bwq","bbn","bsw","axt","bpc","atz","bli","aqf","bho","byx","bdu","bvd","baa","brj","awg","bnp","asm","bjv","cbe","bgb","bxk","bch","btq","ayn","bpw","aut","bmc","aqz","bii","bzr","beo","bvx","bau","bsd","axa","boj","atg","bkp","apm","bgv","bye","bdb","buk","azh","bqq","avn","bmw","art","bjc","cal","bfi","bwr","bbo","bsx","axu","bpd","aua","blj","aqg","bhp","byy","bdv","bve","bab","brk","awh","bnq","asn","bjw","cbf","bgc","bxl","bci","btr","ayo","bpx","auu","bmd","ara","bij","bzs","bep","bvy","bav","bse","axb","bok","ath","bkq","apn","bgw","byf","bdc","bul","azi","bqr","avo","bmx","aru","bjd","cam","bfj","bws","bbp","bsy","axv","bpe","aub","blk","aqh","bhq","byz","bdw","bvf","bac","brl","awi","bnr","aso","bjx","cbg","bgd","bxm","bcj","bts","ayp","bpy","auv","bme","arb","bik","bzt","beq","bvz","baw","bsf","axc","bol","ati","bkr","apo","bgx","byg","bdd","bum","azj","bqs","avp","bmy","arv","bje","can","bfk","bwt","bbq","bsz","axw","bpf","auc","bll","aqi","bhr","bza","bdx","bvg","bad","brm","awj","bns","asp","bjy","cbh","bge","bxn","bck","btt","ayq","bpz","auw","bmf","arc","bil","bzu","ber","bwa","bax","bsg","axd","bom","atj","bks","app","bgy","byh","bde","bun","azk","bqt","avq","bmz","arw","bjf","cao","bfl","bwu","bbr","bta","axx","bpg","aud","blm","aqj","bhs","bzb","bdy","bvh","bae","brn","awk","bnt","asq","bjz","cbi","bgf","bxo","bcl","btu","ayr","bqa","aux","bmg","ard","bim","bzv","bes","bwb","bay","bsh","axe","bon","atk","bkt","apq","bgz","byi","bdf","buo","azl","bqu","avr","bna","arx","bjg","cap","bfm","bwv","bbs","btb","axy","bph","aue","bln","aqk","bht","bzc","bdz","bvi","baf","bro","awl","bnu","asr","bka","cbj","bgg","bxp","bcm","btv","ays","bqb","auy","bmh","are","bin","bzw","bet","bwc","baz","bsi","axf","boo","atl","bku","apr","bha","byj","bdg","bup","azm","bqv","avs","bnb","ary","bjh","caq","bfn","bww","bbt","btc","axz","bpi","auf","blo","aql","bhu","bzd","bea","bvj","bag","brp","awm","bnv","ass","bkb","cbk","bgh","bxq","bcn","btw","ayt","bqc","auz","bmi","arf","bio","bzx","beu","bwd","bba","bsj","axg","bop","atm","bkv","aps","bhb","byk","bdh","buq","azn","bqw","avt","bnc","arz","bji","car","bfo","bwx","bbu","btd","aya","bpj","aug","blp","aqm","bhv","bze","beb","bvk","bah","brq","awn","bnw","ast","bkc","cbl","bgi","bxr","bco","btx","ayu","bqd","ava","bmj","arg","bip","bzy","bev","bwe","bbb","bsk","axh","boq","atn","bkw","apt","bhc","byl","bdi","bur","azo","bqx","avu","bnd","asa","bjj","cas","bfp","bwy","bbv","bte","ayb","bpk","auh","blq","aqn","bhw","bzf","bec","bvl","bai","brr","awo","bnx","asu","bkd","cbm","bgj","bxs","bcp","bty","ayv","bqe","avb","bmk","arh","biq","bzz","bew","bwf","bbc","bsl","axi","bor","ato","bkx","apu","bhd","bym","bdj","bus","azp","bqy","avv","bne","asb","bjk","cat","bfq","bwz","bbw","btf","ayc","bpl","aui","blr","aqo","bhx","bzg","bed","bvm","baj","brs","awp","bny","asv","bke","cbn","bgk","bxt","bcq","btz","ayw","bqf","avc","bml","ari","bir","caa","bex","bwg","bbd","bsm","axj","bos","atp","bky","apv","bhe","byn","bdk","but","azq","bqz","avw","bnf","asc","bjl","cau","bfr","bxa","bbx","btg","ayd","bpm","auj","bls","aqp","bhy","bzh","bee","bvn","bak","brt","awq","bnz","asw","bkf","cbo","bgl","bxu","bcr","bua","ayx","bqg","avd","bmm","arj","bis","cab","bey","bwh","bbe","bsn","axk","bot","atq","bkz","apw","bhf","byo","bdl","buu","azr","bra","avx","bng","asd","bjm","cav","bfs","bxb","bby","bth","aye","bpn","auk","blt","aqq","bhz","bzi","bef","bvo","bal","bru","awr","boa","asx","bkg","cbp","bgm","bxv","bcs","bub","ayy","bqh","ave","bmn","ark","bit","cac","bez","bwi","bbf","bso","axl","bou","atr","bla","apx","bhg","byp","bdm","buv","azs","brb","avy","bnh","ase","bjn","caw","bft","bxc","bbz","bti","ayf","bpo","aul","blu","aqr","bia","bzj","beg","bvp","bam","brv","aws","bob","asy","bkh","cbq","bgn","bxw","bct","buc","ayz","bqi","avf","bmo","arl","biu","cad","bfa","bwj","bbg","bsp","axm","bov","ats","blb","apy","bhh","byq","bdn","buw","azt","brc","avz","bni","asf","bjo","cax","bfu","bxd","bca","btj","ayg","bpp","aum","blv","aqs","bib","bzk","beh","bvq","ban","brw","awt","boc","asz","bki","cbr","bgo","bxx","bcu","bud","aza","bqj","avg","bmp","arm","biv","cae","bfb","bwk","bbh","bsq","axn","bow","att","blc","apz","bhi","byr","bdo","bux","azu","brd","awa","bnj","asg","bjp","cay","bfv","bxe","bcb","btk","ayh","bpq","aun","blw","aqt","bic","bzl","bei","bvr","bao","brx","awu","bod","ata","bkj","cbs","bgp","bxy","bcv","bue","azb","bqk","avh","bmq","arn","biw","caf","bfc","bwl","bbi","bsr","axo","box","atu","bld","aqa","bhj","bys","bdp","buy","azv","bre","awb","bnk","ash","bjq","caz","bfw","bxf","bcc","btl","ayi","bpr","auo","blx","aqu","bid","bzm","bej","bvs","bap","bry","awv","boe","atb","bkk","cbt","bgq","bxz","bcw","buf","azc","bql","avi","bmr","aro","bix","cag","bfd","bwm","bbj","bss","axp","boy","atv","ble","aqb","bhk","byt","bdq","buz","azw","brf","awc","bnl","asi","bjr","cba","bfx","bxg","bcd","btm","ayj","bps","aup","bly","aqv","bie","bzn","bek","bvt","baq","brz","aww","bof","atc","bkl","cbu","bgr","bya","bcx","bug","azd","bqm","avj","bms","arp","biy","cah","bfe","bwn","bbk","bst","axq","boz","atw","blf","aqc","bhl","byu","bdr","bva","azx","brg","awd","bnm","asj","bjs","cbb","bfy","bxh","bce","btn","ayk","bpt","auq","blz","aqw","bif","bzo","bel","bvu","bar","bsa","awx","bog","atd","bkm","cbv","bgs","byb","bcy","buh","aze","bqn","avk","bmt","arq","biz","cai","bff","bwo","bbl","bsu","axr","bpa","atx","blg","aqd","bhm","byv","bds","bvb","azy","brh","awe","bnn","ask","bjt","cbc","bfz","bxi","bcf","bto","ayl","bpu","aur","bma","aqx","big","bzp","bem","bvv","bas","bsb","awy","boh","ate","bkn"]
+=> 600
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+["ba","aa","ab","b","ab"]
+["abc","b","a"]
+=> 1
+
+@gen 6 small
+["a","c"]
+["aa","aa","abc","a","a","ab","c","aa"]
+=> 1
+
+@gen 8 small
+["abcd","ab","a","abcd"]
+["c","abcd","aa","abcd"]
+=> 0
+
+@gen 12 small
+["b","aa"]
+["aa","aa","aa","b","aa"]
+=> 1
+
+@gen 15 small
+["a","b","ab","ba","b","abc"]
+["ba","b","ab","a","c"]
+=> 3
+
+@gen 17 small
+["c","ab","ba","aa","b","ab"]
+["a","b","c","b","abc","ab","aa"]
+=> 2
+
+@gen 18 small
+["abc","ab","a","ba","aa","abc"]
+["ba","abc"]
+=> 1

@@ -1,0 +1,104 @@
+# Check if All A's Appears Before All B's.
+
+@example Cut after the first letter: "a" on the left, "bbb" on the right.
+"abbb"
+=> true
+
+@example The last a stands to the right of two b's, so no cut works.
+"aabba"
+=> false
+
+@example Cut after the last letter; the right part is empty.
+"aaaa"
+=> true
+
+# One letter.
+"a"
+=> true
+
+"b"
+=> true
+
+# The shortest string with a b before an a.
+"ba"
+=> false
+
+# Only b's: the left part is empty.
+"bbbbbbb"
+=> true
+
+# One b too early, at the very start: the only "ba" is the first pair.
+"baaaaa"
+=> false
+
+# One a too late, at the very end: the only "ba" is the last pair.
+"abbbbba"
+=> false
+
+# Starts with a and ends with b, but a b comes before an a in the middle.
+"aababb"
+=> false
+
+# 100 letters: only a's, only b's, and 50 of each in order.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> true
+
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> true
+
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> true
+
+# 100 letters with a single "ba", at the last pair, then at the first.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaba"
+=> false
+
+"babbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abbabbb"
+=> false
+
+@gen 3 small
+"bbbbabbb"
+=> false
+
+@gen 7 small
+"bbbbab"
+=> false
+
+@gen 10 small
+"aabbbbbb"
+=> true
+
+@gen 12 small
+"bbbb"
+=> true
+
+@gen 13 small
+"aaaaa"
+=> true
+
+@gen 16 small
+"abaabb"
+=> false
+
+@gen 20 small
+"abb"
+=> true
+
+# Full-size cases of 100 letters: a's then b's, then the same with one
+# neighbouring pair swapped, then with one letter flipped.
+@gen 38
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> true
+
+@gen 39
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaababbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> false
+
+@gen 56
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbabbbbbbb"
+=> false

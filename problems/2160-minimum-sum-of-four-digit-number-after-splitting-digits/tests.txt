@@ -1,0 +1,83 @@
+# Minimum Sum of Four Digit Number After Splitting Digits.
+
+@example 1 and 2 go in the tens places: 16 + 28 = 44, and no other way of sharing out 8, 2, 6 and 1 does better.
+8261
+=> 44
+
+@example Both zeros can lead: 03 + 07 = 10.
+7030
+=> 10
+
+@example A three-digit part costs more: 246 + 8 = 254, while 26 + 48 = 74.
+2468
+=> 74
+
+# The smallest num: three zeros, so 00 + 01.
+1000
+=> 1
+
+# The largest num; the sum is past what a signed char holds.
+9999
+=> 198
+
+8899
+=> 178
+
+# All four digits the same.
+1111
+=> 22
+
+# Digits in descending order.
+9876
+=> 147
+
+# Scrambled digits: 12 + 49 = 61 pairs them wrongly.
+4192
+=> 43
+
+# Two zeros, in different places.
+6001
+=> 7
+
+4300
+=> 7
+
+9080
+=> 17
+
+# One zero, in the middle.
+5034
+=> 39
+
+# Two pairs of equal digits.
+7337
+=> 74
+
+# The two middle digits are equal.
+1552
+=> 40
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+8888
+=> 176
+
+@gen 2 small
+3200
+=> 5
+
+@gen 3 small
+7850
+=> 65
+
+@gen 4 small
+6362
+=> 62
+
+@gen 5 small
+8008
+=> 16
+
+@gen 6 small
+6769
+=> 136
