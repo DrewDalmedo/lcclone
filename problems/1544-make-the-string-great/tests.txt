@@ -1,0 +1,108 @@
+# Make The String Great.
+
+@example yY clashes and goes; then a and A meet and go too. The two k's have the same case, so they stay.
+"kayYAk"
+=> "kk"
+
+@example Erasing Zz or zZ leaves a single Z either way.
+"ZzZ"
+=> "Z"
+
+@example Nn goes, then oO, then mM: nothing is left.
+"mNnoOM"
+=> ""
+
+# A single letter.
+"q"
+=> "q"
+
+# Two letters that clash.
+"Aa"
+=> ""
+
+# The same letter in the same case never clashes.
+"xx"
+=> "xx"
+
+# Different letters don't clash, whatever their cases.
+"abAB"
+=> "abAB"
+
+# Equal letters next to each other go once the pair between them has gone.
+"ggGG"
+=> ""
+
+# An overlap: lL and Ll share the capital L; either way "Helo" is left.
+"HelLlo"
+=> "Helo"
+
+# The first two letters clash.
+"EeeF"
+=> "eF"
+
+# Pairs side by side, and a nest erased from the middle out.
+"hHjJkK"
+=> ""
+
+"pqrstTSRQP"
+=> ""
+
+# The letters that remain keep their cases and their order; an odd length
+# always leaves something.
+"QwWeRrT"
+=> "QeT"
+
+"wxyYXWv"
+=> "v"
+
+# The longest string: a nest 50 deep, erased one pair at a time.
+"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxXWVUTSRQPONMLKJIHGFEDCBAZYXWVUTSRQPONMLKJIHGFEDCBA"
+=> ""
+
+# The longest string with no clash at all: all 100 letters stay, so the
+# result needs 101 bytes with its terminating NUL.
+"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZaabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxx"
+=> "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZaabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxx"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"cCCbCAAAb"
+=> "CbCAAAb"
+
+@gen 2 small
+"cbbaaac"
+=> "cbbaaac"
+
+@gen 3 small
+"bbcACB"
+=> "bbcACB"
+
+@gen 4 small
+"BcaB"
+=> "BcaB"
+
+@gen 5 small
+"AbBBbABbBb"
+=> "AA"
+
+@gen 6 small
+"bA"
+=> "bA"
+
+@gen 7 small
+"AA"
+=> "AA"
+
+# Full-size cases: a nest 50 deep, the same with three letters changed,
+# and random letters.
+@gen 4
+"BYLaMfYSEzGuAjjyLcSeQqCKvlREKgwkpxAiLemLZLroGJFOZSszofjgORlzlMElIaXPKWGkerLVkcQqEsClYJJaUgZesyFmAlyb"
+=> ""
+
+@gen 1
+"IwOXLSNNRlOjisGUZpMcGiLDBaBJrfAdpOOLByLciuejeYjsTdDtSJyEJEUIClYblooEpaFRjbAbdlIgCVPzugSIJoLrnnslxoWi"
+=> "IwOXLSNNRlOjisGUZpMcGiLDBaBJrfAdpEpaFRjbAbdlIgCVPzugSIJoLrnnslxoWi"
+
+@gen 3
+"xQCkCFHDwkiyLNPjUGrOsUgKjUDwmKOoeCAEuMUqBEssGoaTDiZvxmAxLmdAXqKIuhxkAXGOBUsoEiSmXMlyNJsnrtGtkgVPnxQQ"
+=> "xQCkCFHDwkiyLNPjUGrOsUgKjUDwmKeCAEuMUqBEssGoaTDiZvxmAxLmdAXqKIuhxkAXGOBUsoEiSmXMlyNJsnrtGtkgVPnxQQ"
