@@ -1,0 +1,116 @@
+# Minimum Queen Moves to Reach Target.
+
+@example The squares are 4 rows and 4 columns apart, so one diagonal move gets there.
+[7,2]
+[3,6]
+=> 1
+
+@example 2 rows and 1 column apart: no line joins them, but [4,2] is on a line with each.
+[4,1]
+[6,2]
+=> 2
+
+@example The queen is already on the target.
+[5,5]
+[5,5]
+=> 0
+
+# Next to each other in a column, on the edge of the board.
+[8,4]
+[7,4]
+=> 1
+
+# A whole row, and a whole column, in one move.
+[3,1]
+[3,8]
+=> 1
+
+[1,6]
+[8,6]
+=> 1
+
+# Opposite corners, along each of the two long diagonals.
+[1,1]
+[8,8]
+=> 1
+
+[1,8]
+[8,1]
+=> 1
+
+# Squares next to corners, one pair on each kind of diagonal.
+[1,2]
+[7,8]
+=> 1
+
+[2,8]
+[8,2]
+=> 1
+
+# Diagonal neighbours.
+[5,4]
+[4,5]
+=> 1
+
+# A knight's jump away.
+[8,8]
+[7,6]
+=> 2
+
+# Nearly aligned but on no common line: 7 rows and 6 columns apart, then 2
+# rows and 3 columns apart.
+[8,1]
+[1,7]
+=> 2
+
+[3,4]
+[5,7]
+=> 2
+
+# Two squares of the same colour on one row: one move, though a bishop
+# would need two.
+[5,2]
+[5,6]
+=> 1
+
+# Random cases from gen.c (lc check --regen makes them). The board is
+# always 8 x 8, so there are no full-size ones.
+@gen 1 small
+[7,7]
+[7,7]
+=> 0
+
+@gen 3 small
+[8,3]
+[7,1]
+=> 2
+
+@gen 4 small
+[4,3]
+[5,1]
+=> 2
+
+@gen 5 small
+[6,2]
+[6,7]
+=> 1
+
+@gen 6 small
+[2,2]
+[3,1]
+=> 1
+
+@gen 7 small
+[6,7]
+[8,6]
+=> 2
+
+@gen 11 small
+[7,5]
+[4,2]
+=> 1
+
+@gen 13 small
+[5,5]
+[3,5]
+=> 1

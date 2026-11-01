@@ -1,0 +1,103 @@
+# Minimum Swaps to Move Zeros to End.
+
+@example There are three zeros, so they belong in the last three places. Only the 0 at index 1 is in front of them; swapping it with the 6 gives [3,6,8,0,0,0].
+[3,0,8,0,0,6]
+=> 1
+
+@example Swap the first 0 with the 4 to get [4,0,0]. The other 0 is already in the back block of two.
+[0,0,4]
+=> 1
+
+@example Swapping index 0 with index 2 gives [2,6,0,0]: the 6 and the 2 changed order, which is allowed.
+[0,6,2,0]
+=> 1
+
+# A single zero, and a single non-zero value (the largest one).
+[0]
+=> 0
+
+[100]
+=> 0
+
+# Nothing but zeros, and no zeros at all.
+[0,0,0,0]
+=> 0
+
+[5,1,5,2]
+=> 0
+
+# Five zeros in front of a single non-zero value: one swap settles it,
+# though five zeros stand before the last non-zero value.
+[0,0,0,0,0,63]
+=> 1
+
+# Swaps are not limited to neighbours: two swaps, where moving the zeros a
+# step at a time would take four.
+[0,0,9,9]
+=> 2
+
+# One early zero, a run of non-zero values, then two zeros already at the
+# back: returning the number of zeros would be wrong, and keeping the order
+# of the non-zero values would shift all five of them.
+[0,8,2,6,6,9,0,0]
+=> 1
+
+# Zeros and non-zero values taking turns, starting with either, at even and
+# odd lengths.
+[0,1,0,1,0,1]
+=> 2
+
+[0,7,0,7,0]
+=> 1
+
+[3,0,3,0,3,0]
+=> 1
+
+[100,0,100,0,100]
+=> 1
+
+# The longest array, fifty zeros and then fifty non-zero values: the
+# largest answer.
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100]
+=> 50
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[0,3,0,0,0,0,0]
+=> 1
+
+@gen 2 small
+[29,0,0,0,1]
+=> 1
+
+@gen 3 small
+[0,2,1,1,2,2,1,0]
+=> 1
+
+@gen 4 small
+[0,1,1,3]
+=> 1
+
+@gen 5 small
+[0,0,1,2,35,3]
+=> 2
+
+@gen 6 small
+[0,0]
+=> 0
+
+@gen 7 small
+[0,2,93,26,0,0]
+=> 1
+
+@gen 1
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,69,12,33,64,82,4,51,86,56,2,27,25,82,100,52,93,62,55,46,79,7,69,36,53,47,17,27,89,48,26,24,32,64,64,54,13,4,76,84,3,82,19,35,71,23,85,83,76,60,67]
+=> 50
+
+@gen 2
+[0,1,13,29,77,85,17,19,91,98,23,58,20,100,76,27,77,99,77,37,68,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+=> 1
+
+@gen 7
+[0,75,0,46,0,75,0,93,0,26,0,83,0,75,0,1,0,36,0,53,0,81,0,80,0,23,0,12,0,86,0,80,0,55,0,59,0,68,0,34,0,14,0,11,0,64,0,96,0,29,0,75,0,86,0,28,0,55,0,40,0,75,0,62,0,57,0,1,0,56,0,9,0,45,0,89,0,91,0,80,0,68,0,31,0,26,0,15,0,42,0,45,0,35,0,85,0,96,0,55]
+=> 25

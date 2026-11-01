@@ -1,0 +1,114 @@
+# Number of Elapsed Seconds Between Two Times.
+
+@example From 09:58:40 it takes 80 seconds to reach 10:00:00, and 65 more to reach 10:01:05.
+"09:58:40"
+"10:01:05"
+=> 145
+
+@example 8 hours, 34 minutes and 15 seconds: 28800 + 2040 + 15 seconds.
+"07:45:50"
+"16:20:05"
+=> 30855
+
+@example Both readings are the same moment.
+"14:07:33"
+"14:07:33"
+=> 0
+
+# One second that carries into the minutes, and one that carries into the
+# hours.
+"06:12:59"
+"06:13:00"
+=> 1
+
+"17:59:59"
+"18:00:00"
+=> 1
+
+# The minutes go down while the hour goes up: 20 minutes 20 seconds.
+"11:45:10"
+"12:05:30"
+=> 1220
+
+# Fields 08 and 09 (which octal parsing reads as 0), with the minutes going
+# down from 09 to 08: 50 minutes 52 seconds to 09:00:00, then 8 minutes 9
+# seconds.
+"08:09:08"
+"09:08:09"
+=> 3541
+
+# Only the hours differ, only the minutes, only the seconds.
+"03:27:41"
+"13:27:41"
+=> 36000
+
+"20:14:36"
+"20:51:36"
+=> 2220
+
+"15:42:07"
+"15:42:53"
+=> 46
+
+# Each field differs only in its tens digit: 10 hours, 30 minutes and 30
+# seconds.
+"10:15:25"
+"20:45:55"
+=> 37830
+
+# 18 hours 12 minutes 16 seconds is 65536 seconds, one more than 16 bits
+# hold.
+"05:30:00"
+"23:42:16"
+=> 65536
+
+# The whole day, from its first second to its last: 24 * 3600 - 1 seconds.
+"00:00:00"
+"23:59:59"
+=> 86399
+
+# Equal readings at the end of the day.
+"23:59:59"
+"23:59:59"
+=> 0
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"01:10:09"
+"22:00:01"
+=> 74992
+
+@gen 2 small
+"10:00:00"
+"10:00:00"
+=> 0
+
+@gen 3 small
+"01:13:20"
+"04:54:10"
+=> 13250
+
+@gen 4 small
+"06:19:09"
+"12:29:22"
+=> 22213
+
+@gen 5 small
+"17:52:59"
+"17:53:41"
+=> 42
+
+@gen 6 small
+"01:14:38"
+"01:16:18"
+=> 100
+
+@gen 1
+"01:47:30"
+"20:41:36"
+=> 68046
+
+@gen 2
+"10:41:52"
+"20:18:20"
+=> 34588

@@ -1,0 +1,122 @@
+# Elevator Requests I. Results are seconds.
+
+@example Up 4 floors to floor 4, down 3 to floor 1, then up 6 to floor 7: 4 + 3 + 6 = 13.
+10
+[4,1,7]
+=> 13
+
+@example The second request for floor 3 costs nothing, and the trip back down to floor 0 takes 3 seconds.
+5
+[3,3,0]
+=> 6
+
+@example The elevator is already at floor 0, so the first request is free; then 5 seconds up and 3 down.
+6
+[0,5,2]
+=> 8
+
+# The smallest building: every request is for floor 0.
+1
+[0]
+=> 0
+
+1
+[0,0]
+=> 0
+
+# One request: the answer is that floor, here the top of the tallest building.
+100
+[99]
+=> 99
+
+37
+[20]
+=> 20
+
+# The largest answer: 100 trips of 99 floors, starting upwards.
+100
+[99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0,99,0]
+=> 9900
+
+# Back and forth: every trip counts in full, in the order given (sorting
+# the floors, or taking the highest minus the lowest, falls short).
+10
+[2,9,1,8]
+=> 24
+
+# Passing floor 5 on the way to 15 does not handle the request for floor 5.
+20
+[15,5,10]
+=> 30
+
+# Trips downwards add to the time too; the last one ends at floor 0.
+60
+[50,40,30,0]
+=> 100
+
+# Repeated requests for the same floor cost nothing after the first.
+50
+[20,20,20,20]
+=> 20
+
+# Floors crossed, not floors visited or stops made.
+6
+[5,4,5]
+=> 7
+
+# Two floors.
+2
+[1,1,0,1]
+=> 3
+
+# A tall building does not change short trips.
+100
+[1,0,1,0]
+=> 4
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+9
+[7,2,8,2,2,7,4]
+=> 32
+
+@gen 2 small
+7
+[0,1,0,2,5]
+=> 7
+
+@gen 3 small
+6
+[2,2,4]
+=> 4
+
+@gen 4 small
+4
+[1,0,2]
+=> 4
+
+@gen 5 small
+10
+[1,2]
+=> 2
+
+@gen 6 small
+2
+[0,1]
+=> 1
+
+# Full size: 100 floors and 100 requests.
+@gen 7
+100
+[74,27,45,90,74,6,92,14,25,40,82,8,74,44,0,39,35,36,52,39,80,17,79,40,22,14,11,43,85,43,79,62,54,59,58,66,67,4,33,35,13,25,10,17,63,23,95,66,28,18,74,0,85,89,27,18,54,10,39,28,74,94,61,29,56,15,0,27,55,42,8,64,44,55,88,52,90,19,79,38,67,25,30,62,25,37,14,59,41,65,44,39,34,85,84,9,95,53,54,30]
+=> 3268
+
+@gen 8
+100
+[71,71,71,52,52,52,1,1,1,1,1,1,1,70,70,70,86,86,86,30,30,30,30,30,30,30,30,30,30,30,30,30,18,18,18,37,37,73,73,73,73,73,73,38,38,38,55,55,55,55,55,55,55,55,55,55,55,55,55,55,42,42,68,11,11,11,11,36,38,12,12,63,63,28,76,76,26,66,66,66,66,66,22,22,96,96,96,95,95,95,36,36,36,36,89,89,89,68,68,64]
+=> 1030
+
+@gen 9
+100
+[96,0,98,3,97,4,97,2,99,0,97,0,99,3,98,0,99,3,96,0,96,2,99,4,98,0,97,1,97,0,97,0,99,1,95,1,97,3,98,4,95,0,96,2,96,3,98,3,99,0,97,1,96,1,95,3,95,4,99,3,95,3,96,2,95,1,96,4,95,0,95,2,98,2,97,2,95,3,99,2,95,0,98,4,96,4,96,1,96,0,96,1,99,1,98,0,97,2,97,1]
+=> 9517

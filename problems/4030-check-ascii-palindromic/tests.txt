@@ -1,0 +1,120 @@
+# Check ASCII Palindromic.
+
+@example The bytes are 01110110 01101110 01100110 01110110 01101110. Read backwards, the last byte comes out as 01110110, which is the first byte, and the fourth comes out as the second; the middle byte is the same both ways.
+"vnfvn"
+=> true
+
+@example The letters read the same both ways, but the byte of 'd', 01100100, reversed is 00100110, which is not the byte of 'd'.
+"deed"
+=> false
+
+@example The byte is 01101011, which reversed is 11010110. Without the leading zero, 1101011 would read the same both ways, but the zero counts.
+"k"
+=> false
+
+# A single letter whose byte reads the same both ways.
+"f"
+=> true
+
+# 'c' is 1100011 without its leading zero, which reads the same both ways;
+# with it, 01100011 does not.
+"c"
+=> false
+
+# A single 'n': its byte reversed is the byte of 'v', not its own.
+"n"
+=> false
+
+# 'n' and 'v' are each other's bytes reversed, in either order; two of
+# the same letter do not match.
+"nv"
+=> true
+
+"vn"
+=> true
+
+"nn"
+=> false
+
+# Swapping the two halves of a byte is not reversing it: 01110110 with
+# its halves swapped is 01100111, the byte of 'g'.
+"gv"
+=> false
+
+# The outer pairs match, but the middle byte (of 'a') does not read the
+# same both ways.
+"nvanv"
+=> false
+
+# A palindrome of letters, but not of digits.
+"abcba"
+=> false
+
+# Only the innermost pair of bytes fails.
+"nfvvfv"
+=> false
+
+# Only the outermost pair of bytes fails.
+"nfvnff"
+=> false
+
+# The longest strings, 800 and 792 digits, reading the same both ways.
+"vfffvvfvfvnvvvvnfvfnnvnnfvffvvfvfnfvffvfvvvvfnvnnvnvvnvfnnnnfnffnfvfnfnnffnfvvnvvfnfvnnnnvnfnfnnfffn"
+=> true
+
+"vfvfnfnnfvvvffnffvvfnvvnnfvvfnffnnvvfnvffvfffffvfffnfffffnffnvfnnvvffvfnnfvvnnvfnnffvffnnnfvvfvfnfn"
+=> true
+
+# The same kind of string with one letter changed (position 37).
+"nnfvvvvfnfnnnvfffnvnnfvffffnvfvnfvnnffvvnfnfnnvvvnvnnnvvfvfvnnvfvvnfvnfnvffffnfvvnvfffnvvvfvfnnnnfvv"
+=> false
+
+# The 99-letter string above with its middle letter changed to 'v'.
+"vfvfnfnnfvvvffnffvvfnvvnnfvvfnffnnvvfnvffvfffffvfvfnfffffnffnvfnnvvffvfnnfvvnnvfnnffvffnnnfvvfvfnfn"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"nvvfnnb"
+=> false
+
+@gen 2 small
+"nvfnv"
+=> true
+
+@gen 3 small
+"vwnnvvnn"
+=> false
+
+@gen 4 small
+"fnwf"
+=> false
+
+@gen 5 small
+"bwwwwb"
+=> false
+
+@gen 7 small
+"wfwcnn"
+=> false
+
+@gen 8 small
+"ggwgfwv"
+=> false
+
+@gen 9 small
+"vnvfnvn"
+=> true
+
+# Full size: 99 or 100 letters.
+@gen 9
+"vnvfnnnvfvffvvfvffffnfvfnfvvnvfnffvfvffvvnvnnvvnnfvvnnvvnvnnffnfnffvfnvnnfvfnfvffffnfnnffnfnvvvfnvn"
+=> true
+
+@gen 10
+"vvnfvvfvnnvnffvvnvvnvffffvnnvvfnffvnnnvnnvnfvfffvnvnfffnfvnvvnvvvnffvfvnvvnffffnvnnvnnffvnvvnfnnfvnn"
+=> false
+
+@gen 11
+"nfwwfnfwavvawwawnawwznnvnnfznfvzbwbwazfnbzbbafvbafabvfabbzbnfzawbwbzvfnzfnnvnnzwwanwawwavvawfnfwwfn"
+=> false

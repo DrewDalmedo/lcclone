@@ -1,0 +1,126 @@
+# Count Rotations With Exactly K Equal Adjacent Pairs.
+
+@example The shifts by 1, 3 and 4, "eedss", "dssee" and "sseed", have two doubles each; "seeds" and "edsse" have only one.
+"seeds"
+2
+=> 3
+
+@example "rotor" itself has no double, as its last and first letters are not side by side; "otorr", "torro", "orrot" and "rroto" have one each.
+"rotor"
+1
+=> 4
+
+@example No two neighbours are ever equal, so all six shifts count, though they give only two different strings.
+"cdcdcd"
+0
+=> 6
+
+# The shortest strings: both shifts of "zz" have one double, and both
+# shifts of "az" have none.
+"zz"
+1
+=> 2
+
+"zz"
+0
+=> 0
+
+"az"
+0
+=> 2
+
+# One equal pair inside s and none across the ends: only the shift that
+# splits "cc" ("cdabc") has no double.
+"abccd"
+0
+=> 1
+
+# A run of three holds two doubles, not one: "pppq" and "qppp" have two,
+# "ppqp" and "pqpp" one.
+"pppq"
+2
+=> 2
+
+# A run that wraps from the end of s round to its start: the shifts by 2,
+# 3 and 4 bring all four a's together.
+"aabcaa"
+3
+=> 3
+
+# k = n - 1 can only be reached when every letter is the same.
+"aabb"
+3
+=> 0
+
+# A repeated block: the shifts by 1 and 4 are both "abaaba", and the four
+# shifts with two doubles give only two different strings. Each p counts.
+"aabaab"
+1
+=> 2
+
+"aabaab"
+2
+=> 4
+
+# The longest string, one letter 100 times: every shift has 99 doubles.
+"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+99
+=> 100
+
+# 100 letters alternating: every shift has no double.
+"abababababababababababababababababababababababababababababababababababababababababababababababababab"
+0
+=> 100
+
+# 100 letters whose only equal neighbours are the last and first: s has no
+# double, and the other 99 shifts have one.
+"abcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbca"
+1
+=> 99
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bb"
+1
+=> 2
+
+@gen 2 small
+"aaaaaa"
+5
+=> 6
+
+@gen 3 small
+"bbbccbac"
+6
+=> 0
+
+@gen 4 small
+"aa"
+1
+=> 2
+
+@gen 5 small
+"ab"
+0
+=> 2
+
+@gen 6 small
+"bcccaaa"
+3
+=> 4
+
+# Full-size random cases.
+@gen 1
+"oxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegsqxbgbs"
+94
+=> 0
+
+@gen 2
+"qqqqqsssssssssklllllllllllzzzzzzzvvvvvvvveeeuuurrrrrrrrraaaaaaaaaggggggggggulxxxxxxhhhqaaaaaaiiiwwww"
+80
+=> 81
+
+@gen 3
+"cbbcababbabaaaaaccbabaccccbbcababbabaaaaaccbabaccccbbcababbabaaaaaccbabaccccbbcababbabaaaaaccbabaccc"
+40
+=> 60

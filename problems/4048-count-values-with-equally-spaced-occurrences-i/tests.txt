@@ -1,0 +1,94 @@
+# Count Values With Equally Spaced Occurrences I.
+
+@example 10 sits at indices 1, 4 and 7, three apart each time. 6 is also written three times, at 2, 3 and 6, but those are 1 and then 3 apart; 3 and 2 are written once.
+[3,10,6,6,10,2,6,10]
+=> 1
+
+@example 12 sits at indices 0, 1 and 2, 40 at 3, 5 and 7, and 15 at 4, 6 and 8: three values, each counted once.
+[12,12,12,40,15,40,15,40,15]
+=> 3
+
+@example 21 is written four times, so it doesn't count, although its first three copies are two apart; the copies of 8, at 1, 3 and 6, are 2 and then 3 apart.
+[21,8,21,8,21,21,8]
+=> 0
+
+# The shortest array, one value three times in a row.
+[1,1,1]
+=> 1
+
+# No value repeats.
+[3,1,2]
+=> 0
+
+# The largest value, starting at index 0; 1 is written twice.
+[100,1,100,1,100]
+=> 1
+
+# Uneven gaps both ways round: 7 at 0, 1, 3 and 9 at 4, 6, 7; 4 twice.
+[7,7,4,7,9,4,9,9]
+=> 0
+
+# 5 at 0, 2 and 6: the first and last copies are an even distance apart,
+# but the middle one is not halfway between them.
+[5,1,5,2,3,4,5]
+=> 0
+
+# The widest spacing for seven entries: 9 at 0, 3 and 6.
+[9,1,2,9,3,4,9]
+=> 1
+
+# 2 is written four times, evenly spaced, so it doesn't count; 9 at 1, 3
+# and 5, between the copies of 2, does.
+[2,9,2,9,2,9,2]
+=> 1
+
+# Two values count, each once, not once per copy.
+[3,3,3,8,8,8,1,1]
+=> 2
+
+# One value five times.
+[6,6,6,6,6]
+=> 0
+
+# 100 entries: 33 values, each at i, i + 33 and i + 66, interleaved, and
+# 100 once at the end. The answer is as large as it can be.
+[2,5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71,74,77,80,83,86,89,92,95,98,2,5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71,74,77,80,83,86,89,92,95,98,2,5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59,62,65,68,71,74,77,80,83,86,89,92,95,98,100]
+=> 33
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[69,72,72,72]
+=> 1
+
+@gen 2 small
+[85,69,85,25,85,59]
+=> 1
+
+@gen 3 small
+[72,97,46,72,97,41,72,97]
+=> 2
+
+@gen 4 small
+[9,79,13,79,13,79,13,75]
+=> 2
+
+@gen 5 small
+[57,15,15,15,17]
+=> 1
+
+@gen 6 small
+[86,86,86]
+=> 1
+
+@gen 7 small
+[97,98,49,66,66,66]
+=> 1
+
+# Full-size random cases.
+@gen 1
+[40,25,51,96,3,38,19,83,31,42,26,16,2,28,92,80,86,16,72,70,7,34,90,16,92,13,27,74,80,83,13,88,6,19,92,13,19,88,26,28,13,70,90,70,92,13,31,96,2,22,25,80,56,27,92,86,89,17,52,86,29,74,90,70,22,88,26,34,78,78,78,78,78,59,39,52,39,73,39,22,27,50,90,3,31,61,6,63,43,40,34,96,52,88,2,74,27,36,83,25]
+=> 9
+
+@gen 2
+[89,79,22,90,18,36,87,100,61,40,35,37,66,15,5,27,54,6,69,56,13,47,10,94,46,44,20,95,3,7,8,71,64,89,79,22,90,18,36,87,100,61,40,35,37,66,15,5,27,54,6,69,56,13,47,10,94,46,44,20,95,3,7,8,71,64,89,79,22,90,18,36,87,100,61,40,35,37,66,15,5,27,54,6,69,56,13,47,10,94,46,44,20,95,3,7,8,71,64,86]
+=> 33

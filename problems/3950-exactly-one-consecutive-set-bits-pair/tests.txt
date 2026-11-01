@@ -1,0 +1,112 @@
+# Exactly One Consecutive Set Bits Pair. n is given in decimal.
+
+@example 22 is 10110 in binary: the two lit lamps in the middle are the only glowing pair.
+22
+=> true
+
+@example 29 is 11101: its three 1s in a row hold two overlapping pairs.
+29
+=> false
+
+@example 42 is 101010: no two 1s stand side by side.
+42
+=> false
+
+# Zero, and 1 (a power of two): no pair at all.
+0
+=> false
+
+1
+=> false
+
+# 11, the smallest number with exactly one pair.
+3
+=> true
+
+# 1011: the pair is in the lowest two bits, with a lone 1 above it.
+11
+=> true
+
+# 1001101: lone 1s both above and below the pair.
+77
+=> true
+
+# 111 on its own: two pairs, though a search for non-overlapping "11"
+# finds one.
+7
+=> false
+
+# 1011110 and 111110100: runs of four and five 1s next to a lone 1.
+94
+=> false
+
+500
+=> false
+
+# Sixteen 1s, the longest run below the bound.
+65535
+=> false
+
+# 11011: two pairs apart from each other, so "some pair exists" is not
+# enough.
+27
+=> false
+
+# 1110011 and 110011110: one run of exactly two 1s, but also a longer run
+# whose pairs count too (three and four pairs in all), so looking only for
+# a single run of length two is not enough.
+115
+=> false
+
+414
+=> false
+
+# 10^5 itself is 11000011010100000, with two pairs.
+100000
+=> false
+
+# 11000010101010101, the largest n up to 10^5 with exactly one pair, at the
+# top.
+99669
+=> true
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+19
+=> true
+
+@gen 8 small
+60
+=> false
+
+@gen 3 small
+78
+=> false
+
+@gen 4 small
+95
+=> false
+
+@gen 5 small
+9
+=> false
+
+@gen 6 small
+57
+=> false
+
+@gen 7 small
+62
+=> false
+
+@gen 1
+836
+=> true
+
+@gen 2
+12864
+=> true
+
+@gen 3
+99244
+=> false

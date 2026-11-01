@@ -956,34 +956,34 @@
 3921	score-validator	Score Validator	easy	no	plain	todo
 3925	concatenate-array-with-reverse	Concatenate Array With Reverse	easy	no	plain	todo
 3931	check-adjacent-digit-differences	Check Adjacent Digit Differences	easy	no	plain	todo
-3936	minimum-swaps-to-move-zeros-to-end	Minimum Swaps to Move Zeros to End	easy	no	plain	todo
-3940	limit-occurrences-in-sorted-array	Limit Occurrences in Sorted Array	easy	no	plain	todo
-3945	digit-frequency-score	Digit Frequency Score	easy	no	plain	todo
-3950	exactly-one-consecutive-set-bits-pair	Exactly One Consecutive Set Bits Pair	easy	no	plain	todo
-3954	sum-of-compatible-numbers-in-range-i	Sum of Compatible Numbers in Range I	easy	no	plain	todo
-3959	check-good-integer	Check Good Integer	easy	no	plain	todo
+3936	minimum-swaps-to-move-zeros-to-end	Minimum Swaps to Move Zeros to End	easy	no	plain	draft
+3940	limit-occurrences-in-sorted-array	Limit Occurrences in Sorted Array	easy	no	plain	draft
+3945	digit-frequency-score	Digit Frequency Score	easy	no	plain	draft
+3950	exactly-one-consecutive-set-bits-pair	Exactly One Consecutive Set Bits Pair	easy	no	plain	draft
+3954	sum-of-compatible-numbers-in-range-i	Sum of Compatible Numbers in Range I	easy	no	plain	draft
+3959	check-good-integer	Check Good Integer	easy	no	plain	draft
 3963	create-grid-with-exactly-one-path	Create Grid With Exactly One Path	easy	no	checker	todo
-3978	unique-middle-element	Unique Middle Element	easy	no	plain	todo
-3982	sum-of-integers-with-maximum-digit-range	Sum of Integers with Maximum Digit Range	easy	no	plain	todo
-3986	number-of-elapsed-seconds-between-two-times	Number of Elapsed Seconds Between Two Times	easy	no	plain	todo
+3978	unique-middle-element	Unique Middle Element	easy	no	plain	draft
+3982	sum-of-integers-with-maximum-digit-range	Sum of Integers with Maximum Digit Range	easy	no	plain	draft
+3986	number-of-elapsed-seconds-between-two-times	Number of Elapsed Seconds Between Two Times	easy	no	plain	draft
 3992	rearrange-string-to-avoid-character-pair	Rearrange String to Avoid Character Pair	easy	no	checker	todo
-3996	even-number-of-knight-moves	Even Number of Knight Moves	easy	no	plain	todo
-4000	largest-integer-with-given-digit-sum	Largest Integer With Given Digit Sum	easy	no	plain	todo
-4006	count-valid-prefixes	Count Valid Prefixes	easy	no	plain	todo
+3996	even-number-of-knight-moves	Even Number of Knight Moves	easy	no	plain	draft
+4000	largest-integer-with-given-digit-sum	Largest Integer With Given Digit Sum	easy	no	plain	draft
+4006	count-valid-prefixes	Count Valid Prefixes	easy	no	plain	draft
 4010	maximize-pair-strength-using-gcd	Maximize Pair Strength Using GCD	easy	no	bits	draft
-4020	elevator-requests-i	Elevator Requests I	easy	no	plain	todo
-4024	nearest-available-drone	Nearest Available Drone	easy	no	plain	todo
-4030	check-ascii-palindromic	Check ASCII Palindromic	easy	no	plain	todo
-4038	count-integers-appearing-in-a-single-block	Count Integers Appearing in a Single Block	easy	no	plain	todo
-4043	count-rotations-with-exactly-k-equal-adjacent-pairs	Count Rotations With Exactly K Equal Adjacent Pairs	easy	no	plain	todo
-4048	count-values-with-equally-spaced-occurrences-i	Count Values With Equally Spaced Occurrences I	easy	no	plain	todo
-4052	cyclically-shift-rows-and-columns	Cyclically Shift Rows and Columns	easy	no	plain	todo
-4056	number-of-intersecting-interval-pairs-i	Number of Intersecting Interval Pairs I	easy	no	plain	todo
-4061	minimum-queen-moves-to-reach-target	Minimum Queen Moves to Reach Target	easy	no	plain	todo
-4065	rearrange-array-by-removing-distinct-values	Rearrange Array by Removing Distinct Values	easy	no	plain	todo
-4070	minimum-rotations-to-dial-a-number-i	Minimum Rotations to Dial a Number I	easy	no	plain	todo
+4020	elevator-requests-i	Elevator Requests I	easy	no	plain	draft
+4024	nearest-available-drone	Nearest Available Drone	easy	no	plain	draft
+4030	check-ascii-palindromic	Check ASCII Palindromic	easy	no	plain	draft
+4038	count-integers-appearing-in-a-single-block	Count Integers Appearing in a Single Block	easy	no	plain	draft
+4043	count-rotations-with-exactly-k-equal-adjacent-pairs	Count Rotations With Exactly K Equal Adjacent Pairs	easy	no	plain	draft
+4048	count-values-with-equally-spaced-occurrences-i	Count Values With Equally Spaced Occurrences I	easy	no	plain	draft
+4052	cyclically-shift-rows-and-columns	Cyclically Shift Rows and Columns	easy	no	plain	draft
+4056	number-of-intersecting-interval-pairs-i	Number of Intersecting Interval Pairs I	easy	no	plain	draft
+4061	minimum-queen-moves-to-reach-target	Minimum Queen Moves to Reach Target	easy	no	plain	draft
+4065	rearrange-array-by-removing-distinct-values	Rearrange Array by Removing Distinct Values	easy	no	plain	draft
+4070	minimum-rotations-to-dial-a-number-i	Minimum Rotations to Dial a Number I	easy	no	plain	draft
 4074	maximum-product-pair-with-target-sum	Maximum Product Pair With Target Sum	easy	no	checker	todo
-4078	three-fibonacci-sum	Three Fibonacci Sum	easy	no	plain	todo
-4083	minimum-deletions-to-make-array-sharp	Minimum Deletions to Make Array Sharp	easy	no	plain	todo
-4088	difference-between-peaks-and-valleys	Difference Between Peaks and Valleys	easy	no	plain	todo
-4092	binary-digit-score	Binary Digit Score	easy	no	plain	todo
+4078	three-fibonacci-sum	Three Fibonacci Sum	easy	no	plain	draft
+4083	minimum-deletions-to-make-array-sharp	Minimum Deletions to Make Array Sharp	easy	no	plain	draft
+4088	difference-between-peaks-and-valleys	Difference Between Peaks and Valleys	easy	no	plain	draft
+4092	binary-digit-score	Binary Digit Score	easy	no	plain	draft

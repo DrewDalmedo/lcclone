@@ -1,0 +1,96 @@
+# Minimum Rotations to Dial a Number I.
+
+@example 0 to 3 takes 3 rotations; after that each digit is a neighbour of the one before, 9 and 0 included: 3 + 9 = 12.
+"3456789012"
+=> 12
+
+@example 0 to 7 is 3 rotations the short way (0, 9, 8, 7), and 7 back to 0 is 3 more; a repeated digit costs nothing.
+"7777700000"
+=> 6
+
+@example Between 9 and 1 the short way passes 0, so each of those steps takes 2: 1 + 2 + 0 + 2 + 1 + 0 + 0 + 0 + 1 + 0 = 7.
+"9119000011"
+=> 7
+
+# Nothing to turn: every digit is 0.
+"0000000000"
+=> 0
+
+# The most a code can take: every step is half way round.
+"5050505050"
+=> 50
+
+# Every step size from 0 to 9 once, counted upwards from 0 in the order
+# 3, 7, 0, 9, 1, 5, 2, 8, 4, 6: they cost 3, 3, 0, 1, 1, 5, 2, 2, 4, 4.
+"3009057595"
+=> 25
+
+# The same counted downwards, in the order 6, 2, 9, 4, 1, 7, 5, 3, 8, 0:
+# they cost 4, 2, 1, 4, 1, 3, 5, 3, 2, 0.
+"4239816355"
+=> 25
+
+# The first digit is far from 0, and the knob doesn't start on it.
+"4444444444"
+=> 4
+
+"6666666666"
+=> 4
+
+# Back and forth across the seam between 9 and 0.
+"9090909090"
+=> 10
+
+# 1 and 8 are 3 apart going through 9 and 0.
+"1818181818"
+=> 28
+
+# Digits close to each other but far from 0: only the first step is long.
+"5656565656"
+=> 14
+
+# Downwards all the way, which is the short way every time.
+"0987654321"
+=> 9
+
+# The only rotation is at the very end.
+"0000000009"
+=> 1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"3332223233"
+=> 7
+
+@gen 2 small
+"0000002022"
+=> 6
+
+@gen 3 small
+"0060000000"
+=> 8
+
+@gen 4 small
+"2292229222"
+=> 14
+
+@gen 5 small
+"1111111111"
+=> 1
+
+@gen 6 small
+"9999999999"
+=> 1
+
+# Full size: the length is always 10, but the digits take other shapes.
+@gen 2
+"0140454069"
+=> 25
+
+@gen 4
+"4905419000"
+=> 22
+
+@gen 12
+"9544159509"
+=> 27

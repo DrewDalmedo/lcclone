@@ -1,0 +1,111 @@
+# Even Number of Knight Moves.
+
+@example One way in four jumps: [2,5] -> [4,6] -> [6,5] -> [7,3] -> [6,1].
+[2,5]
+[6,1]
+=> true
+
+@example A single jump gets there, but no route with an even number of jumps does.
+[1,6]
+[3,7]
+=> false
+
+@example Zero jumps is an even number; so is jumping away and straight back.
+[4,7]
+[4,7]
+=> true
+
+# Squares that touch only at a corner: both coordinates change parity.
+[0,0]
+[1,1]
+=> true
+
+# Squares that share a side.
+[5,2]
+[5,3]
+=> false
+
+# Two jumps apart: [0,7] -> [2,6] -> [4,7].
+[0,7]
+[4,7]
+=> true
+
+# One jump apart, on the edge of the board.
+[7,6]
+[5,7]
+=> false
+
+# Opposite corners, six jumps apart at the least.
+[0,0]
+[7,7]
+=> true
+
+[7,0]
+[0,7]
+=> true
+
+# Two corners of the same side.
+[0,0]
+[0,7]
+=> false
+
+# x and y both change by an odd amount.
+[2,3]
+[5,6]
+=> true
+
+# x changes by an even amount, y by an odd one.
+[6,1]
+[2,4]
+=> false
+
+# y changes by an even amount, x by an odd one.
+[1,2]
+[4,6]
+=> false
+
+# Staying on a corner, where only two jumps are possible.
+[7,7]
+[7,7]
+=> true
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[6,1]
+[3,3]
+=> false
+
+@gen 9 small
+[0,1]
+[1,6]
+=> true
+
+@gen 11 small
+[7,3]
+[7,3]
+=> true
+
+@gen 12 small
+[0,7]
+[4,2]
+=> false
+
+@gen 18 small
+[0,6]
+[4,0]
+=> true
+
+@gen 19 small
+[6,6]
+[7,7]
+=> true
+
+@gen 1
+[7,1]
+[3,3]
+=> true
+
+@gen 2
+[0,0]
+[6,6]
+=> true
