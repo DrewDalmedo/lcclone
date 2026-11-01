@@ -1,0 +1,106 @@
+# Complement of Base 10 Integer. Numbers are written in decimal; the
+# explanations spell out their binary forms.
+
+@example 12 is 1100 in binary. Swapping the digits gives 0011, which is 3.
+12
+=> 3
+
+@example 0 is written as the single digit 0, which becomes 1.
+0
+=> 1
+
+@example 1000 is 1111101000 in binary; swapped, that is 0000010111, which is 23.
+1000
+=> 23
+
+# A single 1 becomes 0.
+1
+=> 0
+
+# 10 becomes 01.
+2
+=> 1
+
+# 1110 becomes 0001, and 10001 becomes 01110: swapping one digit too many or
+# too few gives a different answer.
+14
+=> 1
+
+17
+=> 14
+
+# Just below, at and just above a power of two: 1111111111, 10000000000
+# and 10000000001.
+1023
+=> 0
+
+1024
+=> 1023
+
+1025
+=> 1022
+
+# 2^29, the largest power of two in range, has the largest complement,
+# 2^29 - 1.
+536870912
+=> 536870911
+
+# 2^29 - 1 is 29 ones, so nothing is left after the swap.
+536870911
+=> 0
+
+# 2^29 + 1: 30 digits with a 1 at each end.
+536870913
+=> 536870910
+
+# The largest n has 30 binary digits, so its complement is
+# 2^30 - 1 - 999999999.
+999999999
+=> 73741824
+
+# 0x24924924 is 100 repeated ten times (30 digits); its complement is 011
+# repeated ten times, 0x1B6DB6DB.
+613566756
+=> 460175067
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+1048577
+=> 1048574
+
+@gen 3 small
+1328
+=> 719
+
+@gen 7 small
+32767
+=> 0
+
+@gen 13 small
+67108864
+=> 67108863
+
+@gen 15 small
+4095
+=> 0
+
+@gen 19 small
+16385
+=> 16382
+
+@gen 24 small
+1716
+=> 331
+
+# Random full-size cases: 30 binary digits.
+@gen 1
+594318622
+=> 479423201
+
+@gen 2
+698911924
+=> 374829899
+
+@gen 3
+602921623
+=> 470820200

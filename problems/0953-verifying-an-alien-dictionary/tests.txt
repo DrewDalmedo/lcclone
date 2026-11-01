@@ -1,0 +1,136 @@
+# Verifying an Alien Dictionary.
+
+@example Here t comes before c, so "tide" is first; "coat" and "cone" first differ at a and n, and a comes before n.
+["tide","coat","cone"]
+"tcabdefghijklmnopqrsuvwxyz"
+=> true
+
+@example "sun" is the start of "sunny", so it comes first. But "sunny" and "suns" first differ at n and s, and this alphabet puts s first.
+["sun","sunny","suns"]
+"sabcdefghijklmnopqrtuvwxyz"
+=> false
+
+@example In this alphabet o comes before e, and a word may be followed by an identical one.
+["pod","pod","pea"]
+"zyxwvutsrqponmlkjihgfedcba"
+=> true
+
+# A single word.
+["q"]
+"qwertyuiopasdfghjklzxcvbnm"
+=> true
+
+# The usual alphabet: ordinary dictionary order.
+["ant","antelope","bee","beetle"]
+"abcdefghijklmnopqrstuvwxyz"
+=> true
+
+# The only fault: the last word is a prefix of the word before it.
+["ab","abc","abcd","abc"]
+"bcdefghijklmnopqrstuvwxyza"
+=> false
+
+# Each word is the one before it with one more letter.
+["k","kk","kkk","kkkk"]
+"defghijklmnopqrstuvwxyzabc"
+=> true
+
+# Every word the same.
+["same","same","same"]
+"cabdefghijklmnopqrstuvwxyz"
+=> true
+
+# The alphabet starts at d and ends with a, b, c: z comes before a. The first letters
+# decide, though the second letters go the other way and the longer word is first.
+["zxyw","ad"]
+"defghijklmnopqrstuvwxyzabc"
+=> true
+
+# The first letters are out of order (a after z here); the second ones would be fine.
+["ad","zz"]
+"defghijklmnopqrstuvwxyzabc"
+=> false
+
+# c, a, b lead the alphabet: ranking a letter by order[letter - 'a'] instead of by its
+# position in order puts b first, and gets this list wrong.
+["ca","ab","ba"]
+"cabdefghijklmnopqrstuvwxyz"
+=> true
+
+# The alphabet starts at b and ends with a. Only the third pair is out of order, and
+# the inverted ranking misses it.
+["bz","cz","ca","cb","d"]
+"bcdefghijklmnopqrstuvwxyza"
+=> false
+
+# Five words of 20 letters, alike but for the last letter, which climbs d, k, z, a, c
+# in an alphabet that starts at d.
+["mnbvcxzlkjhgfdsapoid","mnbvcxzlkjhgfdsapoik","mnbvcxzlkjhgfdsapoiz","mnbvcxzlkjhgfdsapoia","mnbvcxzlkjhgfdsapoic"]
+"defghijklmnopqrstuvwxyzabc"
+=> true
+
+# Three words of 20 letters that differ only in the 20th: a, k, p, in that order in the
+# usual alphabet, but p ranks before k here. Looking at only 19 letters misses it.
+["vbnmlkjhgfdsapoiuyta","vbnmlkjhgfdsapoiuytk","vbnmlkjhgfdsapoiuytp"]
+"qwertyuiopasdfghjklzxcvbnm"
+=> false
+
+# A 20-letter word followed by its own first 19 letters: out of order by the prefix rule.
+["zyxwvutsrqponmlkjih","zyxwvutsrqponmlkjihg","zyxwvutsrqponmlkjih"]
+"mnbvcxzlkjhgfdsapoiuytrewq"
+=> false
+
+# The shorter word comes first, but its letter ranks later.
+["a","zb"]
+"zyxwvutsrqponmlkjihgfedcba"
+=> false
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["ccbb","ccbb","ccbb","a"]
+"cmpybzfjgveshulwdiqtknarxo"
+=> true
+
+@gen 2 small
+["b","aab"]
+"bwhxmafniqtojyevrzlkpscudg"
+=> true
+
+@gen 3 small
+["cba"]
+"mdixhsrvqpowjfynztukalgebc"
+=> true
+
+@gen 4 small
+["aaab","acb","c","cbaa"]
+"awdikpejotrsnzfqymbcvxhgul"
+=> true
+
+@gen 5 small
+["baaa","baa","bb","baa","b"]
+"abyhkowtxefgqzijupnlscmdrv"
+=> false
+
+@gen 6 small
+["aaa","aaa"]
+"ktupbjvralhzexwnysfdmiqcgo"
+=> true
+
+# Full size: 100 words of 20 letters with a long shared prefix, sorted (seed 9),
+# with the last two different words swapped (seed 7), or ending in a prefix of
+# the word before it (seed 8).
+@gen 7
+["vrbvruktoazgvzbrporp","vrbvruktoazgvzbkbtyu","vrbvruktoazgvzbedbqg","vrbvruktoazgvzgjyzay","vrbvruktoazgvzjrfzzl","vrbvruktoazgvzjabvgl","vrbvruktoazgvzdgmlrh","vrbvruktoazgvzddkoxr","vrbvruktoazgvzdxrplg","vrbvruktoazgvzdoinjz","vrbvruktoazgvzdamqtf","vrbvruktoazgvzdtqqmy","vrbvruktoazgvzvghjem","vrbvruktoazgvzvcpqnh","vrbvruktoazgvzxvjipy","vrbvruktoazgvzxxgbsf","vrbvruktoazgvzxhrzak","vrbvruktoazgvzxeeyci","vrbvruktoazgvzprsmum","vrbvruktoazgvzpsakoi","vrbvruktoazgvzphoryj","vrbvruktoazgvzpyzyhq","vrbvruktoazgvzpcjwmb","vrbvruktoazgvzovsxwj","vrbvruktoazgvzonvipb","vrbvruktoazgvzrxkwjp","vrbvruktoazgvzrikwlr","vrbvruktoazgvzrnegze","vrbvruktoazgvzwzbqzj","vrbvruktoazgvzqbpdmz","vrbvruktoazgvzqgjydj","vrbvruktoazgvzqavfmq","vrbvruktoazgvzqupbqn","vrbvruktoazgvzzgfibg","vrbvruktoazgvzsjhzmz","vrbvruktoazgvzsdtbog","vrbvruktoazgvzsxjhkf","vrbvruktoazgvzsrhgze","vrbvruktoazgvzswuxmt","vrbvruktoazgvzsknrdg","vrbvruktoazgvzsmmwue","vrbvruktoazgvzavvudc","vrbvruktoazgvzasufiq","vrbvruktoazgvzujlifr","vrbvruktoazgvzudqvgy","vrbvruktoazgvzuwojyx","vrbvruktoazgvzuqvqym","vrbvruktoazgvzuqaxkd","vrbvruktoazgvzusqkef","vrbvruktoazgvzuerhmo","vrbvruktoazgvzkgdgdr","vrbvruktoazgvzkrkuex","vrbvruktoazgvzkaaklj","vrbvruktoazgvzkkaahz","vrbvruktoazgvzklixpy","vrbvruktoazgvztrnuko","vrbvruktoazgvztlnyzd","vrbvruktoazgvztiohhf","vrbvruktoazgvztcxetv","vrbvruktoazgvzldlgur","vrbvruktoazgvzlwktgs","vrbvruktoazgvzlaozsx","vrbvruktoazgvzlflgmc","vrbvruktoazgvzmprgif","vrbvruktoazgvzmzkfyw","vrbvruktoazgvzmukxdg","vrbvruktoazgvzmhphye","vrbvruktoazgvzmnodfz","vrbvruktoazgvzibigst","vrbvruktoazgvziwmoym","vrbvruktoazgvzitlvcu","vrbvruktoazgvzihkdkl","vrbvruktoazgvzimfcvn","vrbvruktoazgvziikbca","vrbvruktoazgvzyzvrbm","vrbvruktoazgvzythalb","vrbvruktoazgvzymbmnk","vrbvruktoazgvzyyqxub","vrbvruktoazgvzyejoqf","vrbvruktoazgvzfqaaqk","vrbvruktoazgvzfzwvxl","vrbvruktoazgvzfuiuvu","vrbvruktoazgvzftddxz","vrbvruktoazgvzfteafp","vrbvruktoazgvzfmtmog","vrbvruktoazgvzffiygd","vrbvruktoazgvzfnbvfm","vrbvruktoazgvzfnnkda","vrbvruktoazgvznrmczx","vrbvruktoazgvznsajmg","vrbvruktoazgvznkrfws","vrbvruktoazgvzncpixa","vrbvruktoazgvzcsgymj","vrbvruktoazgvzctjpyv","vrbvruktoazgvzcmrinh","vrbvruktoazgvzegjtlk","vrbvruktoazgvzepffrb","vrbvruktoazgvzeomdoc","vrbvruktoazgvzeewcik","vrbvruktoazgvzerudhc"]
+"bgjdvxporwqzsauktlhmiyfnce"
+=> false
+
+@gen 8
+["tjkftcliawyxabuwvqcd","tjkftcliawyxabanwfuk","tjkftcliawyxabtyjrub","tjkftcliawyxabhdumev","tjkftcliawyxazqjprzp","tjkftcliawyxazjmaiqk","tjkftcliawyxazdocrcf","tjkftcliawyxazvtokdc","tjkftcliawyxanzhfhwr","tjkftcliawyxanislnvr","tjkftcliawyxanckrase","tjkftcliawyxanpdlaxo","tjkftcliawyxanobpkoy","tjkftcliawyxauudafen","tjkftcliawyxauqaybrn","tjkftcliawyxaualbfgz","tjkftcliawyxaumzmnxy","tjkftcliawyxagulbkvf","tjkftcliawyxagiencbm","tjkftcliawyxagsaxyeb","tjkftcliawyxagpqqlif","tjkftcliawyxagwkmypf","tjkftcliawyxagffytat","tjkftcliawyxainsrrbo","tjkftcliawyxaiuppdzg","tjkftcliawyxaikjiwsl","tjkftcliawyxakugfyma","tjkftcliawyxakdijuwg","tjkftcliawyxakcnrqdf","tjkftcliawyxaklkxved","tjkftcliawyxayzikped","tjkftcliawyxaymkeonp","tjkftcliawyxaqkwaxqy","tjkftcliawyxaqyargza","tjkftcliawyxaqtwpiqn","tjkftcliawyxaayqtwmj","tjkftcliawyxaajofjcy","tjkftcliawyxatzyropp","tjkftcliawyxasqbbdrw","tjkftcliawyxasawnfzo","tjkftcliawyxastxxdzz","tjkftcliawyxassgvznt","tjkftcliawyxamaubmuh","tjkftcliawyxamcbwsww","tjkftcliawyxajuajmgl","tjkftcliawyxargdxekz","tjkftcliawyxarylsgmr","tjkftcliawyxaraarcsg","tjkftcliawyxarmizabm","tjkftcliawyxardaujrs","tjkftcliawyxarepilpy","tjkftcliawyxadzfhhvm","tjkftcliawyxadpnwfdf","tjkftcliawyxadvdolfb","tjkftcliawyxadfrjbgt","tjkftcliawyxaczytglj","tjkftcliawyxacgseejm","tjkftcliawyxacypxazi","tjkftcliawyxacmjdidg","tjkftcliawyxacdtsmpo","tjkftcliawyxacwvndyy","tjkftcliawyxacffnong","tjkftcliawyxalgxmies","tjkftcliawyxalkqohlb","tjkftcliawyxalqhriuz","tjkftcliawyxaljdqxbo","tjkftcliawyxalvggbdb","tjkftcliawyxapuzjxbv","tjkftcliawyxapymhqoo","tjkftcliawyxapridvhx","tjkftcliawyxapczdmoc","tjkftcliawyxapcgznen","tjkftcliawyxapplrfeo","tjkftcliawyxapwwkbto","tjkftcliawyxapxdoyxu","tjkftcliawyxapowwfob","tjkftcliawyxawbioval","tjkftcliawyxawzmjhcs","tjkftcliawyxawhrzyrc","tjkftcliawyxavncyrsj","tjkftcliawyxavuespsv","tjkftcliawyxavrzkeoh","tjkftcliawyxavloljgm","tjkftcliawyxavpcqgxy","tjkftcliawyxavplljwn","tjkftcliawyxaxwmppbx","tjkftcliawyxaebgdljd","tjkftcliawyxaenyosqd","tjkftcliawyxaemlsjjv","tjkftcliawyxaedjdqjn","tjkftcliawyxaecwkmzz","tjkftcliawyxaelmbygs","tjkftcliawyxaeejkxxw","tjkftcliawyxaeewsfdq","tjkftcliawyxahyxbnys","tjkftcliawyxahpohvqw","tjkftcliawyxafimjvqe","tjkftcliawyxafxrrvlc","tjkftcliawyxafekkpvh","tjkftcliawyxafekkp"]
+"bznugikyqatsmjrdclpwvxeohf"
+=> false
+
+@gen 9
+["lvvqlkitfjgaazajgjup","lvvqlkitfjgaazajqdxk","lvvqlkitfjgaazajxern","lvvqlkitfjgaazahpwoh","lvvqlkitfjgaazahqgpj","lvvqlkitfjgaazahduki","lvvqlkitfjgaazahnxtq","lvvqlkitfjgaazahnccz","lvvqlkitfjgaazappdzf","lvvqlkitfjgaazapivbi","lvvqlkitfjgaazapqtwp","lvvqlkitfjgaazapqbko","lvvqlkitfjgaazapobqa","lvvqlkitfjgaazapatow","lvvqlkitfjgaazapwxqo","lvvqlkitfjgaazagjgcv","lvvqlkitfjgaazagcpwq","lvvqlkitfjgaazagkctf","lvvqlkitfjgaazaihggq","lvvqlkitfjgaazaixcle","lvvqlkitfjgaazaiwbmq","lvvqlkitfjgaazaqxpbf","lvvqlkitfjgaazaqodtw","lvvqlkitfjgaazaqndgt","lvvqlkitfjgaazaxuxxv","lvvqlkitfjgaazaxskpa","lvvqlkitfjgaazadizve","lvvqlkitfjgaazadurmn","lvvqlkitfjgaazadmwmz","lvvqlkitfjgaazadmyqi","lvvqlkitfjgaazadwegu","lvvqlkitfjgaazadrhoz","lvvqlkitfjgaazaojqat","lvvqlkitfjgaazaoiffc","lvvqlkitfjgaazaootaj","lvvqlkitfjgaazaoumyq","lvvqlkitfjgaazaomldv","lvvqlkitfjgaazaomrbc","lvvqlkitfjgaazazmfxf","lvvqlkitfjgaazazsqqw","lvvqlkitfjgaazazkzmg","lvvqlkitfjgaazampdpk","lvvqlkitfjgaazamcemp","lvvqlkitfjgaazamwple","lvvqlkitfjgaazavggaq","lvvqlkitfjgaazaviolt","lvvqlkitfjgaazavdhpd","lvvqlkitfjgaazavvjdp","lvvqlkitfjgaazavccvk","lvvqlkitfjgaazavkvtx","lvvqlkitfjgaazaadxha","lvvqlkitfjgaazaarqsb","lvvqlkitfjgaazaakped","lvvqlkitfjgaazaaktwp","lvvqlkitfjgaazaslydd","lvvqlkitfjgaazasxbbu","lvvqlkitfjgaazasvsun","lvvqlkitfjgaazafzgxl","lvvqlkitfjgaazafejfp","lvvqlkitfjgaazafyllo","lvvqlkitfjgaazafyudj","lvvqlkitfjgaazacqlqw","lvvqlkitfjgaazacokcn","lvvqlkitfjgaazacukan","lvvqlkitfjgaazacrugf","lvvqlkitfjgaazawmdpu","lvvqlkitfjgaazawakwh","lvvqlkitfjgaazawslzf","lvvqlkitfjgaazarhyco","lvvqlkitfjgaazargdzn","lvvqlkitfjgaazarigur","lvvqlkitfjgaazaelqft","lvvqlkitfjgaazaedvga","lvvqlkitfjgaazaevvrm","lvvqlkitfjgaazaewrzz","lvvqlkitfjgaazatpnsm","lvvqlkitfjgaazatosei","lvvqlkitfjgaazatowvo","lvvqlkitfjgaazatbrpp","lvvqlkitfjgaazayihjw","lvvqlkitfjgaazayqxfq","lvvqlkitfjgaazayxfku","lvvqlkitfjgaazayzdfc","lvvqlkitfjgaazayzfoq","lvvqlkitfjgaazaystbf","lvvqlkitfjgaazayfmrv","lvvqlkitfjgaazayrnhz","lvvqlkitfjgaazaytfvj","lvvqlkitfjgaazaykipq","lvvqlkitfjgaazabjwep","lvvqlkitfjgaazabxowy","lvvqlkitfjgaazakjqym","lvvqlkitfjgaazakuckx","lvvqlkitfjgaazakvxwy","lvvqlkitfjgaazakrety","lvvqlkitfjgaazakysyw","lvvqlkitfjgaazanjexn","lvvqlkitfjgaazandjwb","lvvqlkitfjgaazanzgei","lvvqlkitfjgaazansxdc"]
+"jhpgliqxdouzmvasfcwretybkn"
+=> true
+

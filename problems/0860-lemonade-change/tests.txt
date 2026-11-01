@@ -1,0 +1,98 @@
+# Lemonade Change.
+
+@example The 10 gets the first 5 back, and the 20 gets the 10 and the second 5.
+[5,10,5,20]
+=> true
+
+@example By the last customer the box holds two 10s and no 5, so the 5 owed can't be paid.
+[5,5,10,10,10]
+=> false
+
+@example The 20 comes when the box holds a single 5; the 5s paid after it come too late.
+[5,20,5,5,5]
+=> false
+
+# One customer, who needs no change.
+[5]
+=> true
+
+# The first customer is owed change from an empty box.
+[10]
+=> false
+
+[20]
+=> false
+
+# Nobody needs change.
+[5,5,5,5,5,5,5]
+=> true
+
+# A 20 changed with three 5s, the only way there is.
+[5,5,5,20]
+=> true
+
+# Two 5s are not enough for a 20.
+[5,5,20]
+=> false
+
+# The box holds 20 in all, but as two 10s, and a 20 needs a 5 back.
+[5,10,5,10,20]
+=> false
+
+# A 20 paid in is no use as change: the box holds 20, yet 15 can't be made.
+[5,5,5,20,20]
+=> false
+
+# The first 20 takes all three 5s. A 20 in the box doesn't stand in for a 10, so the second 20, with one 5 to hand, is stuck.
+[5,5,5,20,5,20]
+=> false
+
+# The 20 must take the 10 and a 5; taking three 5s leaves none for the last 10.
+[5,10,5,5,5,20,10,10]
+=> true
+
+# Only the last customer gets stuck.
+[5,5,10,20,5,5,10,20,20]
+=> false
+
+# Stuck at the third customer, though everyone after that pays with a 5.
+[5,10,10,5,5,5,5,5]
+=> false
+
+# 256 5s before the first 10: a count of 5s kept in a byte wraps to 0.
+[5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,10,20]
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[5,10,20,20,5,5,5]
+=> false
+
+@gen 2 small
+[5,5,5,20,5]
+=> true
+
+@gen 3 small
+[5,5,5,10,5,5,10,10]
+=> true
+
+@gen 4 small
+[5,5,10,5]
+=> true
+
+@gen 5 small
+[5,5,5,5,20,10]
+=> true
+
+@gen 6 small
+[10,20]
+=> false
+
+@gen 7 small
+[5,5,20,10,5,20]
+=> false
+
+@gen 8 small
+[5,5,20,5,5,10,10]
+=> false
+
