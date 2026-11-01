@@ -1,0 +1,99 @@
+# Reverse Letters Then Special Characters in a String.
+
+@example The letters x, y, z, w come back as w, z, y, x at indices 0, 2, 3 and 6; the specials (, ), ! come back as !, ), ( at indices 1, 4 and 5.
+"x(yz)!w"
+=> "w!zy)(x"
+
+@example There are no letters, so the four specials simply turn back to front.
+"$&%#"
+=> "#%&$"
+
+@example The only special character has nowhere else to go; the four letters reverse around it.
+"kod*e"
+=> "edo*k"
+
+# The shortest inputs: one letter, one special.
+"q"
+=> "q"
+
+"^"
+=> "^"
+
+# Only letters: the whole string reverses.
+"stream"
+=> "maerts"
+
+# Only specials, all ten of them.
+"(@!#%$^*)&"
+=> "&)*^$%#!@("
+
+# Both kinds split into several runs: neither reversing each run nor
+# reversing the whole string gives this.
+"ab!cd@#e"
+=> "ed#cb@!a"
+
+# Brackets move but are not mirrored.
+"(a)"
+=> ")a("
+
+"(ab))"
+=> ")ba)("
+
+# A single letter among specials stays in place.
+"%k&*!"
+=> "!k*&%"
+
+# A single special at the end stays in place.
+"abcd!"
+=> "dcba!"
+
+# Both kinds read the same backwards, so nothing changes.
+"a!b!a"
+=> "a!b!a"
+
+# 100 characters, mixing all 26 letters and all ten specials.
+"the!qu$&)i#ckbr^(o@wnfxj%*!$m&ps)vlaz#^yd(gth@eq%*!u$ickb&)r#ownfx^(@%j*mp!svla$&zy)dgt#he^(@q%uick*"
+=> "kci*uq%@(e^htgd#)y&zalvs$!*%p@mj(xfnw^#or)bkc&iu$!*q%ehtg@(d^yzalv#)&$s!pm*jxfn%@wo(rbk^ci#)&u$qeht!"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"ccbbbcaba"
+=> "abacbbbcc"
+
+@gen 2 small
+"!!)((#)"
+=> ")#(()!!"
+
+@gen 9 small
+"((bccac"
+=> "((caccb"
+
+@gen 12 small
+"!a)c(a(ba#"
+=> "#a(b(a)ca!"
+
+@gen 17 small
+"a(!!!a)#a"
+=> "a#)!!a!(a"
+
+@gen 26 small
+"bcaca#b)bc"
+=> "cbbac)a#cb"
+
+@gen 29 small
+"))(b(c#!)#"
+=> "#)!c#b(())"
+
+# Full size: 100 characters, nearly all letters, only specials, or an
+# even mix.
+@gen 1
+"oln)oigzmglbbraeoblieejtakzevkl@hvylqsvfhtzddmgqbbbwkgnbbrqfbvykdexwugyewurukqbfybxxhqiju%nwaxsbxslp"
+=> "pls%xbsxawnujiqhxxbyfbqkuruweyg@uwxedkyvbfqrbbngkwbbbqgmddzthfvsqlyvhlkvezkatjeeilboearbb)lgmzgionlo"
+
+@gen 3
+"!#)!&**(^(%)$!(&&#!*%%%)@)()@)%%@&!*#%%*@*%$!&**!^^%^$($%#@(#^(%@*($(#$*$*!@(%(&#^)&#$**#@$$$$@)(%@^"
+=> "^@%()@$$$$@#**$#&)^#&(%(@!*$*$#($(*@%(^#(@#%$($^%^^!**&!$%*@*%%#*!&@%%)@)()@)%%%*!#&&(!$)%(^(**&!)#!"
+
+@gen 5
+"kb$egx$s%gf)l!!ij%*u$n%*i%)gzqfn!f@h*^vi&!!fpmv*yh!@ak@)(*!a(ol$g(b^okj)!b#^abna#h@$o*k)f%v*)*wtop**"
+=> "po*twv*f*ko)h*%an)*b$a@#b^#jkobg!l)o^(ak$(!ahyv*mp()fi@@!*!v!hf&n^f*qzg@!i)%nuji*l%$f*g%s!x!)%gebk$$"

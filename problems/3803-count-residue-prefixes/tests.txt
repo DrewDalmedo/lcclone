@@ -1,0 +1,105 @@
+# Count Residue Prefixes.
+
+@example Moments 1 and 5 score: one letter with r = 1, then the two letters p and q with r = 2.
+"ppqpq"
+=> 2
+
+@example The first two moments score. From the third on, k is at least 3, which no remainder reaches; at the fourth, k = 4 and r = 1.
+"kite"
+=> 2
+
+@example k stays 1, so the moments after letters 1, 4 and 7 score.
+"wwwwwww"
+=> 3
+
+# One letter: the first moment always scores.
+"a"
+=> 1
+
+# Short strings: one letter three times (moments 2 and 3 don't score), and
+# two different letters (both moments score).
+"zzz"
+=> 1
+
+"ab"
+=> 2
+
+# One letter four times, then a second one: moments 1, 4 and 5.
+"aaaab"
+=> 3
+
+# Two letters taking turns: k stays 2, so moments 1, 2, 5 and 8 score.
+# Counting changes of letter instead of different letters misses 5 and 8.
+"xyxyxyxy"
+=> 4
+
+# A third letter arrives at moment 5, which would have scored.
+"ababc"
+=> 2
+
+# A third letter arrives right after moment 5 scored.
+"ababac"
+=> 3
+
+# k = 3 at length 6: equal to r only modulo 3, so it doesn't score.
+"aabbcc"
+=> 1
+
+# All 26 letters: only the first two moments score.
+"abcdefghijklmnopqrstuvwxyz"
+=> 2
+
+# 100 copies of one letter: moments 1, 4, ..., 100, the most possible.
+"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+=> 34
+
+# Two letters at the front, then only those two: moments 1, 2, 5, ..., 98.
+"baaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaabaa"
+=> 34
+
+# 98 copies of one letter, then a second at moment 99, which doesn't score.
+"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggghg"
+=> 33
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"xyy"
+=> 2
+
+@gen 2 small
+"aaaaa"
+=> 2
+
+@gen 3 small
+"aaaaaaaaaaaa"
+=> 4
+
+@gen 4 small
+"pqppqpqr"
+=> 3
+
+@gen 5 small
+"yxyyxyyxyx"
+=> 4
+
+@gen 6 small
+"ovwduhjwza"
+=> 2
+
+@gen 7 small
+"bdmeycorwm"
+=> 2
+
+# Full size: 100 letters from four letters, from two with a third one
+# late, and from two.
+@gen 1
+"bdccdaaaadcdbdbaabbddccadaaccbadddcadcbdddcdbcbcadadacabcacbdcaadcbcbbdadbdbdacaaaacdaaabcbbbbdbaaba"
+=> 2
+
+@gen 2
+"xxxxxxxxyxyyyyxxxxxyxxyxxxxyyyxyxxyxxxyxxyyxyyxyyxyxyyyyxyxxyxyxxxxxxyxyxyxyxxyxxyyxxyxxyyxynxxxyxxy"
+=> 31
+
+@gen 6
+"yxyxyxyyxyxyyxyxxxyyxxxxyyxyyyyyyxyyxyxyxyyxyyxyxxxyyyyxyxyxyxxyxxxyxyyyyyxyyxxyyxyxyyyyyyxxxxyxxyxy"
+=> 34

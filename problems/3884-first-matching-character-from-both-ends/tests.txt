@@ -1,0 +1,96 @@
+# First Matching Character From Both Ends. Indices start at 0; -1 means
+# no square matches.
+
+@example Folded, r lies on e and a on l, but the two t's at indices 2 and 3 meet.
+"rattle"
+=> 2
+
+@example No letter lands on the same letter.
+"quartz"
+=> -1
+
+@example Only the middle letter, the n at index 3, matches: it lies on itself.
+"stencil"
+=> 3
+
+# One letter is its own middle.
+"q"
+=> 0
+
+# Two letters: equal or not.
+"aa"
+=> 0
+
+"ab"
+=> -1
+
+# The first and last letters already match.
+"abccba"
+=> 0
+
+# Several pairs match (index 2, index 3 and the middle 4); the outermost
+# one, at index 2 (not its partner 6), is the answer.
+"dqmxoxmrz"
+=> 2
+
+# Odd length, and only the middle matches.
+"lemon"
+=> 2
+
+# Even length: equal letters that are not partners don't count.
+"abab"
+=> -1
+
+"aabb"
+=> -1
+
+# 100 letters where only the innermost pair, 49 and 50, matches.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> 49
+
+# 99 letters where only the middle, index 49, matches.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaacbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> 49
+
+# 100 letters and no match at all.
+"abababababababababababababababababababababababababababababababababababababababababababababababababab"
+=> -1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"yzzzzyy"
+=> 0
+
+@gen 4 small
+"baa"
+=> 1
+
+@gen 6 small
+"ab"
+=> -1
+
+@gen 7 small
+"bbaaaaa"
+=> 2
+
+@gen 10 small
+"b"
+=> 0
+
+@gen 11 small
+"abbab"
+=> 2
+
+# Full-size cases: 100 letters with no match, one matching pair at index
+# 11, and 99 letters whose innermost pair matches.
+@gen 6
+"bijdhhjjmafhkedbambgdjfkdciflbklckljakhimkfglkdmdbqysxzzvnuptvxwqrpztsxxpwwurzwuxxytwssunquvvxosuooq"
+=> -1
+
+@gen 7
+"bdmelcbejmjhhlbmladdgjembiebiehkgbamgimfmjiklkeelcvysytzpqnzqtsrruquprozqopwzoqzwqupoqnxhtossvtyvpuq"
+=> 11
+
+@gen 8
+"ieiehigekefamgkigjhclhjljgjkfgcliajlkaedjddjaccleseoupouvqwouwvqpqpxqoyxuxpnrqqsyzxronpzwznvqxvxwvw"
+=> 48

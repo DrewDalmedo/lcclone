@@ -926,35 +926,35 @@
 3745	maximize-expression-of-three-elements	Maximize Expression of Three Elements	easy	no	plain	todo
 3750	minimum-number-of-flips-to-reverse-binary-string	Minimum Number of Flips to Reverse Binary String	easy	no	plain	todo
 3754	concatenate-non-zero-digits-and-multiply-by-sum-i	Concatenate Non-Zero Digits and Multiply by Sum I	easy	no	bits	draft
-3769	sort-integers-by-binary-reflection	Sort Integers by Binary Reflection	easy	no	plain	todo
-3774	absolute-difference-between-maximum-and-minimum-k-elements	Absolute Difference Between Maximum and Minimum K Elements	easy	no	plain	todo
-3783	mirror-distance-of-an-integer	Mirror Distance of an Integer	easy	no	plain	todo
+3769	sort-integers-by-binary-reflection	Sort Integers by Binary Reflection	easy	no	plain	draft
+3774	absolute-difference-between-maximum-and-minimum-k-elements	Absolute Difference Between Maximum and Minimum K Elements	easy	no	plain	draft
+3783	mirror-distance-of-an-integer	Mirror Distance of an Integer	easy	no	plain	draft
 3793	find-users-with-high-token-usage	Find Users with High Token Usage	easy	no	skip:sql	todo
-3794	reverse-string-prefix	Reverse String Prefix	easy	no	plain	todo
-3798	largest-even-number	Largest Even Number	easy	no	plain	todo
-3803	count-residue-prefixes	Count Residue Prefixes	easy	no	plain	todo
-3813	vowel-consonant-score	Vowel-Consonant Score	easy	no	plain	todo
-3823	reverse-letters-then-special-characters-in-a-string	Reverse Letters Then Special Characters in a String	easy	no	plain	todo
-3827	count-monobit-integers	Count Monobit Integers	easy	no	plain	todo
-3833	count-dominant-indices	Count Dominant Indices	easy	no	plain	todo
-3838	weighted-word-mapping	Weighted Word Mapping	easy	no	plain	todo
-3842	toggle-light-bulbs	Toggle Light Bulbs	easy	no	plain	todo
-3852	smallest-pair-with-different-frequencies	Smallest Pair With Different Frequencies	easy	no	plain	todo
-3856	trim-trailing-vowels	Trim Trailing Vowels	easy	no	plain	todo
-3861	minimum-capacity-box	Minimum Capacity Box	easy	no	plain	todo
-3866	first-unique-even-element	First Unique Even Element	easy	no	plain	todo
-3870	count-commas-in-range	Count Commas in Range	easy	no	plain	todo
-3875	construct-uniform-parity-array-i	Construct Uniform Parity Array I	easy	no	plain	todo
-3880	minimum-absolute-difference-between-two-values	Minimum Absolute Difference Between Two Values	easy	no	plain	todo
-3884	first-matching-character-from-both-ends	First Matching Character From Both Ends	easy	no	plain	todo
-3894	traffic-signal-color	Traffic Signal Color	easy	no	plain	todo
-3898	find-the-degree-of-each-vertex	Find the Degree of Each Vertex	easy	no	plain	todo
-3903	smallest-stable-index-i	Smallest Stable Index I	easy	no	plain	todo
-3908	valid-digit-number	Valid Digit Number	easy	no	plain	todo
-3912	valid-elements-in-an-array	Valid Elements in an Array	easy	no	plain	todo
-3917	count-indices-with-opposite-parity	Count Indices With Opposite Parity	easy	no	plain	todo
-3921	score-validator	Score Validator	easy	no	plain	todo
-3925	concatenate-array-with-reverse	Concatenate Array With Reverse	easy	no	plain	todo
+3794	reverse-string-prefix	Reverse String Prefix	easy	no	plain	draft
+3798	largest-even-number	Largest Even Number	easy	no	plain	draft
+3803	count-residue-prefixes	Count Residue Prefixes	easy	no	plain	draft
+3813	vowel-consonant-score	Vowel-Consonant Score	easy	no	plain	draft
+3823	reverse-letters-then-special-characters-in-a-string	Reverse Letters Then Special Characters in a String	easy	no	plain	draft
+3827	count-monobit-integers	Count Monobit Integers	easy	no	plain	draft
+3833	count-dominant-indices	Count Dominant Indices	easy	no	plain	draft
+3838	weighted-word-mapping	Weighted Word Mapping	easy	no	plain	draft
+3842	toggle-light-bulbs	Toggle Light Bulbs	easy	no	plain	draft
+3852	smallest-pair-with-different-frequencies	Smallest Pair With Different Frequencies	easy	no	plain	draft
+3856	trim-trailing-vowels	Trim Trailing Vowels	easy	no	plain	draft
+3861	minimum-capacity-box	Minimum Capacity Box	easy	no	plain	draft
+3866	first-unique-even-element	First Unique Even Element	easy	no	plain	draft
+3870	count-commas-in-range	Count Commas in Range	easy	no	plain	draft
+3875	construct-uniform-parity-array-i	Construct Uniform Parity Array I	easy	no	plain	draft
+3880	minimum-absolute-difference-between-two-values	Minimum Absolute Difference Between Two Values	easy	no	plain	draft
+3884	first-matching-character-from-both-ends	First Matching Character From Both Ends	easy	no	plain	draft
+3894	traffic-signal-color	Traffic Signal Color	easy	no	plain	draft
+3898	find-the-degree-of-each-vertex	Find the Degree of Each Vertex	easy	no	plain	draft
+3903	smallest-stable-index-i	Smallest Stable Index I	easy	no	plain	draft
+3908	valid-digit-number	Valid Digit Number	easy	no	plain	draft
+3912	valid-elements-in-an-array	Valid Elements in an Array	easy	no	plain	draft
+3917	count-indices-with-opposite-parity	Count Indices With Opposite Parity	easy	no	plain	draft
+3921	score-validator	Score Validator	easy	no	plain	draft
+3925	concatenate-array-with-reverse	Concatenate Array With Reverse	easy	no	plain	draft
 3931	check-adjacent-digit-differences	Check Adjacent Digit Differences	easy	no	plain	todo
 3936	minimum-swaps-to-move-zeros-to-end	Minimum Swaps to Move Zeros to End	easy	no	plain	todo
 3940	limit-occurrences-in-sorted-array	Limit Occurrences in Sorted Array	easy	no	plain	todo

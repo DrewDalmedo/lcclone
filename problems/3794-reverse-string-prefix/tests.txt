@@ -1,0 +1,119 @@
+# Reverse String Prefix.
+
+@example The prefix "plan" reversed is "nalp"; the "et" after it stays in place.
+"planet"
+4
+=> "nalpet"
+
+@example k is the whole length, so all of s is reversed.
+"stone"
+5
+=> "enots"
+
+@example The prefix "racecar" reads the same backwards, so nothing changes.
+"racecars"
+7
+=> "racecars"
+
+# A single letter.
+"m"
+1
+=> "m"
+
+# k = 1: a prefix of one letter, so s comes back as it was.
+"jump"
+1
+=> "jump"
+
+# k = 2 swaps the first two letters.
+"oxen"
+2
+=> "xoen"
+
+# k = length - 1: only the last letter stays put.
+"trumpet"
+6
+=> "epmurtt"
+
+# Even k: every letter of the prefix moves.
+"wizard"
+4
+=> "aziwrd"
+
+# Odd k: the middle letter of the prefix stays where it is.
+"monkey"
+5
+=> "eknomy"
+
+# The letter right after the prefix differs from the prefix's last letter,
+# so reversing one letter too many or too few shows.
+"lmnop"
+3
+=> "nmlop"
+
+# Repeated letters: a prefix that reads the same backwards, and one that
+# does not.
+"abbaxyz"
+4
+=> "abbaxyz"
+
+"aaab"
+4
+=> "baaa"
+
+# The longest strings: 100 letters, all of them reversed, then all but the
+# last.
+"lanternsglowoverquietharborsatduskwhilefishermenmendtheirnetsandgullscircleaboveslowtidesdriftpastus"
+100
+=> "sutsaptfirdseditwolsevobaelcricsllugdnastenriehtdnemnemrehsifelihwksudtasrobrahteiuqrevowolgsnretnal"
+
+"lanternsglowoverquietharborsatduskwhilefishermenmendtheirnetsandgullscircleaboveslowtidesdriftpastus"
+99
+=> "utsaptfirdseditwolsevobaelcricsllugdnastenriehtdnemnemrehsifelihwksudtasrobrahteiuqrevowolgsnretnals"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abbabbb"
+5
+=> "babbabb"
+
+@gen 2 small
+"gqmse"
+4
+=> "smqge"
+
+@gen 3 small
+"ccbbcaba"
+1
+=> "ccbbcaba"
+
+@gen 4 small
+"abaa"
+3
+=> "abaa"
+
+@gen 5 small
+"bbaaba"
+4
+=> "aabbba"
+
+@gen 6 small
+"ab"
+1
+=> "ab"
+
+# Full size: 100 letters, with k = 13, 99 and 100.
+@gen 1
+"woxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegsqxbgb"
+13
+=> "sijolrnnslxowguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegsqxbgb"
+
+@gen 3
+"qckcfhdwkiylnpjugrosugkjudwmkooecaeumuqbessgoatdizvxmaxlmdaxqkiuhxkaxgobusoeismxmlynjsnrtgtkgvpnxqqb"
+99
+=> "qqxnpvgktgtrnsjnylmxmsieosubogxakxhuikqxadmlxamxvzidtaogssebqumueaceookmwdujkgusorgujpnlyikwdhfckcqb"
+
+@gen 5
+"bbabbabbababbabaaaaaabbabbbbaaaaaabbabbbaababbaabbaaabbaaabaaabbbaaabbbbbababbbbabababaababbaabbbaab"
+100
+=> "baabbbaabbabaababababbbbababbbbbaaabbbaaabaaabbaaabbaabbabaabbbabbaaaaaabbbbabbaaaaaababbababbabbabb"

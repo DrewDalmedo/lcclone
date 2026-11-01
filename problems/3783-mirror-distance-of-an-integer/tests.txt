@@ -1,0 +1,95 @@
+# Mirror Distance of an Integer.
+
+@example The mirror image is 813, which is 495 more than 318.
+318
+=> 495
+
+@example The two zeros at the end are dropped, so the mirror image is 49.
+9400
+=> 9351
+
+@example 2552 reads the same in both directions.
+2552
+=> 0
+
+# A single digit is its own mirror image.
+1
+=> 0
+
+# Two digits: the mirror image smaller, and a palindrome.
+91
+=> 72
+
+44
+=> 0
+
+# Numbers ending in zeros: their mirror images are 2 and 1.
+20
+=> 18
+
+100
+=> 99
+
+# The largest input, the only one with ten digits: its mirror image is 1.
+1000000000
+=> 999999999
+
+# A nine-digit palindrome.
+908070809
+=> 0
+
+# A zero in the middle stays; only the one at the end drops: 5030 against
+# 305.
+5030
+=> 4725
+
+# Large distances, with the mirror image larger and smaller.
+123456789
+=> 864197532
+
+100000009
+=> 799999992
+
+987654320
+=> 964197531
+
+999999998
+=> 99999999
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+282
+=> 0
+
+@gen 4 small
+70
+=> 63
+
+@gen 13 small
+19100
+=> 18909
+
+@gen 14 small
+741
+=> 594
+
+@gen 19 small
+462
+=> 198
+
+@gen 21 small
+6300
+=> 6264
+
+# Full size: seven to nine digits.
+@gen 1
+8370999
+=> 1619739
+
+@gen 2
+286464682
+=> 0
+
+@gen 3
+623910000
+=> 623890674

@@ -1,0 +1,98 @@
+# Vowel-Consonant Score. Inputs keep their spaces exactly as written.
+
+@example V = 7 (a, o, o, u, e, u, e) and C = 3 (y, y, q). 3 fits into 7 twice, and the 1 left over is dropped.
+"a yoyo 1 queue"
+=> 2
+
+@example Digits are not consonants, so C = 0 and the score is 0, although V = 3.
+"e0e0i"
+=> 0
+
+@example V = 4 (e, e, i, e) and C = 1 (the r), so C fits into V four times.
+"eerie"
+=> 4
+
+# Single characters: a consonant, a vowel, a space.
+"b"
+=> 0
+
+"a"
+=> 0
+
+" "
+=> 0
+
+# No letter at all, with spaces in front, behind and in a row.
+"  12  34 "
+=> 0
+
+# 99 vowels and one consonant: the largest score.
+"aeiouaeiouaeiouaeiouaeiouaeiouaeiouaeiouzaeiouaeiouaeiouaeiouaeiouaeiouaeiouaeiouaeiouaeiouaeiouaeio"
+=> 99
+
+# y is a consonant: V = 2, C = 1.
+"you"
+=> 2
+
+# Digits and spaces are not consonants: V = 2, C = 1.
+"ae 1 2 b"
+=> 2
+
+# Spaces in front, behind and doubled around the letters.
+"  oo  k  "
+=> 2
+
+# V = 8 and C = 5: 1.6 is rounded down, not to the nearest.
+"beautiful idea"
+=> 1
+
+# No vowel.
+"rhythm 2"
+=> 0
+
+# A score that is exact: V = 6 and C = 3.
+"ooze 99 oozes"
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"77i"
+=> 0
+
+@gen 2 small
+"obiye"
+=> 1
+
+@gen 3 small
+"eicc ba icyy"
+=> 0
+
+@gen 4 small
+"oiaa0o0i"
+=> 0
+
+@gen 5 small
+"     7   0"
+=> 0
+
+@gen 6 small
+"bb0bbb7 b0"
+=> 0
+
+@gen 7 small
+"iaiubai ia"
+=> 8
+
+# Full size: 100 characters, nearly all vowels, a random mix, or
+# vowel-heavy.
+@gen 1
+"uuieoeuueeuiaeeuaaaeiooieaaeeeeasaeeidooo io0ua iioaeaieiuiuiiaeueiooiouiaauaeeuoouiuiue4i ae auoiea"
+=> 46
+
+@gen 3
+"paexiqmoum3wole2azu4uyxup9euhrsw072u4ieipztfiggpauvto3ufeki58ulizk82mm37fbou8kma9eisib21solv1xqq1a4m"
+=> 0
+
+@gen 11
+"7aieu1io56e6 o3yqeaaloav8ayaa  riaei7oaaecp0ru9uouaioo1iuz0fu7uluui3aon h59uaeicha9om9i i0 uauorzoa2"
+=> 2

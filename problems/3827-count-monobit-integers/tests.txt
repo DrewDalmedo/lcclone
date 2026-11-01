@@ -1,0 +1,89 @@
+# Count Monobit Integers.
+
+@example 0, 1, 3 and 7 (binary 0, 1, 11 and 111) are monobit; the next one, 15 (1111), is above 12.
+12
+=> 4
+
+@example 63 is 111111 and counts itself, along with 0, 1, 3, 7, 15 and 31.
+63
+=> 7
+
+@example Only 0 is in range, and its single binary digit is trivially all the same.
+0
+=> 1
+
+# The smallest positive n: 0 and 1.
+1
+=> 2
+
+# 2 (10) is not monobit, though it is a power of two.
+2
+=> 2
+
+# 3 (11) is.
+3
+=> 3
+
+# Just below, at and just above 7.
+6
+=> 3
+
+7
+=> 4
+
+8
+=> 4
+
+# Just below and at 255 (eight 1s).
+254
+=> 8
+
+255
+=> 9
+
+# Around 511, the largest monobit number in range.
+510
+=> 9
+
+511
+=> 10
+
+512
+=> 10
+
+# The largest n.
+1000
+=> 10
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+36
+=> 6
+
+@gen 3 small
+32
+=> 6
+
+@gen 4 small
+30
+=> 5
+
+@gen 5 small
+41
+=> 6
+
+@gen 6 small
+15
+=> 5
+
+@gen 9 small
+16
+=> 5
+
+@gen 8
+825
+=> 10
+
+@gen 10
+256
+=> 9
