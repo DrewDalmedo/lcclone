@@ -360,42 +360,42 @@
 1403	minimum-subsequence-in-non-increasing-order	Minimum Subsequence in Non-Increasing Order	easy	no	plain	todo
 1407	top-travellers	Top Travellers	easy	no	skip:sql	todo
 1408	string-matching-in-an-array	String Matching in an Array	easy	no	unordered	draft
-1413	minimum-value-to-get-positive-step-by-step-sum	Minimum Value to Get Positive Step by Step Sum	easy	no	plain	todo
+1413	minimum-value-to-get-positive-step-by-step-sum	Minimum Value to Get Positive Step by Step Sum	easy	no	plain	draft
 1417	reformat-the-string	Reformat The String	easy	no	checker	todo
 1421	npv-queries	NPV Queries	easy	yes	skip:sql	todo
-1422	maximum-score-after-splitting-a-string	Maximum Score After Splitting a String	easy	no	plain	todo
+1422	maximum-score-after-splitting-a-string	Maximum Score After Splitting a String	easy	no	plain	draft
 1426	counting-elements	Counting Elements	easy	yes	skip:premium	todo
 1427	perform-string-shifts	Perform String Shifts	easy	yes	skip:premium	todo
-1431	kids-with-the-greatest-number-of-candies	Kids With the Greatest Number of Candies	easy	no	plain	todo
+1431	kids-with-the-greatest-number-of-candies	Kids With the Greatest Number of Candies	easy	no	plain	draft
 1435	create-a-session-bar-chart	Create a Session Bar Chart	easy	yes	skip:sql	todo
-1436	destination-city	Destination City	easy	no	plain	todo
-1437	check-if-all-1s-are-at-least-length-k-places-away	Check If All 1's Are at Least Length K Places Away	easy	no	plain	todo
-1446	consecutive-characters	Consecutive Characters	easy	no	plain	todo
-1450	number-of-students-doing-homework-at-a-given-time	Number of Students Doing Homework at a Given Time	easy	no	plain	todo
-1455	check-if-a-word-occurs-as-a-prefix-of-any-word-in-a-sentence	Check If a Word Occurs As a Prefix of Any Word in a Sentence	easy	no	plain	todo
-1460	make-two-arrays-equal-by-reversing-subarrays	Make Two Arrays Equal by Reversing Subarrays	easy	no	plain	todo
-1464	maximum-product-of-two-elements-in-an-array	Maximum Product of Two Elements in an Array	easy	no	plain	todo
+1436	destination-city	Destination City	easy	no	plain	draft
+1437	check-if-all-1s-are-at-least-length-k-places-away	Check If All 1's Are at Least Length K Places Away	easy	no	plain	draft
+1446	consecutive-characters	Consecutive Characters	easy	no	plain	draft
+1450	number-of-students-doing-homework-at-a-given-time	Number of Students Doing Homework at a Given Time	easy	no	plain	draft
+1455	check-if-a-word-occurs-as-a-prefix-of-any-word-in-a-sentence	Check If a Word Occurs As a Prefix of Any Word in a Sentence	easy	no	plain	draft
+1460	make-two-arrays-equal-by-reversing-subarrays	Make Two Arrays Equal by Reversing Subarrays	easy	no	plain	draft
+1464	maximum-product-of-two-elements-in-an-array	Maximum Product of Two Elements in an Array	easy	no	plain	draft
 1469	find-all-the-lonely-nodes	Find All The Lonely Nodes	easy	yes	skip:premium	todo
-1470	shuffle-the-array	Shuffle the Array	easy	no	plain	todo
+1470	shuffle-the-array	Shuffle the Array	easy	no	plain	draft
 1474	delete-n-nodes-after-m-nodes-of-a-linked-list	Delete N Nodes After M Nodes of a Linked List	easy	yes	skip:premium	todo
-1475	final-prices-with-a-special-discount-in-a-shop	Final Prices With a Special Discount in a Shop	easy	no	plain	todo
-1480	running-sum-of-1d-array	Running Sum of 1d Array	easy	no	plain	todo
+1475	final-prices-with-a-special-discount-in-a-shop	Final Prices With a Special Discount in a Shop	easy	no	plain	draft
+1480	running-sum-of-1d-array	Running Sum of 1d Array	easy	no	plain	draft
 1484	group-sold-products-by-the-date	Group Sold Products By The Date	easy	no	skip:sql	todo
-1486	xor-operation-in-an-array	XOR Operation in an Array	easy	no	plain	todo
+1486	xor-operation-in-an-array	XOR Operation in an Array	easy	no	plain	draft
 1491	average-salary-excluding-the-minimum-and-maximum-salary	Average Salary Excluding the Minimum and Maximum Salary	easy	no	float	draft
 1495	friendly-movies-streamed-last-month	Friendly Movies Streamed Last Month	easy	yes	skip:sql	todo
-1496	path-crossing	Path Crossing	easy	no	plain	todo
-1502	can-make-arithmetic-progression-from-sequence	Can Make Arithmetic Progression From Sequence	easy	no	plain	todo
-1507	reformat-date	Reformat Date	easy	no	plain	todo
+1496	path-crossing	Path Crossing	easy	no	plain	draft
+1502	can-make-arithmetic-progression-from-sequence	Can Make Arithmetic Progression From Sequence	easy	no	plain	draft
+1507	reformat-date	Reformat Date	easy	no	plain	draft
 1511	customer-order-frequency	Customer Order Frequency	easy	yes	skip:sql	todo
-1512	number-of-good-pairs	Number of Good Pairs	easy	no	plain	todo
+1512	number-of-good-pairs	Number of Good Pairs	easy	no	plain	draft
 1517	find-users-with-valid-e-mails	Find Users With Valid E-Mails	easy	no	skip:sql	todo
-1518	water-bottles	Water Bottles	easy	no	plain	todo
-1523	count-odd-numbers-in-an-interval-range	Count Odd Numbers in an Interval Range	easy	no	plain	todo
+1518	water-bottles	Water Bottles	easy	no	plain	draft
+1523	count-odd-numbers-in-an-interval-range	Count Odd Numbers in an Interval Range	easy	no	plain	draft
 1527	patients-with-a-condition	Patients With a Condition	easy	no	skip:sql	todo
-1528	shuffle-string	Shuffle String	easy	no	plain	todo
-1534	count-good-triplets	Count Good Triplets	easy	no	plain	todo
-1539	kth-missing-positive-number	Kth Missing Positive Number	easy	no	plain	todo
+1528	shuffle-string	Shuffle String	easy	no	plain	draft
+1534	count-good-triplets	Count Good Triplets	easy	no	plain	draft
+1539	kth-missing-positive-number	Kth Missing Positive Number	easy	no	plain	draft
 1543	fix-product-name-format	Fix Product Name Format	easy	yes	skip:sql	todo
 1544	make-the-string-great	Make The String Great	easy	no	plain	todo
 1550	three-consecutive-odds	Three Consecutive Odds	easy	no	plain	todo

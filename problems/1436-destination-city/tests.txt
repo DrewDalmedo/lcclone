@@ -1,0 +1,96 @@
+# Destination City.
+
+@example The legs chain Hobart, Perth, Darwin and Cairns, and no leg leaves Cairns.
+[["Perth","Darwin"],["Hobart","Perth"],["Darwin","Cairns"]]
+=> "Cairns"
+
+@example A single leg finishes where it drives to.
+[["Hilo","Kona"]]
+=> "Kona"
+
+@example Ann, Port Ann and port ann are three different cities: the trip goes from Ann to Port Ann, then on to port ann.
+[["Port Ann","port ann"],["Ann","Port Ann"]]
+=> "port ann"
+
+# The leg into the last city is listed first. The first city, Al, is also
+# named only once.
+[["Cy","Dee"],["Bo","Cy"],["Al","Bo"]]
+=> "Dee"
+
+# The leg into the last city is listed in the middle.
+[["Bb","Cc"],["Dd","Ee"],["Aa","Bb"],["Cc","Dd"]]
+=> "Ee"
+
+# The last city's name is the start of names that set out.
+[["Santana","Santa"],["Santa","San"],["Santo","Santana"]]
+=> "San"
+
+# The last city's name continues names that set out.
+[["Sant","Santa"],["Santa","Santana"],["San","Sant"]]
+=> "Santana"
+
+# Cities whose names differ only in case: legs set out from the last
+# city's name in lower case and in capitals.
+[["RIO","rio"],["rio","Rio"],["rIo","RIO"]]
+=> "Rio"
+
+# Names of two words that share a word: the last city's first word is
+# also the first word of a city that a leg sets out from.
+[["Las Vegas","El Paso"],["El Paso","Las Cruces"],["Santa Fe","Las Vegas"]]
+=> "Las Cruces"
+
+# A doubled space and a trailing space make other names.
+[["New Bay ","New  Bay"],["New  Bay","New Bay"]]
+=> "New Bay"
+
+# The same name with no space, a trailing space and a doubled space: all
+# four are different cities, and only "Old Mill" has no leg out.
+[["Old Mill ","Old  Mill"],["Old  Mill","Old Mill"],["OldMill","Old Mill "]]
+=> "Old Mill"
+
+# Names of 10 characters, the longest allowed.
+[["Copenhagen","Manchester"],["Valparaiso","Copenhagen"]]
+=> "Manchester"
+
+# Anagrams: a hash that only adds up the letters can't tell them apart.
+[["abc","cab"],["cab","acb"],["bca","abc"]]
+=> "acb"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[["Ab","bb"],["bb","aAA"],["bbA","Ab"]]
+=> "aAA"
+
+@gen 2 small
+[["bb","aaa"],["ab","bb"],["ba","A"],["baa","ba"],["A","ab"]]
+=> "aaa"
+
+@gen 3 small
+[["aA","a"],["b","AAa"],["AAa","b b"],["b b","aa"],["Aba","aA"],["a","b"]]
+=> "aa"
+
+@gen 4 small
+[["aa","aA"],["aA","abb"]]
+=> "abb"
+
+@gen 5 small
+[["bA","a"],["aa","ab"],["a","bbA"],["ab","bA"]]
+=> "bbA"
+
+@gen 6 small
+[["a","A"],["bb","aab"],["A","b"],["aab","a"]]
+=> "b"
+
+# Full-size random cases.
+@gen 2
+[["PortBaBaAa","PortAAbBBb"],["PortaBBBAa","PortaAaAbb"],["PortBAabab","PortbAaaab"],["PortaBBaAA","PortaABbbB"],["PortABaAaA","PortAAabbb"],["PortbBBAAA","PortbaAbab"],["PortAABaBB","PortabaaAA"],["PortbbbAab","PortbBAbbb"],["PortAbbABB","PortBBbaaB"],["PortAABAAB","PortBaBaAa"],["PortBBbbbb","PortBBbbAA"],["PortBaaBbA","PortBBbbbb"],["PortAAaAAA","PortAAaaBB"],["PortbaAbab","PortBAbAba"],["PortbAaAba","PortbaBBaa"],["PortaAAbbA","PortBaAabb"],["PortbbBBAb","PortaBBBAa"],["PortAABbbB","PortBabAbA"],["PortaBBBBa","PortaaAbAa"],["PortbBAbbb","PortaAAbbA"],["PortAaAbBa","PortbbbabB"],["PortAbaaab","PortBAbaab"],["PortaaBABA","PortaAaBbB"],["PortbAbaAA","PortABaBBa"],["PortBaabAa","PortbbbAab"],["PortBBaaaA","PortbabbbB"],["PortABABba","PortAABbbB"],["PortaaaAAB","PortBBaAaa"],["PortbbABbA","PortBaBBAa"],["PortAAabbb","PortbBBaAB"],["PortbaAaBB","PortaAbBAa"],["PortBBaAaa","PortbBbABB"],["PortBBbbaA","PortBBaaaA"],["PortaBbaAb","PortbbAbab"],["PortabaaAA","PortABaAaA"],["PortABbbbA","PortBaabAa"],["PortAaabbB","PortaBabBb"],["PortaBbABB","PortaAaaab"],["PortBabaAA","PortABABba"],["PortbBBBaa","PortAABaBB"],["PortbbAbab","PortaaaAAB"],["PortbbABaB","PortaaaBaa"],["PortBABbbb","PortBabbBa"],["PortaBaBbB","PortAABaBb"],["PortBAbaAb","PortabBAbB"],["PortBaBBAa","PortBaaBbA"],["PortABABaB","PortabBaaB"],["PortAAaaBB","PortabbBab"],["PortbaaBaA","PortBabaAA"],["PortbBBaAB","PortABaBaA"],["PortABaBaA","PortABABaB"],["PortabBAbB","PortBbbbba"],["PortbABaba","PortAABAAB"],["PortbaBBaa","PortbbABaB"],["PortaaAbAa","PortababBa"],["PortAAAAbB","PortAbbABB"],["PortabBaaB","PortBBbbaA"],["PortbabbbB","PortBbaaAa"],["PortbBbABB","PortaBBaAA"],["PortaAbaaa","PortAbaBaA"],["PortaAaaab","PortbaBaaA"],["PortaABbbB","PortbABaba"],["PortbBaaAa","PortbAbaAA"],["PortAaBAbb","PortAAAAbB"],["PortababBa","PortbAaAba"],["PortAbaBaA","PortAbaaab"],["PortBaAabb","PortaAaabB"],["PortABBbAA","PortAbaBba"],["PortbAaaab","PortbBaaBA"],["PortaAAAbb","PortBAabab"],["PortbaaBab","PortaabaBA"],["PortabbBab","PortaAbaaa"],["PortBAbaab","PortAaAbBa"],["PortAABAab","PortAaabbB"],["PortbABBBb","PortbaaBab"],["PortAbaBba","PortBAbAaB"],["PortBbbbba","PortbbABbA"],["PortaAaabB","PortaAAAbb"],["PortAAbABb","PortbaAaBB"],["PortBabAbA","PortAABAab"],["PortAABaBb","PortBAbaAb"],["PortbBbBaa","PortbbBBAb"],["PortABaBBa","PortaBBBBa"],["PortBAbAba","PortbBbBaa"],["PortBAbAaB","PortbaaBaA"],["PortbBaaBA","PortAAaAAA"],["Portaaaabb","PortbABBBb"],["PortaAaAbb","PortABbbbA"],["PortaAbBAa","PortBABbbb"],["PortBBbbAA","PortAaBAbb"],["PortBbaaAa","PortAAbABb"],["PortbbbabB","PortBaBAAb"],["PortaabaBA","PortbBaaAa"],["PortaAaBbB","PortaBbaAb"],["PortBabbBa","PortaBbABB"],["PortaaaBaa","PortaBaBbB"],["PortBBbaaB","PortABBbAA"],["PortaBabBb","PortbBBAAA"],["PortbaBaaA","PortaaBABA"],["PortBaBAAb","PortbBBBaa"]]
+=> "PortAAbBBb"
+
+@gen 3
+[["aaaAaaA","AaaAAaa"],["aAAAAaAA","aa"],["aaaAaAA","AaaAAAaA"],["aaaa","aAAaAaa"],["AAaAaaaa","aAAaaaAAAA"],["AaAaAAAAA","aaaAaAA"],["aaAaAaAaA","aAaaaa"],["aaaaaA","Aaaaaaaaa"],["aAAaAaAAaA","aAA"],["aAAAAaa","aaaaaA"],["aAaaAAAA","aAAaaA"],["aaAAaAaAaa","aAAaa"],["aaAaa","AaAAAaA"],["aAAaAaa","aaAaaaA"],["AAAa","aA"],["aaaAaa","aaAaAA"],["AAAAaA","aAaaaAAa"],["AaaaAAAAAA","aAAA"],["AaaAAAaA","AAAa"],["AAAAaaAAAa","aaaaaAA"],["aaaAAA","AAaaaaaA"],["aaAAaA","aAa"],["aaaaA","Aaa"],["aaAAAA","aaaAAaa"],["AAaaaaAAA","aaAAaA"],["AAAAaaaAAa","AaAAa"],["AAaaaaaA","AAaAaaaa"],["aAAaa","aaAaaaaaaa"],["AAAAa","aaAaAaAaA"],["AAAaA","aaAaAAaaA"],["aa","AaAaAAAAA"],["aaaaaAA","aaAaAa"],["AaaaAaa","aAAAa"],["AaAA","aaAAaAaAaa"],["aAAAAaA","A"],["AAAaAAaAa","aaAAaAaa"],["AaAAaAA","AAaaAA"],["aAAaAA","AAAAaaaAAa"],["AaaA","aAAAaAAAAA"],["aaa","AAAaaaA"],["aAaaaaaaa","aaaaAaAa"],["AAaAAa","aAAaAA"],["aAa","aAAAAaAA"],["aaAaaaAAa","AaAAaa"],["aAAA","aAaa"],["aaAAa","aAaaAAaa"],["a","AAA"],["aA","aAaAAAA"],["AaaAAaa","aAAaaaaAAa"],["aaAaAA","AAAAaA"],["Aaa","aAAaAaAa"],["AAAA","AaAaA"],["aaaaAaaaa","AaAA"],["aAAaaaAAAA","AAAAAaaA"],["Aa","aaaAaa"],["aAaaaa","aaaAaaA"],["aAaaAAaa","AAAA"],["AaAaAaAA","aaAaa"],["aaAAaAA","AAaAAa"],["aaaAAaa","aaAaAAaaa"],["AAAaaaA","Aa"],["Aaaaaaaaa","aaaaAaaaa"],["AaaAA","AAaAa"],["AaAAAaA","AAAAaaaaaa"],["AaAaA","aaAAAaAaA"],["AAAAAaaA","AaaAA"],["AaAAa","aaAaaaAa"],["aaAAaAaa","AaaA"],["AaAaAaA","aAaaaaaaa"],["aAaAAaAA","aAaaAAAA"],["aAAaA","AAAaA"],["aaAaAAaaA","AaAaAaA"],["aAAaaA","AaaaAaa"],["aAAaaaaAAa","aaAAAA"],["AAaAa","AAAAaaAAAa"],["aAAAaAAAAA","aAAaA"],["aAAAAaAaA","aaaaA"],["AAA","aAAAAaa"],["aaaAaAAAaa","aaA"],["aaAaAa","aaaAaAAAaa"],["AaAAaa","aAAAAaAaA"],["aaAaaaA","aAAaAaAAaA"],["AAaaAA","AaAaAaAA"],["aAaaAAAaa","AaaAAAaaAa"],["aAaAAAA","aaAaaaAAa"],["AAAAaaaaaa","aaaa"],["aaAaaaaaaa","aAaAAaAA"],["aAA","aaa"],["A","AAAAa"],["aaA","AaAAaAA"],["aaAaAAaaa","AAAaAAaAa"],["aAaaaAAa","aaAAa"],["aaAAAaAaA","aAaaAAAaa"],["aAaa","aAAAAaA"],["aAAAa","AAaaaaAAA"],["AaaAAAaaAa","aaAAaAA"],["AaAAaAa","AaaaAAAAAA"],["aAAaAaAa","aaaAAA"],["aaAaaaAa","AaAAaAa"],["aaaaAaAa","aaaAAAAaa"]]
+=> "aaaAAAAaa"
+
+@gen 6
+[["c a Bldey","J xf DL Xh"],["bO d  HCQ","dNObBEC"],["l","UzfE"],["YmqI","nR"],["WBwhqvAd","MY"],["KqWQ","aZMHj"],["a","bqsX"],["K","MfEKlz K"],["U","vGcgkou  L"],["vKdLEwv","QarMc"],["k zB","x UhHqfo"],["tYKakcu","yoQnUoMYc"],["t","vKdLEwv"],["V","T"],["sgooYa","KclMQg"],["nShaSvxe","bIUGn"],["P RDBJIZ","e BqLwvU"],["aGhoDGSGs","o YzPu"],["KnV","Pn"],["NSL","l"],["WUFlryI I","lhtC"],["T","WBwhqvAd"],["t c yO r","UYwz"],["UYwz","DWvH"],["q lM","R"],["qI x","SoQHmeeWa"],["dI","mWvvhQZq"],["CF X m","U"],["MfEKlz K","awywP Y"],["awywP Y","CF X m"],["gM","Xfj"],["Pn","v lP"],["zsld oD","FMiugXQptF"],["R","t"],["jlt","K"],["v lP","P RDBJIZ"],["o YzPu","QIzkpNcsFN"],["YdFHf","e W  Kx"],["tHGTFve","qSZ"],["KclMQg","gsjY"],["v","ZFYQ"],["f","QJAhYO"],["nR","Qw"],["av wc","Jg ObC"],["SoQHmeeWa","aGhoDGSGs"],["XWhmhX Jfh","qI x"],["RI UlfI F","V"],["cFBlXWKH","zsld oD"],["QarMc","Spv kOVfWO"],["vGcgkou  L","q lM"],["Lbo","cOMi"],["P","vXsZSZI h"],["Katzm","bO d  HCQ"],["Kh kW","susbJk"],["sMYk Y MXE","tHGTFve"],["DWvH","WUFlryI I"],["Jg ObC","aKkIgv"],["vXsZSZI h","Katzm"],["Spv kOVfWO","CsHBZrK"],["Xfj","Kh kW"],["aZMHj","t kyOy"],["t kyOy","t c yO r"],["ChoJ","v"],["CZ fxqSO","ZgWjJhdcn"],["ugEyButk","CZ fxqSO"],["QIzkpNcsFN","eesVe Hei"],["e W  Kx","NSL"],["x UhHqfo","TzwQ"],["aKkIgv","sMYk Y MXE"],["bqsX","cFBlXWKH"],["G mGekEPiN","k zB"],["GXhxZZ","RI UlfI F"],["yoQnUoMYc","c a Bldey"],["vd JZf RQ","a"],["dNObBEC","jlt"],["lhtC","ofL  Iw"],["gsjY","Lbo"],["Qw","KnV"],["MY","f"],["QJAhYO","YmqI"],["ZFYQ","gM"],["eesVe Hei","bGy xV"],["cOMi","M"],["bGy xV","GXhxZZ"],["J xf DL Xh","G mGekEPiN"],["susbJk","P"],["TzwQ","av wc"],["M","nm"],["mWvvhQZq","nShaSvxe"],["ofL  Iw","YdFHf"],["nm","KqWQ"],["VPpJnmySR","sgooYa"],["ZgWjJhdcn","tYKakcu"],["UzfE","BFep KU  t"],["bIUGn","VPpJnmySR"],["qSZ","dI"],["CsHBZrK","ugEyButk"],["e BqLwvU","ChoJ"],["BFep KU  t","PLv"],["FMiugXQptF","XWhmhX Jfh"]]
+=> "PLv"
+

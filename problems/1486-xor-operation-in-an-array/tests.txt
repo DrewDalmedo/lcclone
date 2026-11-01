@@ -1,0 +1,131 @@
+# XOR Operation in an Array.
+
+@example The numbers are 4, 6 and 8: 4 XOR 6 is 2, and 2 XOR 8 is 10.
+3
+4
+=> 10
+
+@example The numbers are 1, 3, 5 and 7: 1 XOR 3 is 2, 2 XOR 5 is 7, and 7 XOR 7 is 0.
+4
+1
+=> 0
+
+@example 6 is 0110 in binary and 8 is 1000; they share no set bit, so the XOR is 1110, which is 14.
+2
+6
+=> 14
+
+# A single number is its own XOR.
+1
+0
+=> 0
+
+1
+1000
+=> 1000
+
+# Starting at 1: with an even count the lowest bits cancel out, with an
+# odd count one is left.
+2
+1
+=> 2
+
+3
+1
+=> 7
+
+# Starting at 0, 2 and 3, with counts of every remainder by 4.
+4
+0
+=> 0
+
+8
+2
+=> 16
+
+5
+3
+=> 3
+
+6
+3
+=> 14
+
+7
+0
+=> 14
+
+# Large counts and starts, with results above 2048.
+999
+1000
+=> 2998
+
+1000
+999
+=> 2128
+
+901
+901
+=> 2701
+
+# The largest inputs: the last number is 2998.
+1000
+1000
+=> 0
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 3 small
+12
+2
+=> 24
+
+@gen 4 small
+8
+11
+=> 16
+
+@gen 5 small
+10
+8
+=> 2
+
+@gen 6 small
+10
+1
+=> 2
+
+@gen 8 small
+3
+8
+=> 14
+
+@gen 9 small
+11
+1
+=> 23
+
+@gen 10 small
+8
+3
+=> 16
+
+@gen 11 small
+11
+0
+=> 22
+
+# Full size: n and start anywhere in their ranges.
+@gen 1
+847
+985
+=> 2679
+
+@gen 2
+501
+1000
+=> 2000
+
+@gen 3
+1000
+418
+=> 2256
