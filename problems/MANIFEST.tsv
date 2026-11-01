@@ -893,38 +893,38 @@
 3570	find-books-with-no-available-copies	Find Books with No Available Copies	easy	no	skip:sql	todo
 3571	find-the-shortest-superstring-ii	Find the Shortest Superstring II	easy	yes	skip:premium	todo
 3581	count-odd-letters-from-number	Count Odd Letters from Number	easy	yes	skip:premium	todo
-3582	generate-tag-for-video-caption	Generate Tag for Video Caption	easy	no	plain	todo
-3591	check-if-any-element-has-prime-frequency	Check if Any Element Has Prime Frequency	easy	no	plain	todo
-3602	hexadecimal-and-hexatrigesimal-conversion	Hexadecimal and Hexatrigesimal Conversion	easy	no	plain	todo
-3606	coupon-code-validator	Coupon Code Validator	easy	no	plain	todo
-3622	check-divisibility-by-digit-sum-and-product	Check Divisibility by Digit Sum and Product	easy	no	plain	todo
-3633	earliest-finish-time-for-land-and-water-rides-i	Earliest Finish Time for Land and Water Rides I	easy	no	plain	todo
-3637	trionic-array-i	Trionic Array I	easy	no	plain	todo
-3643	flip-square-submatrix-vertically	Flip Square Submatrix Vertically	easy	no	plain	todo
-3658	gcd-of-odd-and-even-sums	GCD of Odd and Even Sums	easy	no	plain	todo
+3582	generate-tag-for-video-caption	Generate Tag for Video Caption	easy	no	plain	draft
+3591	check-if-any-element-has-prime-frequency	Check if Any Element Has Prime Frequency	easy	no	plain	draft
+3602	hexadecimal-and-hexatrigesimal-conversion	Hexadecimal and Hexatrigesimal Conversion	easy	no	plain	draft
+3606	coupon-code-validator	Coupon Code Validator	easy	no	plain	draft
+3622	check-divisibility-by-digit-sum-and-product	Check Divisibility by Digit Sum and Product	easy	no	plain	draft
+3633	earliest-finish-time-for-land-and-water-rides-i	Earliest Finish Time for Land and Water Rides I	easy	no	plain	draft
+3637	trionic-array-i	Trionic Array I	easy	no	plain	draft
+3643	flip-square-submatrix-vertically	Flip Square Submatrix Vertically	easy	no	plain	draft
+3658	gcd-of-odd-and-even-sums	GCD of Odd and Even Sums	easy	no	plain	draft
 3662	filter-characters-by-frequency	Filter Characters by Frequency	easy	yes	skip:premium	todo
-3663	find-the-least-frequent-digit	Find The Least Frequent Digit	easy	no	plain	todo
+3663	find-the-least-frequent-digit	Find The Least Frequent Digit	easy	no	plain	draft
 3667	sort-array-by-absolute-value	Sort Array By Absolute Value	easy	yes	skip:premium	todo
-3668	restore-finishing-order	Restore Finishing Order	easy	no	plain	todo
-3674	minimum-operations-to-equalize-array	Minimum Operations to Equalize Array	easy	no	plain	todo
-3678	smallest-absent-positive-greater-than-average	Smallest Absent Positive Greater Than Average	easy	no	plain	todo
-3683	earliest-time-to-finish-one-task	Earliest Time to Finish One Task	easy	no	plain	todo
-3684	maximize-sum-of-at-most-k-distinct-elements	Maximize Sum of At Most K Distinct Elements	easy	no	plain	todo
+3668	restore-finishing-order	Restore Finishing Order	easy	no	plain	draft
+3674	minimum-operations-to-equalize-array	Minimum Operations to Equalize Array	easy	no	plain	draft
+3678	smallest-absent-positive-greater-than-average	Smallest Absent Positive Greater Than Average	easy	no	plain	draft
+3683	earliest-time-to-finish-one-task	Earliest Time to Finish One Task	easy	no	plain	draft
+3684	maximize-sum-of-at-most-k-distinct-elements	Maximize Sum of At Most K Distinct Elements	easy	no	plain	draft
 3687	library-late-fee-calculator	Library Late Fee Calculator	easy	yes	skip:premium	todo
-3688	bitwise-or-of-even-numbers-in-an-array	Bitwise OR of Even Numbers in an Array	easy	no	plain	todo
+3688	bitwise-or-of-even-numbers-in-an-array	Bitwise OR of Even Numbers in an Array	easy	no	plain	draft
 3692	majority-frequency-characters	Majority Frequency Characters	easy	no	checker	todo
 3696	maximum-distance-between-unequal-words-in-array-i	Maximum Distance Between Unequal Words in Array I	easy	yes	skip:premium	todo
-3697	compute-decimal-representation	Compute Decimal Representation	easy	no	plain	todo
-3701	compute-alternating-sum	Compute Alternating Sum	easy	no	plain	todo
-3707	equal-score-substrings	Equal Score Substrings	easy	no	plain	todo
-3712	sum-of-elements-with-frequency-divisible-by-k	Sum of Elements With Frequency Divisible by K	easy	no	plain	todo
-3718	smallest-missing-multiple-of-k	Smallest Missing Multiple of K	easy	no	plain	todo
+3697	compute-decimal-representation	Compute Decimal Representation	easy	no	plain	draft
+3701	compute-alternating-sum	Compute Alternating Sum	easy	no	plain	draft
+3707	equal-score-substrings	Equal Score Substrings	easy	no	plain	draft
+3712	sum-of-elements-with-frequency-divisible-by-k	Sum of Elements With Frequency Divisible by K	easy	no	plain	draft
+3718	smallest-missing-multiple-of-k	Smallest Missing Multiple of K	easy	no	plain	draft
 3726	remove-zeros-in-decimal-representation	Remove Zeros in Decimal Representation	easy	no	bits	draft
-3731	find-missing-elements	Find Missing Elements	easy	no	plain	todo
-3736	minimum-moves-to-equal-array-elements-iii	Minimum Moves to Equal Array Elements III	easy	no	plain	todo
-3740	minimum-distance-between-three-equal-elements-i	Minimum Distance Between Three Equal Elements I	easy	no	plain	todo
-3745	maximize-expression-of-three-elements	Maximize Expression of Three Elements	easy	no	plain	todo
-3750	minimum-number-of-flips-to-reverse-binary-string	Minimum Number of Flips to Reverse Binary String	easy	no	plain	todo
+3731	find-missing-elements	Find Missing Elements	easy	no	plain	draft
+3736	minimum-moves-to-equal-array-elements-iii	Minimum Moves to Equal Array Elements III	easy	no	plain	draft
+3740	minimum-distance-between-three-equal-elements-i	Minimum Distance Between Three Equal Elements I	easy	no	plain	draft
+3745	maximize-expression-of-three-elements	Maximize Expression of Three Elements	easy	no	plain	draft
+3750	minimum-number-of-flips-to-reverse-binary-string	Minimum Number of Flips to Reverse Binary String	easy	no	plain	draft
 3754	concatenate-non-zero-digits-and-multiply-by-sum-i	Concatenate Non-Zero Digits and Multiply by Sum I	easy	no	bits	draft
 3769	sort-integers-by-binary-reflection	Sort Integers by Binary Reflection	easy	no	plain	todo
 3774	absolute-difference-between-maximum-and-minimum-k-elements	Absolute Difference Between Maximum and Minimum K Elements	easy	no	plain	todo

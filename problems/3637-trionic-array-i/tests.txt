@@ -1,0 +1,106 @@
+# Trionic Array I.
+
+@example Up from -4 to 7, down to 2, then up to 5.
+[-4,0,7,2,5]
+=> true
+
+@example The two 8s side by side make a horizontal segment.
+[3,8,8,1,6]
+=> false
+
+@example Up, down, up, and then down again: one part too many.
+[6,9,2,7,1]
+=> false
+
+# Three values leave no room for three parts.
+[-1000,1000,-1000]
+=> false
+
+# The shortest trionic array: each part is a single step.
+[1,4,2,3]
+=> true
+
+# Only rises.
+[-3,-2,0,5,9]
+=> false
+
+# Starts by going down.
+[9,4,6,1,8]
+=> false
+
+# Rises, then falls to the end.
+[1,5,9,6,2]
+=> false
+
+# Falls, then rises.
+[7,3,0,4,8]
+=> false
+
+# Falls, rises, then falls: it turns exactly twice, but the parts come in
+# the wrong order.
+[4,-2,-7,5,9,1]
+=> false
+
+# Five parts.
+[0,2,1,3,2,4]
+=> false
+
+# A horizontal segment inside the last part, and one at the bottom of the
+# fall.
+[1,4,2,3,3]
+=> false
+
+[5,9,2,2,6]
+=> false
+
+# The turning points are not the largest and smallest values: the end
+# climbs above the peak, and the start lies below the valley.
+[-1000,999,-999,1000]
+=> true
+
+# A long falling part between two single steps.
+[0,90,80,70,60,50,40,30,95]
+=> true
+
+# A long last part.
+[10,20,-5,-4,-3,-2,-1,0,1]
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[-3,2,0,3,3]
+=> false
+
+@gen 2 small
+[-4,-1,-2,-1,0,2,5]
+=> true
+
+@gen 3 small
+[-6,-4,-2,1,2,4,5,7]
+=> false
+
+@gen 4 small
+[3,4,5,7]
+=> false
+
+@gen 5 small
+[3,4,5,3,4,5]
+=> true
+
+@gen 6 small
+[-5,-2,1,1,0,1]
+=> false
+
+# Full-size cases from gen.c: five parts; an N reaching 1000; an N with one
+# horizontal segment.
+@gen 4
+[-389,-368,-359,-321,-319,-306,-298,-297,-264,-247,-226,-209,-190,-187,-157,-119,-115,-104,-75,-66,-37,-28,-8,-6,15,44,66,103,124,126,138,146,178,213,240,230,202,181,177,162,125,110,92,73,66,53,44,18,-13,-8,17,23,53,79,102,140,164,191,217,225,242,269,289,309,347,362,394,428,461,493,505,538,574,605,639,648,686,722,753,757,792,815,801,773,736,717,712,699,676,644,639,630,594,577,552,521,530,551,553,588]
+=> false
+
+@gen 5
+[-953,-939,-927,-912,-880,-845,-811,-797,-790,-776,-757,-752,-737,-712,-673,-664,-630,-626,-615,-595,-563,-531,-507,-486,-477,-456,-443,-442,-405,-371,-333,-328,-322,-294,-274,-247,-208,-184,-177,-149,-129,-124,-105,-87,-85,-66,-43,-18,16,46,69,102,129,153,158,193,196,232,262,222,221,210,217,225,261,273,299,315,330,368,369,385,413,453,473,482,506,543,581,602,638,659,694,696,709,717,719,746,773,807,841,859,886,919,927,939,960,971,988,1000]
+=> true
+
+@gen 6
+[-955,-945,-935,-922,-921,-915,-907,-896,-891,-887,-887,-888,-901,-903,-910,-914,-924,-930,-941,-945,-948,-957,-963,-975,-977,-988,-1000,-997,-986,-974,-964,-963,-952,-944,-935,-922,-911,-905,-898,-886,-875,-871,-858,-854,-852,-848,-836,-830,-819,-806,-793,-784,-783,-775,-772,-765,-756,-745,-735,-731,-726,-723,-710,-703,-697,-686,-675,-672,-662,-652,-644,-639,-626,-616,-608,-597,-586,-574,-567,-557,-551,-545,-537,-536,-532,-524,-515,-506,-495,-493,-487,-479,-477,-475,-471,-466,-458,-457,-444,-440]
+=> false

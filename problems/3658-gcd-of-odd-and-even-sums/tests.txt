@@ -1,0 +1,88 @@
+# GCD of Odd and Even Sums.
+
+@example The columns are 1, 3, 5 and 2, 4, 6, adding up to 9 and 12. Both are multiples of 3, and of no larger number.
+3
+=> 3
+
+@example A single row: 1 and 2 share no divisor above 1.
+1
+=> 1
+
+@example The totals are 49 and 56, that is 7 * 7 and 7 * 8.
+7
+=> 7
+
+# Two rows: 1 + 3 = 4 and 2 + 4 = 6. Summing one term too few gives
+# gcd(1, 2) = 1, and one too many gives gcd(9, 12) = 3.
+2
+=> 2
+
+# The right column passes 32767 at n = 181 (181 * 182 = 32942) and the
+# left one at n = 182 (33124): a 16-bit total overflows from here.
+180
+=> 180
+
+181
+=> 181
+
+182
+=> 182
+
+# The largest n: the totals are 1000000 and 1001000.
+1000
+=> 1000
+
+999
+=> 999
+
+# A prime n and a power of two.
+997
+=> 997
+
+512
+=> 512
+
+# Small values in between.
+10
+=> 10
+
+64
+=> 64
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+21
+=> 21
+
+@gen 3 small
+181
+=> 181
+
+@gen 8 small
+12
+=> 12
+
+@gen 11 small
+29
+=> 29
+
+@gen 13 small
+37
+=> 37
+
+@gen 21 small
+182
+=> 182
+
+@gen 22 small
+999
+=> 999
+
+# Random full-size cases: n from the top of the range.
+@gen 1
+943
+=> 943
+
+@gen 2
+908
+=> 908

@@ -1,0 +1,103 @@
+# Minimum Distance Between Three Equal Elements I. -1 means no value appears three times.
+
+@example The 4s at indices 0, 2 and 4 are 2, 2 and 4 apart, a spread of 8; the 2s at 1, 5 and 6 give 4 + 1 + 5 = 10.
+[4,2,4,3,4,2,2]
+=> 8
+
+@example 3 and 1 appear twice each and 2 once, so there is no trio.
+[3,1,3,1,2]
+=> -1
+
+@example 5 appears four times; its copies at indices 3, 4 and 5 have a spread of 1 + 1 + 2 = 4.
+[5,3,6,5,5,5]
+=> 4
+
+# A single element.
+[1]
+=> -1
+
+# Two equal elements are not enough.
+[2,2]
+=> -1
+
+# Three equal neighbours: the smallest spread there is.
+[3,3,3]
+=> 4
+
+# Every value appears exactly twice.
+[4,1,4,6,1,6]
+=> -1
+
+# All values different.
+[6,2,5,1,3,4]
+=> -1
+
+# The only trio uses the first and last positions: 2 * (n - 1).
+[7,1,2,7,3,4,7]
+=> 12
+
+# 3 has the closest pair, but its third copy is far away; the 5s win.
+[3,3,7,5,1,2,5,4,6,5,8,3]
+=> 12
+
+# 8 appears four times but loses to three 4s packed together at the end.
+[8,3,8,1,8,2,8,4,4,4]
+=> 4
+
+# The best trio is at the very start; 1 and 2 interleave after it.
+[9,9,9,1,2,1,2,1,2]
+=> 4
+
+# The tightest three copies of 2 are neither its first three nor its last three.
+[2,1,3,1,2,2,3,2,4,3,5,2]
+=> 6
+
+# The value equals the length of nums.
+[4,4,1,4]
+=> 6
+
+# 100 elements: 100 at positions 0, 50 and 99, every other value at most twice.
+[100,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,99,100,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,100]
+=> 198
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[2,2,5,4,4,4,4,1,2]
+=> 4
+
+@gen 2 small
+[1,1,1,1,1,1,1]
+=> 4
+
+@gen 3 small
+[3,2,2,3,1,2]
+=> 8
+
+@gen 4 small
+[1,1,2,1]
+=> 6
+
+@gen 5 small
+[1,2,2,1,2,2,1,2,1,2]
+=> 6
+
+@gen 6 small
+[1,1]
+=> -1
+
+@gen 8 small
+[5,5,3,1,5,2,2]
+=> 8
+
+# Random full-size cases.
+@gen 1
+[86,17,56,78,34,34,3,88,100,92,51,3,27,78,12,7,6,39,29,51,89,96,92,39,38,26,42,24,70,74,13,22,63,52,32,72,14,43,83,61,31,74,49,52,16,80,83,16,38,73,14,29,42,93,43,6,17,24,49,2,31,27,59,13,59,26,90,72,50,12,40,25,93,28,61,100,73,19,56,32,28,80,70,89,22,96,63,36,7,41,36,88,90,41,19,86,50,2,25,40]
+=> -1
+
+@gen 2
+[1,13,29,77,85,17,19,91,98,23,58,20,100,76,27,77,99,77,37,68,89,51,6,73,1,23,57,96,74,54,43,28,33,89,22,89,3,39,50,63,97,66,50,85,86,96,57,84,8,5,38,1,32,96,16,20,49,54,77,49,66,59,18,81,59,65,35,9,95,68,17,58,75,58,13,54,67,17,22,11,89,8,8,89,93,80,11,15,34,100,25,68,53,77,25,21,48,93,1,80]
+=> 28
+
+@gen 3
+[7,100,91,6,48,74,67,91,74,7,46,89,56,73,84,14,89,69,4,85,49,48,17,98,4,38,70,13,98,86,40,16,19,2,56,76,71,32,82,94,78,18,60,75,60,1,40,83,73,72,13,38,34,32,71,81,23,16,62,78,18,49,2,1,75,84,28,27,19,96,54,67,62,14,82,86,54,66,83,27,95,72,76,81,66,96,69,95,6,22,100,22,94,28,46,23,17,70,85,72]
+=> 100

@@ -1,0 +1,96 @@
+# Generate Tag for Video Caption.
+
+@example The first word loses its capital, every later word gets one, and RIVER keeps only its first capital.
+"Morning run by the RIVER"
+=> "#morningRunByTheRiver"
+
+@example The spaces only separate words, so "sunset" is the first word and gets no capital.
+"   sunset   Over the BAY "
+=> "#sunsetOverTheBay"
+
+@example One-letter words: the first one stays a small letter, the later ones become capitals.
+"x Y z"
+=> "#xYZ"
+
+# A single capital as the only word.
+"Q"
+=> "#q"
+
+# No letters at all: the tag is the # alone.
+" "
+=> "#"
+
+# Words in capitals keep only their first capital, and the first word none.
+"BIG NEWS TODAY"
+=> "#bigNewsToday"
+
+# Mixed case inside words, and trailing spaces that add nothing.
+"mIxEd cAsE wOrDs   "
+=> "#mixedCaseWords"
+
+# A single leading space: the first word is still lowercased.
+" Go Team"
+=> "#goTeam"
+
+# 99 letters: the tag is exactly 100 characters, nothing is cut.
+"programming programming programming programming programming programming programming programming programming"
+=> "#programmingProgrammingProgrammingProgrammingProgrammingProgrammingProgrammingProgrammingProgramming"
+
+# 100 letters: the last letter is cut.
+"Basketball Basketball Basketball Basketball Basketball Basketball Basketball Basketball Basketball Basketball"
+=> "#basketballBasketballBasketballBasketballBasketballBasketballBasketballBasketballBasketballBasketbal"
+
+# One word of 150 letters: 51 of them are cut.
+"AbCdEfGhIjKlMnOpQrStUvWxYzAbCdEfGhIjKlMnOpQrStUvWxYzAbCdEfGhIjKlMnOpQrStUvWxYzAbCdEfGhIjKlMnOpQrStUvWxYzAbCdEfGhIjKlMnOpQrStUvWxYzAbCdEfGhIjKlMnOpQrSt"
+=> "#abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu"
+
+# The cut falls right before a word: its capital would be character 101.
+"watermelons watermelons watermelons watermelons watermelons watermelons watermelons watermelons watermelons Gone"
+=> "#watermelonsWatermelonsWatermelonsWatermelonsWatermelonsWatermelonsWatermelonsWatermelonsWatermelons"
+
+# The capital of the last word is character 100, so it alone survives.
+"understandable understandable understandable understandable understandable understandable understandable kept"
+=> "#understandableUnderstandableUnderstandableUnderstandableUnderstandableUnderstandableUnderstandableK"
+
+# 19 leading spaces and 120 letters: the cut applies to the tag, not to the
+# caption, so 99 letters remain.
+"                   LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE LIGHTHOUSE"
+=> "#lighthouseLighthouseLighthouseLighthouseLighthouseLighthouseLighthouseLighthouseLighthouseLighthous"
+
+# The longest caption, all spaces: still no words.
+"                                                                                                                                                      "
+=> "#"
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"AaBA b "
+=> "#aabaB"
+
+@gen 2 small
+"  B  c Ba"
+=> "#bCBa"
+
+@gen 3 small
+"    bcBbaBc"
+=> "#bcbbabc"
+
+@gen 4 small
+"ab cba bA  "
+=> "#abCbaBa"
+
+@gen 5 small
+"Or   kqJFLoI iB  g m qX UA tBsNm  aTenHFzjb kO GLbkX  jFf LYLvO Nw LdrHWatWO  opp RFLf j  YuQ  iA   b K a pvNH  k HjR j V  TFdAsGGve hFUX"
+=> "#orKqjfloiIbGMQxUaTbsnmAtenhfzjbKoGlbkxJffLylvoNwLdrhwatwoOppRflfJYuqIaBKAPvnhKHjrJVTfdasggveHfux"
+
+@gen 6 small
+"bc  cBb c "
+=> "#bcCbbC"
+
+# Full size: captions of 150 characters.
+@gen 1
+"uULKKqfBUfG yZBXxtxDhfQvIejVUsYSNlWWaRxWswBxxss uLdPgKYXvlPMMv KOpKtbDHslLVgcIsjHOCRbQrsqPyoXPYfezaxRAptJxbqUqFrmQNTbpMP sMcawGaPtnAduiCts xopkExVgmDj"
+=> "#uulkkqfbufgYzbxxtxdhfqviejvusysnlwwarxwswbxxssUldpgkyxvlpmmvKopktbdhsllvgcisjhocrbqrsqpyoxpyfezaxra"
+
+@gen 2
+"GiNUHN N dMgAsNxhgQjnxLypvQQHzHHDwNO nEAHNBg tJkOmh UTpZgLvRTsSdsGbBfIzm FEIOeBqjsJewWDbqzRHNkaz njVcsddxKwXIzXXrtHqgSHSGgoZE uxC U hkhcl djrjAIW TMaw"
+=> "#ginuhnNDmgasnxhgqjnxlypvqqhzhhdwnoNeahnbgTjkomhUtpzglvrtssdsgbbfizmFeioebqjsjewwdbqzrhnkazNjvcsddxk"

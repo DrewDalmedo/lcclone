@@ -1,0 +1,99 @@
+# Check Divisibility by Digit Sum and Product.
+
+@example The digits add up to 18 and multiply to 180, so t = 198, and 594 = 3 * 198.
+594
+=> true
+
+@example t = (3 + 7) + (3 * 7) = 31, which does not go into 37.
+37
+=> false
+
+@example The 0 makes the product 0, so t = 1 + 4 + 0 = 5, and 140 = 28 * 5.
+140
+=> true
+
+# Single digits: t is twice n, so never a divisor.
+1
+=> false
+
+9
+=> false
+
+# A two-digit number ending in 9 is exactly its own t.
+19
+=> true
+
+79
+=> true
+
+# t = 3 + 2 = 5. The sum 3 and the product 2 each divide 12, but their
+# total does not (and a product that starts at 0 would test 3 alone).
+12
+=> false
+
+# A 0 digit: t is the digit sum 10 here, which doesn't divide 208. Leaving
+# the 0 out of the product would make t = 10 + 16 = 26, which does.
+208
+=> false
+
+# A 0 digit, and the digit sum 3 divides n.
+1020
+=> true
+
+# A 0 digit, and the digit sum 2 doesn't divide an odd n.
+1001
+=> false
+
+# Powers of ten have t = 1; 10^6 is the only seven-digit input.
+10
+=> true
+
+1000000
+=> true
+
+# The largest t: 54 + 9^6 = 531495.
+999999
+=> false
+
+# A six-digit n without a 0: t = 48 + 244944 = 244992, and n = 4 * t.
+979968
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+277
+=> false
+
+@gen 2 small
+504
+=> true
+
+@gen 3 small
+6318
+=> true
+
+@gen 4 small
+926
+=> false
+
+@gen 5 small
+35
+=> false
+
+@gen 6 small
+1134
+=> true
+
+# Full-size cases from gen.c.
+@gen 1
+564847
+=> false
+
+@gen 2
+285504
+=> true
+
+@gen 3
+297135
+=> true
+

@@ -1,0 +1,101 @@
+# Minimum Number of Flips to Reverse Binary String. n is written in decimal.
+
+@example 52 is 110100 and its mirror is 001011: not one position agrees, so the answer is the full length, 6.
+52
+=> 6
+
+@example 27 is 11011, which reads the same from both ends: nothing to change.
+27
+=> 0
+
+@example 18 is 10010 and its mirror is 01001. The middle bit always matches itself; the other four bits differ.
+18
+=> 4
+
+# The smallest n: a single bit.
+1
+=> 0
+
+# Two bits: 10 against 01.
+2
+=> 2
+
+# Odd lengths: 101 is its own mirror; 110 against 011 differs at both ends.
+5
+=> 0
+
+6
+=> 2
+
+# An even length: 1001 is its own mirror.
+9
+=> 0
+
+# An even n ends in 0, which faces the leading 1: 1110 against 0111.
+14
+=> 2
+
+# A power of two: 1000000 against 0000001.
+64
+=> 2
+
+# 2^29, 30 bits: only the outer pair differs.
+536870912
+=> 2
+
+# 2^29 - 1: 29 ones.
+536870911
+=> 0
+
+# The largest n: 111011100110101100101000000000 has 9 differing pairs.
+1000000000
+=> 18
+
+# 30 bits whose 15 mirror pairs all differ: the largest answer there is.
+536903678
+=> 30
+
+999991688
+=> 30
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+354
+=> 8
+
+@gen 2 small
+65
+=> 0
+
+@gen 3 small
+38
+=> 6
+
+@gen 4 small
+12
+=> 4
+
+@gen 5 small
+891
+=> 0
+
+@gen 6 small
+3
+=> 0
+
+@gen 9 small
+119
+=> 0
+
+# Random full-size cases.
+@gen 1
+770210322
+=> 30
+
+@gen 3
+750780620
+=> 2
+
+@gen 4
+713177429
+=> 6

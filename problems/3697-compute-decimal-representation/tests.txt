@@ -1,0 +1,102 @@
+# Compute Decimal Representation. Expected results list the round numbers
+# from the largest to the smallest, with no zeros.
+
+@example The hundreds digit is 0, so it gives nothing.
+4027
+=> [4000,20,7]
+
+@example A trailing 0 gives nothing either.
+3610
+=> [3000,600,10]
+
+@example Two non-zero digits, with zeros between and after them.
+60300
+=> [60000,300]
+
+# The smallest n.
+1
+=> [1]
+
+# A single digit is already round.
+9
+=> [9]
+
+# The smallest n with two non-zero digits.
+11
+=> [10,1]
+
+# A power of ten is a single round number.
+10
+=> [10]
+
+100000
+=> [100000]
+
+# The largest n; growing a power of ten while it is <= n overflows here.
+1000000000
+=> [1000000000]
+
+# One non-zero digit and eight zeros.
+900000000
+=> [900000000]
+
+# Nine non-zero digits: the longest answers.
+999999999
+=> [900000000,90000000,9000000,900000,90000,9000,900,90,9]
+
+918273645
+=> [900000000,10000000,8000000,200000,70000,3000,600,40,5]
+
+# A long run of zeros in the middle.
+400000009
+=> [400000000,9]
+
+# A zero between every two non-zero digits.
+505050505
+=> [500000000,5000000,50000,500,5]
+
+# Trailing zeros and an inner zero.
+70800
+=> [70000,800]
+
+# Two non-zero digits and a trailing zero.
+560
+=> [500,60]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+890
+=> [800,90]
+
+@gen 2 small
+2
+=> [2]
+
+@gen 3 small
+9000
+=> [9000]
+
+@gen 4 small
+7010
+=> [7000,10]
+
+@gen 5 small
+20
+=> [20]
+
+@gen 6 small
+86
+=> [80,6]
+
+# Random full-size cases.
+@gen 7
+800000
+=> [800000]
+
+@gen 8
+139743833
+=> [100000000,30000000,9000000,700000,40000,3000,800,30,3]
+
+@gen 10
+3404837
+=> [3000000,400000,4000,800,30,7]
