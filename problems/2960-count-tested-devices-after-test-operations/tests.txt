@@ -1,0 +1,92 @@
+# Count Tested Devices After Test Operations.
+
+@example Gadget 0 is tested and drains the rest to [3,0,0,3,1]. Gadgets 1 and 2 are now flat and skipped; gadget 3 is tested and drains gadget 4 to 0.
+[3,0,1,4,2]
+=> 2
+
+@example Gadget 0 is flat. Testing gadget 1 leaves gadgets 2 and 3 at 1 and 4, and testing gadget 2 leaves gadget 3 at 3, so gadgets 1, 2 and 3 are all tested.
+[0,2,2,5]
+=> 3
+
+# One gadget.
+[0]
+=> 0
+
+[100]
+=> 1
+
+# Every charge is 0.
+[0,0,0,0]
+=> 0
+
+# The third gadget has been drained twice, from 2 to 0, and is skipped.
+[2,2,2]
+=> 2
+
+# The order matters: the same charges the other way round.
+[1,2]
+=> 2
+
+[2,1]
+=> 1
+
+# Falling charges: the last one has run down to 0.
+[3,2,1]
+=> 2
+
+# Skipped gadgets drain nothing; a large charge at the end still adds
+# only 1.
+[0,0,0,1,1,90]
+=> 2
+
+# A flat gadget between two charged ones. The charge must stop at 0
+# (stored unsigned without that floor, it would wrap round).
+[1,0,1]
+=> 1
+
+# Every charge 1: only the first gadget is tested.
+[1,1,1,1,1,1]
+=> 1
+
+# Every charge 4: the first four gadgets are tested.
+[4,4,4,4,4,4,4]
+=> 4
+
+# 100 gadgets at 100: the last one still has 1 left when it is reached.
+[100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100]
+=> 100
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[3,3,2,3,3,0,0]
+=> 3
+
+@gen 2 small
+[1,2,1,1,1]
+=> 2
+
+@gen 3 small
+[6,5,4,2,2,1,1,0]
+=> 3
+
+@gen 4 small
+[8,8,8,7]
+=> 4
+
+@gen 5 small
+[2,1,2,2,2,0]
+=> 2
+
+@gen 6 small
+[1,3]
+=> 2
+
+# Full-size random cases.
+@gen 1
+[74,61,100,84,0,37,0,0,0,80,91,0,2,52,60,18,51,17,77,80,0,0,41,0,0,77,0,0,94,69,0,0,82,0,86,2,0,0,100,93,55,79,0,36,47,0,0,48,0,0,0,64,13,0,84,0,19,71,0,83,60,48,0,0,49,91,7,0,67,15,0,0,78,0,0,1,98,0,0,0,0,39,92,0,52,63,0,20,0,0,0,99,0,13,0,0,29,62,21,46]
+=> 45
+
+@gen 3
+[100,98,96,95,94,92,92,91,91,90,89,89,88,88,88,88,88,88,86,84,83,83,82,82,80,78,76,74,73,73,73,71,71,70,70,68,66,65,65,63,61,59,57,55,54,54,53,52,52,52,50,50,48,46,46,44,42,41,41,41,41,39,37,36,34,32,32,30,30,28,27,25,23,23,22,21,20,19,18,17,17,15,14,12,11,9,9,7,5,5,5,5,4,2,2,1,0,0,0,0]
+=> 50
+

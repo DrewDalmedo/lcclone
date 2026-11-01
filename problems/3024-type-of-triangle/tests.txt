@@ -1,0 +1,100 @@
+# Type of Triangle.
+
+@example 7 < 5 + 7, so the sides make a triangle; two of them are 7 and the third is 5.
+[7,5,7]
+=> "isosceles"
+
+@example The longest side, 9, is more than 2 + 4 = 6, so the sides don't meet.
+[2,9,4]
+=> "none"
+
+@example 11 < 6 + 8, and no two sides are equal.
+[6,11,8]
+=> "scalene"
+
+# The smallest and the largest equal sides.
+[1,1,1]
+=> "equilateral"
+
+[100,100,100]
+=> "equilateral"
+
+# Flat triples are not triangles: 1 + 1 == 2 (two equal sides), 1 + 99 == 100.
+[2,1,1]
+=> "none"
+
+[100,1,99]
+=> "none"
+
+# Two equal sides that are too short for the third: validity comes first.
+[4,10,4]
+=> "none"
+
+# The longest side first: nums[0] + nums[1] > nums[2] holds, but 12 > 4 + 6.
+[12,4,6]
+=> "none"
+
+# Scalene with the longest side first, and last (nearly flat: 50 + 51 == 101).
+[9,4,6]
+=> "scalene"
+
+[50,51,100]
+=> "scalene"
+
+# The equal pair at indices 0 and 2, nearly flat (50 + 50 == 100 > 99).
+[50,99,50]
+=> "isosceles"
+
+# The equal pair at indices 0 and 1, with a 1 last.
+[7,7,1]
+=> "isosceles"
+
+# The equal pair at indices 1 and 2, with a tiny third side.
+[1,100,100]
+=> "isosceles"
+
+# 1 + 98 == 99, one short of the longest side.
+[1,98,100]
+=> "none"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[1,1,2]
+=> "none"
+
+@gen 2 small
+[1,5,1]
+=> "none"
+
+@gen 3 small
+[1,5,7]
+=> "none"
+
+@gen 4 small
+[6,6,6]
+=> "equilateral"
+
+@gen 5 small
+[6,4,6]
+=> "isosceles"
+
+@gen 6 small
+[3,7,5]
+=> "scalene"
+
+@gen 7 small
+[4,3,6]
+=> "scalene"
+
+# Full-size cases: lengths up to 100.
+@gen 1
+[12,48,36]
+=> "none"
+
+@gen 6
+[70,70,82]
+=> "isosceles"
+
+@gen 11
+[97,8,90]
+=> "scalene"

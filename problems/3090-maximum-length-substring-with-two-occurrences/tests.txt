@@ -1,0 +1,99 @@
+# Maximum Length Substring With Two Occurrences.
+
+@example Every piece of 7 letters holds three a's or three b's; "abcabc" holds each letter twice.
+"abcabcab"
+=> 6
+
+@example Only l appears twice, so the whole string is allowed.
+"hello"
+=> 5
+
+@example The three x's are never side by side, but no piece may hold all of them: "xyxz" and "yxzx" keep two.
+"xyxzx"
+=> 4
+
+# The shortest strings.
+"qq"
+=> 2
+
+"qr"
+=> 2
+
+# One letter, 100 times.
+"wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+=> 2
+
+# Counting letters over the whole string would allow 8; the three x's
+# can't all be in one piece.
+"abcxxxabc"
+=> 5
+
+# Four p's, none next to another.
+"pqprpsp"
+=> 5
+
+# The best piece ends just before the third f. Moving the left end by one
+# step at that f leaves three f's in a window that then keeps growing.
+"abcdefgfhfijk"
+=> 9
+
+# At the third f the left end must jump five places, past the first f;
+# the best piece starts at the y after it and runs to the end.
+"uvwxfyfzfabcdeg"
+=> 10
+
+# The longest piece is a suffix, found after an early third a.
+"aaabcdefg"
+=> 8
+
+# Every letter twice: the whole string, and the largest answer possible.
+"abcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcba"
+=> 52
+
+# 100 letters cycling through the alphabet: 52 at most.
+"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv"
+=> 52
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abca"
+=> 4
+
+@gen 3 small
+"adbcadb"
+=> 7
+
+@gen 9 small
+"tzcjzveeq"
+=> 9
+
+@gen 11 small
+"aacbcacac"
+=> 5
+
+@gen 13 small
+"adbaabd"
+=> 6
+
+@gen 14 small
+"fdbdcaacfe"
+=> 10
+
+@gen 19 small
+"babababab"
+=> 4
+
+# Full-size random cases: 100 letters from the whole alphabet, the
+# alphabet cycled in a shuffled order, and repeated a's and b's followed
+# by letters used at most twice.
+@gen 7
+"ebdmeycorwmwuuybzyadqtjemovrbvruktoazgvzfzwvxlxeeycilflgmcdamqtferudhceomdocwzbqzjqupbqnxxgbsfitlvcu"
+=> 25
+
+@gen 8
+"bznugikyqatsmjrdclpwvxeohfbznugikyqatsmjrdclpwvxeohfbznugikyqatsmjrdclpwvxeohfbznugikyqatsmjrdclpwvx"
+=> 52
+
+@gen 10
+"baaabbbabbabbabbbabaaabaaabaabaaaabbaabbaabaabbbaaababbcjeumfttcpsxoflbwugqqkhlrnjdxmiozpenvzyasrghk"
+=> 46

@@ -1,0 +1,92 @@
+# Find the Sum of Encrypted Integers.
+
+@example 47 becomes 77, 5 stays 5 and 309 becomes 999.
+[47,5,309]
+=> 1081
+
+@example Zeros are overwritten too: 111 + 1111.
+[100,1000]
+=> 1222
+
+@example Both copies of 62 count: 66 + 66 + 8.
+[62,62,8]
+=> 140
+
+# The smallest input.
+[1]
+=> 1
+
+# The only four-digit number.
+[1000]
+=> 1111
+
+# Single digits stay as they are.
+[3,9,2]
+=> 14
+
+# Zeros inside and at the end keep their places: 111 + 111 + 22 + 555.
+[101,110,20,500]
+=> 799
+
+# The highest digit is in the middle or at the end: 999 + 888 + 888.
+[192,128,381]
+=> 2775
+
+# The first digit is not the highest: 22 + 44 + 99.
+[12,34,19]
+=> 165
+
+# Each number is encrypted on its own: 4 + 8, not the encrypted 12.
+[4,8]
+=> 12
+
+# Numbers whose digits are already all the highest one, or nearly.
+[999,990,99]
+=> 2097
+
+# One number of each length: 7 + 77 + 777 + 1111.
+[7,70,700,1000]
+=> 1972
+
+# The largest sum, 50 times 1111, too big for a 16-bit signed integer.
+[1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000]
+=> 55550
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[87,1000,830,300,44,1000,60]
+=> 3641
+
+@gen 2 small
+[1000,6,10,529,408]
+=> 3015
+
+@gen 3 small
+[1000,1000,50,424,554,32,28,6]
+=> 3403
+
+@gen 4 small
+[7,1000,102,400]
+=> 1784
+
+@gen 5 small
+[2,7,810,9,3,74]
+=> 986
+
+@gen 6 small
+[860,1]
+=> 889
+
+@gen 7 small
+[80,64,98,90,420,220]
+=> 1018
+
+# Full size.
+@gen 1
+[87,1000,830,300,44,1000,60,9,57,866,40,62,1000,900,98,8,9,5,50,49,2,3,10,560,25,9,7,3,7,3,6,60,39,50,751,46,100,800,270,90,1000,841,3,6,400,6,80,3,51,95]
+=> 13523
+
+@gen 2
+[1000,6,10,529,408,98,1000,10,4,62,712,169,26,9,20,6,73,48,840,364,260,1,402,100,424,1000,702,509,850,790,68,2,207,1000,160,1000,85,822,8,496,699,1,7,78,510,94,63,1,69,8]
+=> 22005
+

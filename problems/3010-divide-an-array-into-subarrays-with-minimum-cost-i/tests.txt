@@ -1,0 +1,98 @@
+# Divide an Array Into Subarrays With Minimum Cost I.
+
+@example Cut into [6,9], [2,8] and [5]: 6 + 2 + 5 = 13.
+[6,9,2,8,5]
+=> 13
+
+@example With three elements, each one is a piece of its own.
+[8,2,6]
+=> 16
+
+@example 25 starts the first piece, so it is always paid for. The best cut gives [25], [6] and [3,40,7]: 25 + 6 + 3 = 34.
+[25,6,3,40,7]
+=> 34
+
+# The smallest answer there can be.
+[1,1,1]
+=> 3
+
+# The largest answer, 150: more than a signed char holds.
+[50,50,50]
+=> 150
+
+# The first element is the smallest; it is paid for once, not twice.
+[1,5,3,8]
+=> 9
+
+# A large first element: the three smallest elements are the 1s, but the
+# first piece starts with 50.
+[50,1,1,1]
+=> 52
+
+# The two smallest after the first are equal and next to each other.
+[9,2,2,7]
+=> 13
+
+# A single 1 can start only one piece.
+[50,1,50]
+=> 101
+
+# Only one 1 after the first element: one piece begins with it, and the
+# other has to begin with a 9.
+[4,1,9,9]
+=> 14
+
+# The smallest elements are at position 1 and at the end.
+[8,1,6,7,2]
+=> 11
+
+# A falling tail: the two smallest are the last two, each one smaller than
+# everything before it.
+[10,9,8,7,6,5]
+=> 21
+
+# Fifty elements: 50 everywhere but at the second and last positions.
+[50,1,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,1]
+=> 52
+
+# Fifty elements, all 50.
+[50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50]
+=> 150
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[1,2,2,5,4]
+=> 5
+
+@gen 2 small
+[50,3,3,1,1,1,5]
+=> 52
+
+@gen 3 small
+[1,3,1,4,2,2,3,3]
+=> 4
+
+@gen 4 small
+[2,1,3,2]
+=> 5
+
+@gen 5 small
+[2,2,1,1,2,1]
+=> 4
+
+@gen 6 small
+[2,2,3,3,3,1]
+=> 5
+
+# Full size: the seed picks the shape (see gen.c).
+@gen 1
+[9,50,50,49,49,48,47,46,46,45,44,43,43,43,42,41,40,40,39,39,38,38,38,38,37,37,37,37,37,37,36,35,34,33,32,31,30,30,29,28,27,27,26,26,26,26,26,26,26,25]
+=> 60
+
+@gen 2
+[50,1,13,29,27,35,17,19,41,48,23,8,20,50,26,27,27,49,27,37,18,39,1,6,23,1,23,7,46,24,4,43,28,33,39,22,39,3,39,50,13,47,16,50,35,36,46,7,34,8]
+=> 52
+
+@gen 3
+[16,21,48,50,39,28,50,47,26,36,28,48,46,27,33,50,34,45,37,28,25,24,38,48,32,28,39,30,39,28,45,35,42,36,24,34,43,33,26,33,23,26,46,45,25,34,24,30,38,16]
+=> 53

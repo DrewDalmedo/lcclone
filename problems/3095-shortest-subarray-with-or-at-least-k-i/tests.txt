@@ -1,0 +1,132 @@
+# Shortest Subarray With OR at Least K I. -1 means no slice reaches k.
+
+@example No single element reaches 7, but 5 | 2 = 7 does.
+[5,2,4,1]
+7
+=> 2
+
+@example 16 alone is at least 12, though it has none of the bits of 12.
+[3,1,16,2]
+12
+=> 1
+
+@example Even all three together only reach 1 | 2 | 4 = 7.
+[1,2,4]
+9
+=> -1
+
+# k = 0: one element is enough, even when every element is 0.
+[0,0,0]
+0
+=> 1
+
+# A single element equal to k.
+[37]
+37
+=> 1
+
+# Every element is 0 and k is not.
+[0,0,0,0]
+1
+=> -1
+
+# The whole array's OR is 47, just below k.
+[32,8,4,2,1]
+48
+=> -1
+
+# Only the whole array has both 32 and 16, which 48 needs.
+[32,1,2,4,16]
+48
+=> 5
+
+# 12 is at least 11 though it lacks two of the bits of 11; asking for
+# every bit of k would need all three elements.
+[12,2,1]
+11
+=> 1
+
+# 10 | 4 is exactly 14; asking for more than k would need three elements.
+[1,10,4,2]
+14
+=> 2
+
+# The three 5s share their bits: the window [5,5,5,2] still has OR 7
+# after dropping its first 5, so subtracting or XOR-ing it out is wrong.
+[5,5,5,2]
+7
+=> 2
+
+# The only element that reaches k is the last one.
+[1,2,1,2,50]
+49
+=> 1
+
+# Repeating a value adds nothing to an OR: 20 | 20 | 20 | 9 is only 29,
+# though 20 + 20 is already past 30.
+[20,20,20,9]
+30
+=> -1
+
+# 50 | 13 = 63, the largest OR possible, and k = 63.
+[50,13]
+63
+=> 2
+
+# 50 elements, and only the whole array reaches k.
+[32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16]
+48
+=> 50
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[32,0,32,2,4,4,0]
+35
+=> 3
+
+@gen 3 small
+[0,0,0,0,0,0,1,16]
+15
+=> 1
+
+@gen 4 small
+[0,0,8,0]
+9
+=> -1
+
+@gen 8 small
+[32,15,14,1,4,5,16]
+46
+=> 2
+
+@gen 14 small
+[32,10,12,1,16]
+45
+=> 3
+
+@gen 18 small
+[1,6,6,1]
+29
+=> -1
+
+@gen 22 small
+[5,3,0,5,0,0,3]
+5
+=> 1
+
+# Full-size random cases: 50 values from 0 to 50; 32 first and 16 last;
+# mostly zeros with single bits.
+@gen 2
+[38,19,26,23,6,36,15,19,32,15,6,34,46,15,8,34,44,14,35,3,38,24,42,12,27,4,15,49,23,3,44,18,48,19,29,47,38,13,3,39,11,21,26,2,34,10,18,11,41,47]
+63
+=> 2
+
+@gen 4
+[32,2,13,0,14,5,2,8,6,13,4,12,6,1,13,12,5,2,8,12,10,8,12,12,9,3,3,14,4,2,6,14,3,7,6,8,9,12,12,5,15,9,1,6,12,15,15,0,11,16]
+47
+=> 3
+
+@gen 8
+[8,0,1,0,8,0,0,32,0,0,4,32,0,4,32,4,0,0,0,0,0,0,32,0,0,0,32,0,0,0,32,0,32,0,0,0,0,0,16,0,0,8,0,0,32,0,0,0,0,0]
+61
+=> 37

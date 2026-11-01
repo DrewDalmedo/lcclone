@@ -1,0 +1,114 @@
+# Count Prefix and Suffix Pairs I.
+
+@example "on" bookends both copies of "onion", "o" bookends "oo", and the first "onion" bookends the second.
+["on","onion","o","oo","onion"]
+=> 4
+
+@example "alfa" bookends "alfalfa" (the two copies share its fourth letter) and its own later copy; "alfalfa" is too long to bookend the last word.
+["alfa","alfalfa","alfa"]
+=> 2
+
+@example "gone" only starts with "go" and "ago" only finishes with it; "gogo" does both.
+["go","gone","ago","gogo"]
+=> 1
+
+# A single word has no pair.
+["a"]
+=> 0
+
+# Two copies of a one-letter word.
+["z","z"]
+=> 1
+
+# Equal words at the first and last positions; "k" and "kit" start "kite"
+# but don't finish it.
+["kite","k","kit","kite"]
+=> 1
+
+# A longer word before a shorter one never bookends it ...
+["abcab","ab"]
+=> 0
+
+# ... while in the other order it does.
+["ab","abcab"]
+=> 1
+
+# A word only in the middle, or only at the start, of a later word.
+["b","abc","ab","abcabd"]
+=> 0
+
+# The last four letters of "abcdxabed" differ from "abcd" in an inner
+# letter; "abcdabcd" really finishes with it.
+["abcd","abcdxabed","abcdabcd"]
+=> 1
+
+# "abcdbacd" finishes with the letters of "abcd" in another order: it
+# ends in "cd" but its last four letters start "ba".
+["abcd","abcdbacd"]
+=> 0
+
+# "sees" and "sxxs" agree in their first and last letters only;
+# "seesees" holds two copies of "sees" that share an s.
+["sees","sxxs","seesees"]
+=> 1
+
+# Overlapping copies, up to ten letters long.
+["aaa","aaaa","xyzx","xyzxyzxyzx"]
+=> 2
+
+# A one-letter word bookends the words that start and finish with it.
+["q","qwq","qw","wq","q"]
+=> 2
+
+# Pairs are counted by position: three copies of "a" make three pairs, and
+# each copy before "aa" bookends it.
+["a","a","aa","a"]
+=> 5
+
+# 50 copies of a 10-letter word: 50 * 49 / 2 = 1225 pairs.
+["abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij","abcdefghij"]
+=> 1225
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["ccbc","cbcc","ab","c","c","cc","bbbac"]
+=> 3
+
+@gen 2 small
+["aaaa","aaaa","bab","ca","a"]
+=> 1
+
+@gen 3 small
+["ab","aa","abab","ab","a","aab","aaaa","aa"]
+=> 6
+
+@gen 4 small
+["a","a","baa","baa"]
+=> 2
+
+@gen 5 small
+["bba","ba","baba","aaaaa","babb","aaaaa"]
+=> 2
+
+@gen 6 small
+["ab","aa"]
+=> 0
+
+@gen 7 small
+["a","ab","a","aabba","bbbbb","a"]
+=> 5
+
+# Random full-size cases: near misses (a's with one b), the letter a only,
+# and the mixed shape.
+@gen 9
+["aaaaaaaaba","abaaaaaa","aaaaaaaaa","baaaa","abaaa","aabaaaaa","aaabaaaa","aaaaaa","aaaaabaaaa","aaaaaaab","aaaaaaaaa","abaaa","baaaaaaa","aaabaaa","aaaaaba","aaaaaaaaaa","aaaaaa","baaaaaaaaa","aaaaaaaaaa","aaaaa","aaaabaaaaa","aaaaaaaaaa","aaabaaaaa","abaaaaaa","abaaaaaa","aaaaabaa","aabaaaaaaa","aaaaaaaab","aabaaaaaa","aaaaaaaa","aabaaaaaa","baaaaaa","aaaaa","aaaaaa","aaaaba","aaaaaaaaaa","aaaaaaaa","aaaaabaa","abaaa","abaaaaaaaa","aaaba","aaaaaaaa","aaabaaa","aaaaaba","aaaaaaaaaa","aaaaaaab","aaaaaa","aaaaaaaaab","aaaaaaaaa","aaabaaaa"]
+=> 92
+
+@gen 10
+["aa","aaaaa","aaa","a","aa","aaaaaaaaaa","aaaaaa","aaa","aa","aaaa","aaa","aaaa","aa","aaaaaaaaa","aaaaaaaaaa","aa","aa","aaa","aa","aaaaa","a","a","aaaaaaaaaa","aaaaaaa","aaaaa","aaaaaaaaa","aa","aaa","a","aa","aaaaaaaaa","a","a","a","aaaa","aa","aaaaaaaaa","aaaaaaa","aaaa","aaaaaaaa","aaa","aaa","aaaaaaaaaa","aaaaaaaaa","aaaaa","aa","aaaaaa","aaaaaaaa","a","aaaaaaaaa"]
+=> 737
+
+@gen 14
+["ab","abbab","abbababbab","abbab","abbababbab","abbab","abbaab","bbbbbbbaba","aaaaaa","babbab","abbababbab","abaaba","bbbb","abbaaa","bababbbb","a","ababb","bbbbbbbbb","bbabaaa","bbb","b","bbb","ababababab","a","aaaaaaaa","bbbbbbbaba","abbababbab","abbbbababa","bababbbb","a","bba","bbabbabb","babbaba","a","bab","baba","aabbaabbba","bbaaaaba","bbb","aaaaaaaa","bbbbbbbbb","aaba","babaaababa","aa","aba","ababbababa","a","aabbbab"]
+=> 87
+
