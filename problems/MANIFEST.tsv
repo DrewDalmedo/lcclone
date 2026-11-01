@@ -435,40 +435,40 @@
 1677	products-worth-over-invoices	Product's Worth Over Invoices	easy	yes	skip:sql	todo
 1678	goal-parser-interpretation	Goal Parser Interpretation	easy	no	plain	todo
 1683	invalid-tweets	Invalid Tweets	easy	no	skip:sql	todo
-1684	count-the-number-of-consistent-strings	Count the Number of Consistent Strings	easy	no	plain	todo
-1688	count-of-matches-in-tournament	Count of Matches in Tournament	easy	no	plain	todo
+1684	count-the-number-of-consistent-strings	Count the Number of Consistent Strings	easy	no	plain	draft
+1688	count-of-matches-in-tournament	Count of Matches in Tournament	easy	no	plain	draft
 1693	daily-leads-and-partners	Daily Leads and Partners	easy	no	skip:sql	todo
-1694	reformat-phone-number	Reformat Phone Number	easy	no	plain	todo
-1700	number-of-students-unable-to-eat-lunch	Number of Students Unable to Eat Lunch	easy	no	plain	todo
-1704	determine-if-string-halves-are-alike	Determine if String Halves Are Alike	easy	no	plain	todo
+1694	reformat-phone-number	Reformat Phone Number	easy	no	plain	draft
+1700	number-of-students-unable-to-eat-lunch	Number of Students Unable to Eat Lunch	easy	no	plain	draft
+1704	determine-if-string-halves-are-alike	Determine if String Halves Are Alike	easy	no	plain	draft
 1708	largest-subarray-length-k	Largest Subarray Length K	easy	yes	skip:premium	todo
-1710	maximum-units-on-a-truck	Maximum Units on a Truck	easy	no	plain	todo
-1716	calculate-money-in-leetcode-bank	Calculate Money in Leetcode Bank	easy	no	plain	todo
-1720	decode-xored-array	Decode XORed Array	easy	no	plain	todo
-1725	number-of-rectangles-that-can-form-the-largest-square	Number Of Rectangles That Can Form The Largest Square	easy	no	plain	todo
+1710	maximum-units-on-a-truck	Maximum Units on a Truck	easy	no	plain	draft
+1716	calculate-money-in-leetcode-bank	Calculate Money in Leetcode Bank	easy	no	plain	draft
+1720	decode-xored-array	Decode XORed Array	easy	no	plain	draft
+1725	number-of-rectangles-that-can-form-the-largest-square	Number Of Rectangles That Can Form The Largest Square	easy	no	plain	draft
 1729	find-followers-count	Find Followers Count	easy	no	skip:sql	todo
 1731	the-number-of-employees-which-report-to-each-employee	The Number of Employees Which Report to Each Employee	easy	no	skip:sql	todo
-1732	find-the-highest-altitude	Find the Highest Altitude	easy	no	plain	todo
-1736	latest-time-by-replacing-hidden-digits	Latest Time by Replacing Hidden Digits	easy	no	plain	todo
+1732	find-the-highest-altitude	Find the Highest Altitude	easy	no	plain	draft
+1736	latest-time-by-replacing-hidden-digits	Latest Time by Replacing Hidden Digits	easy	no	plain	draft
 1741	find-total-time-spent-by-each-employee	Find Total Time Spent by Each Employee	easy	no	skip:sql	todo
-1742	maximum-number-of-balls-in-a-box	Maximum Number of Balls in a Box	easy	no	plain	todo
-1748	sum-of-unique-elements	Sum of Unique Elements	easy	no	plain	todo
-1752	check-if-array-is-sorted-and-rotated	Check if Array Is Sorted and Rotated	easy	no	plain	todo
+1742	maximum-number-of-balls-in-a-box	Maximum Number of Balls in a Box	easy	no	plain	draft
+1748	sum-of-unique-elements	Sum of Unique Elements	easy	no	plain	draft
+1752	check-if-array-is-sorted-and-rotated	Check if Array Is Sorted and Rotated	easy	no	plain	draft
 1757	recyclable-and-low-fat-products	Recyclable and Low Fat Products	easy	no	skip:sql	todo
-1758	minimum-changes-to-make-alternating-binary-string	Minimum Changes To Make Alternating Binary String	easy	no	plain	todo
-1763	longest-nice-substring	Longest Nice Substring	easy	no	plain	todo
-1768	merge-strings-alternately	Merge Strings Alternately	easy	no	plain	todo
-1773	count-items-matching-a-rule	Count Items Matching a Rule	easy	no	plain	todo
+1758	minimum-changes-to-make-alternating-binary-string	Minimum Changes To Make Alternating Binary String	easy	no	plain	draft
+1763	longest-nice-substring	Longest Nice Substring	easy	no	plain	draft
+1768	merge-strings-alternately	Merge Strings Alternately	easy	no	plain	draft
+1773	count-items-matching-a-rule	Count Items Matching a Rule	easy	no	plain	draft
 1777	products-price-for-each-store	Product's Price for Each Store	easy	yes	skip:sql	todo
-1779	find-nearest-point-that-has-the-same-x-or-y-coordinate	Find Nearest Point That Has the Same X or Y Coordinate	easy	no	plain	todo
-1784	check-if-binary-string-has-at-most-one-segment-of-ones	Check if Binary String Has at Most One Segment of Ones	easy	no	plain	todo
+1779	find-nearest-point-that-has-the-same-x-or-y-coordinate	Find Nearest Point That Has the Same X or Y Coordinate	easy	no	plain	draft
+1784	check-if-binary-string-has-at-most-one-segment-of-ones	Check if Binary String Has at Most One Segment of Ones	easy	no	plain	draft
 1789	primary-department-for-each-employee	Primary Department for Each Employee	easy	no	skip:sql	todo
-1790	check-if-one-string-swap-can-make-strings-equal	Check if One String Swap Can Make Strings Equal	easy	no	plain	todo
-1791	find-center-of-star-graph	Find Center of Star Graph	easy	no	plain	todo
+1790	check-if-one-string-swap-can-make-strings-equal	Check if One String Swap Can Make Strings Equal	easy	no	plain	draft
+1791	find-center-of-star-graph	Find Center of Star Graph	easy	no	plain	draft
 1795	rearrange-products-table	Rearrange Products Table	easy	no	skip:sql	todo
-1796	second-largest-digit-in-a-string	Second Largest Digit in a String	easy	no	plain	todo
-1800	maximum-ascending-subarray-sum	Maximum Ascending Subarray Sum	easy	no	plain	todo
-1805	number-of-different-integers-in-a-string	Number of Different Integers in a String	easy	no	plain	todo
+1796	second-largest-digit-in-a-string	Second Largest Digit in a String	easy	no	plain	draft
+1800	maximum-ascending-subarray-sum	Maximum Ascending Subarray Sum	easy	no	plain	draft
+1805	number-of-different-integers-in-a-string	Number of Different Integers in a String	easy	no	plain	draft
 1809	ad-free-sessions	Ad-Free Sessions	easy	yes	skip:sql	todo
 1812	determine-color-of-a-chessboard-square	Determine Color of a Chessboard Square	easy	no	plain	todo
 1816	truncate-sentence	Truncate Sentence	easy	no	plain	todo

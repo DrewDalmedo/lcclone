@@ -1,0 +1,128 @@
+# Maximum Number of Balls in a Box.
+
+@example Boxes 5, 6 and 7 get three balls each: box 5 gets 14, 23 and 32. Every other box gets fewer.
+14
+34
+=> 3
+
+@example Balls 61 to 69 go into boxes 7 to 15, one ball per box.
+61
+69
+=> 1
+
+@example Balls 109 and 118 both go into box 10; every other box gets one ball.
+109
+118
+=> 2
+
+# A single ball.
+7
+7
+=> 1
+
+# The last ball alone: 100000 has digit sum 1.
+100000
+100000
+=> 1
+
+# The digits are added up once: ball 19 goes into box 10, not box 1, so
+# boxes 1 to 9 get two balls each.
+1
+19
+=> 2
+
+# Past 100 the digit sums start again from 1: 101 and 110 share box 2.
+98
+112
+=> 2
+
+# Through 9999 to 10000 (box 36, then box 1).
+9990
+10010
+=> 2
+
+# The largest digit sums, up to 45 for 99999; boxes 31 and 32 get 75
+# balls each.
+98999
+99999
+=> 75
+
+# The fullest box is 37, with nine balls (99919, 99928, ..., 99991); box 36
+# has eight. Looking only at boxes up to 36 gives 8.
+99919
+99999
+=> 9
+
+# The ball with the largest digit sum alone: box 45.
+99999
+99999
+=> 1
+
+# Every ball there can be: boxes 22 and 23 tie with 6000 balls each, too
+# many for a char or for the label of a box.
+1
+100000
+=> 6000
+
+# Box 18 gets 670 balls.
+1
+10000
+=> 670
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+98972
+99025
+=> 3
+
+@gen 2 small
+997
+1005
+=> 1
+
+@gen 3 small
+61
+87
+=> 3
+
+@gen 4 small
+99894
+99934
+=> 4
+
+@gen 5 small
+87882
+87883
+=> 1
+
+@gen 6 small
+1
+2
+=> 1
+
+@gen 7 small
+89964
+89989
+=> 3
+
+@gen 8 small
+55572
+55599
+=> 3
+
+# Full-size cases: a random wide range, a range ending near 10^5, and a
+# few balls.
+@gen 1
+24159
+64847
+=> 2782
+
+@gen 2
+10637
+99996
+=> 5517
+
+@gen 3
+30616
+30618
+=> 1

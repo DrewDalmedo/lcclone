@@ -1,0 +1,135 @@
+# Check if One String Swap Can Make Strings Equal.
+
+@example Exchanging the t and the p of "stop" gives "spot".
+"stop"
+"spot"
+=> true
+
+@example The same letters, but five positions differ, and one exchange fixes at most two.
+"listen"
+"silent"
+=> false
+
+@example Already identical, so no exchange is needed, even though no letter repeats.
+"word"
+"word"
+=> true
+
+# A single letter, the same in both.
+"q"
+"q"
+=> true
+
+# A single letter, different.
+"q"
+"r"
+=> false
+
+# Identical strings with repeated letters.
+"mississippi"
+"mississippi"
+=> true
+
+# Exactly one position differs.
+"cold"
+"cord"
+=> false
+
+# Two neighbouring positions cross.
+"form"
+"from"
+=> true
+
+# The first and last positions cross.
+"gnat"
+"tnag"
+=> true
+
+# The same letters moved round three positions.
+"abcz"
+"bcaz"
+=> false
+
+# Two separate pairs, each needing its own exchange.
+"abcd"
+"badc"
+=> false
+
+# Two positions differ, s1[2] == s2[0] but s1[0] != s2[2].
+"pin"
+"nix"
+=> false
+
+# Two positions differ, s1[0] == s2[2] but s1[2] != s2[0].
+"pin"
+"xip"
+=> false
+
+# Two positions differ and s1 has the same letter at both, though the
+# letter codes add up the same ('n' + 'n' == 'm' + 'o').
+"noon"
+"mooo"
+=> false
+
+# Two positions differ, with the same letter at both in s1 and the same
+# letter at both in s2: the four letter codes XOR to 0, yet no exchange helps.
+"sleep"
+"slaap"
+=> false
+
+# All 100 positions differ: a list kept for two differences overflows.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 3 small
+"ronlprmk"
+"ronlprmk"
+=> true
+
+@gen 4 small
+"xxyx"
+"yxxx"
+=> true
+
+@gen 12 small
+"xxxx"
+"yxyx"
+=> false
+
+@gen 17 small
+"r"
+"p"
+=> false
+
+@gen 42 small
+"klsor"
+"rksol"
+=> false
+
+@gen 43 small
+"nkoknpm"
+"pknknpm"
+=> false
+
+@gen 57 small
+"rspmks"
+"rsmpks"
+=> true
+
+# Full-size cases: 100 letters each.
+@gen 2
+"xqmsekulmznzvwecuyriadgwuqlzxshwqzaeidiwbhetxijycxyrphhqdqursjewqicivkjwrqfysdmqxrsotighhwtocmabuulz"
+"yqmsekulmznzvwecuyriadgwuqlzxshwqzaeidiwbhetxijzcxyrphhqdqursjewqicivkjwrqfysdmqxrsotighhwtocmabuulx"
+=> false
+
+@gen 5
+"vkfbgvhetmjxoposqcwgrfwxblhiumoiqjlujpdusjwntewfvisgtjqgizuqufbnomofnhrhwzkhzvlipqdglqqfopjmyvdpoyjn"
+"vkfbgvhetnjxoposqcwgrfwxblhiumoiqjlujpdusjwntewfvisgtjqgizuqufbnomofnhrhwzkhzvlipqdglqqfopjmyvdpoyjo"
+=> false
+
+@gen 6
+"pvwduhjwzafhkrqoazbgqwsxdcvflbxlcxlwnkhizxstlkdmqodlfxmzinupgixwqepmtfxxpwjhemjhkxytjffhnquiixoshobq"
+"qvwduhjwzafhkrqoazbgqwsxdcvflbxlcxlwnkhizxstlkdmqodlfxmzinupgixwqepmtfxxpwjhemjhkxytjffhnquiixoshobp"
+=> true

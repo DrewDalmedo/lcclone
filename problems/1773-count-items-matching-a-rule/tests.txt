@@ -1,0 +1,129 @@
+# Count Items Matching a Rule.
+
+@example Rows 0 and 1 have the type fruit; row 2 is a veg.
+[["fruit","green","kiwi"],["fruit","yellow","lemon"],["veg","green","pea"]]
+"type"
+"fruit"
+=> 2
+
+@example Rows 0 and 2 are named cup. In row 1 cup is the type, a column this query doesn't look at.
+[["mug","blue","cup"],["cup","red","tea"],["bowl","white","cup"]]
+"name"
+"cup"
+=> 2
+
+@example Neither color is exactly teal: tealblue is longer, tea is shorter.
+[["sock","tealblue","wool"],["hat","tea","felt"]]
+"color"
+"teal"
+=> 0
+
+# A single row that passes.
+[["a","b","c"]]
+"color"
+"b"
+=> 1
+
+# A single row holding the word, but in the name column, not the type.
+[["a","b","c"]]
+"type"
+"c"
+=> 0
+
+# The word sits in each of the three columns once; only the color counts.
+[["red","blue","green"],["blue","red","green"],["green","blue","red"]]
+"color"
+"red"
+=> 1
+
+# "type" and "name" are titles of the same length: asking by name must
+# not read the type column, and asking by type must not read the name.
+[["oak","green","leaf"],["leaf","brown","oak"],["oak","red","maple"]]
+"name"
+"oak"
+=> 1
+
+[["oak","green","leaf"],["leaf","brown","oak"],["oak","red","maple"]]
+"type"
+"oak"
+=> 2
+
+# Column titles used as words. Only row 1 has the color "name"; two rows
+# have the name "color".
+[["name","type","color"],["type","name","color"],["color","color","name"]]
+"color"
+"name"
+=> 1
+
+# ruleValue equal to ruleKey: only row 1 has the type "type".
+[["name","type","color"],["type","name","color"],["color","color","name"]]
+"type"
+"type"
+=> 1
+
+# Every row passes, and copies of a row each count.
+[["x","y","z"],["x","y","z"],["x","y","z"]]
+"name"
+"z"
+=> 3
+
+# Whole words only: longer, shorter, containing, and one letter off.
+[["t","abcd","n"],["t","ab","n"],["t","xabcx","n"],["t","abd","n"],["t","abc","n"],["t","cabc","n"]]
+"color"
+"abc"
+=> 1
+
+# Ten-letter words differing only in their last letter.
+[["abcdefghij","k","l"],["abcdefghik","k","l"],["abcdefghij","m","n"]]
+"type"
+"abcdefghij"
+=> 2
+
+# 256 copies of one row, all passing: a count kept in a char wraps to 0.
+[["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"],["p","q","r"]]
+"type"
+"p"
+=> 256
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[["a","ba","b"],["a","ab","a"],["abc","b","abc"],["a","type","ba"],["a","ab","a"],["a","ab","a"],["abc","ba","ab"]]
+"type"
+"a"
+=> 5
+
+@gen 2 small
+[["a","a","abc"],["type","a","b"],["abc","abc","ba"],["a","ab","a"],["a","ab","a"]]
+"name"
+"a"
+=> 2
+
+@gen 3 small
+[["color","b","type"],["abc","ba","b"],["ab","a","a"],["color","a","color"],["abc","a","abc"],["a","a","color"],["a","a","color"],["abc","a","ba"]]
+"color"
+"a"
+=> 6
+
+@gen 4 small
+[["a","type","a"],["type","ba","ab"],["ba","type","ba"],["a","type","b"]]
+"color"
+"type"
+=> 3
+
+@gen 5 small
+[["abc","name","type"],["type","type","type"],["type","ba","type"],["type","b","type"],["name","ba","ba"],["type","ab","ba"]]
+"color"
+"type"
+=> 1
+
+@gen 6 small
+[["ab","abc","ab"],["a","abc","b"]]
+"type"
+"abc"
+=> 0
+
+@gen 7 small
+[["type","b","b"],["type","b","abc"],["a","name","b"],["b","b","b"],["b","ab","b"],["abc","color","b"]]
+"name"
+"b"
+=> 5

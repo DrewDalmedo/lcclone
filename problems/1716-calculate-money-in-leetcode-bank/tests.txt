@@ -1,0 +1,104 @@
+# Calculate Money in Leetcode Bank.
+
+@example Monday, Tuesday and Wednesday of the first week pay 1 + 2 + 3.
+3
+=> 6
+
+@example The first week pays 1 + 2 + ... + 7 = 28. Week two opens with 2 on Monday and 3 on Tuesday, so 28 + 5 = 33.
+9
+=> 33
+
+@example The first two weeks pay 28 and 2 + 3 + ... + 8 = 35. The third Monday pays 3 and its Tuesday 4.
+16
+=> 70
+
+# A single day.
+1
+=> 1
+
+# Exactly one week.
+7
+=> 28
+
+# The second Monday pays 2, not 8.
+8
+=> 30
+
+# Two weeks less a day: six days of the second week.
+13
+=> 55
+
+# Exactly two weeks.
+14
+=> 63
+
+# The third Monday pays 3.
+15
+=> 66
+
+# Three whole weeks: restarting at 1 every Monday would give 84, and never
+# dropping back would give 231.
+21
+=> 105
+
+22
+=> 109
+
+# The total first passes 2^15 - 1 on day 654.
+653
+=> 32739
+
+654
+=> 32835
+
+# The total first passes 2^16 - 1 on day 934.
+933
+=> 65439
+
+934
+=> 65575
+
+# The largest n: 142 weeks and 6 days.
+1000
+=> 74926
+
+999
+=> 74778
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 3 small
+11
+=> 42
+
+@gen 4 small
+23
+=> 114
+
+@gen 11 small
+19
+=> 88
+
+@gen 13 small
+27
+=> 144
+
+@gen 14 small
+18
+=> 81
+
+@gen 15 small
+12
+=> 48
+
+# Full-size cases from gen.c.
+@gen 1
+989
+=> 73323
+
+@gen 3
+978
+=> 71739
+
+@gen 5
+350
+=> 9975

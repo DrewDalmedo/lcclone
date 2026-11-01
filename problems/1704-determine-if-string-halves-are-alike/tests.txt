@@ -1,0 +1,107 @@
+# Determine if String Halves Are Alike.
+
+@example "Moon" has two o's and "LAKE" has an A and an E: two vowels on each side.
+"MoonLAKE"
+=> true
+
+@example The left piece "pia" has two vowels, the right piece "nos" only one.
+"pianos"
+=> false
+
+@example y is not a vowel, so "gyp" has none, while "sum" has one.
+"gypsum"
+=> false
+
+# The shortest strings: both letters vowels, neither, or only one.
+"Io"
+=> true
+
+"xz"
+=> true
+
+"ab"
+=> false
+
+# Capital vowels count: looking at lowercase only would see 0 against 2.
+"AIxexo"
+=> true
+
+# Here lowercase only would see 0 against 0.
+"UbOcdf"
+=> false
+
+# Y is a consonant: counting it would give 2 against 1.
+"Yoga"
+=> true
+
+# No vowels in either piece, though both have a y.
+"rhythm"
+=> true
+
+# Vowels on one side only.
+"bcdfAE"
+=> false
+
+# Every occurrence counts: e twice matches an a and an i.
+"eexaiz"
+=> true
+
+# o twice does not match o once.
+"ooqoqq"
+=> false
+
+# The character at index n / 2 belongs to the right piece: 1 against 1 here,
+# but 0 against 2 or 2 against 0 if the cut is one place off.
+"ktaEvw"
+=> true
+
+# 0 against 2 here, but 1 against 1 if the cut is one place too late.
+"bcdOuf"
+=> false
+
+# 1000 vowels: 500 in each piece.
+"aEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOuaEiOu"
+=> true
+
+# 500 vowels against 244: the counts differ by 256, so an 8-bit counter
+# would find them equal.
+"uOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAuOieAKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKeKezzzzzzzzzzzz"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"UkkUYbEO"
+=> true
+
+@gen 3 small
+"Eo"
+=> true
+
+@gen 6 small
+"yIYb"
+=> false
+
+@gen 9 small
+"UIiy"
+=> false
+
+@gen 11 small
+"UyoaiAZEei"
+=> true
+
+@gen 12 small
+"ZkkyaUYYib"
+=> false
+
+@gen 14 small
+"uZ"
+=> false
+
+# Full-size cases from gen.c: 1000 letters.
+@gen 1
+"DtuAOHEeOauUVsKCTImqUAIUAeELOUIEbBUeDnAEEAEEuOykuAeaEXPOUeofeIxFOFFoTqwijqeLuuOZvevOiQxirwxomAOHfxuoAUCgvdUQOIGEEAfUmuEHERrEjxeUkEAcAEkEAQokZHAfxaQpIUOOeucYZajRyUlOXsMsxqxTUapNAuVeicoIsIuorVAuiIExoAjXjXjOcuBJIUUzUUaEFPvriQcRdpuxeEiIrNLNASwOCoAKLiupwOdWCkiXieiAiXKIvfbiospUloauNeIITepaHUbOicjhLeSkCNUCEjeojjEZyUPFxaiwoauoEUBbEuUVfkEMoPEOiQUHsgYIINhAIuoUialIAmLIiuOOOxBUrEocIijeUTOZORAFeeqiuWAeiOEOjVFycdWuouooRUSOAuaUnAfPUywEMbSUDIoEMRBBCOZouAaAaCEovXQoopuIMaowbzuHpheaiUcEtuacgObOcgVqIHROhALLiXcdeeAoeioniHGoQnUYEWeGisAIEbaGaiUuMOiiilWLOwMOGeaeqEovfApocAeEJhrCJoiaOaGpaeOUIUOIIIuiIeOoBtQsVopWdifBnXDOQovVmCuoAPuiUoEuGEUrzSUXeUelQiVbeOehwJUHGzstiOYiiEiloaooGOCbelcamXKoFzNIisIUUxEiZqWoEXNEGUuEuUevyqoAIeTaaTMkUjATTwAXIiehSxEomgiiZuotZtJRDPUcOtURUhPUcBAEeeAogAvFeCUqyDFJIrAOBuxEeeAMvUYARacvujPaoiITloEsIwePOEayASreOuJEKXZntiDOeUueAieIeUUejyrAUhsURIOredtRaJzoiQQEMEaDFUuovaAomOHUEAsSOoOEuaaFSNOUaLqfIZAxEMSgeiOIoUeCAQhICIVEKoYEQZRsIoTPEPoHoJeuAJZWXIQMaZkSXzzdIDsGqorUfvAHteAUdEEKIEsauEirkospgvuOsbeeOaea"
+=> true
+
+@gen 5
+"OwUIeBfOaeeoyqqAupiIEAUaeIaoOuAEoAAtuaUeeuiTOaEwYEUyCoOEtIhuodIeoEwBqIrAiOooDEOJaOonaoIioaIeeeUAeVIpOaoAMoOaNfiTHEUuTiAauiRaOuozuaouiEoouuIAuuJUeRIAJoDeaiyeOpILUUEOOoAAuauIaEawKNuaowouUAIiRaxjoEzOIUJIaIOEUueieajLEuUyUOjEEaIIEOOaaBaUUOJiIoUIxLqYEaAylUiAOcEOUEIieMaIRiIIEepUaeOeTIoJiuluEUoIIiaOeieLiIeUiOAAOoiTUfAoaeHioIIPIaPQUaAAuAOOABOuGJIucIEOaZeUOeeYaAEIiEOUeeEcoeIeEAiVEiUeUEUiEAWIqUEEuAuWIwIUeYuOIXAwEUtiaifinOOuaOPAJtusaSTkuUIaohiPieVOIUodBGEAUaUohEIiIajIipKAzAEUAeeIeUeuuWeSUoesoUaOQoveieEOWozAAeiOVAAUIOIAZiOUWoXuUeOOUqDUeNOaIfehEfaIheKuaKoAbuOiUEouRuoOOZUoUvEExwaEUAueuOUaVoUOdaAEaUUfaZUUAUNuhUonGiErwIUEIIUOsUUeOXIwoAIAAEoeOAcxuUeiODSEbOUUUyIuhiiiEwuuonoYzjioZooSEuiAuEiIqePAAoEoeCIaoLjaEiIooCUguAeEaaxsiEEeIAxeAvYOXhovobeIOEOoOihEeaaiIEGeuaiiEOEpkootoUUuUUUFuIrFOUSIUaEuAEIgofIFuieaeIiaEuaAYEAUEGoOiDBEIufOaeEihvPUUdeQDIEiIaIFEEukUoTfwmUeAUEiUIiiieUzUapAPbugiUeOiIIiUYOOuIAHauIUIOEIFOUIUIXIOpUoPAeiOUxAojAoVEoAaeIZeEuieUAoZAEOEOiiiaLgEfAyEFayXUAoITIuIaYUiAAVIAAiIiIuIUOAUIEVAuIpAEaoEoOAUaAi"
+=> false
