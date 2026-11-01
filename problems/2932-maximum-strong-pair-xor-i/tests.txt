@@ -1,0 +1,103 @@
+# Maximum Strong Pair XOR I.
+
+@example 13 and 20 give 25. 9 XOR 20 = 29 would be larger, but 20 is more than twice 9.
+[6,9,20,13]
+=> 25
+
+@example No two different values are within a factor of two, so only an element paired with itself is left.
+[40,4,12]
+=> 0
+
+@example 24 is exactly twice 12, which is allowed: 12 XOR 24 = 20. 12 XOR 25 = 21 is larger, but 25 is past twice 12.
+[12,24,25]
+=> 20
+
+# A single element pairs only with itself.
+[1]
+=> 0
+
+# Equal values XOR to 0.
+[7,7,7]
+=> 0
+
+# 1 makes a strong pair with 2, but not with 3.
+[1,2]
+=> 3
+
+[1,3]
+=> 0
+
+# The largest possible answer: 63 XOR 64 = 127.
+[100,63,1,64]
+=> 127
+
+# The answer is the XOR, not the OR (7) or the sum (12).
+[5,7]
+=> 2
+
+# Descending order: 30 and 50 give 44.
+[50,30,17,9]
+=> 44
+
+# Exactly double with 7-bit values: 35 XOR 70 = 101.
+[70,100,35]
+=> 101
+
+# 48 XOR 97 = 81 is just past double and must be left out; 48 XOR 96 = 80.
+[48,97,96]
+=> 80
+
+# Without the strong rule 27 XOR 100 = 127 would win; only 27 and 30 pair.
+[27,100,30]
+=> 5
+
+# Duplicates among other values: 15 and 16 give 31.
+[8,15,8,16,15,3]
+=> 31
+
+# The longest array, 50 down to 1: 31 XOR 32 = 63.
+[50,49,48,47,46,45,44,43,42,41,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
+=> 63
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[17,18,5,8,7,9,3]
+=> 27
+
+@gen 2 small
+[5,3,3,1,1]
+=> 6
+
+@gen 3 small
+[7,5,5,3,18,11,10,9]
+=> 27
+
+@gen 4 small
+[14,15,7,7]
+=> 9
+
+@gen 6 small
+[19,2]
+=> 0
+
+@gen 7 small
+[17,16,12,6,8,8]
+=> 29
+
+@gen 8 small
+[13,1,1,13,1,5,13]
+=> 0
+
+# Random cases of 50 values.
+@gen 1
+[45,76,18,26,43,48,80,81,53,6,21,20,41,13,78,27,38,5,45,28,26,43,38,56,32,2,19,32,53,64,24,4,9,16,30,40,13,60,36,21,26,39,65,52,40,97,32,90,90,48]
+=> 126
+
+@gen 3
+[7,2,17,7,74,17,7,17,2,36,74,2,17,36,17,74,7,74,36,36,74,2,17,36,74,7,2,7,36,17,17,2,7,17,17,74,36,74,2,74,36,74,74,7,7,74,74,36,74,74]
+=> 0
+
+@gen 5
+[100,100,95,92,89,88,88,85,84,82,79,75,74,74,67,66,65,65,64,64,61,59,58,54,51,47,45,43,40,40,39,35,35,34,33,32,22,20,19,18,17,14,14,12,12,9,7,2,1,1]
+=> 127
+

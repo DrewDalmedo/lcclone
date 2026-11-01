@@ -1,0 +1,154 @@
+# Make Three Strings Equal. Inputs: s1, s2, s3; -1 means it can't be done.
+
+@example The longest start the three share is "ban": trim 3, 4 and 1 letters off the ends.
+"banana"
+"bandana"
+"band"
+=> 8
+
+@example The first letters are k, k and b, and no string may be trimmed down to nothing.
+"kite"
+"kit"
+"bit"
+=> -1
+
+@example The strings are already the same.
+"zoo"
+"zoo"
+"zoo"
+=> 0
+
+# Single letters, all the same.
+"a"
+"a"
+"a"
+=> 0
+
+# Single letters, one different: nothing can be trimmed.
+"q"
+"q"
+"r"
+=> -1
+
+# One string is the start of the others.
+"ab"
+"abc"
+"abcd"
+=> 3
+
+# Only the third string differs, in its first letter; the rest is the same.
+"abcdef"
+"abcdef"
+"xbcdef"
+=> -1
+
+# Only the first string differs at the start.
+"qrst"
+"rrst"
+"rrs"
+=> -1
+
+# The first and last strings are equal; the middle one stops the shared start at "rot".
+"rotor"
+"rotate"
+"rotor"
+=> 7
+
+# The first two agree for four letters, but the third only on the first.
+"abcdz"
+"abcdy"
+"aqcdz"
+=> 12
+
+# The mismatch is in the longest string, not the shortest.
+"xyzab"
+"xqzzzzz"
+"xyz"
+=> 12
+
+# One repeated letter: the shortest string is the shared start.
+"aaaa"
+"aaa"
+"aaaaa"
+=> 3
+
+# Three equal strings of the greatest length.
+"thequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbr"
+"thequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbr"
+"thequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbrthequickbr"
+=> 0
+
+# The most moves: three strings of 100 letters sharing only the first.
+"abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+"accccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+"addddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+=> 297
+
+# The first and last share 99 letters, but the middle one is a single letter.
+"mpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqr"
+"m"
+"mpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqpqs"
+=> 198
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"aabba"
+"aab"
+"aa"
+=> 4
+
+@gen 2 small
+"b"
+"bbb"
+"a"
+=> -1
+
+@gen 3 small
+"a"
+"aaa"
+"abb"
+=> 4
+
+@gen 5 small
+"bb"
+"bbbab"
+"bbab"
+=> 5
+
+@gen 6 small
+"abab"
+"ab"
+"aab"
+=> 6
+
+@gen 8 small
+"bb"
+"bbb"
+"bbba"
+=> 3
+
+@gen 9 small
+"baa"
+"baa"
+"baba"
+=> 4
+
+# Random cases of up to 100 letters.
+@gen 1
+"uoxlsnnrlojisguzpmcgildbabjr"
+"woxlsnnrlojisguzpmcgildbabjr"
+"woxlsnnrlojisguzpmcgildbabjr"
+=> -1
+
+@gen 3
+"qatkctapykarwoygfxzuqsmrzaammhhxbastvmfoolszyjzbbulxuyrgyubgrclpxrvokyajslnnnmwtdtkttjlnmlsnsypurvzr"
+"qbgoyvsgadvkbfsnbiqgcrjldglatewoqalobigpkhbmpghoxouqljhhbpygugwlhxhozugewelnbjytfmsevlbtnjhdndykpntp"
+"qcnqgfqafidmtwwfpahnwnsdtjllwyddfkxkymcmiuuasbvbsclgtqdyaabatjfqiymkvwjibhgnpbxlykbbjtctufynjmaxqawa"
+=> 297
+
+@gen 5
+"pvkfbgvhetg"
+"pvkfbgvhetgjxoposqcwgrfwxblhiumoiqjlujpdusjwntewfvisgtjqgizuqufbnomofnhrhwzkhzvlipqdglqqfopjzmank"
+"pvkfbgvhetgjxoposqcwgrfwxblhiumoiqjlujpdusjwntewfvisgtjqgizuqufbnomofnhrhwzkhzvlipqdglqqfopjdjf"
+=> 170
+

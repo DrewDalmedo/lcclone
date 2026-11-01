@@ -1,0 +1,127 @@
+# Divisible and Non-divisible Sums Difference.
+
+@example 1 + 2 - 3 + 4 + 5 - 6 + 7 + 8 = 18.
+8
+3
+=> 18
+
+@example 1 - 2 + 3 - 4 + 5 - 6 = -3: the even numbers outweigh the odd ones.
+6
+2
+=> -3
+
+@example 7 is above 4, so every sign is a plus: 1 + 2 + 3 + 4 = 10.
+4
+7
+=> 10
+
+# The smallest inputs: 1 is a multiple of 1, but not of 2.
+1
+1
+=> -1
+
+1
+2
+=> 1
+
+# m = 1 with the largest n: everything is subtracted.
+1000
+1
+=> -500500
+
+# The largest possible result: n = 999 has no multiple of 1000 below it.
+999
+1000
+=> 499500
+
+# m = n = 1000: only n itself is subtracted.
+1000
+1000
+=> 498500
+
+# m = n: 1 + 2 + ... + 6 - 7.
+7
+7
+=> 14
+
+# The result can be 0: 1 + 2 - 3.
+3
+3
+=> 0
+
+# n is a multiple of m, so n itself is subtracted: 1 + 2 + 3 - 4 + ... - 12.
+12
+4
+=> 30
+
+# n is not a multiple of m: 12 is past n and must not be subtracted.
+11
+4
+=> 42
+
+# m = 2 with the largest n: the odd numbers add up to 250000, the even
+# ones to 250500.
+1000
+2
+=> -500
+
+# The multiples of 3 up to 1000 add up to 166833.
+1000
+3
+=> 166834
+
+# Exactly one multiple below n.
+1000
+999
+=> 498502
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+7
+3
+=> 10
+
+@gen 2 small
+21
+21
+=> 189
+
+@gen 3 small
+11
+1
+=> -66
+
+@gen 4 small
+23
+2
+=> 12
+
+@gen 10 small
+13
+15
+=> 91
+
+@gen 11 small
+19
+14
+=> 162
+
+@gen 12 small
+10
+7
+=> 41
+
+@gen 4
+900
+15
+=> 350550
+
+@gen 5
+986
+407
+=> 484149
+
+@gen 10
+975
+980
+=> 475800

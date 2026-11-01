@@ -1,0 +1,127 @@
+# Count Symmetric Integers.
+
+@example Of the two-digit numbers, only those with two equal digits are symmetric: 44, 55 and 66.
+40
+70
+=> 3
+
+@example Three-digit numbers never count. From 1000 on, 1001 (1 + 0 = 0 + 1) and 1010 (1 + 0 = 1 + 0) are symmetric.
+990
+1020
+=> 2
+
+@example 393 has an odd count of digits, so it is not symmetric, though its outer digits match.
+393
+393
+=> 0
+
+# The smallest range: a single digit never counts.
+1
+1
+=> 0
+
+# 11 is the first symmetric number, and a range of just it.
+11
+11
+=> 1
+
+# Every two-digit number: 11, 22, ..., 99.
+10
+99
+=> 9
+
+# No three-digit number counts.
+100
+999
+=> 0
+
+# Crossing from two digits to three: only 99.
+90
+110
+=> 1
+
+# Crossing from three digits to four, ending on 1001.
+950
+1001
+=> 1
+
+# Every four-digit number: 615 of them.
+1000
+9999
+=> 615
+
+# The whole range: 9 + 615. 10000 has five digits.
+1
+10000
+=> 624
+
+10000
+10000
+=> 0
+
+# 9999 (9 + 9 = 9 + 9) is the last symmetric number.
+9999
+10000
+=> 1
+
+# Both ends are symmetric: 2305, 2314, 2323, 2332, 2341 and 2350.
+2305
+2350
+=> 6
+
+# Zeros in the right half: 9009, 9018, ..., 9081 and 9090.
+9000
+9090
+=> 10
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+4847
+4886
+=> 5
+
+@gen 2 small
+1
+16
+=> 1
+
+@gen 3 small
+1
+4851
+=> 278
+
+@gen 4 small
+1150
+9363
+=> 585
+
+@gen 5 small
+7882
+7908
+=> 2
+
+@gen 6 small
+5770
+5773
+=> 0
+
+@gen 7 small
+2175
+2278
+=> 5
+
+# Full size: ranges reaching from near 1 to near 10^4.
+@gen 1
+59
+9989
+=> 618
+
+@gen 2
+37
+9962
+=> 620
+
+@gen 3
+16
+9978
+=> 622

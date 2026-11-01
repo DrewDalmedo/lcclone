@@ -1,0 +1,143 @@
+# Check if Strings Can be Made Equal With Operations I.
+
+@example A jump between positions 0 and 2 turns "made" into "dame".
+"made"
+"dame"
+=> true
+
+@example Jumps between 0 and 2 and then between 1 and 3 turn "noon" into "onno".
+"noon"
+"onno"
+=> true
+
+@example The t of "trap" can only stand at position 0 or 2, and the t of "part" only at 1 or 3.
+"trap"
+"part"
+=> false
+
+# Identical rows need no jump.
+"abab"
+"abab"
+=> true
+
+# Only the jump between positions 1 and 3.
+"lime"
+"lemi"
+=> true
+
+# The same letters, but the first two would have to trade places, one apart.
+"stop"
+"tsop"
+=> false
+
+# The even positions of s1 hold a twice; those of s2 hold a and b. Then the
+# same with the rows the other way round.
+"axay"
+"axby"
+=> false
+
+"axby"
+"axay"
+=> false
+
+# Both rows have the letters k, k, q, q, but at positions of the wrong kind.
+"kqkq"
+"qkqk"
+=> false
+
+# The even positions match after a jump; the odd ones differ in one letter.
+"wxyz"
+"yxwq"
+=> false
+
+# A single letter throughout; then only the last letter differs.
+"zzzz"
+"zzzz"
+=> true
+
+"zzzz"
+"zzzy"
+=> false
+
+# Only the first letter differs.
+"bcde"
+"acde"
+=> false
+
+# The end letters trade places, three apart: that is not a jump.
+"plum"
+"mlup"
+=> false
+
+# Repeated letters: "aabb" turns into "abba", but not into "abab".
+"aabb"
+"abba"
+=> true
+
+"aabb"
+"abab"
+=> false
+
+# The even positions hold g, i in s1 and h, h in s2: equal sums of letter
+# codes, different letters.
+"gwiv"
+"hwhv"
+=> false
+
+# The even positions match after a jump; the odd ones hold b, d and c, c.
+"rbsd"
+"scrc"
+=> false
+
+# The odd positions hold a, f and b, e: the same sum of letter codes and the
+# same bitwise xor, but different letters.
+"maqf"
+"mbqe"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bccc"
+"bccc"
+=> true
+
+@gen 2 small
+"aaaa"
+"aaaa"
+=> true
+
+@gen 3 small
+"aaab"
+"aaaa"
+=> false
+
+@gen 4 small
+"baab"
+"abaa"
+=> false
+
+@gen 5 small
+"bbaa"
+"bbaa"
+=> true
+
+@gen 6 small
+"abab"
+"abaa"
+=> false
+
+@gen 7 small
+"bbaa"
+"abba"
+=> true
+
+# Full size: letters from the whole alphabet.
+@gen 1
+"woxl"
+"loxw"
+=> false
+
+@gen 2
+"egqm"
+"kulm"
+=> false

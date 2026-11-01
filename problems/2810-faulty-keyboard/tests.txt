@@ -1,0 +1,98 @@
+# Faulty Keyboard.
+
+@example After m, o, s and a the line is "mosa"; the i turns it into "asom", and c goes on the end.
+"mosaic"
+=> "asomc"
+
+@example Turning the one-letter line "k" changes nothing; the last i turns "kw" into "wk".
+"kiwi"
+=> "wk"
+
+@example Three turns in a row leave "de" as "ed", just as one turn would; then f is added.
+"deiiif"
+=> "edf"
+
+# A single key.
+"q"
+=> "q"
+
+# No i at all: the line is s itself.
+"keyboard"
+=> "keyboard"
+
+# Two turns in a row cancel out.
+"abiic"
+=> "abc"
+
+# A turn in the middle only turns the letters before it: removing the i's
+# and reversing once, since there is one i, would give "dcba".
+"abicd"
+=> "bacd"
+
+# Two turns, so an even count, but at different places: they don't cancel.
+"abicdie"
+=> "dcabe"
+
+# A turn after the last letter turns the whole line.
+"abci"
+=> "cba"
+
+# An even run of turns at the end leaves the line as it was.
+"abcii"
+=> "abc"
+
+# Every other key is an i, ending with one.
+"aibicidi"
+=> "dbac"
+
+# The longest s: one letter, then 99 presses of i. Turning a single letter
+# changes nothing.
+"ziiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
+=> "z"
+
+# 98 presses of i between two letters cancel out.
+"xiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiy"
+=> "xy"
+
+# The longest s: 99 letters, then one i that reverses them all.
+"abcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyzabcdefghjklmnopqrstuvwxyi"
+=> "yxwvutsrqponmlkjhgfedcbazyxwvutsrqponmlkjhgfedcbazyxwvutsrqponmlkjhgfedcbazyxwvutsrqponmlkjhgfedcba"
+
+# 50 letters, each followed by an i: the even-numbered letters end up in
+# front, last first, and the odd-numbered ones behind them, first first.
+"aibicidieifigihijikiliminioipiqirisitiuiviwixiyiziaibicidieifigihijikiliminioipiqirisitiuiviwixiyizi"
+=> "zxvtrpnljgecaywusqomkhfdbacegjlnprtvxzbdfhkmoqsuwy"
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"cbaddia"
+=> "ddabca"
+
+@gen 2 small
+"aiiai"
+=> "aa"
+
+@gen 3 small
+"ciiiibca"
+=> "cbca"
+
+@gen 4 small
+"cabi"
+=> "bac"
+
+@gen 5 small
+"bidcdi"
+=> "dcdb"
+
+@gen 6 small
+"bb"
+=> "bb"
+
+# Full size: 100 keys.
+@gen 7
+"ziqgpiijuiiiipsqiiiitnkreiiiiiiyriiapiiliiueqiisiuoqioaiaiiruiikidfmileiiqslkieiiiktiivxiwkducpeiini"
+=> "nepcudkwemfdaosqeulparyerkntqspujpgqzuoqarukleqslkktvx"
+
+@gen 8
+"wiiciwikiiihzimhfiiubciiiaiiiniyiiiiioiifiixiiiiiiiidiitmiiimonpvdbibrinixiwqvemjcuitipiiiirviiutrim"
+=> "rtuvrpucjmevqwnbdvpnomyazhwwckmhfubcnofxdtmbrxtm"
