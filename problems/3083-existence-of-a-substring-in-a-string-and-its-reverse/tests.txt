@@ -1,0 +1,98 @@
+# Existence of a Substring in a String and Its Reverse.
+
+@example "no" is a link of "notion" and also of its backwards spelling "noiton".
+"notion"
+=> true
+
+@example The links are "ea", "ag", "gl" and "le"; backwards they are "el", "lg", "ga" and "ae". The e repeats, but no link is shared.
+"eagle"
+=> false
+
+@example "km" and "mk" overlap at the start, and "km" is a link of the backwards spelling "zyxkmk".
+"kmkxyz"
+=> true
+
+# One letter has no links.
+"q"
+=> false
+
+# Two letters: different, then the same.
+"ab"
+=> false
+
+"zz"
+=> true
+
+# A doubled letter only at the very end, or only at the very start.
+"abcdd"
+=> true
+
+"eebcd"
+=> true
+
+# The only shared link: "ab" at the start, swapped as "ba" at the end.
+"abcdefgba"
+=> true
+
+# Letters repeat, three apart, but no link is shared.
+"abcabc"
+=> false
+
+# A swapped link overlapping in the middle.
+"rstsu"
+=> true
+
+# 26 different letters never share a link.
+"qwertyuiopasdfghjklzxcvbnm"
+=> false
+
+# 100 letters: the alphabet over and over, with no shared link.
+"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv"
+=> false
+
+# 100 letters whose only shared links are "ut", the last one, and "tu".
+"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstut"
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"turrvst"
+=> true
+
+@gen 2 small
+"kiiij"
+=> true
+
+@gen 3 small
+"gilmhihm"
+=> true
+
+@gen 4 small
+"qssq"
+=> true
+
+@gen 5 small
+"mjkmjk"
+=> false
+
+@gen 6 small
+"oq"
+=> false
+
+@gen 7 small
+"hijkji"
+=> true
+
+# Full size.
+@gen 1
+"mqipehmrfhmqsjlpsgmsjmeinqmhkmpshoegnpegknejopehimrijqrijkmoprfiprilmsghikmrfhnfmprsjpsglnoefinskmqr"
+=> true
+
+@gen 2
+"mmmmmmnmnnnnmmmmmnmmnmmmmnnnmnmmnmmmnmmnnmnnmnnmnmnnnnmnmmnmnmmmmmmnmnmnmnmmnmmnnmmnmmnnmnmmmmnmmnmn"
+=> true
+
+@gen 3
+"uvablmnsadockqstghrvbfksuvdnahotwfocitcfmabmwakrucfhlmteltwhmoblrdoqsdnpvfpqeklqakvchlmrvgpuaeocglvd"
+=> false
+

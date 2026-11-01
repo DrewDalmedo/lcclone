@@ -1,0 +1,97 @@
+# Number of Changing Keys.
+
+@example The keys are t, e, e, p, e, e: the key changes at the second, fourth and fifth letters.
+"teEPee"
+=> 3
+
+@example All three letters come from the Z key.
+"Zzz"
+=> 0
+
+@example Two keys used in turn: every letter after the first changes the key.
+"xYxY"
+=> 3
+
+# A single letter.
+"q"
+=> 0
+
+# The same key in both cases, lowercase first and uppercase first.
+"qQ"
+=> 0
+
+"Qq"
+=> 0
+
+# A change of letter together with a change of case is a key change.
+"eD"
+=> 1
+
+"Zy"
+=> 1
+
+# The ends of the alphabet, each twin pair in both orders (keys z, a, a, z, z, a).
+"zAaZzA"
+=> 3
+
+# Going back to the m key after n changes the key again (2 distinct keys, 2 changes).
+"mNm"
+=> 2
+
+# Each letter is compared with the one before it, not with the first letter.
+"ppQQqp"
+=> 2
+
+# Case twins at both ends of a run.
+"HhIiHH"
+=> 2
+
+# 100 letters on one key, in mixed case.
+"MMmmMmMmmMMmmmMMmMMMmmmmmmMMmMMmmmMmMmmmmmmmmmmmMMMMmMmMmmMMMmMMmMmMmMMmmmmmMMMmmMMmmmMMmmMmmmmMMMMM"
+=> 0
+
+# 100 letters, z and a in turn in mixed case: every neighbour pair is a key change.
+"zAzazAzAZAzaZAZAZAZAZAzAZAzAzAZaZAzazAzazAzAZazAzazAZAZAZaZAZAZAZAZazAZazazAzAZazAZAzaZaZaZaZaZAZAzA"
+=> 99
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"lLSSoOOsL"
+=> 4
+
+@gen 2 small
+"AZzzZaA"
+=> 2
+
+@gen 3 small
+"cCcCcC"
+=> 0
+
+@gen 4 small
+"llmL"
+=> 2
+
+@gen 5 small
+"FVvVvVVVvV"
+=> 1
+
+@gen 6 small
+"Wo"
+=> 1
+
+@gen 7 small
+"BB"
+=> 0
+
+# Full-size cases: no two neighbours on one key, one key throughout, runs.
+@gen 1
+"nroIGzmGlbJfDolYCUjYsdPZeVKlaWUSCOEZhbSvgQEsxGSUvLtuQxFyePEKdexWUGyEWURuKQbFYBxdFveVSNwAxsBXsLpKxLmV"
+=> 99
+
+@gen 2
+"SSssSsSssSsssSsssSsSSssssSSSsSsSSSsssSsssssSSSSSsSSSssSssSsssSSssSsssSssSSSsSSsssSSSsSsssSSSsSsSSsSs"
+=> 0
+
+@gen 3
+"KkCccaKCKCKAcKKcccAakkakKkKKaCCCcaAaKkkKKKakKaccAKkCCaakaCcCaACCAacckCcakKkkAKKkKkaCkKaCKcCCkcaakcKk"
+=> 53

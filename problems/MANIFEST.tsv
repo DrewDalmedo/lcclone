@@ -759,44 +759,44 @@
 2932	maximum-strong-pair-xor-i	Maximum Strong Pair XOR I	easy	no	plain	todo
 2937	make-three-strings-equal	Make Three Strings Equal	easy	no	plain	todo
 2942	find-words-containing-character	Find Words Containing Character	easy	no	unordered	draft
-2946	matrix-similarity-after-cyclic-shifts	Matrix Similarity After Cyclic Shifts	easy	no	plain	todo
+2946	matrix-similarity-after-cyclic-shifts	Matrix Similarity After Cyclic Shifts	easy	no	plain	draft
 2951	find-the-peaks	Find the Peaks	easy	no	unordered	draft
-2956	find-common-elements-between-two-arrays	Find Common Elements Between Two Arrays	easy	no	plain	todo
-2960	count-tested-devices-after-test-operations	Count Tested Devices After Test Operations	easy	no	plain	todo
-2965	find-missing-and-repeated-values	Find Missing and Repeated Values	easy	no	plain	todo
-2970	count-the-number-of-incremovable-subarrays-i	Count the Number of Incremovable Subarrays I	easy	no	plain	todo
-2974	minimum-number-game	Minimum Number Game	easy	no	plain	todo
-2980	check-if-bitwise-or-has-trailing-zeros	Check if Bitwise OR Has Trailing Zeros	easy	no	plain	todo
+2956	find-common-elements-between-two-arrays	Find Common Elements Between Two Arrays	easy	no	plain	draft
+2960	count-tested-devices-after-test-operations	Count Tested Devices After Test Operations	easy	no	plain	draft
+2965	find-missing-and-repeated-values	Find Missing and Repeated Values	easy	no	plain	draft
+2970	count-the-number-of-incremovable-subarrays-i	Count the Number of Incremovable Subarrays I	easy	no	plain	draft
+2974	minimum-number-game	Minimum Number Game	easy	no	plain	draft
+2980	check-if-bitwise-or-has-trailing-zeros	Check if Bitwise OR Has Trailing Zeros	easy	no	plain	draft
 2985	calculate-compressed-mean	Calculate Compressed Mean	easy	yes	skip:sql	todo
 2987	find-expensive-cities	Find Expensive Cities	easy	yes	skip:sql	todo
 2990	loan-types	Loan Types	easy	yes	skip:sql	todo
-2996	smallest-missing-integer-greater-than-sequential-prefix-sum	Smallest Missing Integer Greater Than Sequential Prefix Sum	easy	no	plain	todo
-3000	maximum-area-of-longest-diagonal-rectangle	Maximum Area of Longest Diagonal Rectangle	easy	no	plain	todo
-3005	count-elements-with-maximum-frequency	Count Elements With Maximum Frequency	easy	no	plain	todo
-3010	divide-an-array-into-subarrays-with-minimum-cost-i	Divide an Array Into Subarrays With Minimum Cost I	easy	no	plain	todo
-3014	minimum-number-of-pushes-to-type-word-i	Minimum Number of Pushes to Type Word I	easy	no	plain	todo
-3019	number-of-changing-keys	Number of Changing Keys	easy	no	plain	todo
-3024	type-of-triangle	Type of Triangle	easy	no	plain	todo
-3028	ant-on-the-boundary	Ant on the Boundary	easy	no	plain	todo
+2996	smallest-missing-integer-greater-than-sequential-prefix-sum	Smallest Missing Integer Greater Than Sequential Prefix Sum	easy	no	plain	draft
+3000	maximum-area-of-longest-diagonal-rectangle	Maximum Area of Longest Diagonal Rectangle	easy	no	plain	draft
+3005	count-elements-with-maximum-frequency	Count Elements With Maximum Frequency	easy	no	plain	draft
+3010	divide-an-array-into-subarrays-with-minimum-cost-i	Divide an Array Into Subarrays With Minimum Cost I	easy	no	plain	draft
+3014	minimum-number-of-pushes-to-type-word-i	Minimum Number of Pushes to Type Word I	easy	no	plain	draft
+3019	number-of-changing-keys	Number of Changing Keys	easy	no	plain	draft
+3024	type-of-triangle	Type of Triangle	easy	no	plain	draft
+3028	ant-on-the-boundary	Ant on the Boundary	easy	no	plain	draft
 3032	count-numbers-with-unique-digits-ii	Count Numbers With Unique Digits II	easy	yes	skip:premium	todo
-3033	modify-the-matrix	Modify the Matrix	easy	no	plain	todo
-3038	maximum-number-of-operations-with-the-same-score-i	Maximum Number of Operations With the Same Score I	easy	no	plain	todo
-3042	count-prefix-and-suffix-pairs-i	Count Prefix and Suffix Pairs I	easy	no	plain	todo
-3046	split-the-array	Split the Array	easy	no	plain	todo
+3033	modify-the-matrix	Modify the Matrix	easy	no	plain	draft
+3038	maximum-number-of-operations-with-the-same-score-i	Maximum Number of Operations With the Same Score I	easy	no	plain	draft
+3042	count-prefix-and-suffix-pairs-i	Count Prefix and Suffix Pairs I	easy	no	plain	draft
+3046	split-the-array	Split the Array	easy	no	plain	draft
 3051	find-candidates-for-data-scientist-position	Find Candidates for Data Scientist Position	easy	yes	skip:sql	todo
 3053	classifying-triangles-by-lengths	Classifying Triangles by Lengths	easy	yes	skip:sql	todo
 3059	find-all-unique-email-domains	Find All Unique Email Domains	easy	yes	skip:sql	todo
 3062	winner-of-the-linked-list-game	Winner of the Linked List Game	easy	yes	skip:premium	todo
 3063	linked-list-frequency	Linked List Frequency	easy	yes	skip:premium	todo
-3065	minimum-operations-to-exceed-threshold-value-i	Minimum Operations to Exceed Threshold Value I	easy	no	plain	todo
-3069	distribute-elements-into-two-arrays-i	Distribute Elements Into Two Arrays I	easy	no	plain	todo
-3074	apple-redistribution-into-boxes	Apple Redistribution into Boxes	easy	no	plain	todo
-3079	find-the-sum-of-encrypted-integers	Find the Sum of Encrypted Integers	easy	no	plain	todo
-3083	existence-of-a-substring-in-a-string-and-its-reverse	Existence of a Substring in a String and Its Reverse	easy	no	plain	todo
-3090	maximum-length-substring-with-two-occurrences	Maximum Length Substring With Two Occurrences	easy	no	plain	todo
-3095	shortest-subarray-with-or-at-least-k-i	Shortest Subarray With OR at Least K I	easy	no	plain	todo
-3099	harshad-number	Harshad Number	easy	no	plain	todo
-3105	longest-strictly-increasing-or-strictly-decreasing-subarray	Longest Strictly Increasing or Strictly Decreasing Subarray	easy	no	plain	todo
+3065	minimum-operations-to-exceed-threshold-value-i	Minimum Operations to Exceed Threshold Value I	easy	no	plain	draft
+3069	distribute-elements-into-two-arrays-i	Distribute Elements Into Two Arrays I	easy	no	plain	draft
+3074	apple-redistribution-into-boxes	Apple Redistribution into Boxes	easy	no	plain	draft
+3079	find-the-sum-of-encrypted-integers	Find the Sum of Encrypted Integers	easy	no	plain	draft
+3083	existence-of-a-substring-in-a-string-and-its-reverse	Existence of a Substring in a String and Its Reverse	easy	no	plain	draft
+3090	maximum-length-substring-with-two-occurrences	Maximum Length Substring With Two Occurrences	easy	no	plain	draft
+3095	shortest-subarray-with-or-at-least-k-i	Shortest Subarray With OR at Least K I	easy	no	plain	draft
+3099	harshad-number	Harshad Number	easy	no	plain	draft
+3105	longest-strictly-increasing-or-strictly-decreasing-subarray	Longest Strictly Increasing or Strictly Decreasing Subarray	easy	no	plain	draft
 3110	score-of-a-string	Score of a String	easy	no	plain	todo
 3114	latest-time-you-can-obtain-after-replacing-characters	Latest Time You Can Obtain After Replacing Characters	easy	no	plain	todo
 3120	count-the-number-of-special-characters-i	Count the Number of Special Characters I	easy	no	plain	todo

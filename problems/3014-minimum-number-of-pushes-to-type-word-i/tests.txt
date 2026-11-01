@@ -1,0 +1,92 @@
+# Minimum Number of Pushes to Type Word I.
+
+@example Each letter goes first on a key of its own: one press each.
+"frog"
+=> 4
+
+@example Eight letters go first on the eight keys and the other seven second: 8 * 1 + 7 * 2 = 22.
+"uncopyrightable"
+=> 22
+
+@example The whole alphabet: eight letters take 1 press, eight take 2, eight take 3 and the last two take 4.
+"qwertyuiopasdfghjklzxcvbnm"
+=> 56
+
+# A single letter.
+"z"
+=> 1
+
+# Two letters.
+"qj"
+=> 2
+
+# Eight letters: one on every key.
+"keyboard"
+=> 8
+
+# Nine letters: one has to go second.
+"algorithm"
+=> 10
+
+# Sixteen letters: two on every key.
+"uncopyrightables"
+=> 24
+
+# Seventeen: one letter goes third.
+"subdermatoglyphic"
+=> 27
+
+# Twenty-four: three on every key.
+"zyxwvutsrqponmlkjihgfedc"
+=> 48
+
+# Twenty-five: one letter goes fourth.
+"mnbvcxzlkjhgfdsapoiuytrew"
+=> 52
+
+# The alphabet in order.
+"abcdefghijklmnopqrstuvwxyz"
+=> 56
+
+# s and z are fourth on their keys on an ordinary phone, but here every
+# letter of a short word can go first.
+"zsvy"
+=> 4
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"cmpybzfjgveshulwdiqtkna"
+=> 45
+
+@gen 2 small
+"bwhxmafniqtojyevr"
+=> 27
+
+@gen 3 small
+"mdixhsrvq"
+=> 10
+
+@gen 4 small
+"awdikpejo"
+=> 10
+
+@gen 5 small
+"abyhkowtxefgqzij"
+=> 24
+
+@gen 6 small
+"ktupbjvr"
+=> 8
+
+# Full size: the seed picks the shape (see gen.c).
+@gen 1
+"kmsjdewcxbprfzhaongtulyqv"
+=> 52
+
+@gen 2
+"wrniflhytzksoumvpedxjcbq"
+=> 48
+
+@gen 3
+"qngofckbdzhwpsrvmeljtyuiax"
+=> 56
