@@ -1,0 +1,99 @@
+# Rearrange Spaces Between Words.
+
+@example 3 words and 5 spaces: 2 spaces in each of the 2 gaps, and the 1 left over goes after the last word.
+"  red  fox jumps"
+=> "red  fox  jumps "
+
+@example 3 words and 8 spaces: 4 in each gap, with none left over.
+" sun   moon  stars  "
+=> "sun    moon    stars"
+
+@example A single word moves to the front, and all 4 spaces follow it.
+"   zebra "
+=> "zebra    "
+
+# The shortest line: a single letter.
+"q"
+=> "q"
+
+# One word: spaces only before it, only after it, and on both sides.
+"   lead"
+=> "lead   "
+
+"tail    "
+=> "tail    "
+
+"  both  "
+=> "both    "
+
+# One-letter words with one space between each: already laid out.
+"a b c d e f g h"
+=> "a b c d e f g h"
+
+# Already laid out, with one space left over at the end (5 spaces, 3 words).
+"ab  cd  ef "
+=> "ab  cd  ef "
+
+# The most spaces that can be left over: 7 spaces and 5 words give gaps of 1
+# and w - 2 = 3 spaces after the last word.
+"  one two three four five "
+=> "one two three four five   "
+
+# Two words: every space goes into the one gap, and none trails.
+"  m      n   "
+=> "m           n"
+
+# Words move right: spaces of the second gap move into the first, so writing
+# over text from the left would overwrite b before it is read.
+"a b      c"
+=> "a   b   c "
+
+# The longest line with two words: 98 spaces in the one gap.
+"                                                 a                                                 b"
+=> "a                                                                                                  b"
+
+# 50 one-letter words (the most 100 characters can hold) and 50 spaces: gaps
+# of 1, and the space that was in front goes to the end.
+" a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x"
+=> "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x "
+
+# One word of 100 letters.
+"abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"
+=> "abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij"
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"  b   bc   bcc "
+=> "b    bc    bcc "
+
+@gen 2 small
+" caa  "
+=> "caa   "
+
+@gen 3 small
+" bb   aba aaa  ac"
+=> "bb  aba  aaa  ac "
+
+@gen 4 small
+"ac  c ca  b  "
+=> "ac  c  ca  b "
+
+@gen 5 small
+" ba ab"
+=> "ba  ab"
+
+@gen 6 small
+" c   aa  "
+=> "c      aa"
+
+@gen 1
+"ba b j rf ad                                            e ool b ylc i ue je yj s td a pk pzv e vvzky"
+=> "ba   b   j   rf   ad   e   ool   b   ylc   i   ue   je   yj   s   td   a   pk   pzv   e   vvzky     "
+
+@gen 4
+" a il em l zlr og  jf o zs skr m  m ou j e  q a x h  j  g b  hcr  v wo p x z  qxp it  t w je x qfl w"
+=> "a il em l zlr og jf o zs skr m m ou j e q a x h j g b hcr v wo p x z qxp it t w je x qfl w          "
+
+@gen 12
+" rfy wdn fsxmk   iuru s g  obk dbd whomr  gnlp gptz dxu q  bb   zc    fopxr   ws wko  r sumq    h   "
+=> "rfy  wdn  fsxmk  iuru  s  g  obk  dbd  whomr  gnlp  gptz  dxu  q  bb  zc  fopxr  ws  wko  r  sumq  h"

@@ -1,0 +1,105 @@
+# Largest Substring Between Two Equal Characters.
+
+@example The first and last a have "nan" between them; the gap may hold the middle a.
+"banana"
+=> 3
+
+@example Only d occurs twice, and its two copies are neighbours.
+"teddy"
+=> 0
+
+@example Every letter is different, so there is no gap.
+"world"
+=> -1
+
+# A single letter.
+"z"
+=> -1
+
+# Two letters, the same or different.
+"qq"
+=> 0
+
+"qr"
+=> -1
+
+# All 26 letters once each.
+"qwertyuiopasdfghjklzxcvbnm"
+=> -1
+
+# A 27th letter must repeat one of them.
+"qwertyuiopasdfghjklzxcvbnmg"
+=> 11
+
+# Neighbouring letters only: 0, not -1.
+"pressing"
+=> 0
+
+# Four copies of o: the gap from the first to the last, though any two
+# neighbouring copies are close.
+"gotoxoyoz"
+=> 5
+
+# The letter at position 0 repeats once, before the end.
+"wolfwe"
+=> 3
+
+# The widest gap belongs to a rarer letter, not to the most frequent one
+# and not to the first letter.
+"xqbbbbbqy"
+=> 5
+
+# The first and last letters match: the answer is the length minus 2.
+"keeeeeeek"
+=> 7
+
+# 300 letters, the first and last equal: the gap ends at position 299.
+"mabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxyzabcdefghijklnopqrstuvwxm"
+=> 298
+
+# 300 letters in runs; the widest gap runs from position 260 to 299, past
+# what a byte-sized position holds.
+"aaaaaaaaaaaaabbbbbbbbbbbbbcccccccccccccdddddddddddddeeeeeeeeeeeeefffffffffffffggggggggggggghhhhhhhhhhhhhiiiiiiiiiiiiijjjjjjjjjjjjjkkkkkkkkkkkkklllllllllllllmmmmmmmmmmmmmnnnnnnnnnnnnnooooooooooooopppppppppppppqqqqqqqqqqqqqrrrrrrrrrrrrrssssssssssssstttttttttttttzuuuuuuuuvvvvvvvvwwwwwwwwxxxxxxxyyyyyyyz"
+=> 38
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"cmpybpfjg"
+=> 2
+
+@gen 2 small
+"bbbbbbb"
+=> 5
+
+@gen 3 small
+"mdhxhs"
+=> 1
+
+@gen 4 small
+"awdi"
+=> -1
+
+@gen 5 small
+"aaaaaaabbb"
+=> 5
+
+@gen 6 small
+"kk"
+=> 0
+
+@gen 7 small
+"cm"
+=> -1
+
+# Full-size cases: 300 letters.
+@gen 1
+"vvvvvvvvvvvfffffffffffnnnnnnnnnnnnbbbbbbbbbbbooooooooooookkkkkkkkkkkyyyyyyyyyyyyqqqqqqqqqqqssssssssssssiiiiiiiiiiimmmmmmmmmmmmgggggggggggeeeeeeeeeeelllllllllllljjjjjjjjjjjxxxxxxxxxxxxhhhhhhhhhhhppppppppppppzzzzzzzzzzzuuuuuuuuuuuuaaaaaaaaaaattttttttttttrrrrrrrrrrrccccccccccccdwdwwwdwwwwddwwddwwddwwwd"
+=> 23
+
+@gen 2
+"dsfurqqtvnztqqkbnvhhbrrvotfkzdvxfagllsdrgvzouzblwtszgxbjztdsqzsluzjnbskjfslxhfzqlhlfjfxgctnvbjjlgstvcadawgwnasalzhzkrvjocxlbkngnjuogwqqbxablxsoflczklacnbuqrrvbfltfscghsorugzafosjlsjkornchvgcxltaksxxwvrzbqhcbqnqgsnqawhozrojrcknzcgccssdsxokonjwslwarhxlwocctzzauslqcasxkohjgjtrwwjnjhjzcqdxwtrguflcrangcu"
+=> 295
+
+@gen 3
+"zzzzzzzzzzzzzzzztzzzzzddddddddddddddddddddddddddddddddiiknnnnnnnnnnnnnnnnnnnnnnhhhhhhhhhhtthhhhhyyyyyyyyyyyyyyyrtrrreeeeeteeeeeeeeeffffffffffffffjccccccccccutuuuupsssssssssssssssssssssxxxxxxxxxxxxxxxxggggggggggmmmmmmmmmmmmmmvvvvvvvvvvlllllllllllllllwwwwbbbbbbbbbbooooooootoooooooooooooaaaaaaaaaaaaaaa"
+=> 254

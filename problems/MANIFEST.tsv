@@ -397,43 +397,43 @@
 1534	count-good-triplets	Count Good Triplets	easy	no	plain	todo
 1539	kth-missing-positive-number	Kth Missing Positive Number	easy	no	plain	todo
 1543	fix-product-name-format	Fix Product Name Format	easy	yes	skip:sql	todo
-1544	make-the-string-great	Make The String Great	easy	no	plain	todo
-1550	three-consecutive-odds	Three Consecutive Odds	easy	no	plain	todo
-1556	thousand-separator	Thousand Separator	easy	no	plain	todo
-1560	most-visited-sector-in-a-circular-track	Most Visited Sector in  a Circular Track	easy	no	plain	todo
+1544	make-the-string-great	Make The String Great	easy	no	plain	draft
+1550	three-consecutive-odds	Three Consecutive Odds	easy	no	plain	draft
+1556	thousand-separator	Thousand Separator	easy	no	plain	draft
+1560	most-visited-sector-in-a-circular-track	Most Visited Sector in  a Circular Track	easy	no	plain	draft
 1565	unique-orders-and-customers-per-month	Unique Orders and Customers Per Month	easy	yes	skip:sql	todo
-1566	detect-pattern-of-length-m-repeated-k-or-more-times	Detect Pattern of Length M Repeated K or More Times	easy	no	plain	todo
+1566	detect-pattern-of-length-m-repeated-k-or-more-times	Detect Pattern of Length M Repeated K or More Times	easy	no	plain	draft
 1571	warehouse-manager	Warehouse Manager	easy	yes	skip:sql	todo
-1572	matrix-diagonal-sum	Matrix Diagonal Sum	easy	no	plain	todo
+1572	matrix-diagonal-sum	Matrix Diagonal Sum	easy	no	plain	draft
 1576	replace-all-s-to-avoid-consecutive-repeating-characters	Replace All 's to Avoid Consecutive Repeating Characters	easy	no	checker	todo
 1581	customer-who-visited-but-did-not-make-any-transactions	Customer Who Visited but Did Not Make Any Transactions	easy	no	skip:sql	todo
-1582	special-positions-in-a-binary-matrix	Special Positions in a Binary Matrix	easy	no	plain	todo
+1582	special-positions-in-a-binary-matrix	Special Positions in a Binary Matrix	easy	no	plain	draft
 1587	bank-account-summary-ii	Bank Account Summary II	easy	no	skip:sql	todo
-1588	sum-of-all-odd-length-subarrays	Sum of All Odd Length Subarrays	easy	no	plain	todo
-1592	rearrange-spaces-between-words	Rearrange Spaces Between Words	easy	no	plain	todo
-1598	crawler-log-folder	Crawler Log Folder	easy	no	plain	todo
+1588	sum-of-all-odd-length-subarrays	Sum of All Odd Length Subarrays	easy	no	plain	draft
+1592	rearrange-spaces-between-words	Rearrange Spaces Between Words	easy	no	plain	draft
+1598	crawler-log-folder	Crawler Log Folder	easy	no	plain	draft
 1603	design-parking-system	Design Parking System	easy	no	design	todo
 1607	sellers-with-no-sales	Sellers With No Sales	easy	yes	skip:sql	todo
-1608	special-array-with-x-elements-greater-than-or-equal-x	Special Array With X Elements Greater Than or Equal X	easy	no	plain	todo
-1614	maximum-nesting-depth-of-the-parentheses	Maximum Nesting Depth of the Parentheses	easy	no	plain	todo
+1608	special-array-with-x-elements-greater-than-or-equal-x	Special Array With X Elements Greater Than or Equal X	easy	no	plain	draft
+1614	maximum-nesting-depth-of-the-parentheses	Maximum Nesting Depth of the Parentheses	easy	no	plain	draft
 1619	mean-of-array-after-removing-some-elements	Mean of Array After Removing Some Elements	easy	no	float	draft
 1623	all-valid-triplets-that-can-represent-a-country	All Valid Triplets That Can Represent a Country	easy	yes	skip:sql	todo
-1624	largest-substring-between-two-equal-characters	Largest Substring Between Two Equal Characters	easy	no	plain	todo
-1629	slowest-key	Slowest Key	easy	no	plain	todo
+1624	largest-substring-between-two-equal-characters	Largest Substring Between Two Equal Characters	easy	no	plain	draft
+1629	slowest-key	Slowest Key	easy	no	plain	draft
 1633	percentage-of-users-attended-a-contest	Percentage of Users Attended a Contest	easy	no	skip:sql	todo
-1636	sort-array-by-increasing-frequency	Sort Array by Increasing Frequency	easy	no	plain	todo
-1637	widest-vertical-area-between-two-points-containing-no-points	Widest Vertical Area Between Two Points Containing No Points	easy	no	plain	todo
-1640	check-array-formation-through-concatenation	Check Array Formation Through Concatenation	easy	no	plain	todo
-1646	get-maximum-in-generated-array	Get Maximum in Generated Array	easy	no	plain	todo
-1652	defuse-the-bomb	Defuse the Bomb	easy	no	plain	todo
+1636	sort-array-by-increasing-frequency	Sort Array by Increasing Frequency	easy	no	plain	draft
+1637	widest-vertical-area-between-two-points-containing-no-points	Widest Vertical Area Between Two Points Containing No Points	easy	no	plain	draft
+1640	check-array-formation-through-concatenation	Check Array Formation Through Concatenation	easy	no	plain	draft
+1646	get-maximum-in-generated-array	Get Maximum in Generated Array	easy	no	plain	draft
+1652	defuse-the-bomb	Defuse the Bomb	easy	no	plain	draft
 1656	design-an-ordered-stream	Design an Ordered Stream	easy	no	design	todo
 1661	average-time-of-process-per-machine	Average Time of Process per Machine	easy	no	skip:sql	todo
-1662	check-if-two-string-arrays-are-equivalent	Check If Two String Arrays are Equivalent	easy	no	plain	todo
+1662	check-if-two-string-arrays-are-equivalent	Check If Two String Arrays are Equivalent	easy	no	plain	draft
 1667	fix-names-in-a-table	Fix Names in a Table	easy	no	skip:sql	todo
-1668	maximum-repeating-substring	Maximum Repeating Substring	easy	no	plain	todo
-1672	richest-customer-wealth	Richest Customer Wealth	easy	no	plain	todo
+1668	maximum-repeating-substring	Maximum Repeating Substring	easy	no	plain	draft
+1672	richest-customer-wealth	Richest Customer Wealth	easy	no	plain	draft
 1677	products-worth-over-invoices	Product's Worth Over Invoices	easy	yes	skip:sql	todo
-1678	goal-parser-interpretation	Goal Parser Interpretation	easy	no	plain	todo
+1678	goal-parser-interpretation	Goal Parser Interpretation	easy	no	plain	draft
 1683	invalid-tweets	Invalid Tweets	easy	no	skip:sql	todo
 1684	count-the-number-of-consistent-strings	Count the Number of Consistent Strings	easy	no	plain	todo
 1688	count-of-matches-in-tournament	Count of Matches in Tournament	easy	no	plain	todo

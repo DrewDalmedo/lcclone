@@ -1,0 +1,156 @@
+# Detect Pattern of Length M Repeated K or More Times.
+
+@example From index 1, the values 2, 9, 4 come three times in a row.
+[7,2,9,4,2,9,4,2,9,4]
+3
+3
+=> true
+
+@example 6, 6 appears twice, but the 1 between the two groups breaks the repetition.
+[6,6,1,6,6]
+2
+2
+=> false
+
+@example 8, 1 comes four times in a row from index 0, and three are enough.
+[8,1,8,1,8,1,8,1,8]
+2
+3
+=> true
+
+# The smallest arrays.
+[4,4]
+1
+2
+=> true
+
+[4,5]
+1
+2
+=> false
+
+# m is larger than the array and m * k is 10^4: no start fits (an unsigned
+# bound n - m * k would wrap around).
+[100,100,100]
+100
+100
+=> false
+
+# The groups fill the whole array (m * k == n, only start 0).
+[2,7,1,2,7,1]
+3
+2
+=> true
+
+# Only k - 1 equal groups in a row.
+[3,4,3,4,5,5,5]
+2
+3
+=> false
+
+# m = 1: one value k times in a row, here at the very end.
+[3,4,3,4,5,5,5]
+1
+3
+=> true
+
+# A near miss from index 0 overlaps the real repetition, which starts at
+# index 3, not a multiple of m.
+[5,8,5,8,4,8,4,8,4]
+2
+3
+=> true
+
+# 5, 1 occurs three times, but with a 9 between the second and third.
+[5,1,5,1,9,5,1]
+2
+3
+=> false
+
+# 4, 7, 4 occurs three times, but the occurrences overlap.
+[4,7,4,7,4,7,4]
+3
+2
+=> false
+
+# Positions with arr[j] == arr[j + m] add up to 6, but in two runs of 3,
+# and 4 in a row are needed.
+[3,6,3,6,3,9,7,9,7,9]
+2
+3
+=> false
+
+# All values equal, but two groups of 3 need 6 elements.
+[9,9,9,9,9]
+3
+2
+=> false
+
+# m * (k - 1) is 260, which a char-sized count would wrap to 4; the group
+# of 4 comes only three times in a row, far short of 66.
+[5,6,7,8,5,6,7,8,5,6,7,8]
+4
+66
+=> false
+
+# 100 equal values: k = 100 groups of 1 fill the array.
+[100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100]
+1
+100
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[1,1,1,1]
+2
+2
+=> true
+
+@gen 2 small
+[3,3,1,1,1,2,3,1,1]
+4
+2
+=> false
+
+@gen 3 small
+[1,1,2,2,2,1,1]
+2
+6
+=> false
+
+@gen 4 small
+[2,1,2]
+1
+2
+=> false
+
+@gen 5 small
+[1,2,2,1,1]
+1
+3
+=> false
+
+@gen 6 small
+[1,1,1,1,1]
+2
+2
+=> true
+
+@gen 7 small
+[2,2]
+1
+2
+=> true
+
+# Random full-size cases.
+@gen 1
+[17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42,17,55,3,42]
+45
+2
+=> false
+
+@gen 4
+[22,17,7,22,11,1,23,6,13,21,15,18,22,5,14,11,17,21,11,17,5,5,2,20,20,15,13,3,23,15,4,8,7,1,10,5,21,6,24,18,2,7,13,24,16,17,12,5,23,13,8,23,15,11,13,20,11,21,11,17,5,5,2,20,20,15,13,3,23,15,4,8,7,1,10,5,21,6,24,18,2,7,13,24,16,17,12,5,23,13,8,23,15,11,13,20,11,20,21,21]
+40
+2
+=> true

@@ -1,0 +1,100 @@
+# Get Maximum in Generated Array. n takes only 101 values; the answer
+# changes just at the indices where a new largest number first appears.
+
+@example a[11] = a[5] + a[6] = 3 + 2 = 5 is the largest; the last number, a[12] = a[6], is only 2.
+12
+=> 5
+
+@example The list holds only a[0] = 0.
+0
+=> 0
+
+@example The last number, a[19] = a[9] + a[10] = 4 + 3 = 7, is the first one above 5.
+19
+=> 7
+
+# Just a[0] = 0 and a[1] = 1.
+1
+=> 1
+
+# A new largest number appears at the last index, so a scan that stops at
+# n - 1 misses it.
+9
+=> 4
+
+21
+=> 8
+
+37
+=> 11
+
+43
+=> 13
+
+75
+=> 18
+
+# A power of two: a[64] is 1, while the largest, 13, first appears at 43.
+64
+=> 13
+
+# Even n right after a new largest number at n - 1: a[70] = a[35] = 9,
+# and a[69] = 14.
+70
+=> 14
+
+# One short of the first 21: the largest is a[83] = 19.
+84
+=> 19
+
+# a[85] = a[42] + a[43] = 8 + 13 = 21, the largest number at any index up
+# to 100.
+85
+=> 21
+
+# The top of the range.
+100
+=> 21
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+89
+=> 21
+
+@gen 2 small
+62
+=> 13
+
+@gen 4 small
+11
+=> 5
+
+@gen 5 small
+79
+=> 18
+
+@gen 6 small
+8
+=> 3
+
+@gen 7 small
+4
+=> 2
+
+@gen 8 small
+29
+=> 8
+
+@gen 9 small
+0
+=> 0
+
+# Full size: the top of the range.
+@gen 1
+91
+=> 21
+
+@gen 2
+100
+=> 21
+

@@ -1,0 +1,66 @@
+# Matrix Diagonal Sum.
+
+@example The four corners give 6 + 11 + 13 + 1 = 31, and the middle cell, on both lines, adds its 10 just once.
+[[6,2,11],[3,10,4],[13,5,1]]
+=> 41
+
+@example With an even side the lines share no cell, so all eight numbers count: 11 on one line and 30 on the other.
+[[3,10,20,6],[11,2,8,15],[14,9,1,12],[7,13,16,5]]
+=> 41
+
+@example Every cell of a 2 x 2 grid lies on one of the lines.
+[[2,9],[4,6]]
+=> 21
+
+# A single cell, counted once.
+[[37]]
+=> 37
+
+# The smallest values.
+[[1,1],[1,1]]
+=> 4
+
+# The largest values, odd side: five cells.
+[[100,100,100],[100,100,100],[100,100,100]]
+=> 500
+
+# Large neighbours around small diagonal cells: adding a wrong cell shows.
+[[1,50,2],[60,3,70],[4,80,5]]
+=> 15
+
+# Odd side with a large middle cell: counting it twice gives 348.
+[[12,40,41,42,13],[43,22,44,23,45],[46,47,100,48,49],[50,24,51,25,52],[14,53,54,55,15]]
+=> 248
+
+# Even side: nothing is shared, so nothing is taken off (mat[3][3] is 2).
+[[9,1,1,1,1,8],[1,7,1,1,6,1],[1,1,5,4,1,1],[1,1,3,2,1,1],[1,10,1,1,11,1],[12,1,1,1,1,13]]
+=> 90
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[[8]]
+=> 8
+
+@gen 2 small
+[[2,6,6,1,1],[7,5,9,7,1],[5,5,4,9,2],[3,6,9,7,3],[1,7,1,7,2]]
+=> 35
+
+@gen 3 small
+[[1,27,33,24,50,22,71],[43,97,5,98,32,98,66],[59,45,86,53,99,23,75],[77,50,39,74,15,21,93],[29,75,97,21,27,39,33],[83,91,97,8,43,35,19],[25,11,85,74,10,65,72]]
+=> 873
+
+@gen 6 small
+[[79,82,87,28,13,22],[84,33,76,55,54,12],[33,64,83,1,77,34],[90,85,5,97,71,46],[28,19,80,68,76,16],[92,64,59,26,76,97]]
+=> 658
+
+@gen 11 small
+[[79,52],[14,33]]
+=> 178
+
+@gen 20 small
+[[46,34,29],[68,30,65],[9,69,34]]
+=> 148
+
+@gen 21 small
+[[6,6,4,8],[5,3,8,7],[2,4,9,9],[4,8,1,3]]
+=> 45

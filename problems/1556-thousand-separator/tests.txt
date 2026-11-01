@@ -1,0 +1,94 @@
+# Thousand Separator.
+
+@example Four digits: a dot goes between the 3rd and the 4th digit from the right, and the zeros stay.
+7006
+=> "7.006"
+
+@example Six digits make two full groups, with no dot in front of the first.
+314159
+=> "314.159"
+
+@example Two digits get no dot.
+40
+=> "40"
+
+# Zero is the single digit 0.
+0
+=> "0"
+
+# The largest number with no dot, and the smallest with one.
+999
+=> "999"
+
+1000
+=> "1.000"
+
+# Nine digits: three full groups, still no dot in front.
+100200300
+=> "100.200.300"
+
+999999999
+=> "999.999.999"
+
+# Zeros at the start and at the end of a group stay.
+12005
+=> "12.005"
+
+1000000
+=> "1.000.000"
+
+1040000
+=> "1.040.000"
+
+# Ten digits, the most an int has: a power of ten kept in an int overflows
+# when it is multiplied past 10^9.
+1000000000
+=> "1.000.000.000"
+
+2000000001
+=> "2.000.000.001"
+
+2147483647
+=> "2.147.483.647"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+8799260
+=> "8.799.260"
+
+@gen 2 small
+2
+=> "2"
+
+@gen 4 small
+701
+=> "701"
+
+@gen 5 small
+29
+=> "29"
+
+@gen 6 small
+2147483000
+=> "2.147.483.000"
+
+@gen 7 small
+80640
+=> "80.640"
+
+@gen 8 small
+10
+=> "10"
+
+# Full-size cases: ten-digit numbers.
+@gen 1
+1309926000
+=> "1.309.926.000"
+
+@gen 2
+1004007095
+=> "1.004.007.095"
+
+@gen 4
+1010260068
+=> "1.010.260.068"

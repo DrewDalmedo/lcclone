@@ -1,0 +1,94 @@
+# Widest Vertical Area Between Two Points Containing No Points.
+
+@example In order of x the points sit at 4, 6, 12 and 20, and no point lies strictly between 12 and 20.
+[[4,10],[12,1],[6,6],[20,3]]
+=> 8
+
+@example The strip from x = 5 to x = 9 is the widest; the two points with x = 5 lie on its edge, not inside.
+[[5,0],[2,9],[5,7],[3,3],[9,1],[3,8]]
+=> 4
+
+@example Both points have x = 7, so the only strip has width 0.
+[[7,1],[7,1000]]
+=> 0
+
+# Two points, the larger x first.
+[[30,2],[11,50]]
+=> 19
+
+# x = 0 and x = 10^9: the largest possible answer.
+[[1000000000,0],[0,1000000000]]
+=> 1000000000
+
+[[0,1],[0,2],[1000000000,3]]
+=> 1000000000
+
+# The y-coordinates play no part, even when their gaps are much larger.
+[[1,0],[3,1000000000],[2,500]]
+=> 1
+
+# In order of y the points come differently (4, 0, 10).
+[[10,3],[0,2],[4,1]]
+=> 6
+
+# Points next to each other in the input are not next to each other in x.
+[[0,0],[100,0],[1,0],[99,0]]
+=> 98
+
+# Far from 0 and from 10^9: the space outside the points doesn't count.
+[[400000000,1],[400000007,2],[400000003,3]]
+=> 4
+
+# Every x equal, with more points.
+[[123456,9],[123456,0],[123456,77],[123456,5],[123456,1000000000]]
+=> 0
+
+# Repeated x-coordinates among others.
+[[6,1],[6,2],[1,3],[1,4],[6,5],[10,6]]
+=> 5
+
+# Repeated points.
+[[2,2],[8,8],[2,2],[8,8]]
+=> 6
+
+# The widest strip is the leftmost one.
+[[50,3],[0,3],[60,3],[55,3]]
+=> 50
+
+# An odd answer near 10^9, which a float can't hold exactly.
+[[999999999,5],[0,8]]
+=> 999999999
+
+# Eight points in scrambled order, one x repeated: in order of x they sit
+# at 10, 13, 22, 34, 37, 37, 38 and 49, and the gap from 22 to 34 wins.
+[[10,5],[38,0],[37,9],[34,2],[22,7],[37,3],[13,8],[49,1]]
+=> 12
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[[11,0],[5,4],[0,11]]
+=> 6
+
+@gen 2 small
+[[12,11],[5,12],[4,12],[10,0],[7,12]]
+=> 3
+
+@gen 3 small
+[[2,11],[5,11],[7,0],[3,2],[9,9],[10,7],[8,6]]
+=> 2
+
+@gen 4 small
+[[138690295,119676460],[138690298,579784400],[138690290,595686308],[138690292,550837361],[138690290,358898954],[138690291,965089617],[138690301,767731746]]
+=> 3
+
+@gen 5 small
+[[5,7],[1,4],[6,6],[8,6]]
+=> 4
+
+@gen 6 small
+[[94269323,394347125],[94269333,382115104]]
+=> 10
+
+@gen 7 small
+[[830294027,734713185],[25025379,413897095],[1000000000,946694904],[0,748101404],[270606750,230541831]]
+=> 559687277

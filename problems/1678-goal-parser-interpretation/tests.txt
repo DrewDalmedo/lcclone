@@ -1,0 +1,96 @@
+# Goal Parser Interpretation.
+
+@example The tokens are (), G, (al) and (), which stand for o, G, al and o.
+"()G(al)()"
+=> "oGalo"
+
+@example Two (al), two G and one (), in that order.
+"(al)(al)GG()"
+=> "alalGGo"
+
+@example A () has no letters inside, yet it stands for an o.
+"()"
+=> "o"
+
+# Each form alone.
+"G"
+=> "G"
+
+"(al)"
+=> "al"
+
+# (al) then (): an o comes only from a ) right after a (.
+"(al)()"
+=> "alo"
+
+# () then (al).
+"()(al)"
+=> "oal"
+
+# 100 G: the result is as long as command.
+"GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
+=> "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
+
+# 50 ().
+"()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()"
+=> "oooooooooooooooooooooooooooooooooooooooooooooooooo"
+
+# 25 (al).
+"(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)(al)"
+=> "alalalalalalalalalalalalalalalalalalalalalalalalal"
+
+# command ends with (): there is nothing to read after it.
+"G(al)G()"
+=> "GalGo"
+
+# Runs of each form, one after another.
+"GGG()()()(al)(al)(al)"
+=> "GGGoooalalal"
+
+# A mix of 100 characters.
+"()(al)()G(al)(al)()(al)(al)(al)(al)()GG()()()()(al)(al)()G()(al)(al)GGG(al)()G(al)()(al)()G(al)(al)G"
+=> "oaloGalaloalalalaloGGooooalaloGoalalGGGaloGaloaloGalalG"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+"(al)()(al)(al)G"
+=> "aloalalG"
+
+@gen 3 small
+"()(al)(al)()()(al)G()"
+=> "oalalooalGo"
+
+@gen 4 small
+"()G()G"
+=> "oGoG"
+
+@gen 6 small
+"G()"
+=> "Go"
+
+@gen 8 small
+"()G(al)(al)G(al)G"
+=> "oGalalGalG"
+
+@gen 9 small
+"G(al)()(al)G()()"
+=> "GaloalGoo"
+
+@gen 11 small
+"G()GG(al)()(al)"
+=> "GoGGaloal"
+
+# Full size: () and (al) only.
+@gen 2
+"()()()()()()()()(al)()(al)(al)(al)(al)()()()()()(al)()()(al)()()()()(al)(al)(al)()(al)()()(al)()()()"
+=> "ooooooooaloalalalaloooooalooalooooalalaloalooalooo"
+
+# Full size: mostly G.
+@gen 3
+"GGGGGGGGG()(al)(al)GG()()GGGGGGG()G()GGG()(al)GGGGG(al)GGGGGG(al)()GGG()G(al)GGGGGGGGGGGGGGGG()G()GG"
+=> "GGGGGGGGGoalalGGooGGGGGGGoGoGGGoalGGGGGalGGGGGGaloGGGoGalGGGGGGGGGGGGGGGGoGoGG"
+
+# Full size: the three forms as likely.
+@gen 4
+"()G()GG()G()(al)G(al)(al)(al)G()()()()(al)()()()()()()()(al)G(al)()(al)G()GGG()(al)(al)(al)(al)()GGG"
+=> "oGoGGoGoalGalalalGooooaloooooooalGaloalGoGGGoalalalaloGGG"

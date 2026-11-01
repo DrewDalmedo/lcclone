@@ -1,0 +1,131 @@
+# Maximum Repeating Substring.
+
+@example "tic" occurs at 0, 6 and 9. The copies at 6 and 9 touch, giving "tictic"; "tictictic" occurs nowhere.
+"tictactictictac"
+"tic"
+=> 2
+
+@example "aba" occurs at 0, 2, 5 and 8. The copies at 2, 5 and 8 form "abaabaaba"; the copy at 0 shares a letter with the one at 2, so it can't join them.
+"ababaabaaba"
+"aba"
+=> 3
+
+@example All of the letters of "nab" are there, but never in that order.
+"banana"
+"nab"
+=> 0
+
+# The smallest inputs: word is all of sequence.
+"a"
+"a"
+=> 1
+
+# word is longer than sequence.
+"ab"
+"abc"
+=> 0
+
+# sequence is word written 4 times: the chain runs from the first letter to the last.
+"xyxyxyxy"
+"xy"
+=> 4
+
+# Occurrences that overlap don't chain: "aa" occurs 4 times, but only 2 copies fit in a row.
+"aaaaa"
+"aa"
+=> 2
+
+# The largest answer.
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+"z"
+=> 100
+
+# "abcab" ends with its first two letters. The best chain begins at 3, inside the copy at 0; a scan that jumps past that copy finds 1.
+"abcabcababcab"
+"abcab"
+=> 2
+
+# The best chain begins at 5, inside the second copy of the chain at 0 and 3.
+"abaababaabaaba"
+"aba"
+=> 3
+
+# "aabaa" ends with its first two letters: the chain of 3 begins at 3, inside the copy at 0.
+"aabaabaaaabaaaabaa"
+"aabaa"
+=> 3
+
+# Five occurrences in all, but no more than 2 in one chain.
+"cdcdxcdcdxcd"
+"cd"
+=> 2
+
+# Chains of 1, 2 and 3: the longest is the last.
+"qwxqwqwxqwqwqw"
+"qw"
+=> 3
+
+# Two chains of 2, each followed by a copy that falls short: one has a wrong letter, the other is cut off by the end.
+"pqrpqrpqspqrpqrpq"
+"pqr"
+=> 2
+
+# A one-letter word: the answer is the longest run of that letter.
+"bbabbbabb"
+"b"
+=> 3
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+"aabaabaaa"
+"aaba"
+=> 1
+
+@gen 6 small
+"b"
+"bab"
+=> 0
+
+@gen 14 small
+"bbbcbbcbbcb"
+"bbc"
+=> 3
+
+@gen 33 small
+"ababaabaabaaba"
+"aba"
+=> 4
+
+@gen 45 small
+"abbbbbbbbb"
+"b"
+=> 9
+
+@gen 86 small
+"bbaabbabbaabba"
+"abba"
+=> 2
+
+@gen 100 small
+"caccacccacc"
+"cacc"
+=> 2
+
+# Full size: a chain that begins inside an earlier copy of word.
+@gen 12
+"abaabaababaababaababaababaababaababaababaababaababaababaababaababaababaababaababaababaababaababaabab"
+"abaab"
+=> 19
+
+# Full size: one letter throughout, and a word that differs from it only in its last letter.
+@gen 61
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+=> 0
+
+# Full size: the longest chain at the very end.
+@gen 6
+"cdabdadcabababababababababababababababababababababababababababababababababababababababababababababab"
+"ab"
+=> 46
+
