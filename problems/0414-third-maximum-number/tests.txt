@@ -1,0 +1,94 @@
+# Third Maximum Number.
+
+@example The values, largest first, are 10, 7, 0 and -4; the two 7s count as one value.
+[7,-4,7,10,0]
+=> 0
+
+@example There are only two different values, so the largest, 9, is returned.
+[6,9,6]
+=> 9
+
+@example There are exactly three different values, 40, 25 and 12, so the smallest of them has rank 3.
+[12,40,12,40,25]
+=> 12
+
+# A single element.
+[5]
+=> 5
+
+# Two different values: the larger one is returned, not the smaller.
+[-3,8]
+=> 8
+
+# Two equal elements.
+[4,4]
+=> 4
+
+# Repeats of the largest value don't push the others down a rank.
+[9,9,9,8,7]
+=> 7
+
+# Many copies of two values, and no third.
+[3,1,3,1,3,1]
+=> 3
+
+# Increasing and decreasing order.
+[1,2,3,4,5]
+=> 3
+
+[50,40,30,20]
+=> 30
+
+# The three largest values arrive mixed up, with repeats in between.
+[2,5,2,9,5,7,9]
+=> 5
+
+# Only negative values.
+[-7,-3,-5,-3,-1]
+=> -5
+
+# The smallest int has rank 3, so "no value yet" can't be marked with it.
+[1,-2147483648,2]
+=> -2147483648
+
+# The smallest int is there, but has rank 4.
+[-2147483648,6,5,7]
+=> 5
+
+# The largest and smallest int together: a comparison done by subtraction
+# overflows here.
+[2147483647,-1,-2147483648,1]
+=> -1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[-3,-5,7,10,10,0,6]
+=> 6
+
+@gen 2 small
+[0,1,1,-1,-1]
+=> -1
+
+@gen 3 small
+[-5,10,-3,9,1,-10,-9,-1]
+=> 1
+
+@gen 4 small
+[-4,-3,-1,2]
+=> -3
+
+@gen 5 small
+[-2,2,2,0,-3,1]
+=> 0
+
+@gen 6 small
+[1,1]
+=> 1
+
+@gen 7 small
+[3,-3,3,0,-2,-9]
+=> -2
+
+@gen 8 small
+[1,1,2147483647,1,-2147483648,2147483647,-1]
+=> -1

@@ -1,0 +1,104 @@
+# Valid Perfect Square.
+
+@example 169 tiles make a square of 13 rows of 13.
+169
+=> true
+
+@example 200 lies between 14 * 14 = 196 and 15 * 15 = 225.
+200
+=> false
+
+@example A single tile is a square of one row of one.
+1
+=> true
+
+# The two smallest numbers that aren't squares, then 2 * 2.
+2
+=> false
+
+3
+=> false
+
+4
+=> true
+
+# One below and one above 11 * 11 = 121, and 11 * 12, which lies between
+# two squares too.
+120
+=> false
+
+122
+=> false
+
+132
+=> false
+
+# 2^30 = 32768 * 32768.
+1073741824
+=> true
+
+# 46339 * 46339 and 46340 * 46340, the two largest squares that fit in a
+# 32-bit int. Squaring any guess above 46340 in 32 bits overflows.
+2147302921
+=> true
+
+2147395600
+=> true
+
+# One below and one above 46340 * 46340.
+2147395599
+=> false
+
+2147395601
+=> false
+
+# The largest int. Starting a search at num itself, lo + hi or r + num / r
+# overflows a 32-bit int here.
+2147483647
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+1368
+=> false
+
+@gen 2 small
+1877
+=> false
+
+@gen 3 small
+1
+=> true
+
+@gen 4 small
+49
+=> true
+
+@gen 5 small
+6
+=> false
+
+@gen 6 small
+1170
+=> false
+
+@gen 7 small
+132
+=> false
+
+@gen 8 small
+1443
+=> false
+
+# Random full-size cases.
+@gen 1
+1893468195
+=> false
+
+@gen 3
+2147404029
+=> false
+
+@gen 4
+1701727504
+=> true

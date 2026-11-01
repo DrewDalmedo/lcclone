@@ -87,44 +87,44 @@
 270	closest-binary-search-tree-value	Closest Binary Search Tree Value	easy	yes	skip:premium	todo
 278	first-bad-version	First Bad Version	easy	no	api	todo
 283	move-zeroes	Move Zeroes	easy	no	inplace	draft
-290	word-pattern	Word Pattern	easy	no	plain	todo
-292	nim-game	Nim Game	easy	no	plain	todo
+290	word-pattern	Word Pattern	easy	no	plain	draft
+292	nim-game	Nim Game	easy	no	plain	draft
 293	flip-game	Flip Game	easy	yes	skip:premium	todo
 303	range-sum-query-immutable	Range Sum Query - Immutable	easy	no	design	todo
-326	power-of-three	Power of Three	easy	no	plain	todo
-338	counting-bits	Counting Bits	easy	no	plain	todo
-342	power-of-four	Power of Four	easy	no	plain	todo
+326	power-of-three	Power of Three	easy	no	plain	draft
+338	counting-bits	Counting Bits	easy	no	plain	draft
+342	power-of-four	Power of Four	easy	no	plain	draft
 344	reverse-string	Reverse String	easy	no	inplace	draft
-345	reverse-vowels-of-a-string	Reverse Vowels of a String	easy	no	plain	todo
+345	reverse-vowels-of-a-string	Reverse Vowels of a String	easy	no	plain	draft
 346	moving-average-from-data-stream	Moving Average from Data Stream	easy	yes	skip:premium	todo
 349	intersection-of-two-arrays	Intersection of Two Arrays	easy	no	unordered	draft
 350	intersection-of-two-arrays-ii	Intersection of Two Arrays II	easy	no	unordered	draft
 359	logger-rate-limiter	Logger Rate Limiter	easy	yes	skip:premium	todo
-367	valid-perfect-square	Valid Perfect Square	easy	no	plain	todo
+367	valid-perfect-square	Valid Perfect Square	easy	no	plain	draft
 374	guess-number-higher-or-lower	Guess Number Higher or Lower	easy	no	api	todo
-383	ransom-note	Ransom Note	easy	no	plain	todo
-387	first-unique-character-in-a-string	First Unique Character in a String	easy	no	plain	todo
-389	find-the-difference	Find the Difference	easy	no	plain	todo
-392	is-subsequence	Is Subsequence	easy	no	plain	todo
+383	ransom-note	Ransom Note	easy	no	plain	draft
+387	first-unique-character-in-a-string	First Unique Character in a String	easy	no	plain	draft
+389	find-the-difference	Find the Difference	easy	no	plain	draft
+392	is-subsequence	Is Subsequence	easy	no	plain	draft
 401	binary-watch	Binary Watch	easy	no	unordered	draft
 404	sum-of-left-leaves	Sum of Left Leaves	easy	no	tree	todo
-405	convert-a-number-to-hexadecimal	Convert a Number to Hexadecimal	easy	no	plain	todo
+405	convert-a-number-to-hexadecimal	Convert a Number to Hexadecimal	easy	no	plain	draft
 408	valid-word-abbreviation	Valid Word Abbreviation	easy	yes	skip:premium	todo
-409	longest-palindrome	Longest Palindrome	easy	no	plain	todo
-412	fizz-buzz	Fizz Buzz	easy	no	plain	todo
-414	third-maximum-number	Third Maximum Number	easy	no	plain	todo
-415	add-strings	Add Strings	easy	no	plain	todo
+409	longest-palindrome	Longest Palindrome	easy	no	plain	draft
+412	fizz-buzz	Fizz Buzz	easy	no	plain	draft
+414	third-maximum-number	Third Maximum Number	easy	no	plain	draft
+415	add-strings	Add Strings	easy	no	plain	draft
 422	valid-word-square	Valid Word Square	easy	yes	skip:premium	todo
-434	number-of-segments-in-a-string	Number of Segments in a String	easy	no	plain	todo
-441	arranging-coins	Arranging Coins	easy	no	plain	todo
+434	number-of-segments-in-a-string	Number of Segments in a String	easy	no	plain	draft
+441	arranging-coins	Arranging Coins	easy	no	plain	draft
 448	find-all-numbers-disappeared-in-an-array	Find All Numbers Disappeared in an Array	easy	no	unordered	draft
-455	assign-cookies	Assign Cookies	easy	no	plain	todo
-459	repeated-substring-pattern	Repeated Substring Pattern	easy	no	plain	todo
-461	hamming-distance	Hamming Distance	easy	no	plain	todo
-463	island-perimeter	Island Perimeter	easy	no	plain	todo
-476	number-complement	Number Complement	easy	no	plain	todo
-482	license-key-formatting	License Key Formatting	easy	no	plain	todo
-485	max-consecutive-ones	Max Consecutive Ones	easy	no	plain	todo
+455	assign-cookies	Assign Cookies	easy	no	plain	draft
+459	repeated-substring-pattern	Repeated Substring Pattern	easy	no	plain	draft
+461	hamming-distance	Hamming Distance	easy	no	plain	draft
+463	island-perimeter	Island Perimeter	easy	no	plain	draft
+476	number-complement	Number Complement	easy	no	plain	draft
+482	license-key-formatting	License Key Formatting	easy	no	plain	draft
+485	max-consecutive-ones	Max Consecutive Ones	easy	no	plain	draft
 492	construct-the-rectangle	Construct the Rectangle	easy	no	plain	todo
 495	teemo-attacking	Teemo Attacking	easy	no	plain	todo
 496	next-greater-element-i	Next Greater Element I	easy	no	plain	todo

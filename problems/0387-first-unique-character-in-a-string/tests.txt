@@ -1,0 +1,93 @@
+# First Unique Character in a String. Results are positions counted from 0,
+# or -1 when no letter is lonely.
+
+@example Only c (position 4) and d (position 6) occur once; c comes first.
+"abracadabra"
+=> 4
+
+@example p and e both repeat, so the answer is the r at the very end.
+"pepper"
+=> 5
+
+@example x, y and z each occur twice, so no letter is lonely.
+"xyzzyx"
+=> -1
+
+# A single letter is lonely.
+"q"
+=> 0
+
+# One letter, twice.
+"zz"
+=> -1
+
+# Only the last letter is lonely.
+"aaaab"
+=> 4
+
+# The first letter is lonely, and every letter after it repeats.
+"kaabbccdd"
+=> 0
+
+# The first x has no copy next to it, but another x stands near the end,
+# so it isn't lonely: comparing letters only with their neighbours fails.
+"xabcabcxy"
+=> 8
+
+# t, b, c and a are all lonely. t stands first, though a comes first in
+# the alphabet.
+"mmtbca"
+=> 2
+
+# A letter that occurs three times is not lonely: telling counts apart by
+# whether they are odd or even fails here.
+"aaabb"
+=> -1
+
+# Every letter of the alphabet once: the first one wins.
+"qwertyuiopasdfghjklzxcvbnm"
+=> 0
+
+# Every letter of the alphabet twice.
+"abcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcba"
+=> -1
+
+# Longer than 26 letters, and still with a lonely letter: every letter
+# twice except m, which occurs once, in the middle.
+"abcdefghijklnopqrstuvwxyzmzyxwvutsrqponlkjihgfedcba"
+=> 25
+
+# a occurs 257 times and b twice, so no letter is lonely. A count kept in
+# a single byte wraps around after 255 and takes the 257 a's for one.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabb"
+=> -1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"abbabbbba"
+=> -1
+
+@gen 2 small
+"aaaaacc"
+=> -1
+
+@gen 3 small
+"aaazzz"
+=> -1
+
+@gen 4 small
+"zaaz"
+=> -1
+
+@gen 5 small
+"bbaabaabac"
+=> 9
+
+@gen 6 small
+"yy"
+=> -1
+
+@gen 7 small
+"db"
+=> 0
+

@@ -1,0 +1,116 @@
+# Ransom Note.
+
+@example c, a and b each appear in abacus; its spare a, u and s are left behind.
+"cab"
+"abacus"
+=> true
+
+@example coffee needs two e's, but office has only one.
+"coffee"
+"office"
+=> false
+
+@example quick has no z to cut out.
+"quiz"
+"quick"
+=> false
+
+# Single letters, the same and different, from the two ends of the
+# alphabet.
+"q"
+"q"
+=> true
+
+"a"
+"z"
+=> false
+
+# The note is longer than magazine, whose letters are all in the note:
+# checking the roles the wrong way round says true here.
+"melt"
+"elm"
+=> false
+
+# The other way round: magazine has a letter to spare.
+"elm"
+"melt"
+=> true
+
+# The same string on both sides.
+"level"
+"level"
+=> true
+
+# The note's letters in a different order, so it is neither a substring
+# nor a subsequence of magazine.
+"stressed"
+"desserts"
+=> true
+
+# z, at the end of the alphabet, is one short.
+"zaz"
+"aaz"
+=> false
+
+# The note needs four s's, magazine has three; every other letter is
+# there often enough, p even with one to spare.
+"mississippi"
+"pspisimxsiyip"
+=> false
+
+# A short note and a magazine of the whole alphabet.
+"hi"
+"abcdefghijklmnopqrstuvwxyz"
+=> true
+
+# 256 a's in magazine: a count kept in 8 bits wraps back to zero.
+"aaa"
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> true
+
+# 300 b's needed and 100 there: in 8 bits 300 wraps to 44, which would
+# look like enough.
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"zzzzy"
+"yzyz"
+=> false
+
+@gen 2 small
+"ccaaa"
+"caaaa"
+=> false
+
+@gen 10 small
+"aaazzz"
+"aazzzzza"
+=> true
+
+@gen 4 small
+"yxxy"
+"yzyxyxx"
+=> true
+
+@gen 5 small
+"kf"
+"kfgvh"
+=> true
+
+@gen 6 small
+"bccca"
+"cabccaca"
+=> true
+
+@gen 7 small
+"bb"
+"cbccccc"
+=> false
+
+@gen 8 small
+"ccac"
+"caca"
+=> false

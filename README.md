@@ -53,9 +53,9 @@ Milestones **M0** to **M5** are in, and **M6** is under way.
   [docs/problem-format.md](docs/problem-format.md#check). The first batch
   of problems is in: every in-place, bits, floating-point and any-order
   problem, 34 in all. The plain ones, 632, follow in batches of about 25;
-  the first of them, the 25 lowest-numbered (13 to 268), is in too.
+  the first two batches, the 50 lowest-numbered (13 to 485), are in too.
 
-70 problems are included. All but 104 can be judged; binary trees, linked
+95 problems are included. All but 104 can be judged; binary trees, linked
 lists, design problems and the like come in later milestones
 (`docs/PLAN.md` section 9). `lc list` shows them, and
 `problems/MANIFEST.tsv` lists every LeetCode Easy problem: 974, of which

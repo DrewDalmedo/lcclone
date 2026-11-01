@@ -1,0 +1,102 @@
+# Nim Game.
+
+@example Take 2 and leave 4: whatever your opponent then takes, you take the rest.
+6
+=> true
+
+@example Any first move leaves 5, 6 or 7; your opponent then leaves you 4, and whatever you take from 4, they take the rest.
+8
+=> false
+
+@example Take all three pebbles at once.
+3
+=> true
+
+# The smallest piles: one move takes them whole.
+1
+=> true
+
+2
+=> true
+
+# The smallest pile you lose: too many to take at once, and whatever you
+# take, your opponent takes the rest.
+4
+=> false
+
+# One more than a multiple of 4: take a single pebble.
+13
+=> true
+
+# Mid-size piles. Working out every smaller pile by recursion goes about n
+# calls deep.
+1000000
+=> false
+
+100000002
+=> true
+
+# 2^30, a large power of two.
+1073741824
+=> false
+
+# The four largest ints: 2^31 - 4 is a multiple of 4, the others are not.
+# For 2^31 - 1, a table of the results for piles 0 to n would need n + 1 =
+# 2^31 entries, which overflows when counted in an int.
+2147483644
+=> false
+
+2147483645
+=> true
+
+2147483646
+=> true
+
+2147483647
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+7
+=> true
+
+@gen 8 small
+12
+=> false
+
+@gen 13 small
+37
+=> true
+
+@gen 14 small
+2008
+=> false
+
+@gen 16 small
+24
+=> false
+
+@gen 19 small
+3015
+=> true
+
+@gen 33 small
+2624
+=> false
+
+@gen 38 small
+25
+=> true
+
+# Random full-size cases.
+@gen 1
+817674033
+=> true
+
+@gen 6
+966863236
+=> false
+
+@gen 8
+2147483641
+=> true

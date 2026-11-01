@@ -1,0 +1,114 @@
+# Is Subsequence.
+
+@example Keep p, i and the last e of pirate, and cross out r, a and t.
+"pie"
+"pirate"
+=> true
+
+@example pathway has a t, an a and a p, but no p after its t.
+"tap"
+"pathway"
+=> false
+
+@example global has two l's, but only one of them comes after its b.
+"ball"
+"global"
+=> false
+
+# Both empty.
+""
+""
+=> true
+
+# An empty s is left over from any t.
+""
+"z"
+=> true
+
+# From an empty t, only the empty string can be left over.
+"a"
+""
+=> false
+
+# s is longer than t, and t is all of s but its last letter.
+"plans"
+"plan"
+=> false
+
+# s equals t.
+"same"
+"same"
+=> true
+
+# t holds the letters of s side by side.
+"row"
+"arrows"
+=> true
+
+# Only the two ends of t are kept.
+"az"
+"abcdefghijklmnopqrstuvwxyz"
+=> true
+
+# The last letter of s matches the last letter of t; then the same, but
+# with a last letter that t doesn't have.
+"xyz"
+"xaybz"
+=> true
+
+"xyq"
+"xaybz"
+=> false
+
+# s has the same letter twice, t only once.
+"oo"
+"polar"
+=> false
+
+# The letters of s, in the wrong order.
+"ba"
+"ab"
+=> false
+
+# s at its longest: 99 a's and a b, against 300 a's. Trying every choice
+# of positions for the a's, without remembering what failed, never ends.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bcccb"
+"bccccbb"
+=> true
+
+@gen 2 small
+"xxy"
+"yzzxxx"
+=> false
+
+@gen 3 small
+"iy"
+"ckcfhd"
+=> false
+
+@gen 4 small
+"aaabb"
+"baabaa"
+=> false
+
+@gen 5 small
+"zazza"
+"z"
+=> false
+
+@gen 6 small
+"azaz"
+""
+=> false
+
+@gen 7 small
+"zaaaaza"
+"zzaaaaazaa"
+=> true
+
