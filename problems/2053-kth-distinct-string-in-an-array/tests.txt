@@ -1,0 +1,125 @@
+# Kth Distinct String in an Array. When there is no answer the expected
+# result is the empty string "".
+
+@example "red" and "blue" occur twice each; the one-offs in order are "green", "pink" and "gold".
+["red","blue","red","green","pink","blue","gold"]
+2
+=> "pink"
+
+@example Only "moon" and "star" are one-offs, so there is no third.
+["sun","moon","sun","star"]
+3
+=> ""
+
+@example "kiwi" occurs three times, so the first one-off is "fig".
+["kiwi","fig","kiwi","kiwi","date"]
+1
+=> "fig"
+
+# A single string.
+["z"]
+1
+=> "z"
+
+# Every string occurs at least twice: no one-off at all.
+["aa","b","b","aa"]
+1
+=> ""
+
+# All different, k = arr.length: the last entry, though it comes first
+# alphabetically.
+["e","d","c","b","a"]
+5
+=> "a"
+
+# "x" has occurred only once when "y" is reached, but comes back later.
+["x","y","z","x"]
+1
+=> "y"
+
+# Removing duplicates would leave p, q, r and give "q".
+["p","p","q","r"]
+2
+=> "r"
+
+# A string five times, with a one-off between its copies.
+["m","n","m","m","o","m","m"]
+2
+=> "o"
+
+# Different strings that a careless key would mix up: "q" and "aq".
+["q","aq","q"]
+1
+=> "aq"
+
+# Anagrams and prefixes are different strings.
+["tops","pots","stop","pot","tops"]
+3
+=> "pot"
+
+# k is the number of one-offs, then one more.
+["ab","cd","ab","ef","cd","gh"]
+2
+=> "gh"
+
+["ab","cd","ab","ef","cd","gh"]
+3
+=> ""
+
+# A string 257 times: a count kept in a byte would wrap to 1.
+["aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","aa","zz"]
+1
+=> "zz"
+
+# The longest strings.
+["abcde","abcdf","abcde","zzzzz"]
+2
+=> "zzzzz"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["ba","abc","abc","aa","abc","b","b"]
+3
+=> ""
+
+@gen 2 small
+["ba","aa","aa","a","a"]
+1
+=> "ba"
+
+@gen 3 small
+["aa","aa","ba","b","abc","ab","ba","a"]
+5
+=> ""
+
+@gen 4 small
+["ab","ba","a","ab"]
+3
+=> ""
+
+@gen 5 small
+["ba","ba","ba","b","ba","c"]
+1
+=> "b"
+
+@gen 6 small
+["b","c"]
+2
+=> "c"
+
+@gen 7 small
+["b","b","ba","ba","aa","ba"]
+1
+=> "aa"
+
+# Full size, 1000 strings: one string hundreds of times among
+# nearly-different others; 5-letter strings, nearly all different.
+@gen 2
+["qms","qms","mvjp","qms","qms","qms","qms","oeg","nwsbu","qms","owhqg","ladh","qms","ygded","qms","zvo","qms","qms","qms","qms","qms","qms","dekp","qms","qms","qms","qms","qms","yriad","wedr","qms","qms","qms","qms","oex","qms","qms","qms","qms","qms","qms","qms","qms","rhn","iucd","qms","qms","qms","qms","qms","qms","gtj","idotj","qms","zerj","qms","qms","qms","qms","qms","qms","qms","cvjks","qms","qms","qms","qms","qms","qms","qms","qtrb","qms","tmx","qms","qms","qms","qms","qms","qms","qms","qms","qms","recp","ydaa","qms","qms","qms","qms","dsxqj","zwcpj","qms","qms","qms","qms","lizvb","xzz","qms","qms","qms","qms","qms","qms","qms","hgh","mkkmv","qms","huqs","qms","qms","qms","acg","qms","qms","qms","qms","qms","tcw","qms","cxyrp","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","vxm","pydz","qms","qms","qms","eonq","ytbsi","qms","qms","qms","qms","qms","qms","qms","ssie","qms","qms","qms","qms","hpe","qms","qms","vjfma","zhgzl","qms","qms","qms","qms","qms","qms","qms","qms","qms","dsgbb","qms","qms","qms","qms","qms","qms","rjaiw","dnxoc","qms","qms","qms","rkbn","qms","qms","pxpa","jog","qms","qms","xwjm","felv","qms","qms","qms","qms","qms","qms","qms","qms","qms","gxt","qms","vlrtk","qms","qms","qms","asn","qms","qms","qms","qms","qms","qms","ldqw","qms","qms","qms","qms","outpo","qms","qms","qms","qms","jhui","tuka","qms","khcld","qms","qms","qms","qms","qms","qms","jsj","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qnolw","llom","lbci","qms","jzlx","qms","nyc","qms","qms","zxxrt","qms","qms","qms","qms","qms","zobf","uiv","qms","qms","qms","iilox","qms","qms","qms","fuzkx","qms","qms","qms","qms","wyyhj","qms","qms","ssp","qms","qms","qms","ecwf","nwgwi","wwdbq","qms","qms","qms","qms","ygngb","qms","cjmtt","qms","jko","lix","qms","qms","qms","qms","qms","qms","qms","qms","zldsj","qms","qms","wgrv","qms","qms","qms","qms","qms","rrl","qms","qms","qms","qms","qms","qms","qms","ojajk","qms","qms","qms","rts","qms","ocr","qms","nxly","qms","ggoz","qms","qms","qms","oneah","qms","qms","qms","qms","qms","qms","qms","qms","cprgy","qms","qms","qms","ypj","bgin","qms","qms","wgwsr","qms","qms","qcp","qms","qms","qms","qms","zgl","qms","qms","qms","juwdu","qms","dvw","qms","qms","scm","qms","plbj","qms","qms","qms","hitse","qms","qms","qms","qms","qms","vbo","qms","qms","rfax","qms","qms","qms","mern","qms","qms","qms","qms","qms","qms","qms","qms","qms","uow","irr","qms","qms","qms","qms","qms","qms","qms","qms","yon","qms","edp","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","igpdf","sjew","vqi","qms","qms","qms","qms","qms","qms","eok","qms","qsqam","qms","qms","nbcso","myby","qms","qms","qjwne","aaex","qms","mhut","icivk","qms","qms","qms","qms","qms","qms","qms","sbon","qms","qms","qgsh","qms","qms","qms","eymi","qms","qms","nil","swjcp","qms","qms","qms","qms","qms","qms","dsig","qms","qms","qms","qms","vdk","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","sid","qms","qms","qms","qms","qms","qms","qms","aciqv","qms","qms","rci","qms","qms","qms","qms","qms","qms","xaqij","nyy","qms","qms","qms","qms","qms","qms","qms","qms","ohgp","qms","mui","dld","qms","qms","jfud","hnndm","qms","qms","qms","qms","qms","qms","vwq","qms","qms","qms","qms","qms","qms","qms","sxfgs","qms","fzkej","qms","qms","snsf","gcqfz","qms","qms","qms","mlgb","qms","qms","xbnd","qms","qms","syq","qms","qms","qms","qms","earp","hwto","qms","qlyh","qms","qms","qms","qms","qms","qms","uxcu","qms","qms","qms","qms","qms","qms","qms","qms","sml","qms","qms","qms","rmiw","qms","qms","qms","qms","qms","qms","fevsh","qms","qms","qms","qms","qms","qms","qms","maw","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","kul","qms","xdoaf","qms","qms","qms","qms","fqsir","qms","qms","bgtjk","whezs","qms","vuj","qms","qms","qms","wrj","reqqi","qms","qms","qms","qms","qms","qms","qms","hdw","qms","gxlge","qms","qms","qms","ihg","qms","qms","qms","qms","qms","qms","qms","qms","bsru","idsw","wdwr","qms","mudb","qms","qms","qms","qms","qfpfk","qms","qms","qms","zsofr","qms","qms","oeb","qms","qms","qms","qms","qms","qms","qms","rkcw","qms","qms","qms","qms","qms","qms","yiind","aznj","qms","qms","qms","znz","qms","qms","pjfdo","bob","qms","hnim","qms","qnn","csdd","sez","mfyks","qms","crrrv","qms","qms","qms","qms","qms","qms","qms","kwx","qms","qms","qms","qms","etxij","qms","qms","qms","qms","qms","qms","wwd","qms","qms","qms","zxsh","qms","qms","otzzm","qms","qms","qms","qms","qms","crioy","qms","qms","qms","qms","qms","qms","qms","hqdqu","qms","qms","qms","qms","ytb","qms","shbta","qms","qms","qms","qms","qms","qms","yowg","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","svng","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","hgq","qms","qms","qms","qms","qms","qms","qms","qms","qms","uhjkx","joj","qms","dci","qms","qms","wef","qms","qms","qms","qms","qms","qms","jxabm","qms","aqo","pzzjp","qms","bldxf","qms","qms","qms","qms","qms","qms","zpo","qms","qms","qms","qms","qms","aplh","qms","qms","qms","qms","qms","qms","qms","qms","qms","mabuu","ndf","qms","qms","kea","qms","qms","hudhe","qms","qms","qms","qms","qms","qms","qms","qms","rcsp","qms","qms","qms","qms","dqk","hjdu","qms","rljco","qms","qms","qms","qms","qms","qms","qms","qms","qms","wzara","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","blaau","qms","qms","qms","qms","jimj","qms","qms","qms","qms","fck","qms","qms","otig","qms","qms","qms","qms","qms","vqqhz","dmqxr","pmt","qms","qms","vmf","qms","qms","qms","idiwb","qms","asxcq","qms","qms","qms","qms","qms","qms","qms","qms","qza","qms","daocp","qms","jsrb","eyqt","qms","qms","qms","wrqfy","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","qms","kjpk","qms","qms","qms","qms","qms","qms","ifdwx","qms","qms","qms","qms","izmfe","qms","qms","qms","qms","qms","qms","wrjxj","qms","qms","cpo","qms","qms","qms","qms","qms","wuq","qms","qms","qms","qms","qms","qms","qms","wec","qms","qms","qms","qms","qms","qms","qms","qms","ssv","qms","lnfk","qms","qms"]
+231
+=> "lnfk"
+
+@gen 4
+["bylam","fysez","guajj","ylcse","qqckv","lrekg","wkpxa","ileml","zlrog","jfozs","skrmm","oujeq","axhjg","bhcrv","wopxz","qxpit","twjex","qflwr","aqzdg","guach","silsu","kcohc","wdnnt","iewld","jzuhl","himnb","voczm","aqxht","yugmk","qmbzz","zeqwb","akkzv","fyahx","ooana","ekuxd","ezjau","qqtex","hfpxa","qumpf","cfbtm","xmwti","iiora","lfvzl","vooqb","nbbdw","hfhft","kofnt","tusqh","sqzkp","hcmyi","ryexp","tuoij","yifve","nwhlv","brbgm","putdc","hktgw","yfqhy","jnhbj","kyfkg","fytys","xvgsx","qqrcd","nxokp","wuwzb","zdwdg","vcuhr","dcszz","fqpby","syooa","ipgaw","yopzp","ekiqr","xlpcy","yjruu","eitpl","ziiip","bsddy","qbkpp","xchow","ivihr","blryn","abake","fentt","hkfnt","quvao","mdlfy","uusdz","iaiea","ixkgw","ritmh","qikzs","eofcp","pijea","ndbie","wuvvo","hlobv","jqxpp","gxppv","kfdsi","qaxaw","udtzy","wcbtr","fxsov","mrryo","ovdqz","ibpny","dknzw","mqney","cwhjy","lpnok","mwepu","ochhn","wwumr","yqmuq","uhhhg","uhmjj","deaex","mxitd","lsyzx","evwkr","cdgtd","bpcgr","uzzdm","knzsh","yonul","wtgmb","sgynm","nqpfz","halhm","punpx","lyjlp","tpkpb","flgmn","nzyyj","hkwpk","bnori","hknhk","slhcg","rlsae","dsvao","qgivm","wqtqm","boisv","bhshx","vkyfr","pirlf","euvwa","vdnyc","zwjic","sppeb","mqzkk","wurdv","zmqtx","szdsk","xiwwa","ryzlk","xxiig","tcpjz","mtqxd","vnjkk","pynri","rbbhk","ygvto","crgps","ddvwi","sayki","crvbr","qyfgd","tkmqa","faudk","kmdex","jsdve","zyzxy","vgkwi","sekfs","zygrc","chsut","duaep","pcyfx","tyryx","gfanp","gapho","vknyy","yjidq","rgqez","inktn","njpal","syczp","jpovg","kxfck","ufvmj","wozlu","eyvgh","znsff","boxvc","tjnsm","qmbha","urcli","hocrt","xoach","oigdg","hlqmv","fzujz","otvcy","wjlna","dndna","kvvac","fsmpd","nfcce","xrykq","qhpsh","zhkjz","kurns","pexvg","ksppq","xqxvr","qxllu","srukx","fvcvy","ymjwi","qpmhu","tcpxo","wljpt","rdesp","potub","slkvj","zgwvo","gyuxv","uvxlx","hhisv","oywrl","wrqet","sonyi","mcguz","moykv","tefoy","pvmei","auaov","xxkrj","xbmml","tnivh","xoonu","lujpv","druvg","dqhsa","gorbp","olqpe","qrkmj","iuaek","hrxnu","aluga","zhklk","nfbvm","megik","kcllw","olgjq","iluxg","tbnzl","drmss","gsfvo","pczds","fbejm","bxvdc","aexoy","xamim","hhwed","cehal","ripcz","rwplt","wrpyn","dnyhq","fljdd","aubdc","ietqg","mrcso","djihv","lnqwq","bxoyw","osmdx","vmhxt","rtujn","xqryf","xfijm","bigxh","iulfg","euech","sakuo","qdkru","fhdyh","rkaxc","xjeom","vuxph","ookat","biidj","syhpf","xuqmr","vlyvp","cckvj","elibh","wcoia","nlens","ujmig","cvpum","qfgzm","sxuwd","omekk","yqqle","nqilm","afmiz","roaqm","tepmr","ksgln","xszlv","zctbp","vrolj","afuoy","vhagc","gnudp","oqmum","lsymj","jacws","dwhzr","zmulb","ezsgb","hwvzv","ysdes","lldbf","bmixw","ardcd","ebjyo","svapt","txkmo","mzbxt","rzhms","qwnxh","iakss","wxchc","eswac","vjsht","yfpfg","wowgt","ogmyu","jjpxc","vbofm","nreqm","lkkqx","btiwo","glfti","arkuh","hakwl","xtuca","ibesd","vzmuo","bkdfn","lhgqq","irtgg","tnquh","fauui","fejdd","medsm","lfbuv","cydjg","qatnl","mjsya","tmgvg","ktwdq","ejixn","royfc","fxakd","rmfjb","wloqy","lbwxs","ktkbe","aetbv","hslhf","pldfc","hszvu","wqiuh","afwfy","nzkez","ofijb","djsui","xsrko","qieer","gcslv","eghis","lizas","czifj","zvrzd","jqrbp","ovlnj","efbvw","bhdow","eqqfr","mtbgq","tjffx","mfhkg","yaafl","hmfnu","mqisk","uvioz","htlfk","xgwbe","mrhlc","ygfmv","mfqlb","btmov","ahjvq","ugcqv","qyrhu","kcakd","tetbq","ayrec","fizgi","udufo","sladh","bdlwe","yqwno","ioiec","jesco","eowwm","eqvew","lcvrb","ebfqe","fvjmh","nzmjt","qvnjd","kgwoh","zpwob","gvkvu","ejyra","fwhpl","ohbxd","gjqaa","gtnif","zagnv","xzcwb","sabga","xpslv","vmquw","zykad","xemeh","ieryj","myyxh","bdmwy","hqban","sokct","nudug","zeyqe","ltykw","vckic","btvlx","lfznl","iakrk","vtjid","rhjgu","oresg","lwynl","rxapf","gwuyy","ceiwd","dibto","ikzzg","fbhwp","hmcfd","elksa","rypsx","bmpce","bnekt","dzygm","sospw","rdwoh","lmfsg","sfczm","ddhuo","xfjuu","tbwjx","wkbru","vwmbd","tfggv","ixgih","gkima","jigck","ynmgj","upwkh","txguz","zscaf","yyqhh","bfdzr","ijyot","ytglq","akhjp","jygon","ukpju","pjump","mmton","zgoal","ikwwt","emeam","kprwj","gzehk","wwxed","cuuac","foweh","blebc","hjsdl","xiawj","cgmyw","lyjue","wojbb","ksqgq","mjnmn","kaojw","mnovn","daqte","rqjue","vepla","zgwgn","ghhqq","wxkqx","ylanc","fyaet","dwenb","avzip","ucnrm","nkfbv","zixgj","unqtq","iioly","shrhd","pyzvt","woflx","srzmq","upwjs","xihsh","znlyu","nkili","tjlhc","hpvxr","ctzjk","thxpc","rhcdn","hbuwv","kapue","ntgbu","miwqo","avanf","yvtaf","bglhn","xkfju","afffk","jreca","apdde","evtum","kjxxs","ilpnm","snlva","urdkq","mftyp","rwvpa","abraa","ocdzy","nndrl","ntnfi","wiyhj","arfdh","lnluo","ahijr","smhrh","fzfbq","fnxfu","desdy","yraua","ayici","mpluv","wgmlk","muvmj","jomzc","pvrds","zszer","dinty","iiawf","dqzjl","rsxto","hpnzx","msfbs","xdqph","vxdss","hptqa","tkfrm","ltecl","kbmry","wsuwc","vdria","xxwwy","lunzc","hhdre","fctiy","tzyjd","ynizj","djexz","fbcyp","kdobt","tvzdp","oligl","loyzw","tuxss","fvjeg","elnir","pzbfw","bkokk","xxjiq","rcdrx","aofup","hvydl","ivcdx","gpnnw","jgmai","dybxm","wzdhj","srqwu","xeudh","owasp","lnmdp","eyfqy","ighqb","oolbr","qshmp","xxqid","oobca","uwkhq","aspil","uuvbc","hjxgv","bpqup","zaenw","eymbn","bunqz","lehgm","glwcx","fksfv","coupw","qgrcp","dlbbv","thwyt","wbwpt","kjgcx","bpszf","beibd","msfjz","zzwgj","nucsm","cxabc","xfjge","bacjl","kxpga","ydknp","brtav","vuwds","macys","xqyhu","bgtxu","namsk","lrwpt","pwdvm","tjlap","fbloq","fmrni","zurgx","eofpl","afdkt","tgpra","bjbtq","nzkhv","dqsjw","uqamm","ymbey","zhdvb","tmdth","bpyal","bgjxy","zyjua","wnptq","swxrd","gzjrq","cbton","trmsj","mpajj","gpuyf","zbtup","xwyib","veloc","xewtc","vatzn","iusxv","ywycf","xyipz","ylkep","pgbpk","errkm","gulbp","cuqvk","wludb","ualwf","scmcf","ssatc","lqvmg","phiql","usqvx","nrgdb","puuki","ycgce","zosyy","dibmr","xzquh","eguvd","bhyrk","tldao","zyaoq","qfiig","hvjmr","rgnki","abkht","tgscg","uwowx","lykix","nhoau","kzxqv","noqah","pdpfk","mwaom","qyscq","boqjl","cqpyh","zoroy","vtzso","nsbbx","opuvk","awqeo","wnejf","nxtuc","qygxm","vpvyf","dfqrk","pfrvo","mwhdc","qbgop","iflgu","jykfp","vqzge","qutnj","acxkd","vqklh","iwjsm","pcshc","upemb","jlebs","mjuss","kkmsa","kdlku","bkkjq","fqqpt","ndxri","lwrkj","yyfcv","vwzxa","amoai","yluzz","kqnzb","ponio","rpdte","upoxr","ebhfx","fzyvr","ncaby","mpind","tszgd","mkmwc","zbmtg","czlun","rvckf","yujkf","rbmki","ahtyi","vkfbs","drgtv","vqwpo","jqbmj","gmjfv","srvfs","pukfc","nurkg","lsdwo","ymtsu","xdyng","pxkcd","iarhs","qnyxf","hmtdi","uvqmw","mvdgr","tnuaz","foyod","xsito","mjhlx","dhxyx","odkdy","ffgbw","tjled","lvjai","fgyjj","bgkgt","znppa","wokyc","vprfy","adhjv","xisss","brhij","vpizj","tmaki","cywii","uqfjy","yhdwx","zpiff","zcuyf","aurgq","cnxuy","xgatj","gyryk","kdsnb","zpjot","vinlz","ugipf","etulz","fbsmv","ozhlv","sedby","nbqkv","nvyny","wpcad","zefjo","rjigc","gpgjv","xhqdy","bgbbr","eancg","xxozc","fvtww","rpjpn","onibr","yatwf","sflaw","uwixb","xadyy","jhhln","enftq","powar","bbakd","gholb","ncuzv","utxdl","osdmt","sgvhl","rfpvv","tmuvm","vzdhr","jqnlo","zpsdx","ysrxc","jtfuv","baqkt","ccrpu","wykmy","orqwz","uzthl","ydspe","gbuvw","godkm","apnns","whuts","pixqd","obdog","dbrly","yciuy","avdvo","lusid","fsbox","msmrv","oubob","pitia","ggfov","qbgko","htyuy","jdhts","dtdll","fnvsn","icqys","rnmsr","wydgn","sbdrl","vflxb","gbgrc","zvlnr","veklc","ulvad","rjvup","lvnlk","yagco","phrnm","syhxz","mglhz","qgyvk","ngtec","dacvc","lqbro","fzpqv","jgkkq","xysih","dwkcs","vvnoj","yxjzj","mdesq","dlsip","sjmat","plqhn","rkgbn","hakwm","friuz","xsjpw","ijwpo","dyleh","pahbn","vellr","hgibg","mrolu","sqcgi","zccoc","swerj","pwbob","mfgqs","vigto","udlqy","yiops","oxzvs","tsxoi","aofkx","yxzqy","yyers","srhhu","rmvqt","veski","nffbe","pcvby","dxgiu","cnrnt","fbhlo","gycgz","tzasf","hdsvc","ptnwr","humro","zugep","avhnm","ihzkg","bzpmz","gmhax","hhjpm","vsjtm","nefrg","ebeic","pasjb","nhyln","lxdyr","vxdny","njokw","mjjvo","pkibi","jlzcb","dvljf","rgsws","wynbp","rjkwr","xerkt","nvsxy","xtliq","itrpz","zqctk","diagk","mkktu","xpaxi","nvqdw","afgbg","rrdzh","wpmyb","priif","fnyda","paewk","yvekv","drvdd"]
+1000
+=> "drvdd"

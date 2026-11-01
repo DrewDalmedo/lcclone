@@ -1,0 +1,109 @@
+# Count Vowel Substrings of a String.
+
+@example From index 0, the highlights ending at 4, 5 and 6 are good; so are 1 to 6 and 2 to 6. The highlight 1 to 5 has no e.
+"eaiouae"
+=> 5
+
+@example The x splits the vowels into "aei" and "ou", and a good highlight can't cover the x.
+"aeixou"
+=> 0
+
+@example y is a consonant. "auoie" occurs twice, and each occurrence counts.
+"auoieyauoie"
+=> 2
+
+# A single letter.
+"a"
+=> 0
+
+# Exactly the five vowels.
+"oiuea"
+=> 1
+
+# A run of vowels at the start of the word.
+"ioeauek"
+=> 2
+
+# A run of vowels at the end of the word, with no consonant after it.
+"mmoaieuo"
+=> 3
+
+# Two runs with all five vowels each: their counts add up.
+"aeioubuoieaa"
+=> 3
+
+# A complete run, then an incomplete one: nothing may reach back across
+# the x.
+"uoieaxuo"
+=> 1
+
+# The vowel a never occurs.
+"eioueioueiouoiue"
+=> 0
+
+# The vowel u never occurs.
+"aeioaeiooiea"
+=> 0
+
+# Read as a vowel, the y would make the whole word good.
+"aeyiou"
+=> 0
+
+# Highlights that spell the same text at different places all count.
+"ieaouieaou"
+=> 21
+
+# 100 vowels, each five in a row all different: every highlight of 5 or
+# more letters is good, 96 * 97 / 2 of them (too many for a char counter).
+"ouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouieaouiea"
+=> 4656
+
+# A run of 50 vowels and a run of 49: 1081 + 1035.
+"ieaouieaouieaouieaouieaouieaouieaouieaouieaouieaoukoaeiuoaeiuoaeiuoaeiuoaeiuoaeiuoaeiuoaeiuoaeiuoaei"
+=> 2116
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+"eeaiuaeeiaibaoioo"
+=> 0
+
+@gen 15 small
+"uzoiuyoieoeuouauoeao"
+=> 12
+
+@gen 17 small
+"euiaiiaoe"
+=> 3
+
+@gen 23 small
+"oaeeaioeuuu"
+=> 15
+
+@gen 35 small
+"aooeeeaeeoeouao"
+=> 0
+
+@gen 44 small
+"ieiiuioaiiuaoeioeioo"
+=> 88
+
+@gen 55 small
+"ziauoiezuuayoauyzizy"
+=> 2
+
+@gen 58 small
+"aiiuieo"
+=> 1
+
+# Full size: 100 letters.
+@gen 1
+"oauoieeuaoeeouuiaieiiieueooaeuuiuooieoaeoiaioauaeiuaeueueioaiuooeieeuaoaiuoeaaueiauiaeeioaoaeaeaieiu"
+=> 4276
+
+@gen 6
+"eiyiueoaoubayiaoaeyeuiyuazzibbezoueyyiiiobauoayobaueziibbouyiazouzbobyuiouayiazbouaaiiaaouoazziuizoy"
+=> 3
+
+@gen 14
+"eaoaeuuauuoeoueueuuueoaooeuaoeuueauoaeeuuoeuaouoeoaeuoaaeoeaeoeueeooeaeeuooaoaeeauuaaoueuaaaeuuueoeo"
+=> 0

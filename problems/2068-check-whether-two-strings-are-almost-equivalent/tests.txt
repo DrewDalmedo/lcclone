@@ -1,0 +1,133 @@
+# Check Whether Two Strings are Almost Equivalent.
+
+@example m occurs 3 times in word1 and never in word2: exactly 3 apart, which is allowed. Every other letter's counts differ by at most 1.
+"mmmxy"
+"abcyx"
+=> true
+
+@example z occurs 4 times in word1 and never in word2.
+"zzzzq"
+"qrstq"
+=> false
+
+@example e occurs once in word1 and 5 times in word2. The surplus may be in either word.
+"abcde"
+"eeeee"
+=> false
+
+# Single letters: no gap can be more than 1.
+"a"
+"b"
+=> true
+
+# Words of 3 letters can never be 4 apart.
+"zzz"
+"abc"
+=> true
+
+# The shortest words that fail.
+"cccc"
+"dddd"
+=> false
+
+# Only a fails, with 4 more in word1.
+"aaaaq"
+"qrstu"
+=> false
+
+# word2 holds more of a and b, by 2 each: fine.
+"abcdef"
+"aaabbb"
+=> true
+
+# z occurs only in word2, 4 times; it is the only letter that fails.
+"abcdefgh"
+"zzzzabcd"
+=> false
+
+# The same letters in another order.
+"rescue"
+"secure"
+=> true
+
+# Six letters, each exactly 3 apart.
+"aaabbbccc"
+"dddeeefff"
+=> true
+
+# The same, but c is now 4 apart.
+"aaabbbcccc"
+"dddeeefffg"
+=> false
+
+# The longest words: a counted 50 and 47 times, b 50 and 53.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> true
+
+# The longest words: a counted 50 and 46 times, b 50 and 54.
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+"ababababababababababababababababababababababababababababababababababababababababababababababbbbbbbbb"
+=> false
+
+# 100 times y against no y at all.
+"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+"gnomesgnomesgnomesgnomesgnomesgnomesgnomesgnomesgnomesgnomesgnomesgnomesgnomesgnomesgnomesgnomesgnom"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 9 small
+"bzabbbzazaazzaz"
+"aaazazazzbzaazb"
+=> true
+
+@gen 10 small
+"aaabbdaddcdbaddd"
+"abccadacadacdcac"
+=> false
+
+@gen 15 small
+"bacbbbbb"
+"aaaaabbb"
+=> false
+
+@gen 26 small
+"acbdcdadba"
+"bbbbbcddad"
+=> true
+
+@gen 33 small
+"yzzyxyzyyyxyx"
+"xxxxxxyxxyyyz"
+=> false
+
+@gen 37 small
+"zazbazabaazbaabz"
+"bbbazbzaababzabz"
+=> true
+
+@gen 41 small
+"xyzyxyxyz"
+"yyyyyyyxx"
+=> true
+
+@gen 46 small
+"zaaaababzzazzaa"
+"bbbbbaaaazbzzaa"
+=> false
+
+# Full size: words of 100 letters.
+@gen 2
+"yzzxxxyzxxyyxzyzzzxzxxxxyxyzxzxxyzzzyxxzxzzyyxzzzyyzzzxzxzxyyyyxzyzzyxzxyyyyzyxxxzyxyxzyyxzxzxyzxzyy"
+"zzzzzxzxxzyzxyzxxzzxzzzyyxzyxyzyyzyyzxxyzxyzzxxxyxxyxzzyzzzyyyzyxyxxxzzxyzzyyyyyxxxxyzyxzzzyxzyyxzxz"
+=> true
+
+@gen 3
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+"yyyyyyssyyuqausoxquaypstwtaasvuqaxnusmyoyyoymrwmutyrnwrqqqyrrxvaotqyswwwpvmsywqvtuymxxxroxyywvwsuqnt"
+=> false
+
+@gen 12
+"aaaaabcbcbbababbcabddcdbdaaabcadbcbabaaccbbbdccaaacaddadcbddadbdaadbdcdccccbaaaadabbbabaadcdbdaddbdb"
+"ccccbadabcbaababdacdaaacdbcbdabcbcabaccdcdcdcbadddccdcbdaabdcabaabbadadddbabdacabbaadbabcabacadbbadd"
+=> false

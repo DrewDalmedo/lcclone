@@ -1,0 +1,92 @@
+# Delete Characters to Make Fancy String.
+
+@example The four h's in a row lose two of their copies; "shh" has no letter three times in a row.
+"shhhh"
+=> "shh"
+
+@example The m's, t's and e's come in pairs, never in threes, so nothing is struck.
+"committee"
+=> "committee"
+
+@example The five b's are cut to two and the three d's to two.
+"abbbbbcddd"
+=> "abbcdd"
+
+# A single letter.
+"q"
+=> "q"
+
+# Two equal letters in a row are allowed.
+"zz"
+=> "zz"
+
+# Exactly three in a row: one strike.
+"ttt"
+=> "tt"
+
+# The first strike removes a single letter, then a run of 2 follows: it
+# stays whole (an in-place copy that compares with letters it already
+# overwrote cuts it to one).
+"rrrss"
+=> "rrss"
+
+# A run of 3 right after another run of 3.
+"kkkjjj"
+=> "kkjj"
+
+# A long run at the start.
+"ccccccab"
+=> "ccab"
+
+# A long run at the end.
+"abffffff"
+=> "abff"
+
+# Several runs to cut, back to back, each of a different letter.
+"pppqqqqrrrrrs"
+=> "ppqqrrs"
+
+# A letter comes back after another one: its runs are cut separately.
+"wwgwwwgww"
+=> "wwgwwgww"
+
+# Alternating letters: nothing to strike.
+"xyxyxyxy"
+=> "xyxyxyxy"
+
+# A run of 300 between other letters (a run count kept in a char wraps).
+"keeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeekk"
+=> "keekk"
+
+# 257 copies of one letter (an unsigned char count wraps to 1 at 257).
+"uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"
+=> "uu"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"a"
+=> "a"
+
+@gen 2 small
+"aaaaa"
+=> "aa"
+
+@gen 3 small
+"ccbbbbccbbbbbb"
+=> "ccbbccbb"
+
+@gen 4 small
+"aaabbbbb"
+=> "aabb"
+
+@gen 5 small
+"bbbaaaaa"
+=> "bbaa"
+
+@gen 6 small
+"bbcccc"
+=> "bbcc"
+
+@gen 7 small
+"bbbbbbcc"
+=> "bbcc"
