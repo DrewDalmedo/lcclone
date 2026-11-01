@@ -1,0 +1,100 @@
+# Counting Words With a Given Prefix.
+
+@example "stone", "stop" and "stove" start with "sto"; "astonish" has it one letter in, and "st" is too short.
+["stone","stop","astonish","st","stove"]
+"sto"
+=> 3
+
+@example Both copies of "rain" count, each spelled exactly like pref; "brain" has "rain" at its end, and "rai" is too short.
+["rain","rain","brain","rai"]
+"rain"
+=> 2
+
+@example "melon" is one letter shorter than "melons", so it doesn't start with it.
+["mango","melon","lime"]
+"melons"
+=> 0
+
+# One-letter word and pref, the same.
+["a"]
+"a"
+=> 1
+
+# One-letter word and pref, different.
+["b"]
+"a"
+=> 0
+
+# pref only at the end or in the middle of the words.
+["redo","undone","ado"]
+"do"
+=> 0
+
+# A word with pref at both ends counts once.
+["dodo","do","od"]
+"do"
+=> 2
+
+# Words that are shorter starts of pref don't count.
+["c","ca","cat","cats","dog"]
+"cat"
+=> 2
+
+# Words that differ from pref only at its last letter.
+["abcdx","abcdy","abcd","abcdez"]
+"abcde"
+=> 1
+
+# Words that agree with pref at its first and last letters but not in
+# between.
+["trip","trap","traps","tarp","strap"]
+"trap"
+=> 2
+
+# Every word starts with pref.
+["qa","qb","qq","q"]
+"q"
+=> 4
+
+# Longest strings: pref of 100 letters; one word equals it, one is a
+# letter short, one differs at the 100th letter.
+["zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz","zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz","zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzy"]
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+=> 1
+
+# 100 entries, all the same word: the largest answer.
+["ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok"]
+"o"
+=> 100
+
+# Random small cases from gen.c (lc check --regen makes them). Full-size
+# cases (100 words of up to 100 letters) come with milestone M7.
+@gen 1 small
+["abb","baa","abb","aaabb","ab","b","abb"]
+"a"
+=> 5
+
+@gen 2 small
+["aaa","baab","aabab","aaaa","aa"]
+"aaa"
+=> 2
+
+@gen 3 small
+["aab","abb","abaa","aa","a","aa","aa","abaa"]
+"aa"
+=> 4
+
+@gen 4 small
+["bb","bbb","baaa","bab"]
+"ba"
+=> 2
+
+@gen 5 small
+["abbab","b","b","aa","bbaa","b"]
+"ba"
+=> 0
+
+@gen 6 small
+["ba","bab"]
+"a"
+=> 0

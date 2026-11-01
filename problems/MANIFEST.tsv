@@ -531,33 +531,33 @@
 2062	count-vowel-substrings-of-a-string	Count Vowel Substrings of a String	easy	no	plain	draft
 2068	check-whether-two-strings-are-almost-equivalent	Check Whether Two Strings are Almost Equivalent	easy	no	plain	draft
 2072	the-winner-university	The Winner University	easy	yes	skip:sql	todo
-2073	time-needed-to-buy-tickets	Time Needed to Buy Tickets	easy	no	plain	todo
-2078	two-furthest-houses-with-different-colors	Two Furthest Houses With Different Colors	easy	no	plain	todo
+2073	time-needed-to-buy-tickets	Time Needed to Buy Tickets	easy	no	plain	draft
+2078	two-furthest-houses-with-different-colors	Two Furthest Houses With Different Colors	easy	no	plain	draft
 2082	the-number-of-rich-customers	The Number of Rich Customers	easy	yes	skip:sql	todo
-2085	count-common-words-with-one-occurrence	Count Common Words With One Occurrence	easy	no	plain	todo
-2089	find-target-indices-after-sorting-array	Find Target Indices After Sorting Array	easy	no	plain	todo
-2094	finding-3-digit-even-numbers	Finding 3-Digit Even Numbers	easy	no	plain	todo
+2085	count-common-words-with-one-occurrence	Count Common Words With One Occurrence	easy	no	plain	draft
+2089	find-target-indices-after-sorting-array	Find Target Indices After Sorting Array	easy	no	plain	draft
+2094	finding-3-digit-even-numbers	Finding 3-Digit Even Numbers	easy	no	plain	draft
 2099	find-subsequence-of-length-k-with-the-largest-sum	Find Subsequence of Length K With the Largest Sum	easy	no	checker	todo
-2103	rings-and-rods	Rings and Rods	easy	no	plain	todo
-2108	find-first-palindromic-string-in-the-array	Find First Palindromic String in the Array	easy	no	plain	todo
-2114	maximum-number-of-words-found-in-sentences	Maximum Number of Words Found in Sentences	easy	no	plain	todo
-2119	a-number-after-a-double-reversal	A Number After a Double Reversal	easy	no	plain	todo
-2124	check-if-all-as-appears-before-all-bs	Check if All A's Appears Before All B's	easy	no	plain	todo
-2129	capitalize-the-title	Capitalize the Title	easy	no	plain	todo
-2133	check-if-every-row-and-column-contains-all-numbers	Check if Every Row and Column Contains All Numbers	easy	no	plain	todo
-2138	divide-a-string-into-groups-of-size-k	Divide a String Into Groups of Size k	easy	no	plain	todo
-2144	minimum-cost-of-buying-candies-with-discount	Minimum Cost of Buying Candies With Discount	easy	no	plain	todo
-2148	count-elements-with-strictly-smaller-and-greater-elements	Count Elements With Strictly Smaller and Greater Elements	easy	no	plain	todo
-2154	keep-multiplying-found-values-by-two	Keep Multiplying Found Values by Two	easy	no	plain	todo
-2160	minimum-sum-of-four-digit-number-after-splitting-digits	Minimum Sum of Four Digit Number After Splitting Digits	easy	no	plain	todo
-2164	sort-even-and-odd-indices-independently	Sort Even and Odd Indices Independently	easy	no	plain	todo
-2169	count-operations-to-obtain-zero	Count Operations to Obtain Zero	easy	no	plain	todo
-2176	count-equal-and-divisible-pairs-in-an-array	Count Equal and Divisible Pairs in an Array	easy	no	plain	todo
-2180	count-integers-with-even-digit-sum	Count Integers With Even Digit Sum	easy	no	plain	todo
-2185	counting-words-with-a-given-prefix	Counting Words With a Given Prefix	easy	no	plain	todo
-2190	most-frequent-number-following-key-in-an-array	Most Frequent Number Following Key In an Array	easy	no	plain	todo
-2194	cells-in-a-range-on-an-excel-sheet	Cells in a Range on an Excel Sheet	easy	no	plain	todo
-2200	find-all-k-distant-indices-in-an-array	Find All K-Distant Indices in an Array	easy	no	plain	todo
+2103	rings-and-rods	Rings and Rods	easy	no	plain	draft
+2108	find-first-palindromic-string-in-the-array	Find First Palindromic String in the Array	easy	no	plain	draft
+2114	maximum-number-of-words-found-in-sentences	Maximum Number of Words Found in Sentences	easy	no	plain	draft
+2119	a-number-after-a-double-reversal	A Number After a Double Reversal	easy	no	plain	draft
+2124	check-if-all-as-appears-before-all-bs	Check if All A's Appears Before All B's	easy	no	plain	draft
+2129	capitalize-the-title	Capitalize the Title	easy	no	plain	draft
+2133	check-if-every-row-and-column-contains-all-numbers	Check if Every Row and Column Contains All Numbers	easy	no	plain	draft
+2138	divide-a-string-into-groups-of-size-k	Divide a String Into Groups of Size k	easy	no	plain	draft
+2144	minimum-cost-of-buying-candies-with-discount	Minimum Cost of Buying Candies With Discount	easy	no	plain	draft
+2148	count-elements-with-strictly-smaller-and-greater-elements	Count Elements With Strictly Smaller and Greater Elements	easy	no	plain	draft
+2154	keep-multiplying-found-values-by-two	Keep Multiplying Found Values by Two	easy	no	plain	draft
+2160	minimum-sum-of-four-digit-number-after-splitting-digits	Minimum Sum of Four Digit Number After Splitting Digits	easy	no	plain	draft
+2164	sort-even-and-odd-indices-independently	Sort Even and Odd Indices Independently	easy	no	plain	draft
+2169	count-operations-to-obtain-zero	Count Operations to Obtain Zero	easy	no	plain	draft
+2176	count-equal-and-divisible-pairs-in-an-array	Count Equal and Divisible Pairs in an Array	easy	no	plain	draft
+2180	count-integers-with-even-digit-sum	Count Integers With Even Digit Sum	easy	no	plain	draft
+2185	counting-words-with-a-given-prefix	Counting Words With a Given Prefix	easy	no	plain	draft
+2190	most-frequent-number-following-key-in-an-array	Most Frequent Number Following Key In an Array	easy	no	plain	draft
+2194	cells-in-a-range-on-an-excel-sheet	Cells in a Range on an Excel Sheet	easy	no	plain	draft
+2200	find-all-k-distant-indices-in-an-array	Find All K-Distant Indices in an Array	easy	no	plain	draft
 2205	the-number-of-users-that-are-eligible-for-discount	The Number of Users That Are Eligible for Discount	easy	yes	skip:sql	todo
 2206	divide-array-into-equal-pairs	Divide Array Into Equal Pairs	easy	no	plain	todo
 2210	count-hills-and-valleys-in-an-array	Count Hills and Valleys in an Array	easy	no	plain	todo

@@ -1,0 +1,94 @@
+# Capitalize the Title.
+
+@example "ON" has two letters, so it becomes "on"; the other words have three or more.
+"dOGS ON tHe mOON"
+=> "Dogs on The Moon"
+
+@example A one-letter first word stays lowercase, like every short word.
+"A TALE oF tWO CITIES"
+=> "a Tale of Two Cities"
+
+@example A single word of two letters.
+"Up"
+=> "up"
+
+# A single letter, uppercase in the input.
+"Q"
+=> "q"
+
+# Two letters next to three: the edge of the rule.
+"xY XyZ"
+=> "xy Xyz"
+
+# The last word has one, two or three letters.
+"QUICK BROWN m"
+=> "Quick Brown m"
+
+"sweet AS"
+=> "Sweet as"
+
+"far AND aWaY bUs"
+=> "Far And Away Bus"
+
+# Already in the target form: nothing changes.
+"Owl in a Box"
+=> "Owl in a Box"
+
+# Long words in alternating case: the letters after the first are lowered.
+"sTrAnGe WeAtHeR wArNiNgS"
+=> "Strange Weather Warnings"
+
+# 50 words of one capital letter each (99 characters).
+"A B C D E F G H I J K L M N O P Q R S T U V W X Y Z A B C D E F G H I J K L M N O P Q R S T U V W X"
+=> "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x"
+
+# One word of 100 letters.
+"zYxWvUtSrQpOnMlKjIhGfEdCbAzYxWvUtSrQpOnMlKjIhGfEdCbAzYxWvUtSrQpOnMlKjIhGfEdCbAzYxWvUtSrQpOnMlKjIhGfE"
+=> "Zyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfedcbazyxwvutsrqponmlkjihgfe"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"aAA B BBaA"
+=> "Aaa b Bbaa"
+
+@gen 3 small
+"azy AYzb y BY"
+=> "Azy Ayzb y by"
+
+@gen 4 small
+"Yaz ba Yyy AYy"
+=> "Yaz ba Yyy Ayy"
+
+@gen 5 small
+"Yb ZzYB"
+=> "yb Zzyb"
+
+@gen 8 small
+"ZzAy aZ ZB"
+=> "Zzay az zb"
+
+@gen 9 small
+"AA A Az"
+=> "aa a az"
+
+@gen 14 small
+"byAZ"
+=> "Byaz"
+
+@gen 19 small
+"zzz BY zbY"
+=> "Zzz by Zby"
+
+# Full-size cases: words of random lengths filling 100 characters, 50
+# words of one letter, one word of 100 letters.
+@gen 21
+"Rd UhzT k gufP w EHJtMi o Uduoft n yia vK PQrw DPCBz okk HlCpp IZYR K c omgtj qKxlf fP CoutUZ kla BI"
+=> "rd Uhzt k Gufp w Ehjtmi o Uduoft n Yia vk Pqrw Dpcbz Okk Hlcpp Izyr k c Omgtj Qkxlf fp Coutuz Kla bi"
+
+@gen 22
+"D P R u z m G N I X e n L W S b p p k i d q O R W e e v B a e q t P s H F S V j s Z p N W a u L Z E"
+=> "d p r u z m g n i x e n l w s b p p k i d q o r w e e v b a e q t p s h f s v j s z p n w a u l z e"
+
+@gen 25
+"LIKEnLTFlNEhyLziMypVaqzQUIPmaBGFsIKyuqsfrKgclkqMWVtXHCxhRBtxMKYYHVWCkmyleYRooIDvPgraPdVOkmpKSmJJKdAh"
+=> "Likenltflnehylzimypvaqzquipmabgfsikyuqsfrkgclkqmwvtxhcxhrbtxmkyyhvwckmyleyrooidvpgrapdvokmpksmjjkdah"
