@@ -1,0 +1,90 @@
+# Make Array Zero by Subtracting Equal Amounts.
+
+@example Take away 2, then 5, then 4: the array becomes [5,0,5,0,0,9], then [0,0,0,0,0,4], then all zeros.
+[7,2,7,0,0,11]
+=> 3
+
+@example Every entry is 0 already, so no round is needed.
+[0,0]
+=> 0
+
+@example Take away 10, then 30. One round can't do it, since x is at most 10 in the first round.
+[10,40]
+=> 2
+
+# A single positive entry, at the upper bound.
+[100]
+=> 1
+
+# All entries equal and positive: one round.
+[6,6,6,6]
+=> 1
+
+# Repeats far apart, with zeros among them: 0 is not a value to clear.
+[3,0,8,3,0,8,0,3]
+=> 2
+
+# No zero and no repeat: one round per entry.
+[5,1,4,2,3]
+=> 5
+
+# A run of zeros before the only positive value.
+[0,0,0,1,0]
+=> 1
+
+# Large values far apart: 3 rounds, not 100 rounds of x = 1.
+[100,50,99]
+=> 3
+
+# Zeros must stay at 0: lowering them too would make them negative.
+[0,4]
+=> 1
+
+[2,0,2,5]
+=> 2
+
+# Values past 63 (too big for one 64-bit mask) and 100 next to 0.
+[70,64,63,0,100,0,100]
+=> 4
+
+# One value, then zeros, then the same value again.
+[9,0,0,0,0,0,0,0,0,9]
+=> 1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[3,3,8,3,8,8,8]
+=> 2
+
+@gen 2 small
+[0,0,0,0,0]
+=> 0
+
+@gen 3 small
+[2,0,0,0,0,0,0,0]
+=> 1
+
+@gen 4 small
+[1,7,8,7]
+=> 3
+
+@gen 5 small
+[7,0,7,7,0,7]
+=> 1
+
+@gen 6 small
+[8,6]
+=> 2
+
+# Full-size cases: 100 entries.
+@gen 1
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+=> 0
+
+@gen 2
+[8,68,58,84,24,42,23,13,41,47,21,33,81,37,62,75,40,10,73,7,66,2,88,95,79,72,19,92,1,64,94,31,87,99,4,98,20,97,57,44,27,74,52,25,83,71,60,35,61,0,56,28,91,82,69,55,16,63,43,45,89,54,18,22,17,76,30,36,51,67,26,9,53,39,77,70,86,6,59,85,65,15,5,80,93,50,90,11,46,96,38,34,29,78,3,48,49,14,32,12]
+=> 99
+
+@gen 3
+[16,41,46,72,97,87,3,89,23,81,74,79,7,62,4,91,20,86,2,95,67,6,44,57,45,68,17,19,35,18,30,82,63,29,27,24,53,94,9,5,58,99,50,47,36,34,8,49,51,59,66,52,88,76,54,83,26,31,40,75,48,14,70,11,13,39,65,43,55,93,69,92,33,71,85,38,60,84,100,98,56,61,21,10,80,73,96,22,32,28,64,25,37,77,12,90,42,15,78,1]
+=> 100

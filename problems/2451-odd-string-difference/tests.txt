@@ -1,0 +1,107 @@
+# Odd String Difference.
+
+@example "moq", "ace" and "suw" all have the steps 2, 2, while "kmp" has 2, 3.
+["moq","kmp","ace","suw"]
+=> "kmp"
+
+@example "teen", "yjjs" and "vggp" have the steps -15, 0, 9; "ohhm" has -7, 0, 5. The odd word may come first.
+["ohhm","teen","yjjs","vggp"]
+=> "ohhm"
+
+@example "ed" and "lk" have the step -1, but "az" has the step 25, not -1: the alphabet does not wrap around.
+["ed","az","lk"]
+=> "az"
+
+# Three words, the odd one first (a single step each).
+["ca","ab","bc"]
+=> "ca"
+
+# The odd word second.
+["xyz","abd","pqr"]
+=> "abd"
+
+# The odd word last, differing only in its last step.
+["klm","cde","cdf"]
+=> "cdf"
+
+# Differing only in the first step.
+["efg","qrs","prs","uvw"]
+=> "prs"
+
+# Steps 1, 12 against 11, 2: written as digits without a separator, both
+# would read "112". The words also share their first and last letters.
+["abn","aln","cdp"]
+=> "aln"
+
+# The odd word is an anagram of another word.
+["bac","abc","cde","xyz"]
+=> "bac"
+
+# The odd word's steps are the others' in reverse order (3, 1 against 1, 3).
+["abe","cdg","ade","pqt"]
+=> "ade"
+
+# The odd word's steps are the others' negated.
+["cbcb","mnmn","bcbc","xyxy"]
+=> "cbcb"
+
+# Identical words make up the rest.
+["zzz","zzz","zzy","zzz"]
+=> "zzy"
+
+# Twenty letters, spanning the whole alphabet; the odd word skips the l.
+["ghijklmnopqrstuvwxyz","abcdefghijklmnopqrst","abcdefghijkmnopqrstu","bcdefghijklmnopqrstu"]
+=> "abcdefghijkmnopqrstu"
+
+# 100 words: 99 with the step -1, then "az", whose step 25 would match
+# them only if the alphabet wrapped.
+["ba","cb","dc","ed","fe","gf","hg","ih","ji","kj","lk","ml","nm","on","po","qp","rq","sr","ts","ut","vu","wv","xw","yx","zy","ba","cb","dc","ed","fe","gf","hg","ih","ji","kj","lk","ml","nm","on","po","qp","rq","sr","ts","ut","vu","wv","xw","yx","zy","ba","cb","dc","ed","fe","gf","hg","ih","ji","kj","lk","ml","nm","on","po","qp","rq","sr","ts","ut","vu","wv","xw","yx","zy","ba","cb","dc","ed","fe","gf","hg","ih","ji","kj","lk","ml","nm","on","po","qp","rq","sr","ts","ut","vu","wv","xw","yx","az"]
+=> "az"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["zy","hb","zy","ji","nm"]
+=> "hb"
+
+@gen 2 small
+["llhu","aqmz","qqmz"]
+=> "aqmz"
+
+@gen 3 small
+["vwv","uvu","rsr","iju","efe","wxw"]
+=> "iju"
+
+@gen 4 small
+["sss","yyc","zzz","ggg","uuu","aaa"]
+=> "yyc"
+
+@gen 5 small
+["vxw","yxw","wyx","prq"]
+=> "yxw"
+
+@gen 6 small
+["mn","vw","ml","hi"]
+=> "ml"
+
+@gen 7 small
+["ouuu","rrrr","wwww","mmmm"]
+=> "ouuu"
+
+@gen 8 small
+["ywu","rpn","fdb","hpn","pnl"]
+=> "hpn"
+
+# Full-size cases: 100 words of 20 letters, the odd word differing only in
+# its last step; it is last, first, then somewhere in between.
+@gen 3
+["mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","ljpfuswxtrfwuwktbkjp","mkqgvtxyusgxvxluclkq","ljpfuswxtrfwuwktbkjp","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","kioetrvwsqevtvjsajio","kioetrvwsqevtvjsajio","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","kioetrvwsqevtvjsajio","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","ljpfuswxtrfwuwktbkjp","ljpfuswxtrfwuwktbkjp","kioetrvwsqevtvjsajio","nlrhwuyzvthywymvdmlr","ljpfuswxtrfwuwktbkjp","nlrhwuyzvthywymvdmlr","kioetrvwsqevtvjsajio","mkqgvtxyusgxvxluclkq","nlrhwuyzvthywymvdmlr","ljpfuswxtrfwuwktbkjp","kioetrvwsqevtvjsajio","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkq","ljpfuswxtrfwuwktbkjp","kioetrvwsqevtvjsajio","kioetrvwsqevtvjsajio","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","nlrhwuyzvthywymvdmlr","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","ljpfuswxtrfwuwktbkjp","kioetrvwsqevtvjsajio","kioetrvwsqevtvjsajio","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","kioetrvwsqevtvjsajio","kioetrvwsqevtvjsajio","ljpfuswxtrfwuwktbkjp","mkqgvtxyusgxvxluclkq","nlrhwuyzvthywymvdmlr","kioetrvwsqevtvjsajio","nlrhwuyzvthywymvdmlr","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkq","ljpfuswxtrfwuwktbkjp","ljpfuswxtrfwuwktbkjp","nlrhwuyzvthywymvdmlr","kioetrvwsqevtvjsajio","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","nlrhwuyzvthywymvdmlr","ljpfuswxtrfwuwktbkjp","ljpfuswxtrfwuwktbkjp","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkq","mkqgvtxyusgxvxluclkq","ljpfuswxtrfwuwktbkjp","kioetrvwsqevtvjsajio","ljpfuswxtrfwuwktbkjp","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","ljpfuswxtrfwuwktbkjp","kioetrvwsqevtvjsajio","ljpfuswxtrfwuwktbkjp","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","kioetrvwsqevtvjsajio","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkq","kioetrvwsqevtvjsajio","kioetrvwsqevtvjsajio","mkqgvtxyusgxvxluclkq","ljpfuswxtrfwuwktbkjp","nlrhwuyzvthywymvdmlr","nlrhwuyzvthywymvdmlr","mkqgvtxyusgxvxluclkh"]
+=> "mkqgvtxyusgxvxluclkh"
+
+@gen 1
+["efagaafcfgcaaaebffez","fgbhbbgdghdbbbfcggfg","fgbhbbgdghdbbbfcggfg","pqlrllqnqrnlllpmqqpq","uvqwqqvsvwsqqqurvvuv","xytzttyvyzvtttxuyyxy","hidjddifijfdddheiihi","vwrxrrwtwxtrrrvswwvw","nojpjjolopljjjnkoono","opkqkkpmpqmkkkolppop","xytzttyvyzvtttxuyyxy","uvqwqqvsvwsqqqurvvuv","qrmsmmrorsommmqnrrqr","uvqwqqvsvwsqqqurvvuv","jkflffkhklhfffjgkkjk","xytzttyvyzvtttxuyyxy","qrmsmmrorsommmqnrrqr","jkflffkhklhfffjgkkjk","klgmgglilmigggkhllkl","efagaafcfgcaaaebffef","qrmsmmrorsommmqnrrqr","efagaafcfgcaaaebffef","vwrxrrwtwxtrrrvswwvw","uvqwqqvsvwsqqqurvvuv","ghcicchehiecccgdhhgh","vwrxrrwtwxtrrrvswwvw","klgmgglilmigggkhllkl","rsntnnspstpnnnrossrs","xytzttyvyzvtttxuyyxy","mnioiinknokiiimjnnmn","pqlrllqnqrnlllpmqqpq","qrmsmmrorsommmqnrrqr","hidjddifijfdddheiihi","fgbhbbgdghdbbbfcggfg","hidjddifijfdddheiihi","opkqkkpmpqmkkkolppop","jkflffkhklhfffjgkkjk","tupvppuruvrppptquutu","fgbhbbgdghdbbbfcggfg","klgmgglilmigggkhllkl","ijekeejgjkgeeeifjjij","fgbhbbgdghdbbbfcggfg","xytzttyvyzvtttxuyyxy","pqlrllqnqrnlllpmqqpq","qrmsmmrorsommmqnrrqr","fgbhbbgdghdbbbfcggfg","stouootqtuqooospttst","jkflffkhklhfffjgkkjk","wxsyssxuxyussswtxxwx","klgmgglilmigggkhllkl","mnioiinknokiiimjnnmn","tupvppuruvrppptquutu","qrmsmmrorsommmqnrrqr","klgmgglilmigggkhllkl","uvqwqqvsvwsqqqurvvuv","klgmgglilmigggkhllkl","mnioiinknokiiimjnnmn","lmhnhhmjmnjhhhlimmlm","jkflffkhklhfffjgkkjk","hidjddifijfdddheiihi","pqlrllqnqrnlllpmqqpq","hidjddifijfdddheiihi","hidjddifijfdddheiihi","rsntnnspstpnnnrossrs","qrmsmmrorsommmqnrrqr","hidjddifijfdddheiihi","tupvppuruvrppptquutu","hidjddifijfdddheiihi","ghcicchehiecccgdhhgh","fgbhbbgdghdbbbfcggfg","wxsyssxuxyussswtxxwx","stouootqtuqooospttst","opkqkkpmpqmkkkolppop","ghcicchehiecccgdhhgh","ijekeejgjkgeeeifjjij","ghcicchehiecccgdhhgh","tupvppuruvrppptquutu","xytzttyvyzvtttxuyyxy","klgmgglilmigggkhllkl","lmhnhhmjmnjhhhlimmlm","qrmsmmrorsommmqnrrqr","lmhnhhmjmnjhhhlimmlm","stouootqtuqooospttst","mnioiinknokiiimjnnmn","jkflffkhklhfffjgkkjk","opkqkkpmpqmkkkolppop","pqlrllqnqrnlllpmqqpq","klgmgglilmigggkhllkl","nojpjjolopljjjnkoono","tupvppuruvrppptquutu","klgmgglilmigggkhllkl","vwrxrrwtwxtrrrvswwvw","stouootqtuqooospttst","fgbhbbgdghdbbbfcggfg","pqlrllqnqrnlllpmqqpq","lmhnhhmjmnjhhhlimmlm","vwrxrrwtwxtrrrvswwvw","ijekeejgjkgeeeifjjij","mnioiinknokiiimjnnmn","vwrxrrwtwxtrrrvswwvw"]
+=> "efagaafcfgcaaaebffez"
+
+@gen 2
+["oijiknjililkilmiolii","qklkmplknknmknokqnkk","lfgfhkgfifihfijfliff","smnmornmpmpompqmspmm","gabacfbadadcadeagdaa","icdcehdcfcfecfgcifcc","wqrqsvrqtqtsqtuqwtqq","vpqpruqpspsrpstpvspp","tnonpsonqnqpnqrntqnn","tnonpsonqnqpnqrntqnn","icdcehdcfcfecfgcifcc","nhihjmihkhkjhklhnkhh","smnmornmpmpompqmspmm","oijiknjililkilmiolii","hbcbdgcbebedbefbhebb","oijiknjililkilmiolii","icdcehdcfcfecfgcifcc","ystsuxtsvsvusvwsyvss","pjkjlokjmjmljmnjpmjj","icdcehdcfcfecfgcifcc","wqrqsvrqtqtsqtuqwtqq","lfgfhkgfifihfijfliff","pjkjlokjmjmljmnjpmjj","kefegjfehehgehiekhee","lfgfhkgfifihfijfliff","vpqpruqpspsrpstpvspp","wqrqsvrqtqtsqtuqwtqq","jdedfiedgdgfdghdjgdd","nhihjmihkhkjhklhnkhh","kefegjfehehgehiekhee","xrsrtwsrurutruvrxurr","gabacfbadadcadeagdaa","rlmlnqmlolonloplroll","vpqpruqpspsrpstpvspp","vpqpruqpspsrpstpvspp","ztutvyutwtwvtwxtzwtt","oijiknjililkilmiolii","tnonpsonqnqpnqrntqnn","wqrqsvrqtqtsqtuqwtqq","oijiknjililkilmiolii","lfgfhkgfifihfijfliff","kefegjfehehgehiekhey","xrsrtwsrurutruvrxurr","gabacfbadadcadeagdaa","ystsuxtsvsvusvwsyvss","kefegjfehehgehiekhee","uopoqtpororqorsouroo","oijiknjililkilmiolii","uopoqtpororqorsouroo","nhihjmihkhkjhklhnkhh","wqrqsvrqtqtsqtuqwtqq","xrsrtwsrurutruvrxurr","uopoqtpororqorsouroo","xrsrtwsrurutruvrxurr","smnmornmpmpompqmspmm","tnonpsonqnqpnqrntqnn","mghgilhgjgjigjkgmjgg","wqrqsvrqtqtsqtuqwtqq","hbcbdgcbebedbefbhebb","qklkmplknknmknokqnkk","oijiknjililkilmiolii","nhihjmihkhkjhklhnkhh","nhihjmihkhkjhklhnkhh","oijiknjililkilmiolii","smnmornmpmpompqmspmm","ztutvyutwtwvtwxtzwtt","qklkmplknknmknokqnkk","uopoqtpororqorsouroo","tnonpsonqnqpnqrntqnn","ztutvyutwtwvtwxtzwtt","kefegjfehehgehiekhee","nhihjmihkhkjhklhnkhh","smnmornmpmpompqmspmm","wqrqsvrqtqtsqtuqwtqq","kefegjfehehgehiekhee","gabacfbadadcadeagdaa","nhihjmihkhkjhklhnkhh","smnmornmpmpompqmspmm","gabacfbadadcadeagdaa","ztutvyutwtwvtwxtzwtt","smnmornmpmpompqmspmm","nhihjmihkhkjhklhnkhh","smnmornmpmpompqmspmm","jdedfiedgdgfdghdjgdd","ystsuxtsvsvusvwsyvss","ztutvyutwtwvtwxtzwtt","nhihjmihkhkjhklhnkhh","hbcbdgcbebedbefbhebb","pjkjlokjmjmljmnjpmjj","vpqpruqpspsrpstpvspp","gabacfbadadcadeagdaa","nhihjmihkhkjhklhnkhh","uopoqtpororqorsouroo","hbcbdgcbebedbefbhebb","ztutvyutwtwvtwxtzwtt","pjkjlokjmjmljmnjpmjj","mghgilhgjgjigjkgmjgg","wqrqsvrqtqtsqtuqwtqq","tnonpsonqnqpnqrntqnn","ystsuxtsvsvusvwsyvss"]
+=> "kefegjfehehgehiekhey"
+

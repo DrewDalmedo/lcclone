@@ -1,0 +1,112 @@
+# Remove Letter To Equalize Frequency.
+
+@example Erasing the r leaves "sstt", where s and t occur twice each.
+"rsstt"
+=> true
+
+@example An erasure is required, and every erasure leaves one letter a copy short of the other two.
+"ppqqrr"
+=> false
+
+@example Erasing the g leaves "hhh"; with only h left, the string is level.
+"hhhg"
+=> true
+
+# The shortest words: either erasure leaves a single letter.
+"aa"
+=> true
+
+"az"
+=> true
+
+# One letter 100 times.
+"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+=> true
+
+# Every letter once: whatever is erased, the rest occur once each.
+"abcdefghijklmnopqrstuvwxyz"
+=> true
+
+# Counts 2, 2, 1, 1 differ by at most one, yet no erasure works.
+"bacdba"
+=> false
+
+# Counts 3, 3, 3, 1 differ by two, yet erasing the d works.
+"cbadcbacba"
+=> true
+
+# One letter (k) has one copy more than the others.
+"lkmklmk"
+=> true
+
+# One letter (x) has two copies more than the other.
+"xyxxyx"
+=> false
+
+# Two letters have one copy each, so neither vanishing helps: counts 3, 1, 1.
+"acaba"
+=> false
+
+# One letter (f) has one copy fewer than the others, but erasing it leaves
+# one copy, not none: counts 2, 3, 3.
+"gfhghfgh"
+=> false
+
+# Three single copies and a letter twice: erase one of the w.
+"wxyzw"
+=> true
+
+# Three single copies and two letters twice.
+"vwxyzyz"
+=> false
+
+# One letter has a single copy, but the other two don't share a count:
+# counts 1, 2, 3, so erasing the u leaves 2 and 3.
+"wvwuvw"
+=> false
+
+# 50 copies of x and 49 of y.
+"xyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyx"
+=> true
+
+# 100 characters: 25 letters, 4 copies of each.
+"ahovdkrygnucjqxfmtbipwelsahovdkrygnucjqxfmtbipwelsahovdkrygnucjqxfmtbipwelsahovdkrygnucjqxfmtbipwels"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"vvfndd"
+=> false
+
+@gen 2 small
+"dndttn"
+=> false
+
+@gen 3 small
+"ttzztzzt"
+=> false
+
+@gen 4 small
+"dooog"
+=> false
+
+@gen 5 small
+"xuu"
+=> true
+
+@gen 6 small
+"qfflz"
+=> true
+
+@gen 7 small
+"jbb"
+=> true
+
+# Full-size random cases.
+@gen 8
+"kbybnaiqbyagybgbziiaknniuyqzqakgygkuqaakquunzgzngzbzuzzabnqynuuzbgquigkniiakzkbginqbyuiayykq"
+=> false
+
+@gen 9
+"hhhhjhjhjhjjjjjjjhhjhjjjhhjhhhhhhjjhhhjjjjhjhjjjhhhhjhjjhjh"
+=> true

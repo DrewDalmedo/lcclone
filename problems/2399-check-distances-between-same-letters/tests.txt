@@ -1,0 +1,115 @@
+# Check Distances Between Same Letters. distance[0] is the entry for 'a',
+# distance[25] the one for 'z'.
+
+@example k has 1 character between its copies, m has 2 and p has 1, matching their entries; the entries for a, c and x don't matter, since those letters are not in s.
+"kmkpmp"
+[3,0,7,0,0,0,0,0,0,0,1,0,2,0,0,1,0,0,0,0,0,0,0,9,0,0]
+=> true
+
+@example Two characters (both copies of b) stand between the copies of e, but e's entry is 3.
+"ebbe"
+[0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+=> false
+
+@example The two copies of q are neighbours, so their count is 0; every 50 belongs to a letter that is not in s.
+"qq"
+[50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,0,50,50,50,50,50,50,50,50,50]
+=> true
+
+# g, the letter at index 0, is the only wrong one: 1 character stands
+# between its copies, and its entry is 0.
+"gfgf"
+[0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+=> false
+
+# Nested pairs, with nonzero entries for letters that are not in s.
+"lmnnml"
+[1,2,0,0,0,0,0,0,0,0,0,4,2,0,0,0,0,0,0,0,0,0,0,0,0,50]
+=> true
+
+# r has 2 characters between its copies, but its entry is 1.
+"pqrqpr"
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1,1,0,0,0,0,0,0,0,0]
+=> false
+
+# The last letter's entry is 50, which would point far past the end of s.
+"mnnmww"
+[0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,50,0,0,0]
+=> false
+
+# All 26 letters, nested: a has the largest possible count, 50.
+"abcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcba"
+[50,48,46,44,42,40,38,36,34,32,30,28,26,24,22,20,18,16,14,12,10,8,6,4,2,0]
+=> true
+
+# The same, but the entry for a (the letter at index 0) is 49.
+"abcdefghijklmnopqrstuvwxyzzyxwvutsrqponmlkjihgfedcba"
+[49,48,46,44,42,40,38,36,34,32,30,28,26,24,22,20,18,16,14,12,10,8,6,4,2,0]
+=> false
+
+# All 26 letters, each pair side by side.
+"aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz"
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+=> true
+
+# The same, but the last pair's entry is 1.
+"aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz"
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+=> false
+
+# All 26 letters, interleaved: 25 characters between the copies of each.
+"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+[25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]
+=> true
+
+# The same, but the entry for m is 26.
+"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+[25,25,25,25,25,25,25,25,25,25,25,25,26,25,25,25,25,25,25,25,25,25,25,25,25,25]
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"mkkm"
+[43,1,1,0,1,0,0,0,27,1,0,0,43,0,1,0,3,1,1,1,1,33,1,1,1,37]
+=> false
+
+@gen 2 small
+"ww"
+[0,1,3,18,0,1,47,13,0,0,21,2,1,1,0,41,16,1,50,27,6,24,0,1,1,1]
+=> true
+
+@gen 3 small
+"qonqongg"
+[0,1,0,32,1,0,0,32,20,1,0,1,1,2,31,18,2,15,17,1,0,0,0,20,1,17]
+=> false
+
+@gen 4 small
+"zttzdd"
+[21,1,0,0,0,1,14,8,1,0,0,3,1,31,1,0,1,1,13,0,1,1,0,1,1,2]
+=> true
+
+@gen 5 small
+"rwrlxjlxwj"
+[32,25,1,45,0,1,1,1,1,3,0,2,0,5,0,1,1,1,30,1,1,1,6,2,0,1]
+=> true
+
+@gen 6 small
+"oo"
+[0,0,0,0,0,0,30,1,16,33,0,3,1,37,18,0,6,15,17,20,1,1,0,1,0,1]
+=> false
+
+@gen 7 small
+"nuunxx"
+[1,26,15,33,0,21,39,30,33,0,1,1,1,2,38,1,7,0,0,1,0,26,44,0,0,0]
+=> true
+
+# Random full-size cases: 20 to 26 letters.
+@gen 1
+"torabsphfapunxemsjrbghmjouwndzekckxfczwdgt"
+[5,14,3,10,15,26,19,13,1,5,1,8,6,14,22,3,1,15,10,40,13,16,11,20,26,7]
+=> true
+
+@gen 2
+"wvxwcnuglmefetzojhthudybmoakisagijqppdrxkrlnczvfsbyq"
+[3,25,39,15,1,35,23,1,3,16,12,33,14,37,8,0,16,2,18,4,13,44,2,36,27,30]
+=> false

@@ -1,0 +1,89 @@
+# First Letter to Appear Twice. The letter is written as a one-letter string.
+
+@example q comes back as the 4th letter, before p does as the 5th.
+"pqrqp"
+=> "q"
+
+@example Only s occurs twice, at the two ends.
+"swims"
+=> "s"
+
+@example The two l's stand side by side.
+"hello"
+=> "l"
+
+# The shortest string: two equal letters.
+"aa"
+=> "a"
+
+# a occurs first, but b is the first letter to come back.
+"abba"
+=> "b"
+
+# The repeat need not be next to the first copy.
+"abca"
+=> "a"
+
+# a comes back as the 3rd letter, before the side-by-side c's.
+"abacc"
+=> "a"
+
+# Late in the alphabet, but the first to come back.
+"zyzaa"
+=> "z"
+
+"yxaxy"
+=> "x"
+
+# g occurs eight times, but r comes back first.
+"rgrggggggg"
+=> "r"
+
+# All 26 letters, then a repeat as the 27th letter.
+"abcdefghijklmnopqrstuvwxyzq"
+=> "q"
+
+"zyxwvutsrqponmlkjihgfedcbaa"
+=> "a"
+
+# 100 letters, decided at the 3rd letter, with many repeats after it.
+"nqnqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+=> "n"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"ccfa"
+=> "c"
+
+@gen 2 small
+"bbzxshwqz"
+=> "b"
+
+@gen 3 small
+"mdiikoo"
+=> "i"
+
+@gen 4 small
+"aag"
+=> "a"
+
+@gen 5 small
+"kkkkk"
+=> "k"
+
+@gen 6 small
+"ddddd"
+=> "d"
+
+# Full-size random cases.
+@gen 7
+"iadecoodlmodfdfacdiagnnekfohieajneololaamfhdeeanmaoedhafhaceebfjeofjefieflbejkooijgahmjfaomnjllggjhi"
+=> "o"
+
+@gen 8
+"bznugikyqatsmjrdclpwvxeohfwjkftcliawyxaedjdqjnpplrfeohpohvqwbuwvqcdpxdoyxukcnrqdfymkeonpzjmaiqkikjiw"
+=> "w"
+
+@gen 9
+"jhpgliqxdouzmvasfcwretybknzvvqlkitfjgaazapqtwpcrugfgkctfgjgcvytfvjppdzfdmyqiwakwhjqdxkyfmrvqndgtevvr"
+=> "z"

@@ -1,0 +1,194 @@
+# Count Days Spent Together. The inputs are arriveAlice, leaveAlice, arriveBob
+# and leaveBob, in that order.
+
+@example Both are there from 25 February to 5 March: 4 days of February and 5 of March.
+"02-20"
+"03-05"
+"02-25"
+"04-10"
+=> 9
+
+@example 20 November is Alice's last day and Bob's first, and the only day they share.
+"11-03"
+"11-20"
+"11-20"
+"12-02"
+=> 1
+
+@example Bob's whole stay falls inside Alice's: 3 days of April and 3 of May.
+"01-01"
+"12-31"
+"04-28"
+"05-03"
+=> 6
+
+# Both stay the whole year.
+"01-01"
+"12-31"
+"01-01"
+"12-31"
+=> 365
+
+# Bob arrives the day after Alice leaves.
+"03-01"
+"04-30"
+"05-01"
+"05-20"
+=> 0
+
+# Alice leaves the day before Bob arrives, in the middle of a month.
+"07-14"
+"08-02"
+"03-03"
+"07-13"
+=> 0
+
+# Far apart, with Bob first.
+"12-01"
+"12-31"
+"01-01"
+"01-31"
+=> 0
+
+# Far apart, with Alice first: a check for the empty overlap must work both
+# ways round.
+"02-03"
+"02-10"
+"09-12"
+"10-01"
+=> 0
+
+# The same single day.
+"09-30"
+"09-30"
+"09-30"
+"09-30"
+=> 1
+
+# Single days in a row.
+"06-15"
+"06-15"
+"06-16"
+"06-16"
+=> 0
+
+# The same stay, over the end of February: 27 and 28 February, 1 and 2 March.
+"02-27"
+"03-02"
+"02-27"
+"03-02"
+=> 4
+
+# Over the end of a 30-day month: 2 days of April and 10 of May.
+"04-25"
+"05-10"
+"04-29"
+"06-03"
+=> 12
+
+# Over the end of June (30 days): 4 days of June and 9 of July.
+"06-20"
+"07-09"
+"06-27"
+"07-30"
+=> 13
+
+# Over the end of September (30 days): 3 days of September and 3 of October.
+"09-10"
+"10-03"
+"09-28"
+"11-11"
+=> 6
+
+# Bob arrives first; the stays share 28 February and 1 March (no 29th).
+"02-28"
+"04-15"
+"01-20"
+"03-01"
+=> 2
+
+# From 1 February to 30 November: 365 - 31 - 31 days.
+"01-31"
+"11-30"
+"02-01"
+"12-31"
+=> 303
+
+# Alice's single day is the last day of the year, inside Bob's stay.
+"12-31"
+"12-31"
+"11-15"
+"12-31"
+=> 1
+
+# Alice's stay inside Bob's, across the end of August.
+"08-31"
+"09-01"
+"08-01"
+"09-30"
+=> 2
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"12-31"
+"12-31"
+"06-03"
+"12-30"
+=> 0
+
+@gen 2 small
+"01-01"
+"09-26"
+"01-01"
+"01-01"
+=> 1
+
+@gen 3 small
+"02-16"
+"11-17"
+"03-11"
+"07-26"
+=> 138
+
+@gen 4 small
+"08-25"
+"09-16"
+"08-01"
+"11-04"
+=> 23
+
+@gen 5 small
+"03-02"
+"12-01"
+"03-02"
+"12-01"
+=> 275
+
+@gen 6 small
+"04-03"
+"05-20"
+"01-20"
+"04-02"
+=> 0
+
+@gen 7 small
+"03-08"
+"06-22"
+"02-24"
+"06-25"
+=> 107
+
+# Random full-size cases: dates drawn from the whole year.
+@gen 1
+"04-23"
+"04-25"
+"04-19"
+"05-07"
+=> 3
+
+@gen 2
+"09-24"
+"10-30"
+"08-29"
+"12-08"
+=> 37

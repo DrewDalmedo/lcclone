@@ -1,0 +1,120 @@
+# Determine if Two Events Have Conflict.
+
+@example The first event ends at 09:10, the very moment the second one starts, so they share that moment.
+["07:40","09:10"]
+["09:10","12:00"]
+=> true
+
+@example The second event starts earlier, but it is still running between 13:05 and 13:20, after the first one has begun.
+["13:05","13:50"]
+["12:30","13:20"]
+=> true
+
+@example The second event starts one minute after the first one ends.
+["06:00","06:45"]
+["06:46","08:00"]
+=> false
+
+# Two identical events spanning the whole day.
+["00:00","23:59"]
+["00:00","23:59"]
+=> true
+
+# A single moment inside a whole-day event.
+["00:00","23:59"]
+["12:34","12:34"]
+=> true
+
+# The first event lies inside the second.
+["10:15","10:45"]
+["09:00","11:00"]
+=> true
+
+# The second event ends just as the first starts.
+["18:00","19:30"]
+["16:20","18:00"]
+=> true
+
+# ...and one minute before it starts.
+["18:00","19:30"]
+["16:20","17:59"]
+=> false
+
+# Far apart, the second one later.
+["03:10","04:00"]
+["21:00","22:30"]
+=> false
+
+# Within one hour: 08:15 is earlier than 08:30, so the hours alone don't decide.
+["08:00","08:15"]
+["08:30","08:45"]
+=> false
+
+# The second event lies inside the first, though its end minute (20) is
+# smaller than the first event's start minute (50): hours and minutes
+# can't be compared separately.
+["09:50","12:00"]
+["10:10","10:20"]
+=> true
+
+# Two equal single moments.
+["15:15","15:15"]
+["15:15","15:15"]
+=> true
+
+# A single moment at the end of the other event.
+["23:59","23:59"]
+["20:00","23:59"]
+=> true
+
+# A single moment at midnight, just before the other event starts.
+["00:00","00:00"]
+["00:01","23:59"]
+=> false
+
+# Hours and minutes 08 and 09 (bad octal numbers for strtol with base 0).
+["08:09","09:08"]
+["09:08","09:09"]
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["06:06","06:09"]
+["06:06","06:09"]
+=> true
+
+@gen 2 small
+["18:17","18:19"]
+["18:18","18:22"]
+=> true
+
+@gen 3 small
+["06:10","06:10"]
+["06:09","06:11"]
+=> true
+
+@gen 4 small
+["06:22","16:26"]
+["23:59","23:59"]
+=> false
+
+@gen 5 small
+["22:03","22:03"]
+["22:02","22:03"]
+=> true
+
+@gen 6 small
+["07:56","08:52"]
+["09:15","10:08"]
+=> false
+
+@gen 7 small
+["14:14","14:17"]
+["13:45","14:24"]
+=> true
+
+@gen 8 small
+["03:23","03:31"]
+["02:44","02:53"]
+=> false
+

@@ -589,36 +589,36 @@
 2325	decode-the-message	Decode the Message	easy	no	plain	draft
 2329	product-sales-analysis-v	Product Sales Analysis V	easy	yes	skip:sql	todo
 2331	evaluate-boolean-binary-tree	Evaluate Boolean Binary Tree	easy	no	tree	todo
-2335	minimum-amount-of-time-to-fill-cups	Minimum Amount of Time to Fill Cups	easy	no	plain	todo
+2335	minimum-amount-of-time-to-fill-cups	Minimum Amount of Time to Fill Cups	easy	no	plain	draft
 2339	all-the-matches-of-the-league	All the Matches of the League	easy	yes	skip:sql	todo
-2341	maximum-number-of-pairs-in-array	Maximum Number of Pairs in Array	easy	no	plain	todo
-2347	best-poker-hand	Best Poker Hand	easy	no	plain	todo
-2351	first-letter-to-appear-twice	First Letter to Appear Twice	easy	no	plain	todo
+2341	maximum-number-of-pairs-in-array	Maximum Number of Pairs in Array	easy	no	plain	draft
+2347	best-poker-hand	Best Poker Hand	easy	no	plain	draft
+2351	first-letter-to-appear-twice	First Letter to Appear Twice	easy	no	plain	draft
 2356	number-of-unique-subjects-taught-by-each-teacher	Number of Unique Subjects Taught by Each Teacher	easy	no	skip:sql	todo
-2357	make-array-zero-by-subtracting-equal-amounts	Make Array Zero by Subtracting Equal Amounts	easy	no	plain	todo
-2363	merge-similar-items	Merge Similar Items	easy	no	plain	todo
-2367	number-of-arithmetic-triplets	Number of Arithmetic Triplets	easy	no	plain	todo
-2373	largest-local-values-in-a-matrix	Largest Local Values in a Matrix	easy	no	plain	todo
+2357	make-array-zero-by-subtracting-equal-amounts	Make Array Zero by Subtracting Equal Amounts	easy	no	plain	draft
+2363	merge-similar-items	Merge Similar Items	easy	no	plain	draft
+2367	number-of-arithmetic-triplets	Number of Arithmetic Triplets	easy	no	plain	draft
+2373	largest-local-values-in-a-matrix	Largest Local Values in a Matrix	easy	no	plain	draft
 2377	sort-the-olympic-table	Sort the Olympic Table	easy	yes	skip:sql	todo
-2379	minimum-recolors-to-get-k-consecutive-black-blocks	Minimum Recolors to Get K Consecutive Black Blocks	easy	no	plain	todo
-2383	minimum-hours-of-training-to-win-a-competition	Minimum Hours of Training to Win a Competition	easy	no	plain	todo
-2389	longest-subsequence-with-limited-sum	Longest Subsequence With Limited Sum	easy	no	plain	todo
-2395	find-subarrays-with-equal-sum	Find Subarrays With Equal Sum	easy	no	plain	todo
-2399	check-distances-between-same-letters	Check Distances Between Same Letters	easy	no	plain	todo
-2404	most-frequent-even-element	Most Frequent Even Element	easy	no	plain	todo
-2409	count-days-spent-together	Count Days Spent Together	easy	no	plain	todo
-2413	smallest-even-multiple	Smallest Even Multiple	easy	no	plain	todo
-2418	sort-the-people	Sort the People	easy	no	plain	todo
-2423	remove-letter-to-equalize-frequency	Remove Letter To Equalize Frequency	easy	no	plain	todo
-2427	number-of-common-factors	Number of Common Factors	easy	no	plain	todo
-2432	the-employee-that-worked-on-the-longest-task	The Employee That Worked on the Longest Task	easy	no	plain	todo
-2437	number-of-valid-clock-times	Number of Valid Clock Times	easy	no	plain	todo
-2441	largest-positive-integer-that-exists-with-its-negative	Largest Positive Integer That Exists With Its Negative	easy	no	plain	todo
-2446	determine-if-two-events-have-conflict	Determine if Two Events Have Conflict	easy	no	plain	todo
-2451	odd-string-difference	Odd String Difference	easy	no	plain	todo
-2455	average-value-of-even-numbers-that-are-divisible-by-three	Average Value of Even Numbers That Are Divisible by Three	easy	no	plain	todo
-2460	apply-operations-to-an-array	Apply Operations to an Array	easy	no	plain	todo
-2465	number-of-distinct-averages	Number of Distinct Averages	easy	no	plain	todo
+2379	minimum-recolors-to-get-k-consecutive-black-blocks	Minimum Recolors to Get K Consecutive Black Blocks	easy	no	plain	draft
+2383	minimum-hours-of-training-to-win-a-competition	Minimum Hours of Training to Win a Competition	easy	no	plain	draft
+2389	longest-subsequence-with-limited-sum	Longest Subsequence With Limited Sum	easy	no	plain	draft
+2395	find-subarrays-with-equal-sum	Find Subarrays With Equal Sum	easy	no	plain	draft
+2399	check-distances-between-same-letters	Check Distances Between Same Letters	easy	no	plain	draft
+2404	most-frequent-even-element	Most Frequent Even Element	easy	no	plain	draft
+2409	count-days-spent-together	Count Days Spent Together	easy	no	plain	draft
+2413	smallest-even-multiple	Smallest Even Multiple	easy	no	plain	draft
+2418	sort-the-people	Sort the People	easy	no	plain	draft
+2423	remove-letter-to-equalize-frequency	Remove Letter To Equalize Frequency	easy	no	plain	draft
+2427	number-of-common-factors	Number of Common Factors	easy	no	plain	draft
+2432	the-employee-that-worked-on-the-longest-task	The Employee That Worked on the Longest Task	easy	no	plain	draft
+2437	number-of-valid-clock-times	Number of Valid Clock Times	easy	no	plain	draft
+2441	largest-positive-integer-that-exists-with-its-negative	Largest Positive Integer That Exists With Its Negative	easy	no	plain	draft
+2446	determine-if-two-events-have-conflict	Determine if Two Events Have Conflict	easy	no	plain	draft
+2451	odd-string-difference	Odd String Difference	easy	no	plain	draft
+2455	average-value-of-even-numbers-that-are-divisible-by-three	Average Value of Even Numbers That Are Divisible by Three	easy	no	plain	draft
+2460	apply-operations-to-an-array	Apply Operations to an Array	easy	no	plain	draft
+2465	number-of-distinct-averages	Number of Distinct Averages	easy	no	plain	draft
 2469	convert-the-temperature	Convert the Temperature	easy	no	float	draft
 2475	number-of-unequal-triplets-in-array	Number of Unequal Triplets in Array	easy	no	plain	todo
 2480	form-a-chemical-bond	Form a Chemical Bond	easy	yes	skip:sql	todo

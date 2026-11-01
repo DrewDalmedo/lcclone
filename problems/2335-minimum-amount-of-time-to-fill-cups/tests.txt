@@ -1,0 +1,91 @@
+# Minimum Amount of Time to Fill Cups.
+
+@example Nozzle 1 alone needs 8 seconds, and nozzle 2 can run beside it in 3 of them.
+[0,8,3]
+=> 8
+
+@example Run nozzles 0 and 1, then 1 and 2, then 0 and 2.
+[2,2,2]
+=> 3
+
+@example 13 cups at two a second take at least 7 seconds, and 7 are enough.
+[4,3,6]
+=> 7
+
+# No cups at all.
+[0,0,0]
+=> 0
+
+# Three single cups: one second fills two of them, another the last.
+[1,1,1]
+=> 2
+
+# An odd total again: 15 cups need 8 seconds, not 7.
+[7,5,3]
+=> 8
+
+# The two smaller counts add up to exactly the largest one.
+[3,7,4]
+=> 7
+
+# Pairing the two smaller counts first would waste a second.
+[1,2,1]
+=> 2
+
+# One nozzle has more cups than the other two together.
+[2,0,9]
+=> 9
+
+# Two nozzles with the same count, the third idle.
+[6,0,6]
+=> 6
+
+# Bounds.
+[100,100,100]
+=> 150
+
+[0,100,0]
+=> 100
+
+[100,0,100]
+=> 100
+
+[99,100,99]
+=> 149
+
+[100,1,100]
+=> 101
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[2,1,5]
+=> 5
+
+@gen 2 small
+[2,2,4]
+=> 4
+
+@gen 13 small
+[0,1,1]
+=> 1
+
+@gen 4 small
+[0,2,0]
+=> 2
+
+@gen 5 small
+[4,4,1]
+=> 5
+
+@gen 6 small
+[1,0,2]
+=> 2
+
+# Full-size random cases.
+@gen 7
+[60,32,28]
+=> 60
+
+@gen 8
+[2,7,99]
+=> 99

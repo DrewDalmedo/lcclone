@@ -1,0 +1,108 @@
+# Sort the People.
+
+@example Ike (191) is the tallest, then Rosa (162), then Tamsin (148).
+["Rosa","Ike","Tamsin"]
+[162,191,148]
+=> ["Ike","Rosa","Tamsin"]
+
+@example The two singers called Lu are 188 and 140 tall, so one stands first and the other last.
+["Lu","Kai","Lu","Wen"]
+[140,175,188,159]
+=> ["Lu","Kai","Wen","Lu"]
+
+@example "Dana" and "dana" are different names, each kept as written.
+["dana","Dana"]
+[101,102]
+=> ["Dana","dana"]
+
+# One singer.
+["Z"]
+[1]
+=> ["Z"]
+
+# Already tallest first: the row is the input order.
+["Pia","Ugo","Rei","Nils"]
+[90,77,64,52]
+=> ["Pia","Ugo","Rei","Nils"]
+
+# Shortest first: the row is the input reversed.
+["Pia","Ugo","Rei","Nils"]
+[52,64,77,90]
+=> ["Nils","Rei","Ugo","Pia"]
+
+# The height bounds, 1 and 10^5.
+["Short","Tall","Mid"]
+[1,100000,50000]
+=> ["Tall","Mid","Short"]
+
+# Names of 1 and of 20 letters.
+["Q","Abcdefghijklmnopqrst"]
+[3,4]
+=> ["Abcdefghijklmnopqrst","Q"]
+
+# One name for three singers, with others between them in the row.
+["Sam","Ora","Sam","Pip","Sam"]
+[170,130,110,150,140]
+=> ["Sam","Pip","Sam","Ora","Sam"]
+
+# Everyone has the same name.
+["x","x","x"]
+[5,6,4]
+=> ["x","x","x"]
+
+# The same letters in four cases are four different names.
+["ab","AB","Ab","aB"]
+[10,40,20,30]
+=> ["AB","aB","Ab","ab"]
+
+# Each name moves with its own height: sorting the names on their own
+# would give another order.
+["Ana","Bo","Cy","Di"]
+[30,10,40,20]
+=> ["Cy","Ana","Di","Bo"]
+
+# Neighbouring heights at the top of the range.
+["m","n","o"]
+[99999,100000,99998]
+=> ["n","m","o"]
+
+# Heights compare as numbers, not as text.
+["Ten","Nine","Hundred","Two"]
+[10,9,100,2]
+=> ["Hundred","Ten","Nine","Two"]
+
+# A longer row in mixed order.
+["Eli","Fay","Gus","Hal","Ivy","Jo","Kit","Lars","Mo","Ned","Oz","Pam"]
+[155,201,123,178,166,140,199,132,187,150,171,145]
+=> ["Fay","Kit","Mo","Hal","Oz","Ivy","Eli","Ned","Pam","Jo","Lars","Gus"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["A","A","AB","Ab","Ab","Ab","Ab"]
+[9,2,3,7,4,8,11]
+=> ["Ab","A","Ab","Ab","Ab","AB","A"]
+
+@gen 2 small
+["a","a","a","a","a"]
+[11,10,8,7,6]
+=> ["a","a","a","a","a"]
+
+@gen 3 small
+["Zed","AB","A","ab","Ab","AB","zed","A"]
+[1,3,5,7,8,9,10,11]
+=> ["A","zed","AB","Ab","ab","A","AB","Zed"]
+
+@gen 4 small
+["a","ab","Zed","AB"]
+[1,6,9,11]
+=> ["AB","Zed","ab","a"]
+
+@gen 5 small
+["a","A","A","a","A","A"]
+[2,3,4,6,10,11]
+=> ["A","A","a","A","A","a"]
+
+@gen 6 small
+["A","ab"]
+[12,9]
+=> ["A","ab"]
