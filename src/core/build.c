@@ -10,8 +10,9 @@
  * build.c: building a solution with its harness (docs/PLAN.md section
  * 5.6, docs/judging.md "Building").
  *
- * Every build is one source file made of the prelude, the solution after
- * a `#line 1 "<its path>"` (so the compiler's messages point at the
+ * Every build is one source file made of the prelude (in C, followed by
+ * lc's versions of a few C library functions), the solution after a
+ * `#line 1 "<its path>"` (so the compiler's messages point at the
  * solution's own lines), the runtime and the generated harness. It is
  * compiled in a directory of the cache named after the problem, the
  * language and the standard, into prog-<key>, where the key hashes
@@ -164,6 +165,9 @@ static int make_unit(lc_ctx *ctx, const lc_build_req *req, const lc_str *src,
     lc_codegen_defines(req->p, tu);
     rc = put_rt(ctx, tu, c ? "c/lc_prelude.h" : "cpp/lc_prelude.hpp",
                 c ? "lc_prelude.h" : "lc_prelude.hpp");
+    /* C: lc's qsort, realloc and free, which the solution then calls. */
+    if (rc == LC_OK && c)
+        rc = put_rt(ctx, tu, "c/lc_rt_libc.h", "lc_rt_libc.h");
     if (rc != LC_OK)
         return rc;
     put_line(tu, req->src);

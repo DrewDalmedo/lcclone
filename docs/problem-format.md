@@ -232,7 +232,9 @@ compare: unordered 0
   array parameter, not only the checked one. Built with AddressSanitizer
   (`--sanitize`, and `lc submit`'s sanitizer check), arrays other than
   `char[]` have no spare element, and ASan reports a write or a read past
-  the end itself.
+  the end itself. An array the solution reallocated or freed isn't
+  checked, as its memory is no longer the array's
+  ([judging.md](judging.md#verdicts)).
 - **A `void` function without `check:`** has nothing to judge: `lc test`
   and `lc submit` say so, and `lc check` reports it as an error, not as a
   problem it can't judge yet.

@@ -630,6 +630,23 @@ static void test_verdicts(void)
         lc_report_free(rep);
     }
 
+    /* A solution may realloc or free an array it was given: the harness
+     * then doesn't look past its end, which is no longer the array's. */
+    {
+        static const char *const src[] = {"realloc.c", "free.c"};
+
+        for (i = 0; i < sizeof src / sizeof src[0]; i++) {
+            lc_report *rep = judge(ctx, "reverse", src[i], NULL, 1, NULL);
+
+            CHECK(rep != NULL);
+            if (rep && rep->verdict != LC_ACCEPTED && rep->nresults)
+                fprintf(stderr, "    %s: %s", src[i],
+                        rep->results[rep->nresults - 1].stderr_text);
+            CHECK_INT(rep ? rep->verdict : LC_VERDICT_NONE, LC_ACCEPTED);
+            lc_report_free(rep);
+        }
+    }
+
     /* check: a parameter after the call is the result, and for prefix the
      * harness makes sure the count fits it, in either language. */
     {
@@ -648,6 +665,13 @@ static void test_verdicts(void)
              "lc: dedup returned 5, but nums has 0 elements\n"},
             {"merge", "past.c", LC_RUNTIME_ERROR, NULL,
              "lc: merge wrote past the end of a (a[5])\n"},
+            /* Freeing b leaves the check of a as it was. */
+            {"merge", "pastfree.c", LC_RUNTIME_ERROR, NULL,
+             "lc: merge wrote past the end of a (a[5])\n"},
+            {"merge", "freeb.c", LC_ACCEPTED, "[1,2,3,4,5]", ""},
+            /* The parameter that holds the result can't be given back. */
+            {"merge", "realloc.c", LC_RUNTIME_ERROR, NULL,
+             "lc: merge freed or reallocated a, which holds the result\n"},
             {"upper", "nullrow.c", LC_RUNTIME_ERROR, NULL,
              "lc: upper left grid[0] NULL, but its size is 2\n"},
         };
