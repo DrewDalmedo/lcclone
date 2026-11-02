@@ -1,0 +1,102 @@
+# Maximum Difference Between Even and Odd Frequency I. A letter's tally
+# is how often it occurs in s; letters that don't occur have none.
+
+@example Tallies: a 3, n 2, b 1 and s 1. The best choice is a with n, giving 3 minus 2.
+"bananas"
+=> 1
+
+@example The only odd tally is m's 1, and the smallest even one is p's 2. Letters missing from s don't give an even tally of 0.
+"mississippi"
+=> -1
+
+@example Tallies r 5, g 4, b 2, t 1: the largest odd one minus the smallest even one.
+"grbrtgrbgrgr"
+=> 3
+
+# The shortest string: one letter twice, one once.
+"cdc"
+=> -1
+
+# One odd tally (3) and one even tally (2).
+"wqwqq"
+=> 1
+
+# All 26 letters occur: q 5 times, m twice, the rest once.
+"abcdefghijklmnopqrstuvwxyzmqqqq"
+=> 3
+
+# Odd tallies 1 and 3, even tallies 4 and 6: the smallest even one counts.
+"dcbdadcdbcdbcd"
+=> -1
+
+# The most common letter, k (8 times), has an even tally and is no use.
+"jkjkjkjkjkjkjkhkh"
+=> 5
+
+# Odd tallies 1, 5, 9 and even tallies 2, 4, 8.
+"bebebebebdadcfcfcfcfcfcfcfcfc"
+=> 7
+
+# Seven letters once and z six times.
+"pzqzrzsztzuzv"
+=> -5
+
+# Odd tally 3 against even tallies 10 and 12.
+"aaabbbbbbbbbbcccccccccccc"
+=> -7
+
+# The largest answer: an odd tally of 97 and an even tally of 2.
+"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffg"
+=> 95
+
+# The smallest answer: odd tallies of 1 against an even tally of 98.
+"ihhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhj"
+=> -97
+
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"wxxwzzzzw"
+=> 1
+
+@gen 6 small
+"aaaca"
+=> -3
+
+@gen 7 small
+"bbbbcbc"
+=> 3
+
+@gen 8 small
+"wzxzzzzz"
+=> -5
+
+@gen 11 small
+"baacbcacacc"
+=> 3
+
+@gen 15 small
+"bbcbba"
+=> -3
+
+@gen 19 small
+"yyyxzxy"
+=> -1
+
+@gen 31 small
+"abbbaccbbcba"
+=> -3
+
+# Full-size cases: one letter with an even or an odd tally near 100, and
+# all 26 letters with random tallies.
+@gen 6
+"oooiooooooooooooooooooooooooooooooooooooooooooooooooioooooooooooooooooooiooofooooooooooooooooooooooo"
+=> -93
+
+@gen 2
+"wwwwwwrwnwwwwiwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwnwwwwwwwwwwwiwwwwwwwwwwwwwww"
+=> 93
+
+@gen 3
+"vclhqpslqukggxjbgzeweqoxexmgxoknuqgoldmemvytyskmxifxadkrtoamvdqstjxcuaisabnpiumbnioruaznhsdsexktomwa"
+=> 5

@@ -1,0 +1,97 @@
+# Maximum Product of Two Digits.
+
+@example No pair of cards beats 8 and 5, which give 8 * 5 = 40.
+5248
+=> 40
+
+@example Two of the cards show 9, so 9 * 9 = 81 is allowed.
+90709
+=> 81
+
+@example Every pair of cards includes a 0.
+600
+=> 0
+
+# The smallest input.
+10
+=> 0
+
+# The largest input, and the only one with ten digits: a 1 and nine 0s.
+1000000000
+=> 0
+
+# Two equal digits.
+77
+=> 49
+
+# A single 9 can't be squared: the best is 9 * 5.
+1935
+=> 45
+
+# The larger digit first, then last.
+85
+=> 40
+
+58
+=> 40
+
+# The leading digit is the largest, and only the last digit is nonzero
+# besides it.
+700000005
+=> 35
+
+# A repeated largest digit at the start, in the middle and at the end.
+9919
+=> 81
+
+19491
+=> 81
+
+12399
+=> 81
+
+# The two 9s are far apart, with 0s between them.
+9000009
+=> 81
+
+# The largest nine-digit number.
+999999999
+=> 81
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+7211
+=> 14
+
+@gen 2 small
+680
+=> 48
+
+@gen 8 small
+9806
+=> 72
+
+@gen 12 small
+444
+=> 16
+
+@gen 13 small
+8455
+=> 40
+
+@gen 19 small
+711
+=> 7
+
+# Random full-size cases.
+@gen 3
+102647175
+=> 49
+
+@gen 14
+610001111
+=> 6
+
+@gen 16
+637882937
+=> 72

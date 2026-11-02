@@ -1,0 +1,93 @@
+# Find Most Frequent Vowel and Consonant.
+
+@example b tops the consonants with 3 and u the vowels with 2.
+"bubblegum"
+=> 5
+
+@example u and e tie at 2 for the vowels (only one of them counts) and q is the only consonant.
+"queue"
+=> 3
+
+@example There is no vowel, so the vowel team scores 0; h, with 2, tops the consonants.
+"rhythm"
+=> 2
+
+# A single letter: a vowel, then a consonant.
+"e"
+=> 1
+
+"z"
+=> 1
+
+# y belongs to the consonants.
+"yay"
+=> 3
+
+# Vowels only, several of them: the top one counts, not their total.
+"iouaiai"
+=> 3
+
+# The two highest counts both belong to the consonants.
+"sssttta"
+=> 4
+
+# The two highest counts both belong to the vowels.
+"eeaaab"
+=> 4
+
+# The most frequent letter counts once, for its own team.
+"mmmmo"
+=> 5
+
+# Ties at the top of both teams.
+"aabbeecc"
+=> 4
+
+# Every letter once.
+"abcdefghijklmnopqrstuvwxyz"
+=> 2
+
+# The top vowel fills the start and the top consonant the end.
+"uubcdd"
+=> 4
+
+# The longest string, one letter throughout.
+"oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+=> 100
+
+# The longest string, half y and half u.
+"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"
+=> 100
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bccbyyy"
+=> 3
+
+@gen 2 small
+"ioeue"
+=> 2
+
+@gen 3 small
+"aeioueai"
+=> 2
+
+@gen 4 small
+"eabe"
+=> 3
+
+@gen 5 small
+"cdyydc"
+=> 2
+
+@gen 6 small
+"yy"
+=> 2
+
+@gen 10
+"sdkcidbngbbyfzojhvudwscpcwypqavaawednecxxgofeipllcigpkpxbybmqtkpnhfnslhisnncylmzjlnefiplmmuglzzbzcbj"
+=> 12
+
+@gen 11
+"eyzyeyyeyeeyyyezyyyzeyeyeyyezzyyzyyeyyyyzzyeyeyyzyzyyzzyyyeezyzyzeyyzezzezzeyyzzeyeyyzyzezyeeyyeyeey"
+=> 75

@@ -1,0 +1,113 @@
+# Minimum Pair Removal to Sort Array I.
+
+@example The pair sums are 4 and 3, so 1 and 2 are fused into 3, and [3,3] is non-decreasing.
+[3,1,2]
+=> 1
+
+@example Both pairs sum to 4, so the left pair is fused: [4,-3] still drops, and one more fusion leaves [1].
+[-3,7,-3]
+=> 2
+
+@example The array is already non-decreasing, so nothing is fused.
+[0,0,5]
+=> 0
+
+# A single element.
+[-1000]
+=> 0
+
+# Equal neighbours are allowed; extreme values in order.
+[2,2,2,2]
+=> 0
+
+[-1000,-5,-5,0,1000]
+=> 0
+
+# Two elements out of order.
+[1000,-1000]
+=> 1
+
+# Fusions at the start, in the middle (a tie, broken to the left), and at
+# the end.
+[1,-5,10,20]
+=> 1
+
+[5,9,-8,9,20]
+=> 2
+
+[1,2,3,-10]
+=> 3
+
+# The leftmost of two equal sums is fused; fusing the right one would stop
+# after 2.
+[-1,4,-1,0]
+=> 3
+
+# The smallest sum, not the first drop: fusing 5 and 0 would stop after 2.
+[1,5,0,2]
+=> 3
+
+# The smallest sum, 3 + 4, is at the end, away from both the smallest
+# element and the first drop: one fusion leaves [2,7,7].
+[2,7,3,4]
+=> 1
+
+# The last smallest sum, 2600, is larger than any sum of two inputs.
+[1000,900,800,700,600,500]
+=> 4
+
+# Falling negatives, -951 down to -1000, keep fusing at the end until one
+# element is left; it passes -32768.
+[-951,-952,-953,-954,-955,-956,-957,-958,-959,-960,-961,-962,-963,-964,-965,-966,-967,-968,-969,-970,-971,-972,-973,-974,-975,-976,-977,-978,-979,-980,-981,-982,-983,-984,-985,-986,-987,-988,-989,-990,-991,-992,-993,-994,-995,-996,-997,-998,-999,-1000]
+=> 49
+
+# Falling positives, 1000 down to 951: the last fusion leaves
+# [17847,30928], which is in order.
+[1000,999,998,997,996,995,994,993,992,991,990,989,988,987,986,985,984,983,982,981,980,979,978,977,976,975,974,973,972,971,970,969,968,967,966,965,964,963,962,961,960,959,958,957,956,955,954,953,952,951]
+=> 48
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 2 small
+[-3,-2,-3,-1,2]
+=> 1
+
+@gen 3 small
+[2,3,-3,2,1,-3,-2,-1]
+=> 7
+
+@gen 5 small
+[-2,2,2,0,-3,1]
+=> 4
+
+@gen 6 small
+[648,-372]
+=> 1
+
+@gen 8 small
+[1,1,3,1,-3,3,-1]
+=> 6
+
+@gen 9 small
+[-2,1,1,1,1,2,2]
+=> 0
+
+@gen 11 small
+[858,-679,14,352,-609,940,-571]
+=> 5
+
+@gen 13 small
+[6,-1,0,-5,-8]
+=> 4
+
+# Full-size random cases: 50 elements, values near 1000, sorted, and random.
+@gen 1
+[966,954,969,973,983,951,996,951,979,987,956,961,976,993,996,955,967,981,995,971,993,960,979,970,997,988,963,979,972,976,958,999,995,991,964,999,950,971,979,975,976,966,991,995,991,976,989,970,983,981]
+=> 49
+
+@gen 4
+[-963,-945,-875,-849,-832,-831,-819,-818,-750,-588,-556,-520,-502,-497,-493,-445,-411,-402,-360,-334,-312,-268,-251,-241,-173,-123,-86,110,117,137,207,274,274,292,294,300,330,363,386,427,474,513,667,697,798,814,821,906,974,976]
+=> 0
+
+@gen 7
+[-182,201,-6,-627,453,352,525,154,-923,-932,106,-818,-857,-830,735,828,404,480,-282,-971,-658,781,426,-178,-648,-592,776,-632,-841,26,-60,-527,-587,-137,-538,844,50,286,731,-116,-823,400,-979,394,-43,-821,920,-781,543,813]
+=> 46

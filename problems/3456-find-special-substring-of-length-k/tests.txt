@@ -1,0 +1,156 @@
+# Find Special Substring of Length K. The answer is true exactly when s
+# has a block (a longest run of one letter) of length k.
+
+@example ppppp holds three p's in a row, but any three of them have another p right beside them.
+"mmpppppm"
+3
+=> false
+
+@example The block www is exactly three letters long.
+"vvwwwxv"
+3
+=> true
+
+@example The whole string is one block of five letters.
+"ggggg"
+5
+=> true
+
+# A single letter.
+"a"
+1
+=> true
+
+# k is the whole length, but the letters are not all the same.
+"aab"
+3
+=> false
+
+# k = 1, but every letter has an equal neighbour.
+"aabbaacc"
+1
+=> false
+
+# k = 1: the letter at the very end stands alone.
+"ccddddq"
+1
+=> true
+
+# The only block of length k is at the start.
+"fffgggg"
+3
+=> true
+
+# The only block of length k is at the end.
+"zzzzyyy"
+3
+=> true
+
+# One block of k + 1.
+"aaaa"
+3
+=> false
+
+# Blocks of 2k, each made of two windows of k that touch.
+"bbbbbbcccccc"
+3
+=> false
+
+# Different letters next to each other don't make a block.
+"xyxyxy"
+2
+=> false
+
+# The window pqp starts and ends with the same letter and is fenced off,
+# but its middle letter differs: every block here is shorter than k.
+"pqpss"
+3
+=> false
+
+# Two blocks of the same letter: one of length k.
+"pppbppppp"
+5
+=> true
+
+# p occurs four times, but in blocks of two.
+"ppbpp"
+4
+=> false
+
+# The block of length k is in the middle, between longer and shorter ones.
+"qqqqrrsssssu"
+2
+=> true
+
+# 100 copies of one letter.
+"hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+100
+=> true
+
+"hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+99
+=> false
+
+# Blocks of five, then a block of ten at the very end.
+"aaaaabbbbbaaaaabbbbbaaaaabbbbbaaaaabbbbbaaaaabbbbbaaaaabbbbbaaaaabbbbbaaaaabbbbbaaaaabbbbbcccccccccc"
+10
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"cccbbbb"
+3
+=> true
+
+@gen 3 small
+"abbbaaaabbb"
+4
+=> true
+
+@gen 8 small
+"ccccaaaa"
+5
+=> false
+
+@gen 13 small
+"aaaabbbba"
+1
+=> true
+
+@gen 14 small
+"bbbccaaaabcc"
+2
+=> true
+
+@gen 22 small
+"bbbaaa"
+4
+=> false
+
+@gen 23 small
+"aaaacca"
+3
+=> false
+
+@gen 24 small
+"abaaa"
+2
+=> false
+
+# Full-size cases: runs of every length but k, then a run of k at the
+# very end; runs of every length but k; random a and b.
+@gen 1
+"xxxxxxxxssssssssssssssrrrrrjjjssssssssuuuuuuuummmmmiiiiiddddddddddddddbbbbbbbbfffeeeeeeeeeeeeooooooo"
+7
+=> true
+
+@gen 5
+"kkkkggggghhhhgggxxxxooooqqqwwwrrrxhhhuuuoooqqqlllljjjuuuuuwwwweeeeevvvgggjjjjiiiqqqqqbmnnnhkkkvvvppp"
+2
+=> false
+
+@gen 2
+"aaaaaaababbbbaaaaabaabaaaabbbabaabaaabaabbabbabbababbbbabaababaaaaaababababaabaabbaabaabbabaaaabaaba"
+8
+=> false
+
