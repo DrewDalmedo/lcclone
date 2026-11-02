@@ -28,6 +28,9 @@
 #define CACHE TMP "/cache"
 /* Where problem 10's C solutions are built. */
 #define ADD_C CACHE "/build/0010-add/c-c11"
+/* Room for a path: a pack's directory is absolute, and the checkout's own
+ * path can be long. */
+#define PATH_BUF 4096
 
 static void write_file(const char *path, const char *data)
 {
@@ -38,6 +41,26 @@ static void write_file(const char *path, const char *data)
         fputs(data, f);
         fclose(f);
     }
+}
+
+/* dir/name in path (of PATH_BUF bytes); a path that doesn't fit fails
+ * the test rather than being cut short. */
+static char *join_path(char *path, const char *dir, const char *name)
+{
+    int n = snprintf(path, PATH_BUF, "%s/%s", dir, name);
+
+    CHECK(n > 0 && n < PATH_BUF);
+    return path;
+}
+
+/* `name`, relative to the current directory, made absolute in path (of
+ * PATH_BUF bytes). */
+static char *tmp_path(char *path, const char *name)
+{
+    char cwd[PATH_BUF];
+
+    CHECK(getcwd(cwd, sizeof cwd) != NULL);
+    return join_path(path, cwd, name);
 }
 
 /* How many entries of `dir` are named `prefix`...`suffix`; the path of
@@ -143,12 +166,12 @@ static lc_report *judge(lc_ctx *ctx, const char *problem, const char *src,
     lc_judge_options opts;
     lc_hooks hooks;
     lc_report *rep = NULL;
-    char path[256];
+    char path[PATH_BUF];
 
     CHECK(p != NULL);
     if (!p)
         return NULL;
-    snprintf(path, sizeof path, "%s/%s", p->dir, src);
+    join_path(path, p->dir, src);
     memset(&opts, 0, sizeof opts);
     opts.std = std;
     opts.examples = 1;
@@ -244,7 +267,7 @@ static void test_stubs_compile(void)
         for (l = 0; l < lc_lang_count(); l++) {
             const lc_lang *lang = lc_lang_at(l);
             lc_str stub = LC_STR_INIT;
-            char path[256];
+            char path[PATH_BUF];
 
             snprintf(path, sizeof path, TMP "/stubs/%d.%s", p->id,
                      lang->ext);
@@ -372,7 +395,7 @@ static void test_cached_output(void)
 {
     lc_ctx *ctx = open_ctx(JUDGE);
     lc_report *rep;
-    char first[4096] = "", log[512] = "";
+    char first[4096] = "", log[PATH_BUF] = "";
     size_t i;
     int found = 0;
 
@@ -436,6 +459,61 @@ static void test_cached_output(void)
     /* warn.c's program was used just now, so it stays. */
     CHECK_INT(entries(ADD_C, "prog-", ".log", NULL, 0), 2);
     lc_close(ctx);
+}
+
+/*
+ * A solution and a build cache whose absolute paths are about 850 bytes
+ * long, however long the checkout's own path is (up to that). The cache
+ * tests once failed in a checkout with a path of 195 bytes, when a path
+ * built in a fixed-size buffer was cut short.
+ */
+static void test_deep_paths(void)
+{
+    static const char seg[] = "/a-directory-with-a-long-name-0123456789";
+    lc_str dir = LC_STR_INIT, rel = LC_STR_INIT, cmd = LC_STR_INIT;
+    char cwd[PATH_BUF], path[PATH_BUF];
+    lc_options opt;
+    lc_ctx *ctx;
+    lc_report *rep;
+    events ev;
+    struct stat st;
+
+    CHECK(getcwd(cwd, sizeof cwd) != NULL);
+    lc_str_puts(&dir, TMP "/deep");
+    do
+        lc_str_puts(&dir, seg);
+    while (strlen(cwd) + dir.len + sizeof seg < 850);
+    lc_str_printf(&cmd, "rm -rf " TMP "/deep && mkdir -p %s/cache",
+                  lc_str_cstr(&dir));
+    CHECK(system(lc_str_cstr(&cmd)) == 0);
+    write_file(join_path(path, lc_str_cstr(&dir), "solution.c"),
+               "int add(int a, int b) { return a + b; }\n");
+
+    lc_options_init(&opt);
+    opt.problems_dir = JUDGE;
+    opt.cache_dir = join_path(path, lc_str_cstr(&dir), "cache");
+    ctx = lc_open(&opt);
+    CHECK_INT(lc_load(ctx), LC_OK);
+    /* judge() takes the solution's path from the pack's directory. */
+    lc_str_printf(&rel, "../../../tmp/build/deep%s/solution.c",
+                  lc_str_cstr(&dir) + strlen(TMP "/deep"));
+    rep = judge(ctx, "add", lc_str_cstr(&rel), NULL, 0, &ev);
+    CHECK(rep && rep->build && rep->build->ok && !rep->build->cached);
+    CHECK(rep && strlen(rep->build ? rep->build->source : "") >= 800);
+    CHECK_INT(rep ? rep->verdict : LC_VERDICT_NONE, LC_ACCEPTED);
+    lc_report_free(rep);
+    rep = judge(ctx, "add", lc_str_cstr(&rel), NULL, 0, &ev);
+    CHECK(rep && rep->build && rep->build->cached && ev.cached);
+    CHECK_INT(rep ? rep->verdict : LC_VERDICT_NONE, LC_ACCEPTED);
+    lc_report_free(rep);
+    lc_str_clear(&cmd);
+    lc_str_printf(&cmd, "%s/cache/build/0010-add/c-c11/main.c",
+                  lc_str_cstr(&dir));
+    CHECK(stat(lc_str_cstr(&cmd), &st) == 0);
+    lc_close(ctx);
+    lc_str_free(&dir);
+    lc_str_free(&rel);
+    lc_str_free(&cmd);
 }
 
 static void test_compile_error(void)
@@ -511,9 +589,9 @@ static void test_verdicts(void)
     for (i = 0; i < sizeof want / sizeof want[0]; i++) {
         lc_judge_options opts;
         lc_report *rep = NULL;
-        char path[256];
+        char path[PATH_BUF];
 
-        snprintf(path, sizeof path, JUDGE "/0010-add/%s", want[i].src);
+        join_path(path, JUDGE "/0010-add", want[i].src);
         memset(&opts, 0, sizeof opts);
         opts.all = 1;
         opts.stop_on_failure = 1;
@@ -606,18 +684,18 @@ static void expect_judge_error(lc_ctx *ctx, const char *problem,
     lc_report *rep = (lc_report *)&opts;
     lc_hooks hooks;
     events ev;
-    char path[256];
+    char path[PATH_BUF];
 
     if (!p)
         return;
-    snprintf(path, sizeof path, "%s/%s", p->dir, src);
+    join_path(path, p->dir, src);
     memset(&opts, 0, sizeof opts);
     opts.examples = 1;
     opts.std = std;
     if (cases) {
-        char cpath[256];
+        char cpath[PATH_BUF];
 
-        snprintf(cpath, sizeof cpath, "%s/%s", p->dir, cases);
+        join_path(cpath, p->dir, cases);
         CHECK_INT(lc_load_user_cases(ctx, cpath, &mine), LC_OK);
         opts.cases = mine;
     }
@@ -710,7 +788,7 @@ static void test_std(void)
     lc_ctx *ctx = open_ctx(JUDGE);
     lc_str script = LC_STR_INIT;
     char *old = getenv("CXX") ? strdup(getenv("CXX")) : NULL;
-    char fake[512];
+    char fake[PATH_BUF];
 
     CHECK_INT(lc_std_resolve(ctx, cpp, NULL, &std), LC_OK);
     CHECK_STR(std, "c++11");
@@ -733,9 +811,7 @@ static void test_std(void)
     unsetenv("LC_CXXSTD");
 
     /* A compiler that rejects c++23 and c++2b. */
-    if (!getcwd(fake, sizeof fake - 64))
-        fake[0] = '\0';
-    strcat(fake, "/" TMP "/fake-c++");
+    tmp_path(fake, TMP "/fake-c++");
     lc_str_printf(&script, "#!/bin/sh\nfor a do\n  case $a in\n"
                   "  -std=c++23|-std=c++2b) echo no >&2; exit 1;;\n"
                   "  esac\ndone\nexec %s \"$@\"\n",
@@ -791,7 +867,7 @@ static void test_sanitize(void)
         printf("test_build: note: skipped the sanitizer test (the C "
                "compiler has no sanitizers)\n");
     } else if (rep) {
-        char dsym[512] = "";
+        char dsym[PATH_BUF] = "";
 
         CHECK(rep->build && rep->build->sanitize);
         CHECK_INT(rep->verdict, LC_RUNTIME_ERROR);
@@ -842,12 +918,12 @@ static lc_report *judge_with(lc_ctx *ctx, const char *problem,
     check_events ce;
     lc_hooks hooks;
     lc_report *rep = NULL;
-    char path[256];
+    char path[PATH_BUF];
 
     CHECK(p != NULL);
     if (!p)
         return NULL;
-    snprintf(path, sizeof path, "%s/%s", p->dir, src);
+    join_path(path, p->dir, src);
     memset(&ce, 0, sizeof ce);
     ce.flag = flag;
     memset(&hooks, 0, sizeof hooks);
@@ -1020,13 +1096,11 @@ static void test_sanitizer_check(void)
 
 /* Writes an executable script at TMP/<name> and returns its absolute
  * path in `path`. */
-static void fake_compiler(const char *name, const char *body, char *path,
-                          size_t size)
+static void fake_compiler(const char *name, const char *body, char *path)
 {
-    if (!getcwd(path, size - 64))
-        path[0] = '\0';
-    strcat(path, "/" TMP "/");
-    strcat(path, name);
+    char rel[PATH_BUF];
+
+    tmp_path(path, join_path(rel, TMP, name));
     write_file(path, body);
     chmod(path, 0755);
 }
@@ -1068,7 +1142,7 @@ static void test_sanitizer_skip(void)
     lc_ctx *ctx = open_ctx(JUDGE);
     lc_judge_options opts;
     lc_str body = LC_STR_INIT, cache = LC_STR_INIT;
-    char fake[512];
+    char fake[PATH_BUF];
     events ev;
     size_t i;
 
@@ -1081,7 +1155,7 @@ static void test_sanitizer_skip(void)
 
         lc_str_clear(&body);
         lc_str_printf(&body, fakes[i].body, old && *old ? old : "cc");
-        fake_compiler(fakes[i].name, lc_str_cstr(&body), fake, sizeof fake);
+        fake_compiler(fakes[i].name, lc_str_cstr(&body), fake);
         setenv("CC", fake, 1);
         rep = judge_with(ctx, "missing", "past.c", &opts, &ev, NULL);
         CHECK(rep != NULL);
@@ -1133,6 +1207,7 @@ int main(void)
     RUN(test_stubs_compile);
     RUN(test_cache_and_events);
     RUN(test_cached_output);
+    RUN(test_deep_paths);
     RUN(test_compile_error);
     RUN(test_verdicts);
     RUN(test_errors);
