@@ -759,6 +759,23 @@ expect_run "lc test sig.c" 2 '^lc_harness:[0-9]*:[0-9]*: error: ' \
     -- test $J/sig.c
 expect_run "lc test sig.cpp" 2 '^    int Solution::add(int a, int b)$' \
     -- test $J/sig.cpp
+# Helpers named mergesort, heapsort and other BSD functions that macOS
+# declares and glibc doesn't: the C prelude hides them, as on LeetCode.
+expect_run "lc submit bsd.c" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/bsd.c
+# It hides them by defining each as a macro while it includes the headers;
+# none may be left after it.
+# shellcheck disable=SC2086 # CC may be several words
+if $E2E_CC -std=c11 -Iruntime/c -E -dM runtime/c/lc_prelude.h \
+    >"$TMP/prelude.dM" 2>"$TMP/err"; then
+    if grep lc_darwin_ "$TMP/prelude.dM" >"$TMP/left"; then
+        bad "C prelude macros" "still defined: $(head -n 3 "$TMP/left")"
+    else
+        ok
+    fi
+else
+    bad "C prelude macros" "$E2E_CC failed: $(head -n 5 "$TMP/err")"
+fi
 expect_run "lc test warn.c" 0 "^$D/warn.c:4:[0-9]*: warning: " \
     '^Accepted: 2/2 cases passed' -- test $J/warn.c
 # The second time the build is cached, and its warnings are shown again.
