@@ -1,7 +1,7 @@
 --- stdout
 Building tests/fixtures/judge/0010-add/solution.c (C, c11)
-  Example 1  Accepted                  N ms
-  Example 2  Accepted                  N ms
+  Example 1  Accepted N ms
+  Example 2  Accepted N ms
 
 Accepted: 2/2 cases passed, slowest N ms, peak memory N MB
 --- stderr

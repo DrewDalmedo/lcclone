@@ -1,11 +1,11 @@
 --- stdout
 Building tests/fixtures/judge/0010-add/wrong.c (C, c11)
 Building the reference solution (C, c11)
-  Example 1                                   Accepted                  N ms
-  Example 2                                   Wrong Answer              N ms
-  tests/fixtures/judge/0010-add/mycases.txt:2 Accepted                  N ms
-  tests/fixtures/judge/0010-add/mycases.txt:6 Accepted                  N ms
-  tests/fixtures/judge/0010-add/mycases.txt:9 Wrong Answer              N ms
+  Example 1                                   Accepted N ms
+  Example 2                                   Wrong Answer N ms
+  tests/fixtures/judge/0010-add/mycases.txt:2 Accepted N ms
+  tests/fixtures/judge/0010-add/mycases.txt:6 Accepted N ms
+  tests/fixtures/judge/0010-add/mycases.txt:9 Wrong Answer N ms
 
 tests/fixtures/judge/0010-add/wrong.c:1: Wrong Answer on example 2
   Input:    a = -5, b = 5

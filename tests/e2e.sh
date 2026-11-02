@@ -75,7 +75,9 @@ TMP_P_RE=$(re_escape "$TMP_P")
 
 # The root is replaced only where a path into it, or the root itself, is
 # (so a root of /w doesn't turn @TMP@/ws into @TMP@@ROOT@s). Times and
-# sizes of runs differ from one run to the next. Whether lc submit checks
+# sizes of runs differ from one run to the next. A case's time is right-
+# aligned in a field, whose padding shrinks once a case takes 10 ms, so
+# the spaces before a time go too, down to one. Whether lc submit checks
 # a solution with the sanitizers depends on the compiler, so the lines
 # that say it are left out; tests further down look at them.
 normalize() {
@@ -84,7 +86,8 @@ normalize() {
         -e "s/$TMP_P_RE/@TMP@/g" -e "s/$TMP_RE/@TMP@/g" \
         -e "s/$ROOT_RE\\([/\"']\\)/@ROOT@\\1/g" -e "s/$ROOT_RE\$/@ROOT@/" \
         -e "s/$ESC/<ESC>/g" \
-        -e 's/[0-9][0-9]* ms/N ms/g' -e 's/[0-9][0-9.]* MB/N MB/g'
+        -e 's/  *[0-9][0-9]* ms/ N ms/g' -e 's/[0-9][0-9]* ms/N ms/g' \
+        -e 's/[0-9][0-9.]* MB/N MB/g'
 }
 
 # The compilers lc uses for solutions: the ones make was given, if any.
