@@ -87,8 +87,13 @@ and no global state leaks from one case to the next.
 - **Signals** that the front-end ignores or blocks are reset to their
   defaults, so a solution that writes to a closed pipe dies of SIGPIPE as
   it would anywhere else.
-- **Environment.** The program inherits `lc`'s environment and runs in the
-  directory the caller chooses.
+- **Environment.** The program inherits `lc`'s environment, except that
+  `TZ` is `UTC0` (UTC, in POSIX's form, which needs no time zone files):
+  whatever the machine's time zone, a program runs in UTC, as on
+  LeetCode. A solution that counts days with `mktime` would otherwise be
+  a day short across the start of daylight saving time. Every program `lc`
+  runs gets this, compilers too. It runs in the directory the caller
+  chooses.
 
 The parent writes the input and reads the three outputs in a single
 `poll()` loop, so a large input can't deadlock against a large output. It

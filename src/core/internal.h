@@ -315,7 +315,7 @@ typedef struct lc_run_spec {
     const char *path;         /* the program, used as given: no $PATH search */
     char *const *argv;        /* NULL-terminated; NULL means { path, NULL } */
     char *const *envp;        /* NULL-terminated environment; NULL keeps
-                                 the caller's */
+                                 the caller's. Either way TZ is UTC0 */
     const char *cwd;          /* directory to run in; NULL keeps the caller's */
     const char *input;        /* written to stdin, which is then closed */
     size_t input_len;

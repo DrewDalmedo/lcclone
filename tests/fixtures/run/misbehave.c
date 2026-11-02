@@ -25,6 +25,8 @@
  *                      whether any signal is blocked
  *   pgid               prints "leader" if it leads its process group
  *   bigfile FILE MB    writes MB megabytes to FILE
+ *   env NAME           prints each NAME=... entry of its environment, and
+ *                      the hour of the epoch's start in its local time
  */
 #define _POSIX_C_SOURCE 200809L
 
@@ -41,6 +43,8 @@
 #include <unistd.h>
 
 #define MB (1024 * 1024)
+
+extern char **environ;
 
 /* Busy loops count here, so the compiler can't remove them. */
 static volatile unsigned long counter;
@@ -268,6 +272,16 @@ int main(int argc, char **argv)
             if (write_all(fd, buf, sizeof buf) != 0)
                 return 1;
         close(fd);
+        return 0;
+    }
+    if (strcmp(mode, "env") == 0) {
+        size_t len = strlen(arg);
+        time_t epoch = 0;
+        char **e;
+        for (e = environ; *e; e++)
+            if (strncmp(*e, arg, len) == 0 && (*e)[len] == '=')
+                printf("%s\n", *e);
+        printf("hour %d\n", localtime(&epoch)->tm_hour);
         return 0;
     }
     fprintf(stderr, "misbehave: unknown mode '%s'\n", mode);
