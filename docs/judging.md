@@ -160,11 +160,24 @@ doubles from 128 MB to 256 MB under a 256 MB limit needs 384 MB while it
 copies. A failed allocation would show up as a crash, which says much less
 about what went wrong.
 
+Only memory the program has touched counts, as on LeetCode: memory it
+asks for and never uses costs nothing. In C, `calloc` of a huge block is
+cheap, because the C library gets a large block from the system already
+zeroed and the system hands out its pages only when they are first used;
+the same allocation as a C++ `vector`, which writes every element, counts
+in full. `lc` doesn't count memory that is only reserved: that would turn
+away solutions LeetCode accepts, and macOS has no limit that counts it.
+
 The same limits apply on every platform, with these differences:
 
 - **macOS** doesn't enforce `RLIMIT_AS`, so `lc` watches the program's
   memory itself, every 5 ms. It kills the program once the program passes
   the guard.
+- **Linux** enforces `RLIMIT_AS`, which counts memory the program has
+  reserved, used or not. So there an allocation larger than the guard
+  (576 MB under the default limit) fails even when the program would
+  barely touch it, and `malloc` returns NULL. On macOS the same allocation
+  works, and only the memory touched counts.
 - **macOS** caps `RLIMIT_STACK` at 64 MB, so a case gets 64 MB of stack
   there.
 - **Linux** counts, in a program's peak memory, what it inherited from
