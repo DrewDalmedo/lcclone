@@ -1,0 +1,126 @@
+# Absolute Difference Between Maximum and Minimum K Elements.
+
+@example Sorted, nums is 1, 3, 6, 8, 9. The front group 1 and 3 adds up to 4, the back group 8 and 9 to 17.
+[8,3,9,1,6]
+2
+=> 13
+
+@example Sorted: 2, 4, 4, 7, 7. The front group is 2, 4, 4 (sum 10) and the back group 4, 7, 7 (sum 18); the middle 4 is in both.
+[4,7,4,2,7]
+3
+=> 8
+
+@example k is the whole length, so both groups hold every element.
+[12,30,7]
+3
+=> 0
+
+# The smallest input.
+[1]
+1
+=> 0
+
+# k = 1: the largest element minus the smallest.
+[42,17,99,3,58]
+1
+=> 96
+
+# Values at both bounds.
+[100,1]
+1
+=> 99
+
+# All equal.
+[9,9,9,9,9,9]
+4
+=> 0
+
+# Copies of one value inside and outside a group: sorted 2,5,5,5,8,8, so
+# the front group is 2 and one 5, the back group both 8s.
+[5,8,2,5,8,5]
+2
+=> 9
+
+# Sorted 1,3,3,3,7,7,7: the front group is 1 and 3, the back group 7 and
+# 7, not 7 and 3 (taking distinct values would give 6).
+[3,3,3,1,7,7,7]
+2
+=> 10
+
+# 2k equals the length: the two halves.
+[10,40,20,30]
+2
+=> 40
+
+# Odd length with k = (n + 1) / 2: 4,8,11 against 11,15,20, sharing 11.
+[15,4,11,8,20]
+3
+=> 23
+
+# k = n - 1: only the smallest and the largest do not cancel.
+[6,1,9,4]
+3
+=> 8
+
+# k just above half: 2,3,7,9 against 7,9,14,20.
+[2,9,14,3,20,7]
+4
+=> 29
+
+# Distinct powers of two, so starting the back group one place early or
+# late shows.
+[1,2,4,8,16,32]
+2
+=> 45
+
+# The largest possible answer: fifty 100s and fifty 1s with k = 50.
+[1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1,1,100,100,1]
+50
+=> 4950
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[53,74,38,61,100,100,100]
+5
+=> 109
+
+@gen 2 small
+[1,1,1,1,1]
+4
+=> 0
+
+@gen 3 small
+[1,27,33,24,50,22,71,43]
+1
+=> 70
+
+@gen 4 small
+[50,21,59,42]
+3
+=> 38
+
+@gen 5 small
+[98,99,100,100,99,98]
+4
+=> 4
+
+@gen 6 small
+[99,98]
+1
+=> 1
+
+# Full size: 100 elements: values 1 to 100, values 1 to 3, and only 1s and 100s.
+@gen 1
+[47,53,74,38,61,100,100,100,84,13,58,37,27,9,7,52,80,55,91,25,49,2,82,52,97,60,44,18,90,51,60,17,53,77,86,80,13,6,47,41,13,21,58,77,23,18,67,94,60,69,12,33,64,82,4,51,86,56,2,27,25,82,100,52,93,62,55,46,79,7,69,36,53,47,17,27,89,48,26,24,32,64,64,54,13,4,76,84,3,82,19,35,71,23,85,83,76,60,67,48]
+13
+=> 1116
+
+@gen 2
+[3,2,3,3,1,1,1,2,3,1,1,2,2,1,3,2,3,3,3,1,3,1,1,1,1,2,1,2,3,1,3,1,1,2,3,3,3,2,1,1,3,1,3,3,2,2,1,3,3,3,2,2,3,3,3,1,3,1,3,1,2,2,2,2,1,3,2,3,3,2,1,3,1,2,2,2,2,3,2,1,1,1,3,2,1,2,1,3,2,2,1,3,1,3,1,2,3,1,3,2]
+13
+=> 26
+
+@gen 5
+[100,100,1,100,100,1,100,100,1,100,1,100,100,1,100,1,1,1,1,1,1,100,100,1,100,100,100,100,1,1,1,1,1,1,100,100,1,100,100,100,1,1,100,1,100,100,1,1,100,100,1,1,1,100,100,1,1,1,100,1,1,1,100,100,100,1,1,1,100,100,100,100,100,1,100,1,100,100,100,100,1,100,1,100,1,100,1,1,100,1,100,100,1,1,100,100,100,1,1,100]
+40
+=> 3960

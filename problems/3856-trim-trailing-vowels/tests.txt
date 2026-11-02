@@ -1,0 +1,104 @@
+# Trim Trailing Vowels.
+
+@example The last consonant is m; the five vowels after it are dropped.
+"cameoaie"
+=> "cam"
+
+@example y is a consonant, so nothing is dropped, and the leading i stays.
+"ivy"
+=> "ivy"
+
+@example Every letter is a vowel, so nothing is left.
+"oui"
+=> ""
+
+# A single consonant.
+"z"
+=> "z"
+
+# A single vowel.
+"e"
+=> ""
+
+# The vowel before the last consonant stays.
+"kiwi"
+=> "kiw"
+
+# u at the end.
+"haiku"
+=> "haik"
+
+# Every letter once, ending in a; b, d, f, h, j, n, p, t and v are consonants.
+"zyxwvutsrqponmlkjihgfedcba"
+=> "zyxwvutsrqponmlkjihgfedcb"
+
+# A tail of mixed vowels, u among them.
+"queue"
+=> "q"
+
+# The cut stops at a y.
+"spryeo"
+=> "spry"
+
+# Leading vowels stay when the tail goes.
+"eerie"
+=> "eer"
+
+# 100 vowels.
+"eoieieieoauueoiuuiuaaoiioouueieeeoiaeooaoauoooaaiuauieaeiouiouiaaouaiaoaueueiaiaieeuuoooouaaiueiiueu"
+=> ""
+
+# One consonant followed by 99 copies of a.
+"waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+=> "w"
+
+# 98 vowels and then two consonants: nothing is dropped.
+"ouououououououououououououououououououououououououououououououououououououououououououououououououpt"
+=> "ouououououououououououououououououououououououououououououououououououououououououououououououououpt"
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"ibubjeo"
+=> "ibubj"
+
+@gen 2 small
+"ietab"
+=> "ietab"
+
+@gen 3 small
+"aiuaeiin"
+=> "aiuaeiin"
+
+@gen 4 small
+"uouf"
+=> "uouf"
+
+@gen 5 small
+"zuubeo"
+=> "zuub"
+
+@gen 6 small
+"jb"
+=> "jb"
+
+@gen 30 small
+"iaoe"
+=> ""
+
+@gen 8 small
+"duaeieo"
+=> "d"
+
+# Full-size random cases.
+@gen 1
+"woxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegsqxbgc"
+=> "woxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegsqxbgc"
+
+@gen 2
+"aioeueoaiiiuuaeeoeeioaaiaieaooiiioeoiouieauuaaeoiuiaeaauooeoaoiaouuouieiuiioeeeaoiioiuauouuiieuaiiau"
+=> ""
+
+@gen 3
+"ckcfhdwkiylnpjugrosugkjudwmkooecaeumuqbessgoatdizvxmaxlmdaxqkiuhxkaxgobusoeismxmlyiouooiaoeiioiiauai"
+=> "ckcfhdwkiylnpjugrosugkjudwmkooecaeumuqbessgoatdizvxmaxlmdaxqkiuhxkaxgobusoeismxmly"
+

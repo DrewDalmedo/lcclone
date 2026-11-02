@@ -1,0 +1,139 @@
+# Valid Digit Number.
+
+@example 4070 starts with 4, and a 7 follows later.
+4070
+7
+=> true
+
+@example 7307 has a 7 at the end, but it also starts with one.
+7307
+7
+=> false
+
+@example 4213 has no 9 at all.
+4213
+9
+=> false
+
+# Zero: for x = 0 the numeral starts with 0; any other x is missing.
+0
+0
+=> false
+
+0
+6
+=> false
+
+# A single digit is either x itself, in front, or not x.
+8
+8
+=> false
+
+3
+2
+=> false
+
+# Zeros are never in front, except in 0 itself.
+100000
+0
+=> true
+
+20
+0
+=> true
+
+# 100000 starts with 1.
+100000
+1
+=> false
+
+# Numerals that start with 1 then 0: a digit loop that stops while 10 is
+# still left never looks at that 0 or that leading 1.
+10
+0
+=> true
+
+10541
+1
+=> false
+
+# x last but not first, and x first but not last.
+36845
+5
+=> true
+
+58346
+5
+=> false
+
+# x in the middle only, more than once.
+18881
+8
+=> true
+
+# x only in front, repeated after it.
+99999
+9
+=> false
+
+# Absent from a long numeral.
+98765
+0
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+799
+8
+=> false
+
+@gen 4 small
+31326
+3
+=> false
+
+@gen 5 small
+100000
+9
+=> false
+
+@gen 6 small
+6111
+1
+=> true
+
+@gen 7 small
+214
+1
+=> true
+
+@gen 13 small
+98442
+4
+=> true
+
+@gen 17 small
+805
+8
+=> false
+
+@gen 26 small
+4999
+9
+=> true
+
+# Full-size cases: n from 10000 to 100000.
+@gen 9
+32752
+6
+=> false
+
+@gen 10
+12100
+7
+=> false
+
+@gen 11
+65449
+4
+=> true

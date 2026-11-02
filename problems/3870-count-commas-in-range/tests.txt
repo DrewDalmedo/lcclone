@@ -1,0 +1,83 @@
+# Count Commas in Range.
+
+@example 1,000 to 1,250 are the 251 numbers with a comma; all the others have three digits or fewer.
+1250
+=> 251
+
+@example Every number up to 640 has at most three digits, so no comma is printed.
+640
+=> 0
+
+@example 1,000 up to 31,416 is 30417 numbers, one comma each.
+31416
+=> 30417
+
+# The smallest n.
+1
+=> 0
+
+# Three-digit numbers carry no comma.
+100
+=> 0
+
+999
+=> 0
+
+# The first comma, and the next.
+1000
+=> 1
+
+1001
+=> 2
+
+# From four to five digits: still one comma each.
+9999
+=> 9000
+
+10000
+=> 9001
+
+# Six digits still take only one comma.
+99999
+=> 99000
+
+100000
+=> 99001
+
+# A value in the middle.
+54321
+=> 53322
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+18045
+=> 17046
+
+@gen 2 small
+903
+=> 0
+
+@gen 3 small
+12635
+=> 11636
+
+@gen 4 small
+926
+=> 0
+
+@gen 5 small
+1003
+=> 4
+
+@gen 6 small
+996
+=> 0
+
+# Full-size cases.
+@gen 1
+92681
+=> 91682
+
+@gen 2
+95058
+=> 94059

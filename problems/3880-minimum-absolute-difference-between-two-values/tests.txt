@@ -1,0 +1,105 @@
+# Minimum Absolute Difference Between Two Values. -1 means there is no
+# pair of a 1 and a 2.
+
+@example The only 1, at index 4, is 3 places from the 2 at index 1 and 4 places from the 2 at index 8; the nearer one counts.
+[0,2,0,0,1,0,0,0,2]
+=> 3
+
+@example There is no 1, so there is nothing to measure.
+[0,2,0,2,0]
+=> -1
+
+@example The 1 at index 6 is right next to the 2 at index 7.
+[2,0,1,0,0,0,1,2]
+=> 1
+
+# A single entry never has a pair.
+[0]
+=> -1
+
+[1]
+=> -1
+
+[2]
+=> -1
+
+# Neighbours, in both orders.
+[1,2]
+=> 1
+
+[2,1]
+=> 1
+
+# All zeros; only 1s and zeros; only 2s and zeros.
+[0,0,0,0]
+=> -1
+
+[1,0,1,1]
+=> -1
+
+[2,0,2,2]
+=> -1
+
+# 100 entries with the 1 and the 2 at the two ends: the largest answer.
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2]
+=> 99
+
+# The nearest 2 lies to the left of the 1; the 2 on its right is farther.
+[2,1,0,0,0,2]
+=> 1
+
+# The only pair is 4 apart, the 2 first, not at index 0.
+[0,2,0,0,0,1]
+=> 4
+
+# The closest pair is near the end and uses neither the first 1 nor the
+# first 2.
+[1,0,0,0,0,2,0,0,0,1,0,0,2]
+=> 3
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[0,0,2,2,0,0,2]
+=> -1
+
+@gen 2 small
+[2,2,0,2,1]
+=> 1
+
+@gen 3 small
+[0,1,2,1,1,2,2,0]
+=> 1
+
+@gen 11 small
+[0,0,2,0,0,1,0]
+=> 3
+
+@gen 12 small
+[0,0,0,0]
+=> -1
+
+@gen 13 small
+[0,1,0,2,1]
+=> 1
+
+@gen 15 small
+[1,0,1,0,0,2,0,0]
+=> 3
+
+@gen 16 small
+[2,0,0,1,1,0]
+=> 3
+
+# Full-size cases: the closest pair at the far right, a 2 and a 1 at the
+# two ends, and 1s with no 2.
+@gen 1
+[1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,1]
+=> 8
+
+@gen 5
+[2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1]
+=> 99
+
+@gen 3
+[0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1]
+=> -1
