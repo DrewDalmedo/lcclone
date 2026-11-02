@@ -1,0 +1,119 @@
+# Check Adjacent Digit Differences.
+
+@example The biggest moves, 5 to 3 and 4 to 2, are falls of exactly 2.
+"4565342"
+=> true
+
+@example The move from 5 to 9 is a rise of 4.
+"13597"
+=> false
+
+@example Every move is a fall of 2; the first and last readings are 8 apart, but they are not neighbours.
+"97531"
+=> true
+
+# A single move: no change, a rise of exactly 2, a fall of exactly 2.
+"00"
+=> true
+
+"02"
+=> true
+
+"20"
+=> true
+
+# A move of exactly 3 is too much, up or down.
+"03"
+=> false
+
+"30"
+=> false
+
+# The largest possible jump, both ways.
+"90"
+=> false
+
+"09"
+=> false
+
+# The only bad move is a fall, in the middle; every rise is small.
+"24685676"
+=> false
+
+# The only bad move is a rise, in the middle; every fall is small.
+"65458876"
+=> false
+
+# Falls of 1 and 2 throughout are fine (a difference taken as unsigned
+# would wrap around and reject them).
+"97864231"
+=> true
+
+# Only the first move is bad.
+"5122334"
+=> false
+
+# A leading zero is a reading like any other (read as a number, "0312"
+# would lose it and look smooth).
+"0312"
+=> false
+
+# The first and last readings are 9 apart but every move is 1; read as a
+# loop, the last move would wrongly go from 9 back to 0.
+"0123456789"
+=> true
+
+# 100 identical readings.
+"7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777"
+=> true
+
+# 100 readings going up and down between 0 and 9 in steps of at most 2,
+# ending 9 away from where they start.
+"0134689975310134689975310134689975310134689975310134689975310134689975310134689975310134689975313579"
+=> true
+
+# 100 readings, every move exactly 2 except the very last, a fall of 3.
+"0246864202468642024686420246864202468642024686420246864202468642024686420246864202468642024686420241"
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"23"
+=> true
+
+@gen 2 small
+"854533"
+=> false
+
+@gen 3 small
+"03023021"
+=> false
+
+@gen 4 small
+"96"
+=> false
+
+@gen 5 small
+"11"
+=> true
+
+@gen 6 small
+"6698868"
+=> false
+
+@gen 7 small
+"04"
+=> false
+
+# Random full-size cases: 100 readings.
+@gen 8
+"4664654465676646898665345579877667978656678989644564431313343202231233456657756578666897986577676666"
+=> false
+
+@gen 9
+"3423567988865585699747754664647463564300335747744567525302363525636886536779741352454114111433111314"
+=> false
+
+@gen 10
+"2133102001223235433242021343310131343434444679866453122432201331357988797557644320220122110132334679"
+=> true

@@ -179,7 +179,7 @@
 661	image-smoother	Image Smoother	easy	no	plain	draft
 671	second-minimum-node-in-a-binary-tree	Second Minimum Node In a Binary Tree	easy	no	tree	todo
 674	longest-continuous-increasing-subsequence	Longest Continuous Increasing Subsequence	easy	no	plain	draft
-680	valid-palindrome-ii	Valid Palindrome II	easy	no	plain	todo
+680	valid-palindrome-ii	Valid Palindrome II	easy	no	plain	draft
 682	baseball-game	Baseball Game	easy	no	plain	draft
 693	binary-number-with-alternating-bits	Binary Number with Alternating Bits	easy	no	plain	draft
 696	count-binary-substrings	Count Binary Substrings	easy	no	plain	draft
@@ -215,7 +215,7 @@
 830	positions-of-large-groups	Positions of Large Groups	easy	no	plain	draft
 832	flipping-an-image	Flipping an Image	easy	no	plain	draft
 836	rectangle-overlap	Rectangle Overlap	easy	no	plain	draft
-844	backspace-string-compare	Backspace String Compare	easy	no	plain	todo
+844	backspace-string-compare	Backspace String Compare	easy	no	plain	draft
 859	buddy-strings	Buddy Strings	easy	no	plain	draft
 860	lemonade-change	Lemonade Change	easy	no	plain	draft
 867	transpose-matrix	Transpose Matrix	easy	no	plain	verified
@@ -652,7 +652,7 @@
 2600	k-items-with-the-maximum-sum	K Items With the Maximum Sum	easy	no	plain	draft
 2605	form-smallest-number-from-two-digit-arrays	Form Smallest Number From Two Digit Arrays	easy	no	plain	draft
 2609	find-the-longest-balanced-substring-of-a-binary-string	Find the Longest Balanced Substring of a Binary String	easy	no	plain	draft
-2614	prime-in-diagonal	Prime In Diagonal	easy	no	plain	todo
+2614	prime-in-diagonal	Prime In Diagonal	easy	no	plain	draft
 2619	array-prototype-last	Array Prototype Last	easy	no	skip:javascript	todo
 2620	counter	Counter	easy	no	skip:javascript	todo
 2621	sleep	Sleep	easy	no	skip:javascript	todo
@@ -797,7 +797,7 @@
 3095	shortest-subarray-with-or-at-least-k-i	Shortest Subarray With OR at Least K I	easy	no	plain	draft
 3099	harshad-number	Harshad Number	easy	no	plain	draft
 3105	longest-strictly-increasing-or-strictly-decreasing-subarray	Longest Strictly Increasing or Strictly Decreasing Subarray	easy	no	plain	draft
-3110	score-of-a-string	Score of a String	easy	no	plain	todo
+3110	score-of-a-string	Score of a String	easy	no	plain	draft
 3114	latest-time-you-can-obtain-after-replacing-characters	Latest Time You Can Obtain After Replacing Characters	easy	no	plain	draft
 3120	count-the-number-of-special-characters-i	Count the Number of Special Characters I	easy	no	plain	draft
 3127	make-a-square-with-the-same-color	Make a Square with the Same Color	easy	no	plain	draft
@@ -955,7 +955,7 @@
 3917	count-indices-with-opposite-parity	Count Indices With Opposite Parity	easy	no	plain	draft
 3921	score-validator	Score Validator	easy	no	plain	draft
 3925	concatenate-array-with-reverse	Concatenate Array With Reverse	easy	no	plain	draft
-3931	check-adjacent-digit-differences	Check Adjacent Digit Differences	easy	no	plain	todo
+3931	check-adjacent-digit-differences	Check Adjacent Digit Differences	easy	no	plain	draft
 3936	minimum-swaps-to-move-zeros-to-end	Minimum Swaps to Move Zeros to End	easy	no	plain	draft
 3940	limit-occurrences-in-sorted-array	Limit Occurrences in Sorted Array	easy	no	plain	draft
 3945	digit-frequency-score	Digit Frequency Score	easy	no	plain	draft

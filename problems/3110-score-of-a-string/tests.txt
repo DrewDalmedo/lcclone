@@ -1,0 +1,98 @@
+# Score of a String.
+
+@example Legs r-o, o-u, u-t and t-e cost 3, 6, 1 and 15.
+"route"
+=> 25
+
+@example 21 + 11 + 0 + 7 + 20; the leg between the two l's costs nothing.
+"valley"
+=> 59
+
+@example Legs cost 1, 2 and 6; there is no leg from e back to h.
+"hike"
+=> 9
+
+# Two letters: a single leg.
+"mm"
+=> 0
+
+"az"
+=> 25
+
+# Down and back up: signed differences would cancel out to 0.
+"pbp"
+=> 28
+
+# Only downhill: signed differences would add up to a negative number.
+"spa"
+=> 18
+
+# First and last letters differ: a leg from y back to b would add 23.
+"bdy"
+=> 23
+
+# The steepest leg is the last one.
+"gggx"
+=> 17
+
+# Up and then down: the last letter minus the first would give 0.
+"dkqd"
+=> 26
+
+# The whole alphabet up, and down: each leg costs 1.
+"abcdefghijklmnopqrstuvwxyz"
+=> 25
+
+"zyxwvutsrqponmlkjihgfedcba"
+=> 25
+
+# A score of 256 wraps an 8-bit counter round to 0.
+"azazazazazag"
+=> 256
+
+# 100 letters, all the same.
+"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+=> 0
+
+# 100 letters, a and z in turn: the largest score, 99 * 25.
+"azazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazazaz"
+=> 2475
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"ox"
+=> 9
+
+@gen 2 small
+"hgihig"
+=> 7
+
+@gen 3 small
+"abmyzbam"
+=> 62
+
+@gen 4 small
+"za"
+=> 25
+
+@gen 5 small
+"bm"
+=> 11
+
+@gen 6 small
+"ovwduhj"
+=> 59
+
+# Full-size random cases from gen.c: random letters, then long runs up and
+# down the alphabet.
+@gen 2
+"egqmsekulmznzvwecuyriadgwuqlzxshwqzaeidiwbhetxijzcxyrphhqdqursjewqicivkjwrqfysdmqxrsotighhwtocmabuul"
+=> 797
+
+@gen 3
+"qrtuvvvvvtttrppnmkjhfddccceghhjkmoqsstuvxzyywwvvttrpnlljhhhjjlmoqstuuvxxyzxxxxzzzzzxwwutssssssrrrppn"
+=> 99
+
+@gen 4
+"yyzzxvtsrponoqomllkiggedccbaabccdegghjjllmooqssuwyzxvwyzxzyxwvvvtrrrppnnmmljjigfdddbaacccdddcefgiikm"
+=> 108

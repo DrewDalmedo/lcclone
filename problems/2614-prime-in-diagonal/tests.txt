@@ -1,0 +1,103 @@
+# Prime In Diagonal.
+
+@example The diagonal cells hold 10, 21, 15, 29 and 33; only 29 is prime. 41 and 17 are prime too, but sit off the diagonals.
+[[10,41,21],[17,15,8],[29,6,33]]
+=> 29
+
+@example The largest diagonal number, 49, is 7 * 7; the diagonal primes are 13, 19, 7 and 2, and 19 is the largest.
+[[8,14,22,13],[6,4,19,9],[25,7,35,12],[2,26,16,49]]
+=> 19
+
+@example None of 4, 6, 1, 27 and 9 is prime; the primes 5, 7, 11 and 13 are all off the diagonals.
+[[4,5,6],[7,1,11],[27,13,9]]
+=> 0
+
+# A single cell holding 1, which is not prime.
+[[1]]
+=> 0
+
+# 2 is the only prime on a diagonal; the larger primes 3, 5, 7, 11 are not on one.
+[[9,3,15],[5,2,7],[21,11,1]]
+=> 2
+
+# 3 is the largest diagonal prime (the other is 2): a test that rejects
+# multiples of 3 before letting 3 itself through answers 2.
+[[4,5,3],[7,2,11],[1,13,9]]
+=> 3
+
+# 5 is the largest diagonal prime, above 3 and 2: a test that rejects
+# multiples of 5 before letting 5 itself through answers 3.
+[[5,7,10,2],[12,8,3,14],[15,9,4,16],[1,18,20,6]]
+=> 5
+
+# Squares of primes are not prime: 3996001 = 1999 * 1999 and 1369 = 37 * 37.
+[[3996001,1,25],[1,1369,1],[121,1,23]]
+=> 23
+
+# Products of two primes near 2000 (3992003, 3980021, 3988009), and numbers
+# that fool weak probabilistic tests: 1373653 = 829 * 1657, 2047 = 23 * 89,
+# and the Carmichael numbers 561 and 1105.
+[[3992003,6,8,1373653],[10,2047,561,12],[14,1000003,3980021,16],[1105,18,20,3988009]]
+=> 1000003
+
+# The largest value allowed, 4 * 10^6, is not prime; 3999971 is the largest
+# prime allowed.
+[[4000000,3999999],[3999971,3999998]]
+=> 3999971
+
+# The only diagonal prime is on the anti-diagonal, in the top-right corner.
+[[1,4,6,101],[8,9,10,12],[14,15,16,18],[20,21,22,25]]
+=> 101
+
+# The only diagonal prime is on the anti-diagonal, in the bottom-left corner.
+[[33,4,6,8,35],[10,39,12,49,14],[16,18,1,20,22],[24,51,26,55,28],[3989,30,32,34,57]]
+=> 3989
+
+# The only diagonal prime is on the main diagonal, in the bottom-right corner;
+# the anti-diagonal holds 27, 33, 39 and 63.
+[[15,2,3,27],[5,21,33,7],[11,39,45,13],[63,17,19,97]]
+=> 97
+
+# Odd side: the answer is the middle cell, on both diagonals, while larger
+# primes surround it off the diagonals.
+[[1,7927,1,7933,1],[7937,4,1,8,7949],[1,1,7919,1,1],[7951,6,1,9,7963],[1,7993,1,8009,10]]
+=> 7919
+
+# Even side: the four middle cells are all diagonal cells, and the prime is
+# at row 3, column 2. Every other diagonal number is a square, the largest
+# 994009 = 997 * 997.
+[[994009,1,1,1,1,121],[1,169,1,1,289,1],[1,1,361,529,1,1],[1,1,8191,841,1,1],[1,961,1,1,1681,1],[1849,1,1,1,1,2209]]
+=> 8191
+
+# Every cell holds the same prime.
+[[13,13,13],[13,13,13],[13,13,13]]
+=> 13
+
+# The diagonals hold only 1s; the largest primes allowed are elsewhere.
+[[1,3999971,1],[3999949,1,3999929],[1,3999917,1]]
+=> 0
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[[2047,1,2989500],[2902084,18,7],[7,1373653,8911]]
+=> 7
+
+@gen 2 small
+[[12,3208017,11,1231923,1373653],[3274876,3697829,3825407,4,9],[1373653,8911,49,3045822,773303],[10,49,1000003,3888343,1373653],[3812609,12,1827416,9,1729]]
+=> 0
+
+@gen 3 small
+[[7,4,3996001,3999929,1621805,1404532],[3424866,3999901,3009553,3898623,3920351,3984007],[15,3648321,19,3,1495897,3],[19,11,1124974,5,3999949,5],[1019600,2635381,3999971,1,15,1408668],[3999001,1000003,9,19,11,1729]]
+=> 3999901
+
+@gen 4 small
+[[1,3999949],[9,1650158]]
+=> 3999949
+
+@gen 5 small
+[[3,20,2732374,15],[15,14,3999917,5],[3999999,14,1341251,947312],[2519464,1999993,13,17]]
+=> 3999917
+
+@gen 6 small
+[[3836897,2,2326033,3996001],[13,3999929,17,10],[2296905,2369271,25,20],[3999893,12,1999993,16]]
+=> 3999929

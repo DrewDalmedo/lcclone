@@ -1,0 +1,146 @@
+# Backspace String Compare.
+
+@example The backspace erases the mistyped x, so both logs leave "kitten".
+"kitx#ten"
+"kitten"
+=> true
+
+@example The two backspaces at the start of s find the box empty and do nothing, while in t the backspace erases w: both leave "up".
+"##up"
+"w#up"
+=> true
+
+@example s leaves "moe", since its backspace takes the p, but t leaves "mope".
+"mop#e"
+"mope"
+=> false
+
+# The shortest logs: one letter each.
+"a"
+"a"
+=> true
+
+# A lone backspace leaves the box empty; the other box holds a letter.
+"#"
+"z"
+=> false
+
+# Every letter is erased in both logs: two empty boxes match.
+"abc###"
+"q#"
+=> true
+
+# Backspaces in an empty box are not saved for the letters after them.
+"###abc"
+"abc"
+=> true
+
+"a##b"
+"b"
+=> true
+
+# Runs of backspaces between letters: a, b, #, c, #, # leaves nothing
+# before the d.
+"ab#c##d"
+"d"
+=> true
+
+# One text is a prefix of the other ("ab" and "abd"), then a suffix
+# ("zbc" and "bc"), then a prefix the other way round ("inks" and "ink").
+"ab"
+"abc#d"
+=> false
+
+"zz#bc"
+"bc"
+=> false
+
+"inks"
+"inkx#"
+=> false
+
+# The same length and the same characters, but "a" against "b".
+"ab#"
+"a#b"
+=> false
+
+# The texts differ only in their last letter: "pqs" against "pqt".
+"pqr#s"
+"pqt"
+=> false
+
+# The same four letters with the same first and last letter, in another
+# order: "trap" against "tarp".
+"trax#p"
+"taq#rp"
+=> false
+
+# The backspaces erase letters that differ between s and t.
+"mox#on"
+"moy#on"
+=> true
+
+# 130 backspaces in a row erase x, y and z and then find the box empty;
+# a skip count kept in a signed char would wrap past 127.
+"xyz##################################################################################################################################ok"
+"ok"
+=> true
+
+# 200 letters each, the longest text a box can hold, differing only in the
+# first letter.
+"awtiydpbviwdoadukruzpauvgelgvbabourjrrrpztkyzxvzehctdrmzxbajgtedasmegdqaclllenfmywljryelfkdfmoncxazgrqdwvqukukhvfjjiujcucgfkifaxrwtupeqemfhtoqfxuxjqnxkeloizavjwxaykqmwbclccjpmsenstxuaovsqphxpexdjihcgd"
+"mwtiydpbviwdoadukruzpauvgelgvbabourjrrrpztkyzxvzehctdrmzxbajgtedasmegdqaclllenfmywljryelfkdfmoncxazgrqdwvqukukhvfjjiujcucgfkifaxrwtupeqemfhtoqfxuxjqnxkeloizavjwxaykqmwbclccjpmsenstxuaovsqphxpexdjihcgd"
+=> false
+
+# 200 keys that leave the box empty on both sides.
+"########################################################################################################################################################################################################"
+"ab######################################################################################################################################################################################################"
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bba##bab"
+"bb#ba#a"
+=> false
+
+@gen 2 small
+"#b#aaaa"
+"a#a#aaaa"
+=> true
+
+@gen 3 small
+"c#cbba##"
+"c#cbb##b"
+=> true
+
+@gen 4 small
+"b##c#baa"
+"bb##baa"
+=> true
+
+@gen 5 small
+"b"
+"a"
+=> false
+
+@gen 6 small
+"c#"
+"aa"
+=> false
+
+# Full-size cases: a near miss at the first letter, a run of 135
+# backspaces, and two logs that type the same text differently.
+@gen 1
+"###buwvk#####onubqbx######qyfebp######yek###########oxlsnnr################ox######oxl##xlsnnrloz#jis####fqvi####ojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegs"
+"x########x####x#########w#p#xoxictsx#####kexvgmdj########lsn############xoxlsnd#mfvum###################xoxlsnnrlojisguzpmcgildbabjrfadeoolbylciuejeyjstdapkpzvevvzkyljlahwvuyslcqosevzfhhbtszvdgdqmegs"
+=> false
+
+@gen 4
+"amfysezguajjylcseqqckvl#######################################################################################################################################e######z#ermmou##########ekgwkpxailemlzlr"
+"it##jex#######r#ek################eklsukc#####gwd###e################ekgwkp#########ekght##wkkqmbz#####px################ekgwka#ooanae######pxazjauq#####ilemlz##################e###ekgwkpx#xailemlzlr"
+=> true
+
+@gen 16
+"u##############uqktixdtgu######om########u#####uqk###uqkt######pzxotpuc########uqktomdjkwefbrhwfluiefzzbwoqomeerdekqgkfasqwdiwrtbprgwqwiwxyrwwxvbztuvyvzxidsqkcjjsfmfitlnszvpounvetchtxtibybcrxpjxarcjsp"
+"##uqktomd#########uqwa##kxwnndq######tomdlbr###jkwefufj###brv#hgelbyjzd########wf#fluiefzzb#####z#efzzbwoqomeerdekqgkfasqwdiwrtbprgwqwiwxyrwwxvbztuvyvzxidsqkcjjsfmfitlnszvpounvetchtxtibybcrxpjxarcjsp"
+=> true
