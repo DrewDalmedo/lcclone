@@ -107,6 +107,29 @@
 #define isspecial lc_darwin_isspecial
 /* <math.h>: struct exception */
 #define exception lc_darwin_exception
+#elif !defined(_GNU_SOURCE)
+/*
+ * musl's headers, with _DEFAULT_SOURCE (which is _BSD_SOURCE there), also
+ * declare a few functions that glibc's declare only for _GNU_SOURCE or
+ * _XOPEN_SOURCE: a GNU qsort_r, mkostemp, memalign, setkey, ptsname and
+ * others, and <math.h>'s HUGE. They are hidden the same way, as lc_libc_
+ * names. No macro tells musl apart before its headers are read, but
+ * glibc's declare none of these names here, so this is done everywhere
+ * but macOS, unless the build defines _GNU_SOURCE and so asks for them.
+ */
+/* <stdlib.h> */
+#define grantpt lc_libc_grantpt
+#define memalign lc_libc_memalign
+#define mkostemp lc_libc_mkostemp
+#define mkostemps lc_libc_mkostemps
+#define posix_openpt lc_libc_posix_openpt
+#define ptsname lc_libc_ptsname
+#define qsort_r lc_libc_qsort_r
+#define setkey lc_libc_setkey
+#define unlockpt lc_libc_unlockpt
+/* <stdio.h> */
+#define cuserid lc_libc_cuserid
+#define fgetln lc_libc_fgetln
 #endif
 
 #include <assert.h>
@@ -219,6 +242,20 @@
 #undef SIZE_T_MAX
 #undef UID_MAX
 #undef UQUAD_MAX
+#elif !defined(_GNU_SOURCE)
+/* The names renamed above, and <math.h>'s HUGE */
+#undef grantpt
+#undef memalign
+#undef mkostemp
+#undef mkostemps
+#undef posix_openpt
+#undef ptsname
+#undef qsort_r
+#undef setkey
+#undef unlockpt
+#undef cuserid
+#undef fgetln
+#undef HUGE
 #endif
 
 #ifdef LC_LISTNODE
