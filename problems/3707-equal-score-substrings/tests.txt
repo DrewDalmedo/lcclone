@@ -1,0 +1,95 @@
+# Equal Score Substrings.
+
+@example "cba" scores 3 + 2 + 1 = 6, and so does "f".
+"cbaf"
+=> true
+
+@example The total is 52, but the left substrings score 8, 13, 25 and 37, skipping 26.
+"hello"
+=> false
+
+@example The total, 24 + 25 + 26 = 75, is odd, so it can't be shared out evenly.
+"xyz"
+=> false
+
+# Two letters balance only when they are the same.
+"qq"
+=> true
+
+# A total of 3: "a" scores 1, half of 3 rounded down, but "b" scores 2.
+"ab"
+=> false
+
+# The balancing split comes right after the first letter.
+"daaaa"
+=> true
+
+# The balancing split comes right before the last letter.
+"aaaad"
+=> true
+
+# All a's: an odd count can't balance, an even count can.
+"aaaaa"
+=> false
+
+"aaaaaa"
+=> true
+
+# An odd total of 9 where "d" scores 4, half of 9 rounded down.
+"dcb"
+=> false
+
+# Character codes would balance "zzzz" against "aaabc" (488 each), but they
+# score 104 and 8, and no other split balances either.
+"zzzzaaabc"
+=> false
+
+# The left and right substrings differ by exactly 256: ten z's score 260
+# and "d" scores 4, so sums kept in a single byte would wrongly balance.
+"zzzzzzzzzzd"
+=> false
+
+# The longest strings. Four z's balance 88 a's and 8 b's.
+"zzzzaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbb"
+=> true
+
+# 49 z's score 1274 and 50 score 1300, jumping over half the total, 1275.
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+=> false
+
+"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+=> true
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"bbad"
+=> false
+
+@gen 2 small
+"pbaaccbcb"
+=> false
+
+@gen 3 small
+"ccdbbcc"
+=> true
+
+@gen 4 small
+"acd"
+=> true
+
+@gen 5 small
+"dedcb"
+=> true
+
+@gen 6 small
+"bcdab"
+=> false
+
+# Random full-size cases.
+@gen 7
+"zzzzzaccbcaaaaaaacaaaaabaabaababababaaaaaaaabbaacbbbbaaabbaaaaaaaaaaaabaabaaaabaaabaababaaabbabbbaa"
+=> true
+
+@gen 8
+"aaaaaaaadaafaaaaamakaaiaaaaacaaaajbhaaaaacaaaaaaaaaaeaabaaadfcaaaagaalacaaaaaaaiaaaaaeoazzzzzzzz"
+=> false

@@ -1,0 +1,106 @@
+# Find The Least Frequent Digit.
+
+@example 0 appears twice, 9 and 8 once each. 8 is the smaller of the two digits with the lowest tally; digits such as 1 that never appear don't take part.
+9080
+=> 8
+
+@example 2 appears three times and 0 twice, so 0 has the lowest tally.
+20202
+=> 0
+
+@example The only digit present is 6.
+66
+=> 6
+
+# A single digit.
+7
+=> 7
+
+# 0 and 2 tie with one place each and 0 is smaller, though it comes last.
+5520
+=> 0
+
+# A tie broken by value, with the smaller digit at either end of n.
+9911
+=> 1
+
+1199
+=> 1
+
+# Many zeros: the lone 1 has the lowest tally.
+1000000000
+=> 1
+
+# The answer is the largest digit present and the last one written.
+445566778
+=> 8
+
+# The lowest tally is 2, shared by 0 and 2.
+2211100
+=> 0
+
+# Every digit present appears twice.
+112233
+=> 1
+
+# One digit ten times and nine times: a lowest tally that starts at 1
+# never moves.
+1111111111
+=> 1
+
+999999999
+=> 9
+
+# All ten digits once each.
+1203456789
+=> 0
+
+# The largest n: 1, 2, 3, 6 and 8 appear once, 7 twice and 4 three times.
+2147483647
+=> 1
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+335
+=> 5
+
+@gen 2 small
+66060000
+=> 6
+
+@gen 5 small
+11919119
+=> 9
+
+@gen 13 small
+90090
+=> 9
+
+@gen 14 small
+31113333
+=> 1
+
+@gen 18 small
+40404440
+=> 0
+
+@gen 22 small
+8292982
+=> 8
+
+@gen 28 small
+775475
+=> 4
+
+# Random full-size cases: ten digits.
+@gen 2
+2031034083
+=> 1
+
+@gen 3
+1055393300
+=> 1
+
+@gen 9
+1779174324
+=> 2

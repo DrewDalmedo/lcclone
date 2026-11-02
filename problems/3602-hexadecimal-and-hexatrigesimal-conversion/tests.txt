@@ -1,0 +1,101 @@
+# Hexadecimal and Hexatrigesimal Conversion.
+
+@example 45 * 45 = 2025 = 7 * 16^2 + 14 * 16 + 9 gives 7E9, and 45^3 = 91125 = 1 * 36^3 + 34 * 36^2 + 11 * 36 + 9 gives 1YB9.
+45
+=> "7E91YB9"
+
+@example 36 = 2 * 16 + 4 gives 24, and 216 = 6 * 36 + 0 gives 60: a zero digit at the end stays.
+6
+=> "2460"
+
+@example 40000 is 9C40 in base 16, and 8000000 is 4RGU8 in base 36.
+200
+=> "9C404RGU8"
+
+# The smallest n: both numerals are 1.
+1
+=> "11"
+
+# Letters only in the base-36 part: 1000 = 27 * 36 + 28.
+10
+=> "64RS"
+
+# A zero digit inside the base-36 part, and its last letter Z: 1331 = 36^2 + 35.
+11
+=> "7910Z"
+
+# Zero digits at the end of both parts: 144 = 9 * 16, 1728 = 36^2 + 12 * 36.
+12
+=> "901C0"
+
+# A letter as the leading hex digit: 225 = 14 * 16 + 1.
+15
+=> "E12LR"
+
+# 256 = 16^2, so its hex numeral is 100.
+16
+=> "10035S"
+
+# Letters in both parts.
+35
+=> "4C9X2Z"
+
+# The last square with 4 hex digits, and the first with 5 (10000).
+255
+=> "FE019VE9R"
+
+256
+=> "100009ZLDS"
+
+# The last cube with 5 base-36 digits, and the first with 6 (36^5 <= 393^3).
+392
+=> "25840ZV2M8"
+
+393
+=> "25B51104Z89"
+
+# The largest n: 10^6 and 10^9, 11 characters in all.
+1000
+=> "F4240GJDGXS"
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+847
+=> "AF261A1RY7J"
+
+@gen 4 small
+3
+=> "9R"
+
+@gen 8 small
+2
+=> "48"
+
+@gen 10 small
+394
+=> "25E6410EXNS"
+
+@gen 11 small
+29
+=> "349ITH"
+
+@gen 13 small
+37
+=> "5591331"
+
+@gen 16 small
+24
+=> "240AO0"
+
+# Full size: large n.
+@gen 1
+535
+=> "45E112J645J"
+
+@gen 2
+693
+=> "753F95I5BT9"
+
+@gen 3
+571
+=> "4F99932U98J"

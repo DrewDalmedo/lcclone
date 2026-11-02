@@ -1,0 +1,110 @@
+# Smallest Absent Positive Greater Than Average.
+
+@example The average is 19 / 4 = 4.75. The first whole number above it is 5, which is not in nums.
+[6,2,7,4]
+=> 5
+
+@example The average is exactly 5. It is missing from nums but not greater than itself, so the answer is 6.
+[1,9,3,7]
+=> 6
+
+@example The average, -10 / 5 = -2, is below every positive number; 1 and 2 are in nums, 3 is not.
+[-8,1,-3,2,-2]
+=> 3
+
+# A single entry, the largest allowed: the answer is one more.
+[100]
+=> 101
+
+# A single entry, the smallest allowed: every positive number is above the
+# average, and 1 is missing.
+[-100]
+=> 1
+
+# The average 30 / 6 = 5 is a missing whole number and must be skipped;
+# 6 is present too.
+[2,4,6,8,10,0]
+=> 7
+
+# Average 3.5, exactly halfway: 4 is above it and missing.
+[1,6]
+=> 4
+
+# Average 10 / 3 = 3.33..., a fraction below one half: 4 is the answer,
+# not 3.
+[8,1,1]
+=> 4
+
+# A negative entry pulls the average down to 10 / 4 = 2.5; the average of
+# the positive entries alone would be 20.
+[-50,10,20,30]
+=> 3
+
+# Every copy of 9 counts: the average is 28 / 4 = 7, not (9 + 1) / 2.
+[9,9,9,1]
+=> 8
+
+# Average 1 / 3, between 0 and 1: 1 is present, so 2.
+[-3,3,1]
+=> 2
+
+# All equal: the answer is above the largest entry.
+[5,5,5]
+=> 6
+
+# Average -9 / 5: zero and negative numbers are never candidates; 1, 2 and
+# 3 are present.
+[-20,1,2,3,5]
+=> 4
+
+# 1 to 100: the average is 50.5 and 51 to 100 are all present, so the
+# answer is 101, above every entry.
+[100,99,98,97,96,95,94,93,92,91,90,89,88,87,86,85,84,83,82,81,80,79,78,77,76,75,74,73,72,71,70,69,68,67,66,65,64,63,62,61,60,59,58,57,56,55,54,53,52,51,50,49,48,47,46,45,44,43,42,41,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
+=> 101
+
+# 100 entries of 100, the largest possible sum.
+[100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100]
+=> 101
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[-5,10,6,-3,0,7,10]
+=> 4
+
+@gen 2 small
+[9,10,0,3,7,1]
+=> 6
+
+@gen 3 small
+[-7,-8,-1,-3,0,-5,0,-8]
+=> 1
+
+@gen 5 small
+[2,3,10,4,5,10]
+=> 6
+
+@gen 6 small
+[5,6]
+=> 7
+
+@gen 7 small
+[8,-4,9,-5,9,-5]
+=> 3
+
+@gen 9 small
+[6,2,5,8,7,4,3]
+=> 9
+
+# Full-size cases: pairs around a missing centre (average 67), a run of
+# consecutive values from -81, and random positive values.
+@gen 25
+[57,70,37,65,68,48,55,92,87,77,62,69,75,40,86,79,72,72,56,98,45,72,68,99,52,83,75,82,52,37,98,64,52,71,59,80,47,77,52,34,43,89,88,57,100,51,97,35,82,94,81,82,42,78,88,99,70,58,45,36,70,52,53,64,77,83,36,80,59,35,81,91,53,64,94,76,54,35,50,72,47,62,46,51,62,97,62,46,57,66,99,89,82,87,40,82,66,63,54,84]
+=> 73
+
+@gen 21
+[-38,-44,3,-77,9,-29,-39,-13,6,-30,-24,8,-43,0,-61,-68,11,13,-76,-42,-14,-51,14,16,-10,-75,-8,-47,-45,-5,-27,-81,-69,-46,-23,-70,-28,-66,-53,-74,-34,-80,2,-35,15,-6,4,-19,-56,-48,-33,-26,-65,7,-54,-15,10,-58,-36,-57,-16,-3,-67,-49,-1,-25,-40,-79,-78,-18,-9,1,-11,-4,-73,-63,5,-21,-62,-22,17,-32,-37,-64,-52,-7,-59,-20,-41,-55,-50,-71,-12,-60,12,-2,-17,-72,-31,18]
+=> 19
+
+@gen 11
+[83,59,57,27,18,69,2,16,72,66,24,43,46,33,1,99,2,64,47,44,34,87,60,55,33,84,1,94,6,73,56,36,20,41,53,2,96,99,54,55,4,31,21,49,90,76,71,61,52,67,39,76,98,87,35,56,59,84,33,61,24,2,19,85,57,71,12,66,79,8,26,21,97,14,67,73,84,89,33,54,53,33,94,18,14,32,80,78,77,38,8,48,85,43,3,89,54,70,70,89]
+=> 58

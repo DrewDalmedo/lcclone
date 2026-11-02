@@ -1,0 +1,135 @@
+# Coupon Code Validator.
+
+@example "snack 5" has a space and "Pharmacy" a capital; the other three come in the order of their lines of business.
+["MEDS4U","snack_5","Tv2024","snack 5","AAA"]
+["pharmacy","grocery","electronics","grocery","Pharmacy"]
+[true,true,true,true,true]
+=> ["Tv2024","snack_5","MEDS4U"]
+
+@example One line of business: digits sort before capitals, capitals before _, and _ before small letters. "b" is switched off.
+["b2","B2","_b","2b","b"]
+["restaurant","restaurant","restaurant","restaurant","restaurant"]
+[true,true,true,true,false]
+=> ["2b","B2","_b","b2"]
+
+@example The first code is empty, and "groceries" is not a line of business.
+["","OK1"]
+["grocery","groceries"]
+[true,true]
+=> []
+
+# A single coupon that passes.
+["X"]
+["electronics"]
+[true]
+=> ["X"]
+
+# A single coupon that is switched off.
+["X"]
+["electronics"]
+[false]
+=> []
+
+# Codes made only of underscores pass; a prefix sorts first.
+["a_b","___","_"]
+["grocery","grocery","grocery"]
+[true,true,true]
+=> ["_","___","a_b"]
+
+# One bad character, at the end, in the middle, at the start, or a lone space.
+["CODE ","a.b","x-y","50%","ok@","$1"," ","fine"]
+["pharmacy","pharmacy","pharmacy","pharmacy","pharmacy","pharmacy","pharmacy","pharmacy"]
+[true,true,true,true,true,true,true,true]
+=> ["fine"]
+
+# Near misses of the four names, including one that only extends "electronics".
+["a","b","c","d","e","f","g","h","i","j"]
+["Grocery","PHARMACY","electronic","groceries"," grocery","grocery ","","electronicsX","restaurants","restaurant"]
+[true,true,true,true,true,true,true,true,true,true]
+=> ["j"]
+
+# Equal codes in one line of business each give an entry.
+["DUP","dup","DUP","DUP"]
+["grocery","grocery","grocery","grocery"]
+[true,true,true,false]
+=> ["DUP","DUP","dup"]
+
+# The same code in two lines of business appears in each place.
+["Z9","A1","Z9"]
+["restaurant","restaurant","electronics"]
+[true,true,true]
+=> ["Z9","A1","Z9"]
+
+# The input order, the code order and the line order all disagree.
+["a","c","b","d"]
+["restaurant","electronics","pharmacy","grocery"]
+[true,true,true,true]
+=> ["c","d","b","a"]
+
+# Codes that differ in case only, or are prefixes of each other.
+["abc","ab","aB","a","ABC","Abc"]
+["electronics","electronics","electronics","electronics","electronics","electronics"]
+[true,true,true,true,true,true]
+=> ["ABC","Abc","a","aB","ab","abc"]
+
+# Codes and a line of business of 100 characters; the first code ends in "!".
+["Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9!","Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_","short","Plain"]
+["grocery","grocery","electronicssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss","grocery"]
+[true,true,true,true]
+=> ["Plain","Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_Zx9_"]
+
+# All four lines of business, mixed with coupons that fail a check.
+["r2","p1","g9","e5","r1","G0","p0","e_","g1","E9"]
+["restaurant","pharmacy","grocery","electronics","restaurant","grocery","pharmacy","electronics","Grocery","electronics"]
+[true,true,true,true,true,true,false,true,true,true]
+=> ["E9","e5","e_","G0","g9","p1","r1","r2"]
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["AA","@a0","AA_","_a","0","A","-A"]
+["electronicsx","electronicsx","restaurant","electronicsx","electronics","Grocery","grocery"]
+[false,false,true,true,true,true,true]
+=> ["0","AA_"]
+
+@gen 2 small
+["","0","_0","0 a","a"]
+["electronics"," grocery","PHARMACY","PHARMACY","electronics"]
+[true,true,true,true,true]
+=> ["a"]
+
+@gen 3 small
+["0a_","A_","000","aa0","0a_","@","A","0a_"]
+["pharmacy","pharmacy","pharmacy","pharmacy","pharmacy","restaurant"," grocery","pharmacy"]
+[true,true,true,true,true,true,true,true]
+=> ["000","0a_","0a_","0a_","A_","aa0"]
+
+@gen 4 small
+["a"," a0","aa","0"]
+["pharmacy","electronicsx","restaurant",""]
+[false,true,true,true]
+=> ["aa"]
+
+@gen 5 small
+["0_","0","@a0","aaa","A__","a0"]
+[" grocery","pharmacy","restaurant","electronics","restaurant","pharmacy"]
+[true,true,true,true,true,true]
+=> ["aaa","0","a0","A__"]
+
+@gen 6 small
+["A0","0A_"]
+["grocery","pharmacy"]
+[false,true]
+=> ["0A_"]
+
+@gen 7 small
+["A0","0a0","_a","_","@0_","_"]
+["electronics","restaurant","Grocery","restaurant","grocery","electronics"]
+[true,true,true,true,true,true]
+=> ["A0","_","0a0","_"]
+
+# Full size: 100 coupons, codes and lines of business up to 100 characters.
+@gen 1
+["Vruu06z16DlMpmR0ZqfmVSBFsxlh6bZx0WNKPpk5TSHesJT6h0UAv","eyi5aMaPvWTRLo8zck4cFt4fAQ4FyBriukY24J20jVXbHffro4wCmREA_FTEpF","6cGojc3ZlGcmuTu2CIYo5QTujI3UroKOqwJ1PMbcKX2US9zd","Uwu8GJDi9ouvoo1Hl4E_Rf","ggBFYgmzB7VOe67V8RaYCAapSGTt9fD1","35BPyWY_2pybgdmaJ4PY4rmcVFRX4SmH2YW6qwqGNPuIceq0Uw8wC","v3aXBtwT4otHANMhUb7qcfGqiu1CW","LG5TmQaCfKb1I91PYYzOt5HKWGHk3AaxfcE62JT5CmSQ87B9XD7Yu","msFTJLpW1ov1xsNqbRMjbMcqehY6IhPTx","8qDkGMjVvrVQ","A7IgOvCFFPOXbAGY3UPQATvVk_9o5LbZvvu5DjqyCzrz4oBuNXT2gD8yVCyV3hVhl3YTQ0s7tKII7KyPu9Edf7LfJBSiicCQN6ng","S8WqlH1lD8nTHSmq5MQx01EvGytTC9e2jkMfBBhpM9PCSNM","fMI3AyVqdhd_t5aCv4yi8G7Isy60chBAXSHDR0ymNbEiYkb6lbNrgAHaflMNWu1d86","4z4YbslfflV09w2pRhwsZr8Q5QdWv2l_XRWWX4I8lIgNN0fvH4YbHYEKN3vWLjy~aZUfw_3gwwTJww0eE8jMY5nb4VPoH","aIqjtcNMxI6iNoA6j9G58DH19Q_r25R7aTdNXBWn2Ba7ml6SSS4eDIuRyt1bG","ANGHdJnpBO_H3z68nHveEiTpkC_ZpnCGt","","csPOm7SbsIdJQPYLdJBs","oWIMGwrHizGuDQkLgCKWkrZQvFHPy1D_IpyzNryzwymJRkn7v8E8ACou7TMablMeE0ECIFwe0Fkj7dnwtbEi_dFIOL38","Fr6p5mVlWN8ApV3Y4twVrQUvcR2edPzzjG","45yApuTjKL0ubSDwzamhg","RMpgAORzbiMNBXLyVZtg0GOyegmzX7HLBjD85PfwL7sXEzVA8dFH1cEGQjIIOwKlgKOdWiJSqtCphpzgn6TStT1zhJVL60kk6AUo","CvW5K4pB0tdUHhP0oHnFQFzvZPaWxiOHBsOA7VV7GVX8WWP3BQ102txJL8ADv7zOpkjgid5BfhSdLYTj7FTlfNyhT_c6VBnKd5Ev","tgQI1304PEOCdX58P0MUmGF7ynbfL1uLLuGYy1EgM3nCmlDjQ8VPXXbby0fAvgFTXbEqPALQmzkigILVX","FdBurWGWwx0jIJW9FPChbbP3","h0CjQIOUzbrexQQWbzZWSmxTeyVbmDhh33XKLtGK8eEky9get99P022Jgt8IMBuj6pjVl969y4Ye2Gm8ltPzK9b9e4r0sen27Uny","","3VERldUmPhvuzW3QKzYEgxKomG6fDPh3EeAOpIqvnjIA6rV7jOEtNr5FzmInhIpbLUW2ePdjkwo9mpN","gnTHxn2Lc6PZf4O=rpl3vIs","LqBT3wLH_JUs1RAm9f","_F2NLuuO7z45NHGQ8Dd9DUJiaB7JuwIBJBom6JYW6eCbQAAUOl2slMluK3pG9AnVjq3akmQLrLTnUt8cpbJv0Eom5rVdxbW8ARC","","ZTEu_oc_sweF1ksUUXyJ5s2WyudAsqdqEXG0d4sKvp5hKI6sgkzW6OUdy3F42VwatqUPsHQKMYiSSdbMg2Va5z4ewpGMD1skiM1e","tBODuvDFAC3g97yYyHaeS6fPtL3nD6GsGRAOPAzNtBqZ7v4igt380XAD04WsncbTxrBMJ58A_JaylDCXASGNJNFs","","YDmvyoeZiS0RcZJRpGJerbiqcPZ7IW71HJnMi4_BAGSEFKqrrFtfGO39k_zl_TbiVPCdROKwE7RM4k4Vx0RuRD0QHWnBgkyBVrv5","oBMZsTfnlp57mpGJA53snPHZU5vW3MWJcsO3ZaILW8i1W8VIYUC","5gQdMX1Ro6E2","yuxBpxGuQ_8hiyv41ijG4TedMtCQ0zxl6dwFOXrNcmkNWuVKtoTK29XdZAY4NSQXOV5h0F5AQxaxAPuHfSSDFSdan89Y","FUnILvNslQ7j34W5fAqnA9TtMlFb4JBOoEs4hRkAlam0svkvJERyOwLsLhAJQp8BYWfsFP4KxrTPoveGsfUPrdLIV0eWGI","Jhw-","L9Rg9oU","0VVYzJJrPkFs","R80Ba2_toxo9kklvGZZkWZkyHi2QIWz_Ok7FLx8suoTYvpZ_CjoCGxz7zzoJjirxZc5WGfpWW1TwrWqL2SiI","bdAgCptbDmU5TDag5y9tuPr5cJOBMRaZAFjNDni1UNp4wpZFrpw1k5yEcbJZEto_NDj9jiAJV226Qo3lut4Obp7A_eqCw","DashvJjnbobBMcYMN3QGZzCrtgazMiiQjrN663pyvgZmKMyDLWdQEi7v1nmD48N4hkUSi6OeM<mvj4yy0","","zkLOctOw5vTpqX1H0mw28XKtPJ3_umV1bNWuPMXWgqvmuAdQu68S9rZ","6LlTJddWLohFjGjXZqvgU71lFBk1WwUHHVXJpIRzvCSshk8LG5_hh8ZzyFrTw88ZOdo1y0Nc_ssrbfHPl0JHQDxEMZHb_Zke19SW","bZavmA1LjtyNcjq","_32_MNVxrtvQVx8mYtK0_D_V","","ecoNCW3zBejBAYaBopmrEb88g9ss_FEK9HrsRmHDQweH1dOhojwYb1pJOgrlH3QoqBwiyHJI_sRuOd6s_Eqm4I4j_jlMi5SuWuW_","y3AWaZz","qRXZGX1cfYn6VKM2CH680pgieRVKbnPA3Fx1p","rerHFxv9_hzdR45x3nfW6bWShv1YmpVtnBci3M61iwYkguSinob5udQe1iWLFhoYwKkfNzk7","GrcEXBhwr3DYjcqko1R6jEBv9QH4lmLMyT4BOzhxLJRgR27ow8736SaR","QeQDRcfzvax\\RaSHF6QJu7iB1EGE","yqbeZayREzoxOJiWXNXeOTUUDuUPdKAWKtF7HhEbUgkCMicPEnh06Zg6nmqWUB4rLGp0Kw7NqWaWpekynBrRSXVSfVIAJMpikPpz","","FMBycZz18Iz545erbqcFQiGLyImazWbuL9cgmvkETLNOqFkfSqG3ePw72xsxXAbDiSQ6xTI0NbbO_z6cDEnPVqpLI","BLTLITzYjIpkDiOZ8jsKMBj67j_wEzIdScDfSVgdUoWSxNu49P4KAGVBhrriaOOigsPeE_1KOP_XTc0XPwjVq2aUPhR1r_CtXs5F","N8aQEM18CuJoaH88Sitbsnvy4AqhdUtqjqI","RG7KZoKcl7XgNaR8LYiyTOWqeDKKx5sP1zDTLcmpJyGeb70KEFLWksR3hI3IP8mitzMngymmT7rCe8RYDxEaIjy5uNuP2oLqTrEA","JtvEO7rMN65M+YgAWUzgHsiSTJvNvzweOgf4SuwSs2vCfZIv2L4Z7DrKon5NEhOd8bwJ64Q7MrR6tnGEZhgHVy98Ewd4xb9EFqWg","uAaJ_9K9t7tcHD47jMmvWb","nGX1AHk6kG","Gf2I74LAMunkmCdpYma714wCPxlqQUhG7xjSEFa6meXca_d_TZ4GzObpzpWZTvY4n85A0LbCMt2ug1LnB8SMAOxTkFoeN_wkpbLi","H89gX_jcRnZTAD4mt8_WYro9RxIIyH2aEHCUsd4gx2UGxj_c1FuFiJKBU7B4TyBueqdiEzT","","","KV7jOL8TxliOmQKa5c6I9L9r8tmN8DPPkBjswvUdIqm6cSj_XKJ(jYN61eYqrqLaTrdUlXlLwpDJO5jgOYTWWPuYh7d5nR0xKMH","zhU.","NSZty_LDWPsSdRjychwYo85KxZVE_8br2Vrd3KyktUzgBqU7wF51H9G5","wKKGwbF0I2CzNS2ULiiBi_C0Uda7SqBLGrZekRNh6xQvCfpsWdxHdH8W_","37f3hOEqCAqAU6wYMSrangBmuLCRxw02C9ctDGXJ4WzjrbGU5gAPuDP8bejzHi","eTbb0390Xl6kns1Zt0ecd0u_YlrR9mJLKs$5XpCcd6xGFt4SzIMSV5stf16G_aUrczBuq8pNbkL5","YkiB_RhPcjonrAjR6gq_absYe4B4tQ3sisdXFHLTwuevpfz6MMmRL39R9qzz0Phv;Vy5myD4RrwW_xtDxUnC6","VdrEM8vWtZNA2sxqz4iTol4SiuvXa0qVsZapxTT","kZpYuX9xfXVvX8recSEMpgbZ3GOVmzVN8tt1bNfsn2CyApxX-EJ2YqajTD50adi4m6yjtnSPZeAzgyS5K_xT9XCVb4HPaDRIb","VzM8rXhzS8ML4NPAvGLc2M9dmtGxAwdw7u5r9eOHC9TmvKv_XKjlQXBVUU1ipH3PLo68Qahe_UCCDGR9UVvhwCVZu73Tw7RoypCJ","","2jfOskaNAT98caH1p41b0bDRuPFc6tFK_0fVYQfBdVEhoFP5RrJO3CIs3","vEarUd","gkZYSPTiBr8ASuDiXFkkGQru_z5veYwm8WfGS3hew53b3t_QJM5UT9BmURD9wAso6LQfHeg2UvkOJe","","v&32","KWyjLkMXcsKiYYf_9Tm3X9dzNmgWTOHwkbK)J1zl0AyAdbFdAZPTYYVvwK3Txhh5W03QH5HFKS8l2og1Hjr7vt3iAJj25LojmhPn","SDdaAiquH7DMtiTax9P23nd6qnJ5LZigpnSXkLL_2Gbo7DQaa9eO","9n8D9_9oCtVPQvw6kjEaq0BxeiYzXs","FMOTMgY0","vYD_sAxtJLf1R","zEoTWZed2RbsCcUdjS~NJgkDoLO4AROrQzZHJ4QJH","lzCV8xWMLE9Ft","UXtma8Aqa1u5_iGkoalTZPbFAAcrpgWowZpd7_VtbnpzUtM8VCYs_D8GRpmTWdx8AYTcXaODGwTj7rEEfOiq8EnUzmHwiQKZW94l","GFXC3om3XYhCOuUCjXqFQ_Sd42_hGDyRfaOrBwkvJ7CdjlGa5ZICNtVB0mBpCrWfUqxj","kWbcEwGxHAK2Vx67_1Sd","bGqAWoLZP6K3ENjYbhfn)_qT6daVaorDbdGz","Bu3EdidoeutVTvNFDMftVwyfTG8tofk546COH6R2QYYGAAEWOcxTyS0Roj7QEZpiijqLszAKQt1OZ|dt6N07","LMAi6nb8zrOv_did3DpqItV7sWZ1x88i75rJrCn4Fu2I50BP4Rxtt36FGxFxiNEc2sT1geO74Son2Tnfxnr"]
+["pharmacyqj+;Xof-:_H,&NvF;\\_XPx2\"Kf#@+AjfO$h `!^r,Li %b!Qa!EVN?cwoZhW)JhG'","pharmacy","restaurant","restaurant","pharmacy ","electronics","grocery","electronics","enJi Lpgo&K)UEGo*crSm4% %o_YUD.IT","&327 U\"YP20/QG|rS.#I4RSu.B%^","pharmacy","electronics","grocery","grocery","electronics","pharmacy","electronics","pharmacy","electronics","restaurant","electronics","electronics","grocery","food","grocery","electronics","grocery","Fr","grocery","grocery","electronics","!w<\";7xidZ=J$(JiGGglkWs_~rV.3%AcL[&-;<R@bNfUG","pharmacy","restaurant","grocery","electronicsx","restaurant","pharmacy","electronics","grocery","pharmacy","pharmacy","wF)uRYXM'Se_hhwRE9dyyD'EmJ{ZF!!AylB?>IZFeFg-PdFy%25(GVJC:Z0yNu\\c.!Re`z't-","food","grocerymO>I'lHo`3T_:Zy@W~ZU6m07LX=<\\QW$!Hmjb-YyRSR><","electronics","grocery","electronics!'=JpA`Xe)>>H<l:j6Uq?%vQ'Dl`J\"3|s*rVDAti\"I}8{*y|J<7qR","restaurant","grocery","pharmacy ","","grocery"," grocery","pharmacy ","pharmacy","restaurantG6?>ZUjc$n6#.&!0IOa","restaurant","W@A`.39d_-K0t*u8VRFmt*0B![5t@f5o,KPS5WuTg/Ux!WVxEwq^&F>;gU?*^!6,J0ZqLE0rxz(zwj-qhRVyjprq+Iz# Pz`=t","electronic","electronicsx","electronics","electronics","pharmacy7L~nj\"gS*yv<ene?', MRm","pharmacy","electronics","grocery","restaurantz!yH`1jf)8&2=0:b\"r&W!8w_3TUdHIx[@`{[GUo@tu?(KC!9foCfC%1Tl}-5lCaQj;Y#5QJDncQ","QW<g.b2CbT_|0Tu","restaurant","electronics","electronics4(>324y9.\"3_:<HDYO;jYp7uK#V$e_1c=J","electronics?*HdIy,G4KpYp`5DP96qrcEOC!=a\"L","grocery76W@~uI5)EGft@4W,F,u5K:HK.\":W2HJMcw)_/w.~LH$t|<BePWY@\"XyGgF","^cmh/H[gl6b~3X)TEgNiy^/@y`/+p*{.GTh1gY","restaurant","food","grocery","groceryto4/{M/Eq!LP*Yc5dt-a}.f","electronics}?V~vh@ SyJw\"OEN)S-}i?&3Lt7 r(\\(GK ~olw>QMVt)$=*Pu271uv;}BdF=oN74F\\d","electronics","grocery","electronics","electronicsYjm/`yd>S~U#%CQ(v'CVVZKtsM_Gbd.B)zT{WA.E_|X*m:zGf{&AfEG{G#P/U9cI(9HYQUBJJa4%[=s9axz3~l","pharmacy","electronics","electronics","grocery","pharmacy","electronics","pharmacy ","restaurant","restaurant","grocery","vSV|}nvFi:-{O(.","electronics","pharmacy","Grocery","+zp>X\\i:N<hAq#csQNx' /B#`<=UqI9`ziV#j(MPFaHKdVOjJ","restaurant"]
+[true,true,true,true,false,true,true,true,true,false,true,true,false,false,true,true,true,true,true,true,true,false,true,true,true,true,true,true,false,true,true,false,true,false,true,true,true,true,true,true,true,true,true,true,true,false,false,false,true,true,true,true,false,false,false,true,true,true,true,false,false,true,false,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,false,true,true,true,false,true,false,true,true,true,true,true,true,true,true,true]
+=> ["2jfOskaNAT98caH1p41b0bDRuPFc6tFK_0fVYQfBdVEhoFP5RrJO3CIs3","35BPyWY_2pybgdmaJ4PY4rmcVFRX4SmH2YW6qwqGNPuIceq0Uw8wC","45yApuTjKL0ubSDwzamhg","9n8D9_9oCtVPQvw6kjEaq0BxeiYzXs","BLTLITzYjIpkDiOZ8jsKMBj67j_wEzIdScDfSVgdUoWSxNu49P4KAGVBhrriaOOigsPeE_1KOP_XTc0XPwjVq2aUPhR1r_CtXs5F","GFXC3om3XYhCOuUCjXqFQ_Sd42_hGDyRfaOrBwkvJ7CdjlGa5ZICNtVB0mBpCrWfUqxj","LG5TmQaCfKb1I91PYYzOt5HKWGHk3AaxfcE62JT5CmSQ87B9XD7Yu","S8WqlH1lD8nTHSmq5MQx01EvGytTC9e2jkMfBBhpM9PCSNM","VzM8rXhzS8ML4NPAvGLc2M9dmtGxAwdw7u5r9eOHC9TmvKv_XKjlQXBVUU1ipH3PLo68Qahe_UCCDGR9UVvhwCVZu73Tw7RoypCJ","_F2NLuuO7z45NHGQ8Dd9DUJiaB7JuwIBJBom6JYW6eCbQAAUOl2slMluK3pG9AnVjq3akmQLrLTnUt8cpbJv0Eom5rVdxbW8ARC","aIqjtcNMxI6iNoA6j9G58DH19Q_r25R7aTdNXBWn2Ba7ml6SSS4eDIuRyt1bG","h0CjQIOUzbrexQQWbzZWSmxTeyVbmDhh33XKLtGK8eEky9get99P022Jgt8IMBuj6pjVl969y4Ye2Gm8ltPzK9b9e4r0sen27Uny","oWIMGwrHizGuDQkLgCKWkrZQvFHPy1D_IpyzNryzwymJRkn7v8E8ACou7TMablMeE0ECIFwe0Fkj7dnwtbEi_dFIOL38","yuxBpxGuQ_8hiyv41ijG4TedMtCQ0zxl6dwFOXrNcmkNWuVKtoTK29XdZAY4NSQXOV5h0F5AQxaxAPuHfSSDFSdan89Y","CvW5K4pB0tdUHhP0oHnFQFzvZPaWxiOHBsOA7VV7GVX8WWP3BQ102txJL8ADv7zOpkjgid5BfhSdLYTj7FTlfNyhT_c6VBnKd5Ev","FUnILvNslQ7j34W5fAqnA9TtMlFb4JBOoEs4hRkAlam0svkvJERyOwLsLhAJQp8BYWfsFP4KxrTPoveGsfUPrdLIV0eWGI","FdBurWGWwx0jIJW9FPChbbP3","LqBT3wLH_JUs1RAm9f","bZavmA1LjtyNcjq","lzCV8xWMLE9Ft","nGX1AHk6kG","v3aXBtwT4otHANMhUb7qcfGqiu1CW","5gQdMX1Ro6E2","A7IgOvCFFPOXbAGY3UPQATvVk_9o5LbZvvu5DjqyCzrz4oBuNXT2gD8yVCyV3hVhl3YTQ0s7tKII7KyPu9Edf7LfJBSiicCQN6ng","ANGHdJnpBO_H3z68nHveEiTpkC_ZpnCGt","L9Rg9oU","ZTEu_oc_sweF1ksUUXyJ5s2WyudAsqdqEXG0d4sKvp5hKI6sgkzW6OUdy3F42VwatqUPsHQKMYiSSdbMg2Va5z4ewpGMD1skiM1e","csPOm7SbsIdJQPYLdJBs","eyi5aMaPvWTRLo8zck4cFt4fAQ4FyBriukY24J20jVXbHffro4wCmREA_FTEpF","kWbcEwGxHAK2Vx67_1Sd","rerHFxv9_hzdR45x3nfW6bWShv1YmpVtnBci3M61iwYkguSinob5udQe1iWLFhoYwKkfNzk7","37f3hOEqCAqAU6wYMSrangBmuLCRxw02C9ctDGXJ4WzjrbGU5gAPuDP8bejzHi","6LlTJddWLohFjGjXZqvgU71lFBk1WwUHHVXJpIRzvCSshk8LG5_hh8ZzyFrTw88ZOdo1y0Nc_ssrbfHPl0JHQDxEMZHb_Zke19SW","6cGojc3ZlGcmuTu2CIYo5QTujI3UroKOqwJ1PMbcKX2US9zd","Fr6p5mVlWN8ApV3Y4twVrQUvcR2edPzzjG","LMAi6nb8zrOv_did3DpqItV7sWZ1x88i75rJrCn4Fu2I50BP4Rxtt36FGxFxiNEc2sT1geO74Son2Tnfxnr","Uwu8GJDi9ouvoo1Hl4E_Rf","oBMZsTfnlp57mpGJA53snPHZU5vW3MWJcsO3ZaILW8i1W8VIYUC","vYD_sAxtJLf1R"]
