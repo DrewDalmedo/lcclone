@@ -2,7 +2,7 @@ id: 812
 slug: largest-triangle-area
 title: Largest Triangle Area
 difficulty: easy
-tags: geometry, array, math, polygon
+tags: geometry, array, math
 signature: double largestTriangleArea(int[][] points)
 ---
 Each `points[i] = [x, y]` is a point of the plane with whole-number

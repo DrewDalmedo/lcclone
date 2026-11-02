@@ -1,4 +1,4 @@
 --- stdout
-lc 0.1.0-dev
+lc 0.6.0
 --- stderr
 --- exit 0

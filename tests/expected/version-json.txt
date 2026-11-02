@@ -1,4 +1,4 @@
 --- stdout
-{"schema":1,"version":"0.1.0-dev"}
+{"schema":1,"version":"0.6.0"}
 --- stderr
 --- exit 0
