@@ -70,6 +70,38 @@
 #include <span>
 #endif
 
+// Macros that glibc's headers don't define, even for g++, and so a
+// solution may use their names, as on LeetCode: say `enum { OVERFLOW,
+// UNDERFLOW };`. macOS's <math.h> has the old SVID ones (DOMAIN, OVERFLOW,
+// HUGE, ...), its <limits.h> BSD ones (QUAD_MAX, SIZE_T_MAX, OPEN_MAX, ...)
+// and its <stdio.h> fropen and fwopen; musl's <math.h> has HUGE. The C
+// prelude #undefs the same ones. No standard library header uses them, and
+// where they aren't defined this does nothing. (The C prelude also hides
+// the functions those headers add, but C++ needs no such thing for helpers
+// named mergesort or heapsort: with other parameter types they overload.)
+#undef DOMAIN
+#undef SING
+#undef OVERFLOW
+#undef UNDERFLOW
+#undef TLOSS
+#undef PLOSS
+#undef X_TLOSS
+#undef HUGE
+#undef CHILD_MAX
+#undef CLK_TCK
+#undef GID_MAX
+#undef OFF_MAX
+#undef OFF_MIN
+#undef OPEN_MAX
+#undef PASS_MAX
+#undef QUAD_MAX
+#undef QUAD_MIN
+#undef SIZE_T_MAX
+#undef UID_MAX
+#undef UQUAD_MAX
+#undef fropen
+#undef fwopen
+
 using namespace std;
 
 #ifdef LC_LISTNODE

@@ -153,13 +153,17 @@ usual C headers (`stdio.h`, `stdlib.h`, `string.h`, `stdbool.h`,
 `stdint.h`, `limits.h`, `math.h`, `ctype.h` and a few more) and
 [uthash](https://troydhanson.github.io/uthash/), the hash table macros
 (`HASH_ADD_INT`, `HASH_FIND_STR` and the rest) LeetCode's C environment
-has. Writing `#include "uthash.h"` yourself works too. On macOS the C
-prelude hides the BSD functions macOS's headers add and glibc's don't,
-such as `heapsort`, `mergesort` and `strnstr`, so a solution can name its
-own helpers after them, as on LeetCode. The C++
-prelude includes the standard headers one by one, plus the C++17 and C++20
-ones when the standard has them, and says `using namespace std;`. Both are
-in `runtime/`.
+has. Writing `#include "uthash.h"` yourself works too. The C prelude
+hides the functions and macros that macOS's and musl's headers add and
+glibc's don't, such as `heapsort`, `mergesort`, `strnstr`, `qsort_r` and
+`OVERFLOW`, so a solution can name its own helpers after them, as on
+LeetCode. The C++ prelude includes the standard headers one by one, plus
+the C++17 and C++20 ones when the standard has them, and says `using
+namespace std;`. It hides those macros too. A C++ helper named like one of
+those functions is an overload, so it builds; only a free function with
+the very parameter types of one, such as `int isnumber(int)` or `bool
+fls(int)` on macOS, still clashes, and a member function never does. Both
+preludes are in `runtime/`.
 
 **`--sanitize`** builds with AddressSanitizer and UndefinedBehaviorSanitizer
 (where the compiler has them), so out-of-bounds accesses, use after free

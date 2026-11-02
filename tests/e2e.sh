@@ -766,12 +766,22 @@ expect_run "lc test sig.cpp" 2 '^    int Solution::add(int a, int b)$' \
 # declares and glibc doesn't: the C prelude hides them, as on LeetCode.
 expect_run "lc submit bsd.c" 0 '^Accepted: 5/5 cases passed' \
     -- submit $J/bsd.c
+# Helpers named qsort_r, setkey, ptsname and others that musl declares and
+# glibc doesn't: elsewhere than macOS, the C prelude hides those.
+expect_run "lc submit musl.c" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/musl.c
+# Names that are macros on macOS (OVERFLOW, QUAD_MAX, ...) or musl (HUGE)
+# and not on glibc: the C++ prelude #undefs them, as the C prelude does.
+expect_run "lc submit macros.cpp" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/macros.cpp
+expect_run "lc submit macros.cpp --std=max" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/macros.cpp --std=max
 # It hides them by defining each as a macro while it includes the headers;
 # none may be left after it.
 # shellcheck disable=SC2086 # CC may be several words
 if $E2E_CC -std=c11 -Iruntime/c -E -dM runtime/c/lc_prelude.h \
     >"$TMP/prelude.dM" 2>"$TMP/err"; then
-    if grep lc_darwin_ "$TMP/prelude.dM" >"$TMP/left"; then
+    if grep -E 'lc_(darwin|libc)_' "$TMP/prelude.dM" >"$TMP/left"; then
         bad "C prelude macros" "still defined: $(head -n 3 "$TMP/left")"
     else
         ok
@@ -1281,6 +1291,26 @@ expect_run "cflags: lc test" 0 '^Accepted: 3/3' LC_CONFIG="$CFG/flags" \
     -- test "$TMP/flags/0010-add/solution.c"
 expect_run "no cflags: lc test" 2 '^Compile Error' \
     -- test "$TMP/flags/0010-add/solution.c"
+# With -D_GNU_SOURCE, glibc and musl declare GNU's qsort_r, and the C
+# prelude leaves it alone. (macOS's qsort_r is another, and stays hidden.)
+if [ "$(uname -s)" != Darwin ]; then
+    mkdir -p "$TMP/gnu/0010-add"
+    cat >"$TMP/gnu/0010-add/solution.c" <<'EOF'
+static int cmp(const void *x, const void *y, void *sign) {
+    return *(const int *)sign * (*(const int *)x - *(const int *)y);
+}
+
+int add(int a, int b) {
+    int v[2] = {a, b}, up = 1;
+    qsort_r(v, 2, sizeof v[0], cmp, &up);
+    return v[0] + v[1];
+}
+EOF
+    printf '1\n2\n' >"$TMP/gnu/0010-add/cases.txt"
+    printf 'cflags = -D_GNU_SOURCE\n' >"$CFG/gnu"
+    expect_run "cflags = -D_GNU_SOURCE: lc test qsort_r" 0 '^Accepted: 3/3' \
+        LC_CONFIG="$CFG/gnu" -- test "$TMP/gnu/0010-add/solution.c"
+fi
 # editor, lang, open_statement and workspace for lc start.
 printf 'editor = %s -y\nlang = c\nopen_statement = yes\nworkspace = ~/cfgws\n' "$TMP/ed.sh" >"$CFG/start"
 run LC_CONFIG="$CFG/start" LC_WORKSPACE= LC_PROBLEMS=problems VISUAL=no-such-editor \
