@@ -1,0 +1,117 @@
+# Largest Integer With Given Digit Sum. -1 means no integer qualifies.
+
+@example 9 + 9 + 2 = 20, and 993 to 999, the only larger numbers with at most three digits, add up to more.
+3
+20
+=> 992
+
+@example Using all four digits gives the most room: 3000 beats 2100, 300 and 3.
+4
+3
+=> 3000
+
+@example Four digits add up to at most 4 * 9 = 36, which is less than 37.
+4
+37
+=> -1
+
+# s = 0: only 0 itself qualifies.
+1
+0
+=> 0
+
+4
+0
+=> 0
+
+# One digit: s from 0 to 9 works, 10 is too much.
+1
+9
+=> 9
+
+1
+10
+=> -1
+
+# Every digit a 9, at s = 9 * n.
+2
+18
+=> 99
+
+4
+36
+=> 9999
+
+5
+45
+=> 99999
+
+# One more than 9 * n.
+3
+28
+=> -1
+
+5
+46
+=> -1
+
+# The largest s.
+5
+100
+=> -1
+
+# A small s still uses every digit, followed by zeros.
+5
+1
+=> 10000
+
+# The left-over digit sits between the nines and the zeros.
+5
+31
+=> 99940
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 2 small
+2
+2
+=> 20
+
+@gen 4 small
+4
+7
+=> 7000
+
+@gen 8 small
+2
+17
+=> 98
+
+@gen 12 small
+5
+18
+=> 99000
+
+@gen 14 small
+1
+40
+=> -1
+
+@gen 20 small
+3
+18
+=> 990
+
+@gen 1
+5
+97
+=> -1
+
+@gen 3
+5
+2
+=> 20000
+
+@gen 9
+5
+74
+=> -1

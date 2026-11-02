@@ -1,0 +1,98 @@
+# Digit Frequency Score.
+
+@example 4 occurs three times and scores 4 * 3 = 12; 8 occurs once and scores 8.
+4448
+=> 20
+
+@example The two 3s score 6 between them, and the three 0s score nothing.
+30300
+=> 6
+
+@example A single digit scores its own value.
+7
+=> 7
+
+# The smallest n.
+1
+=> 1
+
+# The largest n, ten digits: a single 1 and nine 0s.
+1000000000
+=> 1
+
+# The largest score: nine 9s.
+999999999
+=> 81
+
+# One digit repeated: counting each distinct digit once would give 2.
+222222222
+=> 18
+
+# One 2 and three 3s: 2 + 3 * 3. Squaring the counts, or counting only how
+# often digits occur, gives other totals.
+2333
+=> 11
+
+# Every digit from 1 to 9 once.
+123456789
+=> 45
+
+# Non-zero digits only at the two ends.
+900000009
+=> 18
+
+100000001
+=> 2
+
+# Zeros between the other digits.
+908070605
+=> 35
+
+# Two digits taking turns: five 9s and four 8s.
+989898989
+=> 77
+
+# A trailing zero.
+10
+=> 1
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 1 small
+509
+=> 14
+
+@gen 2 small
+888868666
+=> 64
+
+@gen 3 small
+2
+=> 2
+
+@gen 4 small
+88818
+=> 33
+
+@gen 5 small
+99
+=> 18
+
+@gen 8 small
+995
+=> 23
+
+@gen 7 small
+804
+=> 12
+
+@gen 1
+999999939
+=> 75
+
+@gen 2
+822611637
+=> 36
+
+@gen 3
+600000005
+=> 11

@@ -1,0 +1,108 @@
+# Three Fibonacci Sum.
+
+@example 8, 13 and 21 are the terms F(6), F(7) and F(8), side by side, and 8 + 13 + 21 = 42.
+42
+=> true
+
+@example Neighbouring triples jump from 26 (5 + 8 + 13) straight to 42 (8 + 13 + 21). The terms 1, 8 and 21 do add up to 30, but they sit far apart.
+30
+=> false
+
+@example 21 is a Fibonacci number itself, but no three neighbouring terms add up to it.
+21
+=> false
+
+# The smallest n.
+1
+=> false
+
+# The group F(0) + F(1) + F(2) = 0 + 1 + 1.
+2
+=> true
+
+# The group F(1) + F(2) + F(3) = 1 + 1 + 2, using both 1s.
+4
+=> true
+
+# Three Fibonacci numbers that aren't neighbours: 2 + 5 + 13 and 1 + 3 + 8.
+20
+=> false
+
+12
+=> false
+
+# A Fibonacci number, but not a sum of three neighbours.
+144
+=> false
+
+# A sum of three neighbours that is not a Fibonacci number: 89 + 144 + 233.
+466
+=> true
+
+# One more than 42: halving it and rounding down would give 21.
+43
+=> false
+
+# The largest sum below 10^9: 165580141 + 267914296 + 433494437.
+866988874
+=> true
+
+# Just above it.
+866988876
+=> false
+
+# The sum before it: 102334155 + 165580141 + 267914296.
+535828592
+=> true
+
+# The largest n.
+1000000000
+=> false
+
+# F(42), an even Fibonacci number: n / 2 = 133957148 is not one, but
+# 5 * 133957148^2 + 4 lies within rounding of a perfect square, so a square
+# test done in floating point takes it for one.
+267914296
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+113
+=> false
+
+@gen 2 small
+7
+=> false
+
+@gen 3 small
+41
+=> false
+
+@gen 4 small
+70
+=> false
+
+@gen 5 small
+68
+=> true
+
+@gen 7 small
+26
+=> true
+
+@gen 10 small
+44
+=> false
+
+# Full size: numbers up to 10^9.
+@gen 2
+35422
+=> true
+
+@gen 4
+999999900
+=> false
+
+@gen 6
+1028457
+=> false

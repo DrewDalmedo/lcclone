@@ -1,0 +1,117 @@
+# Unique Middle Element.
+
+@example The centre holds 8, found nowhere else; 6 and 2 repeat, but neither is at the centre.
+[6,2,8,6,2]
+=> true
+
+@example The centre (position 3) holds 5, and so does position 5.
+[9,4,1,5,9,5,3]
+=> false
+
+@example A single entry is the centre, and nothing else can share its value.
+[42]
+=> true
+
+# The smallest input, at both ends of the value range.
+[1]
+=> true
+
+[100]
+=> true
+
+# All entries equal.
+[5,5,5]
+=> false
+
+# 100 at the centre, with a copy (a count table of 100 slots indexed by
+# value would overflow), and 100 repeated around a lone centre.
+[100,100,1]
+=> false
+
+[100,1,100]
+=> true
+
+# The only copy of the centre's value is far away: at the very start, or
+# at the very end. Its neighbours differ from it.
+[4,1,2,3,4,5,6,8,9]
+=> false
+
+[3,8,6,1,2,9,1]
+=> false
+
+# The entry just after the centre has a copy, but the centre doesn't.
+[2,3,5,4,4]
+=> true
+
+# The other way round: the centre has a copy, the entry after it doesn't.
+[3,8,7,1,7]
+=> false
+
+# Sorting first would put another value at the centre: 3 (alone) here...
+[1,9,9,2,3]
+=> false
+
+# ... and 4 (repeated) here.
+[4,4,1,6,7]
+=> true
+
+# Every position but one holds the same value: the centre's, or not.
+[8,8,8,8,8,8,3]
+=> false
+
+[8,8,8,1,8,8,8]
+=> true
+
+# 99 different values: the centre (position 49) holds 14.
+[1,38,75,12,49,86,23,60,97,34,71,8,45,82,19,56,93,30,67,4,41,78,15,52,89,26,63,100,37,74,11,48,85,22,59,96,33,70,7,44,81,18,55,92,29,66,3,40,77,14,51,88,25,62,99,36,73,10,47,84,21,58,95,32,69,6,43,80,17,54,91,28,65,2,39,76,13,50,87,24,61,98,35,72,9,46,83,20,57,94,31,68,5,42,79,16,53,90,27]
+=> true
+
+# The same, but the last entry is a second 14.
+[1,38,75,12,49,86,23,60,97,34,71,8,45,82,19,56,93,30,67,4,41,78,15,52,89,26,63,100,37,74,11,48,85,22,59,96,33,70,7,44,81,18,55,92,29,66,3,40,77,14,51,88,25,62,99,36,73,10,47,84,21,58,95,32,69,6,43,80,17,54,91,28,65,2,39,76,13,50,87,24,61,98,35,72,9,46,83,20,57,94,31,68,5,42,79,16,53,90,14]
+=> false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+[1,6,100,7,100]
+=> false
+
+@gen 3 small
+[6,8,4,6,5,2,1]
+=> false
+
+@gen 4 small
+[8,100,2,8,5,4,3]
+=> false
+
+@gen 5 small
+[7,100,1]
+=> true
+
+@gen 8 small
+[3,2,4,5,2]
+=> true
+
+@gen 9 small
+[6,1,100,8,7]
+=> true
+
+@gen 10 small
+[1,1,1,2,2,4,1]
+=> false
+
+@gen 11 small
+[1,1,3,2,3]
+=> false
+
+# Random full-size cases: 99 entries.
+@gen 22
+[77,63,48,26,58,76,1,7,62,9,28,71,87,33,43,72,47,50,100,22,54,3,49,96,82,27,67,30,61,44,51,74,34,19,99,16,91,85,42,81,36,89,10,25,13,69,14,83,57,64,70,52,18,66,56,97,75,24,4,35,12,38,40,20,60,94,23,8,92,21,65,80,31,55,5,53,98,41,37,68,46,17,93,32,88,95,90,86,84,39,11,59,79,15,73,6,45,78,64]
+=> false
+
+@gen 25
+[59,40,10,72,29,67,73,11,80,66,15,7,60,31,99,23,8,45,56,86,93,65,78,55,50,18,43,94,17,5,82,38,37,83,90,48,46,19,24,39,52,47,58,61,6,77,95,85,71,100,32,49,51,33,68,89,4,3,16,34,20,98,42,41,74,21,28,27,96,75,91,88,53,92,9,84,22,26,35,13,76,54,62,63,97,36,44,1,12,57,79,64,81,70,87,30,14,25,69]
+=> true
+
+@gen 31
+[76,14,39,8,24,91,69,87,77,75,56,98,97,99,11,70,2,41,68,90,38,1,21,37,78,3,9,48,40,72,44,64,95,100,81,12,53,18,27,63,42,92,82,55,62,83,43,7,4,37,57,29,61,16,30,67,47,93,32,54,60,23,80,50,71,19,85,5,22,13,73,17,49,33,6,65,94,25,59,28,34,35,88,36,31,84,96,15,86,45,46,74,51,89,66,26,20,58,79]
+=> false

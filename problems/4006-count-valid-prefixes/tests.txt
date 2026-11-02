@@ -1,0 +1,90 @@
+# Count Valid Prefixes.
+
+@example Only "11" fails: two 1s and no 0 can't be kept apart. "110", for one, can be laid out as "101".
+"1100101"
+=> 6
+
+@example The valid ones are "0", "00011" (as "01010") and "000111" (as "010101").
+"000111"
+=> 3
+
+@example Every prefix can be laid out, e.g. "011" as "101" and "01101" as "10101".
+"01101001"
+=> 8
+
+# A single character.
+"0"
+=> 1
+
+"1"
+=> 1
+
+# All characters equal: only the first prefix is valid.
+"1111111"
+=> 1
+
+"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+=> 1
+
+# Odd lengths: "100" is valid although its counts differ, and it is not
+# alternating as it stands.
+"100"
+=> 3
+
+# More 1s than 0s; the whole string is not valid.
+"1101"
+=> 2
+
+# Not alternating as it stands, but "1100" can become "1010".
+"1100"
+=> 3
+
+# Validity goes off and comes back several times; the whole string is not
+# valid.
+"1110001100001111"
+=> 10
+
+# Already alternating: every prefix is valid.
+"1010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010"
+=> 100
+
+# Every prefix is valid, though most aren't alternating as they stand.
+"0110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110"
+=> 100
+
+# Fifty 0s, then fifty 1s: valid only at lengths 1, 99 and 100.
+"0000000000000000000000000000000000000000000000000011111111111111111111111111111111111111111111111111"
+=> 3
+
+# Random cases from gen.c (lc check --regen makes them).
+@gen 13 small
+"100001101"
+=> 5
+
+@gen 2 small
+"01010"
+=> 5
+
+@gen 3 small
+"001110000111"
+=> 8
+
+@gen 4 small
+"00100010"
+=> 2
+
+@gen 5 small
+"0110110101"
+=> 7
+
+@gen 6 small
+"1010110101"
+=> 7
+
+@gen 1
+"1001101010101001011011010100110010011001011010101010100110010101001010110101001101010101100101011010"
+=> 92
+
+@gen 2
+"0000000000000000000000011111111100000000000000000000000000011111111111111111111111110000000111111111"
+=> 1
