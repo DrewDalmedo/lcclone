@@ -799,6 +799,9 @@ expect_run "lc submit posix.cpp --std=max" 0 '^Accepted: 5/5 cases passed' \
 # works under a zone with daylight saving time too.
 expect_run "TZ=EST5EDT lc submit tz.c" 0 '^Accepted: 5/5 cases passed' \
     TZ=EST5EDT,M3.2.0,M11.1.0 -- submit $J/tz.c
+# <regex> comes without an #include, as with LeetCode's <bits/stdc++.h>.
+expect_run "lc submit regex.cpp" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/regex.cpp
 expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp" 0 '(C++, c++17)$' \
     LC_CXXSTD=c++17 -- test $J/cxx17.cpp
 expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp --std c++14" 2 \
