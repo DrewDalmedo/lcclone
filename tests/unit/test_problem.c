@@ -15,6 +15,9 @@
 #define TMP "tests/tmp/problem"
 #define FIXTURES "tests/fixtures/problems"
 #define BAD "tests/fixtures/bad"
+/* Room for a path: many are absolute, and the checkout's own path can be
+ * long. */
+#define PATH_BUF 4096
 
 /* The four required fields; the next header line is line 5. */
 #define HDR(id, slug) "id: " id "\nslug: " slug "\ntitle: T\ndifficulty: easy\n"
@@ -66,7 +69,7 @@ static const char *new_root(void)
 /* Creates root/name, with problem.md holding `md` unless it is NULL. */
 static void add_pack(const char *root, const char *name, const char *md)
 {
-    char path[512];
+    char path[PATH_BUF];
 
     snprintf(path, sizeof path, "%s/%s", root, name);
     make_dir(path);
@@ -104,7 +107,7 @@ static const char *pdir(const lc_ctx *ctx)
 static void expect_bad(const char *name, const char *md, const char *suffix)
 {
     const char *root = new_root();
-    char want[1024];
+    char want[PATH_BUF];
     lc_ctx *ctx;
 
     add_pack(root, name, md);
@@ -167,7 +170,7 @@ static void check_fallback(const char *xdg_tried)
 {
     lc_arena a = {0};
     lc_ctx *ctx = open_dir(NULL);
-    char want[2048];
+    char want[PATH_BUF];
     int rc = lc_load(ctx);
 
     if (lc_is_dir(LC_DATADIR "/problems")) {
@@ -295,7 +298,7 @@ static void test_empty_and_ignored(void)
 {
     lc_arena a = {0};
     const char *root = new_root();
-    char path[512], target[512];
+    char path[PATH_BUF], target[PATH_BUF];
     lc_ctx *ctx;
 
     /* An empty directory is fine. */
@@ -373,7 +376,7 @@ static void test_fixture_tree(void)
     lc_ctx *ctx = load_dir(FIXTURES);
     const char *abs = lc_realpath(&a, FIXTURES);
     const lc_problem *p;
-    char want[512];
+    char want[PATH_BUF];
     size_t i;
 
     CHECK_STR(lc_problems_dir(ctx), abs);
@@ -525,7 +528,7 @@ static void test_bad_tree(void)
     static const char *const slugs[] = {"alpha", "delta", "epsilon"};
     size_t nw = sizeof warnings / sizeof warnings[0], i;
     lc_ctx *ctx = load_dir(BAD);
-    char want[1024];
+    char want[PATH_BUF];
 
     CHECK_INT(lc_warning_count(ctx), nw);
     for (i = 0; i < nw && i < lc_warning_count(ctx); i++) {
@@ -709,7 +712,7 @@ static void test_nul_byte(void)
     static const char md[] = "id: 1\nslug: a\ntitle: T\ndifficulty: easy\n"
                              "---\nText\0more\n";
     const char *root = new_root();
-    char path[512], want[1024];
+    char path[PATH_BUF], want[PATH_BUF];
     lc_ctx *ctx;
     FILE *f;
 

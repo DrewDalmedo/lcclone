@@ -3,7 +3,9 @@
  * build and gives the generated harness a reader and a writer for each
  * type, in LeetCode's C conventions: an array comes with its size, a 2D
  * array with its row count and an array of row sizes, and everything is
- * malloc'ed, so a solution may modify or keep what it is given.
+ * malloc'ed, so a solution may modify, keep, realloc or free what it is
+ * given. lc_rt_libc.h, before the solution, notes which array parameters
+ * it reallocated or freed.
  *
  * Writers take the solution's function name, for the message when what
  * the solution returned can't be written, such as a NULL array. For a
@@ -150,15 +152,28 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
  * of a 2D array get LC_RT_SPARE. lc_check_N_end, called after the
  * solution returns, fails when the spare element is no longer all zero
  * bits, and does nothing when there is none.
+ *
+ * An array parameter (lc_read_N_array, not the rows of a 2D one) is
+ * watched: once the solution has freed or reallocated it, its memory is
+ * no longer the harness's to read. lc_check_N_end then leaves it alone,
+ * and lc_write_N_array fails if it is the parameter that holds the result
+ * (check:), whose memory LeetCode's harness would read after it was
+ * freed: AddressSanitizer reports that as a heap-use-after-free there.
  */
 #define LC_RT_ARRAYS(N, T, SPARE)                                          \
-    LC_RT T *lc_read_##N##_array(int *size)                                \
+    LC_RT T *lc_rt_read_##N##_items(int *size)                             \
     {                                                                      \
         int n = lc_rt_count(), i;                                          \
         T *a = (T *)lc_rt_alloc((size_t)n + (SPARE), sizeof *a);           \
         for (i = 0; i < n; i++)                                            \
             a[i] = lc_read_##N();                                          \
         *size = n;                                                         \
+        return a;                                                          \
+    }                                                                      \
+    LC_RT T *lc_read_##N##_array(int *size)                                \
+    {                                                                      \
+        T *a = lc_rt_read_##N##_items(size);                               \
+        lc_rt_watch(a);                                                    \
         return a;                                                          \
     }                                                                      \
     LC_RT T **lc_read_##N##_array2(int *size, int **colSizes)              \
@@ -168,7 +183,7 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
         int *cols =                                                        \
             (int *)lc_rt_alloc((size_t)n + LC_RT_SPARE, sizeof *cols);     \
         for (i = 0; i < n; i++)                                            \
-            a[i] = lc_read_##N##_array(&cols[i]);                          \
+            a[i] = lc_rt_read_##N##_items(&cols[i]);                       \
         *size = n;                                                         \
         *colSizes = cols;                                                  \
         return a;                                                          \
@@ -176,6 +191,9 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
     LC_RT void lc_write_##N##_array(const char *fn, T *a, int n)           \
     {                                                                      \
         int i;                                                             \
+        if (lc_rt_param && lc_rt_released(a))                              \
+            lc_rt_fail("%s freed or reallocated %s, which holds the "      \
+                       "result", fn, lc_rt_param);                         \
         lc_rt_check_size(fn, n);                                           \
         if (!a && n > 0)                                                   \
             lc_rt_fail("%s returned NULL, but *returnSize is %d", fn, n);  \
@@ -216,7 +234,8 @@ LC_RT void lc_rt_check_size(const char *fn, int n)
     {                                                                      \
         T zero;                                                            \
         memset(&zero, 0, sizeof zero);                                     \
-        if ((SPARE) > 0 && memcmp(&a[n], &zero, sizeof zero) != 0)         \
+        if ((SPARE) > 0 && !lc_rt_released(a) &&                           \
+            memcmp(&a[n], &zero, sizeof zero) != 0)                        \
             lc_rt_fail("%s wrote past the end of %s (%s[%d])", fn, param,  \
                        param, n);                                          \
     }

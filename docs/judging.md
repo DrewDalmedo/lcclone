@@ -14,12 +14,14 @@ the solution, and writes the result. The build is one source file made of:
 1. the **prelude** (`runtime/c/lc_prelude.h` or
    `runtime/cpp/lc_prelude.hpp`): the headers a LeetCode solution expects
    without `#include`, uthash in C, and `using namespace std;` in C++;
-2. `#line 1 "<your file>"`, then **your source**, so the compiler's
+2. in C, **lc's versions of a few C library functions**
+   (`runtime/c/lc_rt_libc.h`, [below](#the-c-library));
+3. `#line 1 "<your file>"`, then **your source**, so the compiler's
    messages give your file's own line numbers;
-3. the **runtime** (`runtime/common/lc_rt_core.h`, then `runtime/c/lc_rt.c`
+4. the **runtime** (`runtime/common/lc_rt_core.h`, then `runtime/c/lc_rt.c`
    or `runtime/cpp/lc_rt.cpp`): reading and writing the
    [wire format](wire.md) for every type;
-4. the **harness**, reported in messages as the file `lc_harness`. An error
+5. the **harness**, reported in messages as the file `lc_harness`. An error
    there means the solution's function doesn't match the problem's
    signature; `lc test` then prints the declaration it expected.
 
@@ -28,6 +30,28 @@ else on disk to build. Because it is one file, the C++ harness sees
 `class Solution`. The runtime adds no POSIX header such as `<unistd.h>`,
 and calls only functions the prelude's headers declare, so a solution may
 name its own helpers `read`, `write`, `sleep` or `nice`, as on LeetCode.
+
+**The C library.** LeetCode's C library is glibc. Where another one
+behaves differently in a way a solution can see, a C build calls a
+version of `lc`'s own, the same on every system:
+
+- **`qsort`** is glibc's merge sort. It is stable: elements that compare
+  equal keep their order. And it makes the same comparisons in the same
+  order as glibc's, so it also gives the same result with a comparator
+  that glibc's sort happens to work with, such as one that returns 1 for
+  "greater" and 0 otherwise, never less than 0. The `qsort` of macOS and
+  musl is neither, so a solution that relied on either got another answer
+  there than on LeetCode.
+- **`realloc` and `free`** note when the solution reallocates or frees an
+  array it was given, which it may, as on LeetCode
+  ([Verdicts](#verdicts)).
+
+Each is a macro for `lc`'s function from there on, so the compiler's
+messages about a call to one may name it `lc_rt_qsort`, `lc_rt_realloc` or
+`lc_rt_free`. C++ has no such thing: `std::sort` isn't stable, and libc++
+(Apple's clang) can leave equal elements in a different order than
+libstdc++ (g++, and LeetCode) does. A solution for which that order
+matters needs `std::stable_sort`, on LeetCode too.
 
 **Compiling.** C is built with `$CC -std=c11 -O2 -I. ... -lm` and C++
 with `$CXX -std=c++11 -O2` (`cc` and `c++` when the variables aren't set,
@@ -87,8 +111,13 @@ and no global state leaks from one case to the next.
 - **Signals** that the front-end ignores or blocks are reset to their
   defaults, so a solution that writes to a closed pipe dies of SIGPIPE as
   it would anywhere else.
-- **Environment.** The program inherits `lc`'s environment and runs in the
-  directory the caller chooses.
+- **Environment.** The program inherits `lc`'s environment, except that
+  `TZ` is `UTC0` (UTC, in POSIX's form, which needs no time zone files):
+  whatever the machine's time zone, a program runs in UTC, as on
+  LeetCode. A solution that counts days with `mktime` would otherwise be
+  a day short across the start of daylight saving time. Every program `lc`
+  runs gets this, compilers too. It runs in the directory the caller
+  chooses.
 
 The parent writes the input and reads the three outputs in a single
 `poll()` loop, so a large input can't deadlock against a large output. It
@@ -131,11 +160,24 @@ doubles from 128 MB to 256 MB under a 256 MB limit needs 384 MB while it
 copies. A failed allocation would show up as a crash, which says much less
 about what went wrong.
 
+Only memory the program has touched counts, as on LeetCode: memory it
+asks for and never uses costs nothing. In C, `calloc` of a huge block is
+cheap, because the C library gets a large block from the system already
+zeroed and the system hands out its pages only when they are first used;
+the same allocation as a C++ `vector`, which writes every element, counts
+in full. `lc` doesn't count memory that is only reserved: that would turn
+away solutions LeetCode accepts, and macOS has no limit that counts it.
+
 The same limits apply on every platform, with these differences:
 
 - **macOS** doesn't enforce `RLIMIT_AS`, so `lc` watches the program's
   memory itself, every 5 ms. It kills the program once the program passes
   the guard.
+- **Linux** enforces `RLIMIT_AS`, which counts memory the program has
+  reserved, used or not. So there an allocation larger than the guard
+  (576 MB under the default limit) fails even when the program would
+  barely touch it, and `malloc` returns NULL. On macOS the same allocation
+  works, and only the memory touched counts.
 - **macOS** caps `RLIMIT_STACK` at 64 MB, so a case gets 64 MB of stack
   there.
 - **Linux** counts, in a program's peak memory, what it inherited from
@@ -190,6 +232,15 @@ past the end of arr (arr[8])`. That is a Runtime Error too, shown with the
 message (and `lc check` adds the message to its finding). Built with
 AddressSanitizer, the harness leaves out the spare element it catches such
 writes with, and ASan reports them itself ([Sanitizers](#sanitizers)).
+
+A C solution may `realloc` or `free` an array it was given, as on
+LeetCode; say, `realloc(nums, 2 * numsSize * sizeof *nums)` to fill twice
+as many elements and return them. The harness then leaves that array
+alone, past its end too, since that memory is no longer the array's. The
+exception is the array that holds the result of a problem solved in
+place: the harness reads it after the call, which on LeetCode reads freed
+memory, a `heap-use-after-free`. `lc` stops instead: `lc: merge freed or
+reallocated nums1, which holds the result`.
 
 ## A run's report
 

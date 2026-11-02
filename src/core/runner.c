@@ -71,7 +71,7 @@ enum { S_IN, S_OUT, S_ERR, S_RES, NSTREAMS };
 typedef struct child_setup {
     const char *path;
     char *const *argv;
-    char *const *envp;        /* NULL: the caller's environment */
+    char *const *envp;        /* the program's environment */
     const char *cwd;
     int fd[NSTREAMS];         /* the child's ends, by stream; -1 for none */
     int status_fd;            /* write end of the exec status pipe */
@@ -91,6 +91,39 @@ static const int reset_signals[] = {
     SIGPIPE, SIGINT, SIGQUIT, SIGHUP, SIGTERM, SIGCHLD, SIGALRM,
     SIGUSR1, SIGUSR2, SIGTSTP, SIGTTIN, SIGTTOU, SIGXCPU, SIGXFSZ
 };
+
+/* POSIX leaves declaring it to the program. */
+extern char **environ;
+
+/*
+ * The time zone every program runs in: UTC, as on LeetCode's machines,
+ * whatever lc's own. A solution's localtime() and mktime() then give the
+ * same answers everywhere; under a zone with daylight saving time, a day
+ * can be 23 or 25 hours long. "UTC0" is POSIX's form, which needs no time
+ * zone files.
+ */
+#define RUN_TZ "TZ=UTC0"
+
+/* `env` (lc's environment when NULL) with TZ set to RUN_TZ, in `a`. */
+static char **run_env(lc_arena *a, char *const *env)
+{
+    size_t n = 0, i, k = 0;
+    char **out;
+
+    if (!env)
+        env = environ;
+    while (env[n])
+        n++;
+    out = lc_arena_array(a, n + 2, sizeof *out);
+    if (!out)
+        return NULL;
+    for (i = 0; i < n; i++)
+        if (strncmp(env[i], "TZ=", 3) != 0)
+            out[k++] = env[i];
+    out[k++] = RUN_TZ;
+    out[k] = NULL;
+    return out;
+}
 
 /* ------------------------------------------------------------------ */
 /* In the child                                                        */
@@ -192,10 +225,7 @@ static void run_child(const child_setup *cs)
 
     if (cs->cwd && chdir(cs->cwd) != 0)
         child_fail(st, STAGE_CHDIR);
-    if (cs->envp)
-        execve(cs->path, cs->argv, cs->envp);
-    else
-        execv(cs->path, cs->argv);
+    execve(cs->path, cs->argv, cs->envp);
     child_fail(st, STAGE_EXEC);
 }
 
@@ -593,8 +623,12 @@ int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r)
     argv0[0] = (char *)spec->path;
     argv0[1] = NULL;
     cs.argv = spec->argv ? spec->argv : argv0;
-    cs.envp = spec->envp;
+    cs.envp = run_env(&tmp, spec->envp);
     cs.cwd = spec->cwd;
+    if (!cs.envp) {
+        lc_arena_free(&tmp);
+        return lc_oom(ctx);
+    }
 
     add_core_limit(&cs);
     if (spec->cpu_sec > 0)

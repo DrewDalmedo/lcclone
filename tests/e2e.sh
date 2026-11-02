@@ -75,7 +75,9 @@ TMP_P_RE=$(re_escape "$TMP_P")
 
 # The root is replaced only where a path into it, or the root itself, is
 # (so a root of /w doesn't turn @TMP@/ws into @TMP@@ROOT@s). Times and
-# sizes of runs differ from one run to the next. Whether lc submit checks
+# sizes of runs differ from one run to the next. A case's time is right-
+# aligned in a field, whose padding shrinks once a case takes 10 ms, so
+# the spaces before a time go too, down to one. Whether lc submit checks
 # a solution with the sanitizers depends on the compiler, so the lines
 # that say it are left out; tests further down look at them.
 normalize() {
@@ -84,7 +86,8 @@ normalize() {
         -e "s/$TMP_P_RE/@TMP@/g" -e "s/$TMP_RE/@TMP@/g" \
         -e "s/$ROOT_RE\\([/\"']\\)/@ROOT@\\1/g" -e "s/$ROOT_RE\$/@ROOT@/" \
         -e "s/$ESC/<ESC>/g" \
-        -e 's/[0-9][0-9]* ms/N ms/g' -e 's/[0-9][0-9.]* MB/N MB/g'
+        -e 's/  *[0-9][0-9]* ms/ N ms/g' -e 's/[0-9][0-9]* ms/N ms/g' \
+        -e 's/[0-9][0-9.]* MB/N MB/g'
 }
 
 # The compilers lc uses for solutions: the ones make was given, if any.
@@ -795,6 +798,34 @@ expect_run "lc submit posix.cpp" 0 '^Accepted: 5/5 cases passed' \
     -- submit $J/posix.cpp
 expect_run "lc submit posix.cpp --std=max" 0 '^Accepted: 5/5 cases passed' \
     -- submit $J/posix.cpp --std=max
+# lc's qsort is glibc's merge sort, LeetCode's, on every system: a sort by
+# key alone that relies on it being stable, and a comparator that returns
+# only 0 or 1, pass as there.
+expect_run "lc submit stable.c" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/stable.c
+expect_run "lc submit cmp01.c" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/cmp01.c
+# Programs run in UTC, whatever lc's time zone: counting days with mktime
+# works under a zone with daylight saving time too.
+expect_run "TZ=EST5EDT lc submit tz.c" 0 '^Accepted: 5/5 cases passed' \
+    TZ=EST5EDT,M3.2.0,M11.1.0 -- submit $J/tz.c
+# <regex> comes without an #include, as with LeetCode's <bits/stdc++.h>.
+expect_run "lc submit regex.cpp" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/regex.cpp
+# A solution may realloc or free an array it was given (1929 reallocs
+# nums to twice its size), but not the one that holds the result.
+expect_run "lc submit realloc.c" 0 '^Accepted: 2/2 cases passed' \
+    -- submit $JFIX/0011-reverse/realloc.c
+expect_run "lc submit free.c" 0 '^Accepted: 2/2 cases passed' \
+    -- submit $JFIX/0011-reverse/free.c
+expect_run "lc submit freeb.c" 0 '^Accepted: 3/3 cases passed' \
+    -- submit $JFIX/0015-merge/freeb.c
+expect_run "lc submit 0015-merge/realloc.c" 1 \
+    '^    lc: merge freed or reallocated a, which holds the result$' \
+    -- submit $JFIX/0015-merge/realloc.c
+expect_run "lc submit pastfree.c" 1 \
+    '^    lc: merge wrote past the end of a (a\[5\])$' \
+    -- submit $JFIX/0015-merge/pastfree.c
 expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp" 0 '(C++, c++17)$' \
     LC_CXXSTD=c++17 -- test $J/cxx17.cpp
 expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp --std c++14" 2 \

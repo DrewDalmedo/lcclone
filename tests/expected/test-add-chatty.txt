@@ -1,7 +1,7 @@
 --- stdout
 Building tests/fixtures/judge/0010-add/chatty.c (C, c11)
-  Example 1  Wrong Answer              N ms
-  Example 2  Wrong Answer              N ms
+  Example 1  Wrong Answer N ms
+  Example 2  Wrong Answer N ms
 
 tests/fixtures/judge/0010-add/chatty.c:1: Wrong Answer on example 1
   Input:    a = 1, b = 2

@@ -543,6 +543,41 @@ static void test_cwd(void)
     lc_arena_free(&a);
 }
 
+/*
+ * Every program runs in UTC, whatever TZ lc has or the spec gives: as on
+ * LeetCode, a solution's localtime and mktime then answer the same on
+ * every machine. The rest of the environment is passed on as it is.
+ */
+static void test_time_zone(void)
+{
+    static char *env[] = {"LC_A=1", "TZ=EST5EDT", "LC_B=2", "TZ=JST-9",
+                          NULL};
+    const char *old = getenv("TZ");
+    char *saved = old ? strdup(old) : NULL;
+    lc_run_spec s;
+    char *argv[6];
+
+    spec_for(&s, argv, "env", "TZ", NULL);
+    s.envp = env;
+    if (run_ok(&s))
+        CHECK_STR(lc_str_cstr(&res.out), "TZ=UTC0\nhour 0\n");
+    spec_for(&s, argv, "env", "LC_B", NULL);
+    s.envp = env;
+    if (run_ok(&s))
+        CHECK_STR(lc_str_cstr(&res.out), "LC_B=2\nhour 0\n");
+    /* lc's own environment, with a TZ in it, and without. */
+    CHECK(setenv("TZ", "EST5EDT", 1) == 0);
+    spec_for(&s, argv, "env", "TZ", NULL);
+    if (run_ok(&s))
+        CHECK_STR(lc_str_cstr(&res.out), "TZ=UTC0\nhour 0\n");
+    CHECK(unsetenv("TZ") == 0);
+    if (run_ok(&s))
+        CHECK_STR(lc_str_cstr(&res.out), "TZ=UTC0\nhour 0\n");
+    if (saved)
+        setenv("TZ", saved, 1);
+    free(saved);
+}
+
 static void test_start_errors(void)
 {
     lc_run_spec s;
@@ -619,6 +654,7 @@ int main(void)
     RUN(test_limits);
     RUN(test_signals_reset);
     RUN(test_cwd);
+    RUN(test_time_zone);
     RUN(test_start_errors);
     RUN(test_reuse);
 
