@@ -401,5 +401,5 @@ name, such as `"0001-two-sum"`, or null for `MANIFEST.tsv` as a whole).
 ## `lc version --json`
 
 ```json
-{"schema":1,"version":"0.1.0-dev"}
+{"schema":1,"version":"0.6.0"}
 ```

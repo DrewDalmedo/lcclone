@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-#define LC_VERSION "0.1.0-dev"
+#define LC_VERSION "0.6.0"
 
 /* Version of the `lc --json` output format. */
 #define LC_JSON_SCHEMA 1
