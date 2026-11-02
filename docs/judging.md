@@ -25,7 +25,9 @@ the solution, and writes the result. The build is one source file made of:
 
 The runtime files are compiled into `lc` itself, so `lc` needs nothing
 else on disk to build. Because it is one file, the C++ harness sees
-`class Solution`.
+`class Solution`. The runtime adds no POSIX header such as `<unistd.h>`,
+and calls only functions the prelude's headers declare, so a solution may
+name its own helpers `read`, `write`, `sleep` or `nice`, as on LeetCode.
 
 **Compiling.** C is built with `$CC -std=c11 -O2 -I. ... -lm` and C++
 with `$CXX -std=c++11 -O2` (`cc` and `c++` when the variables aren't set,

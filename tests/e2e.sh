@@ -770,6 +770,14 @@ expect_run "lc test cxx14.cpp --std c++14" 0 '(C++, c++14)$' \
     -- test $J/cxx14.cpp --std c++14
 expect_run "lc test cxx17.cpp --std=max" 0 '^Accepted' \
     -- test $J/cxx17.cpp --std=max
+# Helpers named read, write, sleep or nice: as on LeetCode, no POSIX
+# header comes with the solution, and the harness never calls those names.
+expect_run "lc submit posix.c" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/posix.c
+expect_run "lc submit posix.cpp" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/posix.cpp
+expect_run "lc submit posix.cpp --std=max" 0 '^Accepted: 5/5 cases passed' \
+    -- submit $J/posix.cpp --std=max
 expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp" 0 '(C++, c++17)$' \
     LC_CXXSTD=c++17 -- test $J/cxx17.cpp
 expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp --std c++14" 2 \
