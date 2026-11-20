@@ -381,12 +381,16 @@ static void pack_done_json(run *r, const pack *pk, const char *status,
         lc_json_int(&j, (long long)rep->nexamples);
         lc_json_key(&j, "generated");
         lc_json_int(&j, (long long)rep->ngenerated);
+        lc_json_key(&j, "full");
+        lc_json_int(&j, (long long)rep->nfull);
         lc_json_key(&j, "ref");
         lc_json_string(&j, rep->ref);
         lc_json_key(&j, "brute");
         lc_json_string(&j, rep->brute);
         lc_json_key(&j, "gen");
         lc_json_string(&j, rep->gen);
+        lc_json_key(&j, "slow");
+        lc_json_string(&j, rep->slow);
         lc_json_key(&j, "stubs");
         lc_json_int(&j, (long long)rep->stubs);
         lc_json_key(&j, "ref_passed");
@@ -395,6 +399,11 @@ static void pack_done_json(run *r, const pack *pk, const char *status,
         lc_json_int(&j, rep->ref_max_ms);
         lc_json_key(&j, "cross");
         lc_json_int(&j, (long long)rep->cross);
+        lc_json_key(&j, "brute_full_ms");
+        if (rep->brute_full_ms >= 0)
+            lc_json_int(&j, rep->brute_full_ms);
+        else
+            lc_json_null(&j);
         lc_json_key(&j, "regen");
         if (r->c->regen) {
             lc_json_begin_object(&j);
@@ -426,6 +435,8 @@ static void pack_done_text(run *r, const pack *pk, const lc_check_report *rep)
     cli_put_styled(&r->out, r->color, CLI_ST_GREEN | CLI_ST_BOLD, "ok");
     lc_str_printf(&r->out, " (%lu case%s", (unsigned long)rep->ncases,
                   rep->ncases == 1 ? "" : "s");
+    if (rep->nfull)
+        lc_str_printf(&r->out, ", %lu full-size", (unsigned long)rep->nfull);
     if (rep->skipped)
         lc_str_puts(&r->out, "; not judged yet");
     else if (rep->ref)
@@ -542,6 +553,7 @@ int cmd_check(cli *c)
 
     memset(&co, 0, sizeof co);
     co.regen = c->regen;
+    co.quick = c->quick;
     co.count = c->count;
     co.seed = c->seed_given ? c->seed : 1;
     memset(&hooks, 0, sizeof hooks);

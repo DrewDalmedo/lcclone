@@ -725,8 +725,8 @@ default (`--count`), since each costs two processes; the batch runner of
 `ref` needs more than a third of the time limit. Step 3's cases at the
 constraint limits are only in packs whose limits are small, such as 812's
 50 points: one case of 10^5 numbers is about a megabyte of text, too much
-to store in every pack. M7 makes those cases when a solution is judged;
-see §6.4.)
+to store in every pack. M7 makes those cases when a solution is judged,
+from `@full` lines; see §6.4.)
 
 ### 6.3 Batches
 
@@ -869,6 +869,36 @@ has them, and the earlier packs get them in one pass.
   `brute.c` yet, so the pass writes those first. Adding the seed lines is
   mechanical; setting each pack's time limit takes the effort, and it
   needs M7's tools anyway.
+
+(As built in M7, first part: the tools; no shipped pack has full-size
+cases yet.
+- **The line** is `@full SEED HASH`, a case on its own, with an optional
+  `=> RESULT` line right after it. The hash is 64-bit FNV-1a over the
+  input lines, each ended by a newline, folded to 32 bits and written as
+  8 hex digits. A result is kept when it is at most 100 bytes long.
+  `cases.txt` may hold `@full SEED`, the hash optional.
+- **Judging:** `lc` builds `gen.c` as `generator-c-c11/` and makes each
+  case right before it runs; a hash that differs stops the run with an
+  error naming the case's line and seed. Results `ref` works out are
+  cached under `full/<NNNN-slug>/<gen key>-<ref key>-<seed>`.
+- **Memory:** the runner's other choice. On Linux the harness forks
+  before any of its code runs and reports the child's status, CPU time
+  and peak memory on fd 4 (`runtime/common/lc_rt_core.h`), so nothing lc
+  holds is counted; at a deadline lc kills that child first, so the
+  report still comes. Measured with a case of 10^6 numbers: 77.8 MB
+  reported before, 10.0 MB after, for a program whose own peak is about
+  10.5 MB.
+- **`lc check`** checks the hashes and gen's speed, runs `ref` on the
+  full-size cases, and unless `--quick`: `brute` under ten times the
+  limit (its slowest time as a multiple of the limit, a warning between
+  a third of the limit and three times it, and its results against
+  `ref`'s), `slow.c`, which must run out of time, and `ref` with the
+  sanitizers. A note reports `brute`'s time; 121's `O(n^2)` brute takes
+  2.6 s at n = 10^5 with gcc in a Linux container, in the warning band of
+  its 1 s limit, which the pass over the packs settles.
+- **Still to do:** scaling limits for slow machines, the CI split
+  (`--quick` over every pack, the full checks for the packs a PR
+  changes), the pass over the earlier packs, and lists and trees.)
 
 ## 7. Source layout
 

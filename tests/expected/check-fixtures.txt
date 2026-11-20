@@ -38,7 +38,7 @@ tests/fixtures/check/0010-unlisted/problem.md:1: error: problem 10 is not in MAN
 0010-unlisted: FAILED (1 error)
 tests/fixtures/check/0011-renamed/problem.md:3: error: title 'Renamed' differs from 'Old Name' in MANIFEST.tsv:11
 0011-renamed: FAILED (1 error)
-tests/fixtures/check/0013-unused-gen/gen.c: warning: gen.c is not used: add brute.c to compare ref with on random cases, or @gen cases to tests.txt
+tests/fixtures/check/0013-unused-gen/gen.c: warning: gen.c is not used: add brute.c to compare ref with on random cases, or @gen or @full cases to tests.txt
 0013-unused-gen: ok (2 cases; ref.c slowest N ms)
 0014-no-params: ok (2 cases; ref.c slowest N ms)
 0015-inplace: ok (3 cases; ref.c slowest N ms; agrees with brute.c on 30 random cases)
@@ -49,9 +49,11 @@ tests/fixtures/check/0017-bad-count/tests.txt:5: error: ref.c gets Runtime Error
     Expected: []
     Output:   (none)
 0017-bad-count: FAILED (1 error)
+tests/fixtures/check/0018-stale-full/tests.txt:11: error: this case is not what gen.c makes for '@full 6' now (its hash is 0c82c93f); run 'lc check --regen' to make it again
+0018-stale-full: FAILED (1 error)
 tests/fixtures/check/0012-broken/problem.md: error: missing required field 'difficulty'
 0012-broken: FAILED (it does not load)
 
-Checked 17 packs: 4 ok, 1 not judged yet, 12 failed
+Checked 18 packs: 4 ok, 1 not judged yet, 13 failed
 --- stderr
 --- exit 1

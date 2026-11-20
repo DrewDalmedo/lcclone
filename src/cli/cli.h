@@ -37,7 +37,8 @@ enum {
     CLI_OPT_MANIFEST = 1 << 10,
     CLI_OPT_REGEN = 1 << 11,
     CLI_OPT_COUNT = 1 << 12,
-    CLI_OPT_SEED = 1 << 13
+    CLI_OPT_SEED = 1 << 13,
+    CLI_OPT_QUICK = 1 << 14
 };
 
 typedef struct cli cli;
@@ -75,6 +76,7 @@ struct cli {
     int no_edit;            /* --no-edit */
     int manifest;           /* --manifest */
     int regen;              /* --regen */
+    int quick;              /* --quick */
     unsigned long count;    /* --count (0: not given) */
     unsigned long long seed; /* --seed */
     int seed_given;

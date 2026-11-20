@@ -231,21 +231,22 @@ errors before or during the run). For example:
 {"schema":1,"event":"build_start","reference":false,"lang":"cpp","std":"c++11","source":"/home/me/lc/0001-two-sum/solution.cpp","compiler":"c++","sanitize":false,"sanitizer_check":false}
 {"schema":1,"event":"build_done","reference":false,"lang":"cpp","std":"c++11","source":"...","compiler":"c++","sanitize":false,"sanitizer_check":false,"ok":true,"cached":false,"time_ms":412,"output":"","diagnostics":[],"prototype":"vector<int> Solution::twoSum(vector<int>& nums, int target)"}
 {"schema":1,"event":"case_start","index":0,"total":3,"file":"/home/me/lcclone/problems/0001-two-sum/tests.txt","line":5,"sanitizer_check":false}
-{"schema":1,"event":"case_done","total":3,"index":0,"file":"...","line":5,"example":true,"custom":false,"verdict":"accepted","message":null,"inputs":[{"name":"nums","value":"[5,2,7,9]"},{"name":"target","value":"11"}],"expected":"[1,3]","output":"[1,3]","stdout":"","stdout_truncated":false,"stderr":"","stderr_truncated":false,"time_ms":2,"wall_ms":3,"memory_kb":1360,"exit_code":0,"signal":null,"sanitizer_check":false}
+{"schema":1,"event":"case_done","total":3,"index":0,"file":"...","line":5,"example":true,"custom":false,"verdict":"accepted","message":null,"full":false,"seed":null,"hash":null,"inputs":[{"name":"nums","value":"[5,2,7,9]","size":null},{"name":"target","value":"11","size":null}],"expected":"[1,3]","output":"[1,3]","stdout":"","stdout_truncated":false,"stderr":"","stderr_truncated":false,"time_ms":2,"wall_ms":3,"memory_kb":1360,"exit_code":0,"signal":null,"sanitizer_check":false}
 {"schema":1,"event":"done","verdict":"accepted","passed":3,"total":3,"cancelled":false,"max_time_ms":2,"max_memory_kb":1360,"sanitizer_check":null,"sanitizer_check_note":null,"warnings":[]}
 ```
 
 ### `build_start`, `build_done`
 
 A source file is about to be built, or was. There is one pair for your
-solution and, when your cases need expected results worked out, one for
-the problem's reference solution, after it. `lc submit` may add one more
+solution; when the run has full-size cases, one for the pack's `gen.c`,
+which makes them; and when cases need expected results worked out, one
+for the problem's reference solution, after those. `lc submit` may add one more
 for your solution, after its cases: the [sanitizer check](#the-sanitizer-check)'s.
 
 | Member        | Type    | Meaning |
 |---------------|---------|---------|
 | `reference`   | boolean | this is the reference solution, not yours |
-| `role`        | string  | what is built: `"solution"` (yours) or `"reference"`; for `lc check` also `"brute"`, `"stub"` and `"generator"` |
+| `role`        | string  | what is built: `"solution"` (yours), `"reference"` or `"generator"` (`gen.c`, for full-size cases); for `lc check` also `"brute"`, `"stub"` and `"slow"` |
 | `lang`        | string  | `"c"` or `"cpp"` |
 | `std`         | string  | the standard, e.g. `"c++17"` |
 | `source`      | string  | the source file |
@@ -286,8 +287,11 @@ or `"note"`), `message`, and `in_solution` (the file is your solution).
 | `custom`    | boolean         | one of your cases |
 | `verdict`   | string          | `"accepted"`, `"wrong_answer"`, `"runtime_error"`, `"time_limit_exceeded"`, `"memory_limit_exceeded"` or `"output_limit_exceeded"` |
 | `message`   | string or null  | why, for verdicts other than Accepted and Wrong Answer, e.g. `"killed by SIGSEGV"` |
-| `inputs`    | array           | `name` (or null) and `value`, as for examples in `lc show` |
-| `expected`  | string          | the expected result, as a literal |
+| `full`      | boolean         | a full-size case (`@full`), whose input the pack's `gen.c` made |
+| `seed`      | string or null  | a full-size case's seed, as a string (seeds go up to 2^64 − 1); null for other cases |
+| `hash`      | string or null  | the hash of the input `gen.c` made; with `seed`, the case's line `@full SEED HASH`, which runs it again from `cases.txt` |
+| `inputs`    | array           | `name` (or null), `value` and `size`. `value` is the literal, as for examples in `lc show`; for a long input of a full-size case it is null, and `size` says what it is instead, such as `"100000 items"` (null otherwise) |
+| `expected`  | string          | the expected result, as a literal (for a full-size case whose result tests.txt doesn't keep, the one the reference solution worked out) |
 | `output`    | string or null  | the solution's result, as a literal; null when there was none that could be read |
 | `stdout`    | string          | the first 64 KiB of what it printed on stdout |
 | `stderr`    | string          | the last 64 KiB of its stderr |
@@ -360,7 +364,7 @@ name, such as `"0001-two-sum"`, or null for `MANIFEST.tsv` as a whole).
 {"schema":1,"event":"pack_start","pack":"0121-best-time-to-buy-and-sell-stock","id":121,"dir":"/home/me/lcclone/problems/0121-best-time-to-buy-and-sell-stock"}
 {"schema":1,"event":"build_start","pack":"0121-best-time-to-buy-and-sell-stock","reference":false,"role":"stub","lang":"c",...}
 {"schema":1,"event":"finding","pack":"0121-best-time-to-buy-and-sell-stock","level":"error","file":"/home/me/.../ref.c","line":null,"message":"ref.c and brute.c disagree on the random case for seed 80 (small)","detail":"Input:    prices = [7,16,13]\nref.c:    10\nbrute.c:  12\n"}
-{"schema":1,"event":"pack_done","pack":"0121-best-time-to-buy-and-sell-stock","status":"failed","errors":1,"warnings":0,"skipped":null,"cases":14,"examples":3,"generated":3,"ref":"ref.c","brute":"brute.c","gen":"gen.c","stubs":2,"ref_passed":14,"ref_max_ms":2,"cross":79,"regen":null}
+{"schema":1,"event":"pack_done","pack":"0121-best-time-to-buy-and-sell-stock","status":"failed","errors":1,"warnings":0,"skipped":null,"cases":14,"examples":3,"generated":3,"full":0,"ref":"ref.c","brute":"brute.c","gen":"gen.c","slow":null,"stubs":2,"ref_passed":14,"ref_max_ms":2,"cross":79,"brute_full_ms":null,"regen":null}
 {"schema":1,"event":"done","packs":1,"ok":0,"skipped":0,"failed":1,"manifest_ok":true,"cancelled":false,"warnings":[]}
 ```
 
@@ -374,12 +378,14 @@ name, such as `"0001-two-sum"`, or null for `MANIFEST.tsv` as a whole).
   outputs, or a compiler's output; or null).
 - **`pack_done`**: `status` is `"ok"`, `"failed"` (errors were found) or
   `"skipped"` (its solutions were not built or run: `skipped` says why).
-  The counts: `cases`, `examples` and `generated` (`@gen`) in
-  tests.txt, `stubs` built, `ref_passed` cases and `ref_max_ms`, and
-  `cross` random cases `ref` and `brute` agreed on. `ref`, `brute` and
-  `gen` name the pack's files, or are null. With `--regen`, `regen` is
-  `written`, `changed` (expected results written) and `generated`
-  (cases made).
+  The counts: `cases`, `examples`, `generated` (`@gen`) and `full`
+  (`@full`) in tests.txt, `stubs` built, `ref_passed` cases and
+  `ref_max_ms`, and `cross` random cases `ref` and `brute` agreed on.
+  `brute_full_ms` is `brute`'s slowest full-size case among those it
+  finished within ten times the time limit, or null. `ref`, `brute`,
+  `gen` and `slow` name the pack's files, or are null. With `--regen`,
+  `regen` is `written`, `changed` (expected results written) and
+  `generated` (cases made, and `@full` hashes written).
 - **`done`**: the counts of packs, `manifest_ok`, and whether ^C
   `cancelled` the run.
 

@@ -1,0 +1,13 @@
+@example
+[3,1,2]
+2
+=> [3,2]
+
+[5]
+1
+=> [5]
+
+# Full-size cases: k = 3, then k = n (too long to keep here).
+@full 1 fd3d2546
+=> [999997666,999966674,999931389]
+@full 2 eb5e98e0

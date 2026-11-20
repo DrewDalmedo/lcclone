@@ -321,6 +321,14 @@ typedef struct lc_run_spec {
     size_t input_len;
     int result_fd;            /* 1: open fd 3 for the harness's result and
                                  capture it; 0: fd 3 is closed */
+    /*
+     * 1: the program is a harness, and on Linux it is asked to measure
+     * the solution itself (runtime/common/lc_rt_core.h), so that its peak
+     * memory leaves out what it inherited from lc through fork(). Its
+     * report then gives the result's exit status, CPU time and peak
+     * memory. Elsewhere, and for any other program, 0.
+     */
+    int measure;
 
     /*
      * Resource limits, set in the child. RLIMIT_CORE is always 0. A limit
@@ -433,6 +441,9 @@ typedef struct lc_judge_opts {
      */
     int sanitizer_check;
     int no_done;              /* no LC_EV_DONE: the caller sends it */
+    /* the pack's generator, built: it makes the inputs of full-size
+     * cases right before each runs. NULL: a full-size case is an error */
+    const char *gen_exe;
 } lc_judge_opts;
 
 /*
@@ -451,6 +462,12 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
                  const lc_case *cases, size_t ncases,
                  const lc_judge_opts *opts, const lc_hooks *hooks,
                  lc_report **out);
+
+/*
+ * The environment for a program built with the sanitizers, in `a`: lc's,
+ * with LeakSanitizer turned off. NULL when out of memory.
+ */
+char **lc_sanitize_env(lc_arena *a);
 
 /* getenv, but NULL when the variable is unset or empty. */
 const char *lc_getenv(const char *name);
@@ -575,11 +592,12 @@ typedef enum {
     LC_ROLE_REF,              /* the pack's ref.c or ref.cpp */
     LC_ROLE_BRUTE,            /* the pack's brute.c or brute.cpp */
     LC_ROLE_STUB,             /* the stub lc start writes (lc check) */
-    LC_ROLE_GEN               /* the pack's gen.c: lc_gen.h, gen.c and
+    LC_ROLE_GEN,              /* the pack's gen.c: lc_gen.h, gen.c and
                                  lc_gen_main.c, not a harness */
+    LC_ROLE_SLOW              /* the pack's slow.c or slow.cpp (lc check) */
 } lc_role;
 
-/* "solution", "reference", "brute", "stub" or "generator". */
+/* "solution", "reference", "brute", "stub", "generator" or "slow". */
 const char *lc_role_name(int role);
 
 typedef struct lc_build_req {
@@ -660,5 +678,74 @@ char *lc_pack_source(lc_arena *a, const lc_problem *p, const char *base,
 /* Finds the compiler's messages in its output (gcc and clang style). */
 int lc_parse_diags(lc_arena *a, const char *text, size_t len,
                    const char *source, lc_diag **out, size_t *count);
+
+/* ------------------------------------------------------------------ */
+/* Full-size cases and running gen (full.c)                            */
+/* ------------------------------------------------------------------ */
+
+/* Length of a full-size case's input hash: 8 hex digits. */
+#define LC_FULL_HASH_LEN 8
+
+/* Limits for running a pack's generator. */
+#define LC_GEN_CPU_SEC 20
+#define LC_GEN_WALL_MS 60000
+#define LC_GEN_MEMORY ((unsigned long long)2048 << 20)
+#define LC_GEN_OUTPUT_MAX (256 * LC_MIB)
+
+/* Runs the generator `gen_exe` as "gen SEED small|large COUNT", in its
+ * own directory (strings in `a`). As lc_run: what gen did is in *r. */
+int lc_gen_run(lc_ctx *ctx, const char *gen_exe, unsigned long long seed,
+               int small, unsigned long long count,
+               const volatile sig_atomic_t *cancel, lc_arena *a,
+               lc_run_result *r);
+
+/* 1 when a run of gen failed, with why in `why` ("killed by SIGSEGV",
+ * "exit status 3", ...); else 0. */
+int lc_gen_failed(const lc_run_result *r, lc_str *why);
+
+/* The hash of a case's input lines, as "@full SEED HASH" gives it: 8 hex
+ * digits and a NUL in `out` (LC_FULL_HASH_LEN + 1 bytes). */
+void lc_full_hash(const char *const *args, size_t nargs, char *out);
+
+/*
+ * Makes the inputs of full-size case `c` with the pack's generator
+ * `gen_exe`: runs it for c->seed and reads the case it prints. On LC_OK
+ * *made is a list of that one case, with c's file, lines, seed, hash and
+ * expected result (pointing into c: free *made first); NULL when
+ * *cancelled is set. `hash` (LC_FULL_HASH_LEN + 1 bytes, may be NULL)
+ * gets the hash of what gen made. A gen that fails, prints anything but
+ * one case, or makes a case whose hash isn't c->hash (*mismatch is then
+ * set; may be NULL) gives LC_ERR_INVALID with a message that starts with
+ * the case's "<file>:<line>: ". *gen_ms (may be NULL) gets the CPU time gen
+ * took.
+ */
+int lc_full_make(lc_ctx *ctx, const lc_problem *p, const char *gen_exe,
+                 const lc_case *c, const volatile sig_atomic_t *cancel,
+                 lc_cases **made, char *hash, int *mismatch, long *gen_ms,
+                 int *cancelled);
+
+/*
+ * How an input of a full-size case is shown: *out is NULL when the
+ * literal is short enough to show as it is, else its size (in `a`), such
+ * as "100000 items", "300 x 300 items", "100000 characters" or "5000
+ * nodes". `t` is the input's type (may be NULL), `v` its value. Returns
+ * LC_OK or LC_ERR_NOMEM.
+ */
+int lc_full_size(lc_arena *a, const lc_type *t, const lc_value *v,
+                 const char *literal, const char **out);
+
+/*
+ * The cache of results that ref worked out for full-size cases, keyed by
+ * the build keys of gen and ref and by the seed. lc_full_cache_get sets
+ * *out (in `a`) to the result, or NULL when the cache has none;
+ * lc_full_cache_put keeps one, and a cache it can't write is no error.
+ * Both fail only when out of memory.
+ */
+int lc_full_cache_get(lc_ctx *ctx, const lc_problem *p, const char *gen_exe,
+                      const char *ref_exe, unsigned long long seed,
+                      lc_arena *a, const char **out);
+int lc_full_cache_put(lc_ctx *ctx, const lc_problem *p, const char *gen_exe,
+                      const char *ref_exe, unsigned long long seed,
+                      const char *result);
 
 #endif /* LC_INTERNAL_H */
