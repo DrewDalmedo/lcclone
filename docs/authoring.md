@@ -39,7 +39,7 @@ scraping, so nothing is copied from it.
 export LC_PROBLEMS=$PWD/problems
 lc check --regen 121        # rewrite tests.txt
 lc check 121                # check the pack
-lc check                    # check every pack, as CI does
+lc check --quick            # check every pack, as CI does on each change
 ```
 
 ## The files of a pack
@@ -245,7 +245,8 @@ On the full-size cases, `lc check` measures what the limit is set from:
 
 These checks run `brute` for up to ten times the limit per case, so they
 are slow. `lc check --quick` leaves them out; it still makes every
-full-size case and runs `ref` on it.
+full-size case and runs `ref` on it. CI runs them only on the packs a
+change touches ([CI](#ci)).
 
 ## lc check --regen
 
@@ -318,7 +319,28 @@ when one isn't (or `MANIFEST.tsv` is broken), and 3 for a usage error.
 
 Each random case runs `ref` and `brute` once each, a process apiece, so
 300 cases take a few seconds. `make test` checks the shipped packs with
-50; `make check-packs`, which CI runs, with the default 300.
+`--quick` and 50; `make check-packs` with the default 300 (`PACKS='1 121'`
+checks only those, and `CHECKFLAGS` adds options such as `--quick`).
+
+## CI
+
+CI checks every pack on each push and PR, leaving out the slow checks on
+the full-size cases (`--quick`): in `make test` on every system, and with
+`make check-packs CHECKFLAGS=--quick` on Linux (gcc and clang) and macOS
+too. Over every pack those checks would take hours, so they run, on those
+systems and on Alpine (musl), only for
+
+- the packs the push or PR changes: those with a file under
+  `problems/NNNN-slug/` that differs from the base. For a PR that is its
+  base branch; for a push, the commit before it, or for a new branch,
+  where it leaves `main`;
+- every pack, when a file under `runtime/` changes (`lc_gen.h`
+  included), on Mondays, and when the workflow is run by hand
+  (`gh workflow run CI --ref BRANCH`). Run it by hand for a change to how
+  `lc` builds, runs or times programs that is outside `runtime/`.
+
+`tools/full-packs.sh BASE` prints the packs CI picks, and the first job,
+"Packs to check in full", shows them.
 
 ## MANIFEST.tsv
 

@@ -896,9 +896,26 @@ cases yet.
   sanitizers. A note reports `brute`'s time; 121's `O(n^2)` brute takes
   2.6 s at n = 10^5 with gcc in a Linux container, in the warning band of
   its 1 s limit, which the pass over the packs settles.
-- **Still to do:** scaling limits for slow machines, the CI split
-  (`--quick` over every pack, the full checks for the packs a PR
-  changes), the pass over the earlier packs, and lists and trees.)
+- **CI** checks every pack with `--quick`: in `make test` on every job,
+  and with `make check-packs CHECKFLAGS=--quick` (300 random cases) on
+  Linux (gcc and clang) and macOS. A first job picks the packs that get
+  the full checks too, on those three and on Alpine, with
+  `tools/full-packs.sh`: those with a file under `problems/NNNN-slug/`
+  that differs from the base, or every pack when a file under `runtime/`
+  does. The base is a PR's base branch, or for a push the commit before
+  it (for a new branch, where it leaves `main`). On `main` that is what
+  the merged PRs change: their own runs checked those packs, but against
+  the base they had, so this also covers two PRs merged one after the
+  other, a runtime change and then a pack; checking every pack on each
+  merge would take hours for packs nothing touched. Every pack is checked
+  in full on Mondays and when the workflow is run by hand, which is also
+  the way to check a change outside `runtime/` to how `lc` builds or
+  times programs. On ten easy packs given three full-size cases each, the
+  full checks added about half a second a pack where `brute` is fast;
+  where it is the slow method the limit rejects, they take up to ten
+  times the limit per case, plus `slow.c`'s run to the limit.
+- **Still to do:** scaling limits for slow machines, the pass over the
+  earlier packs, and lists and trees.)
 
 ## 7. Source layout
 
@@ -972,7 +989,9 @@ The Neovim plugin is in its own repository, lc.nvim (§3.1).
     problems.)
 - **CI:** GitHub Actions on Ubuntu (gcc and clang), Alpine (musl) and macOS
   (clang and libc++). Dev builds use `-Wall -Wextra -Wpedantic -Werror`, the
-  test build uses ASan and UBSan, and `lc check` runs over all packs.
+  test build uses ASan and UBSan, and `lc check` runs over all packs (its
+  slow checks on the full-size cases only on those a change touches,
+  §6.4).
 
 ## 9. Milestones
 
