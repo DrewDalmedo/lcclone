@@ -42,6 +42,7 @@ CORE_OBJ = \
 	src/core/config.o \
 	src/core/ctx.o \
 	src/core/fs.o \
+	src/core/full.o \
 	src/core/json.o \
 	src/core/judge.o \
 	src/core/lang.o \

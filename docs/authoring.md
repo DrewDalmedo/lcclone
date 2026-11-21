@@ -22,12 +22,13 @@ scraping, so nothing is copied from it.
    cheap to write, and **`gen.c`**, which makes random cases.
 3. **Write `tests.txt`**: the examples (`@example`), hand-written edge
    cases (an empty input, a single element, extreme values, duplicates),
-   random cases (`@gen`), and, when the constraints are small, a few
-   cases at their limits, so that a slow solution runs out of time (big
-   ones come with milestone M7; see [Generated cases](#generated-cases)).
-   Leave out the expected results (`=> ...`) if you like.
-4. **Run `lc check --regen`**: it makes the `@gen` cases with `gen.c` and
-   works out every expected result with `ref`.
+   random cases (`@gen`), and a few full-size cases (`@full`), at the
+   limits of the constraints, so that a slow solution runs out of time
+   (see [Full-size cases](#full-size-cases)). Leave out the expected
+   results (`=> ...`) if you like.
+4. **Run `lc check --regen`**: it makes the `@gen` cases with `gen.c`,
+   writes the hashes of the `@full` ones, and works out every expected
+   result with `ref`.
 5. **Run `lc check`**, and fix what it finds: it builds the stubs, runs
    `ref` on every case, and compares `ref` with `brute` on random small
    cases.
@@ -49,14 +50,18 @@ problems/0121-best-time-to-buy-and-sell-stock/
   tests.txt     the cases
   ref.c         the reference solution (or ref.cpp)
   brute.c       optional: slow and obviously right (or brute.cpp)
-  gen.c         optional: makes random cases
+  gen.c         optional: makes random cases and the full-size ones
+  slow.c        optional: right, but too slow at full size (or slow.cpp)
 ```
 
-**`ref`, `brute`** are written like any solution: just the function, or
-the `Solution` class in C++, with no `#include`s. Everything shipped must
-build as C11 or C++11, the defaults, so that it builds whatever standard a
-user picks. A pack has `ref.c` or `ref.cpp`, not both; the same goes for
-`brute`.
+**`ref`, `brute`, `slow`** are written like any solution: just the
+function, or the `Solution` class in C++, with no `#include`s. Everything
+shipped must build as C11 or C++11, the defaults, so that it builds
+whatever standard a user picks. A pack has `ref.c` or `ref.cpp`, not
+both; the same goes for `brute` and `slow`. `slow` is a solution that is
+right but too slow, such as the `O(n^2)` method a problem's constraints
+are there to turn away: `lc check` makes sure it runs out of time on the
+full-size cases ([Time limits](#time-limits)).
 
 **`gen.c`** is always C. See below.
 
@@ -145,24 +150,119 @@ can't drift apart. To `lc test` and `lc submit` it is a case like any
 other.
 
 Full-size cases can be large: 10^5 numbers are half a megabyte to a
-megabyte of `tests.txt`. So for now a pack stores them only when its
-constraints are small. Milestone M7 makes the big ones when a solution is
-judged (`docs/PLAN.md` §6.4).
+megabyte of `tests.txt`. So a pack stores them as `@gen` cases only when
+its constraints are small; the big ones are `@full` cases, below.
+
+## Full-size cases
+
+A case at the limits of the problem's constraints is what tells a
+solution that is right but too slow, or that overflows only on big
+numbers, from a good one, as on LeetCode. Such a case can be megabytes,
+so `tests.txt` keeps only a line for it, and `gen.c` makes it again when
+a solution is judged (`docs/PLAN.md` §6.4):
+
+```
+@full 101 3f2a9c1e
+=> 99999
+
+@full 102 77c0d2e1
+```
+
+- **The seed** is given to `gen(0)`, as for `@gen 101`: the same seed
+  makes the same full-size case either way.
+- **The hash** is of the input `gen.c` makes. When the input made at
+  judging time has another hash, the case is not judged: `lc` stops with
+  an error that names the seed, which says that the generator makes
+  another case on this system (see the rules below). `lc check` makes
+  each case and compares the hashes too, on every system CI runs on.
+- **The expected result** is kept when it is short (100 bytes at most:
+  a number, a bool, a short list). A longer one, such as a sorted array,
+  isn't: the reference solution works it out when the case is judged,
+  and the result is kept in the cache, `$XDG_CACHE_HOME/lcclone/full/`,
+  under the build keys of `gen` and `ref` and the seed.
+- **Writing them:** add `@full SEED` lines, and `lc check --regen` adds
+  the hashes and the short results. It writes them again when `gen.c`
+  changes: like `@gen` cases, they can't drift apart from the generator,
+  since `lc check` fails when one is stale.
+- **Where:** after the stored cases, by custom, so that a submission
+  meets them last, as on LeetCode. Two or three are usually enough: one
+  of the shapes that are slowest for a naive method, and a random one.
+- **Judging:** `lc submit` runs them with the other cases; `lc test`
+  doesn't, but runs those in your `cases.txt` (`@full SEED`, with or
+  without the hash). Building `gen.c` takes `cc`.
+
+**What `gen.c` must do for them.** It runs on every machine that judges
+the case, so it must make a full-size case in well under the time limit:
+`lc check` warns when it takes more than a third of it. And it must make
+the same case everywhere:
+
+- use only `rnd()` and its friends for randomness (above);
+- call no `libm` function but `sqrt` (`exp`, `log`, `pow`, `sin` and the
+  rest round differently from one C library to another); `fabs`,
+  `floor`, `ceil` and `fmod` are exact, and fine;
+- sort nothing whose order among equal items matters: `qsort` isn't
+  stable, and orders ties differently on each system;
+- `lc` builds `gen.c` with `-ffp-contract=off`, so that the compiler
+  can't fuse a multiply and an add into one instruction, as clang does on
+  arm64, which rounds once instead of twice.
+
+**Up to the edges, never past them.** Full-size cases reach the limits
+the statement allows: the largest sizes, values at their limits, and an
+answer near the `int` limit when the statement says it fits in one. A
+case past them fails right solutions, and neither `brute` nor the
+sanitizers notice, so read `gen.c` against every guarantee of the
+statement, not only the sizes.
+
+**Worst cases, not only big ones.** Random input is often easy for a slow
+method: a duplicate turns up early, or the answer sits near the start.
+Use the seed to pick among shapes (`gen_seed() % 3`), and make some of
+them the slowest for the naive method.
+
+## Time limits
+
+A pack's `time_limit_ms` should reject what LeetCode rejects, such as an
+`O(n^2)` method at n = 10^5, and accept what it accepts, such as `O(n^2)`
+at n = 10^4; the default of a second can't do that for every problem.
+On the full-size cases, `lc check` measures what the limit is set from:
+
+- **`ref`** must take at most a third of the limit on every case, as on
+  the others: the limit leaves room for slower machines and for other
+  right solutions.
+- **`brute`** runs on them under ten times the limit, and `lc check`
+  reports its slowest time as a multiple of the limit (a note). It warns
+  when `brute` takes between a third of the limit and three times it on a
+  case: there the verdict on a method that slow would depend on the
+  machine and the compiler. When `brute` finishes, its results must agree
+  with `ref`'s, so `ref` is checked at full size too.
+- **`slow`** (`slow.c` or `slow.cpp`), if the pack has one, must run out
+  of time on at least one full-size case, and be right where it doesn't.
+  Since `lc check` runs on every CI system, a faster machine or compiler
+  that lets it pass is noticed.
+- **`ref` with the sanitizers** runs them too, where the compiler has
+  sanitizers (not musl's gcc: a note says so), so that UBSan catches a
+  signed overflow that only the big numbers reach. It doesn't catch a
+  `long long` cut down to an `int`; read `ref`'s types.
+
+These checks run `brute` for up to ten times the limit per case, so they
+are slow. `lc check --quick` leaves them out; it still makes every
+full-size case and runs `ref` on it.
 
 ## lc check --regen
 
 `lc check --regen` rewrites `tests.txt` before checking the pack:
 
 - the case under each `@gen` line is made again with `gen.c`;
+- each `@full` line gets the hash of the case `gen.c` makes for it;
 - every case gets its expected result from `ref`. A result that is
   already there and matches `ref`'s (as the problem's `compare:` mode
   judges it, so `[1,0]` stays for an unordered result) is kept as it was
-  written;
+  written. A full-size case's result is written only when it is at most
+  100 bytes long; a longer one's `=>` line is removed;
 - everything else, comments and blank lines included, stays as it is.
 
 While `--regen` reads it, a case may leave out its `=> ...` line (it then
-ends at a blank line), or have nothing after the `=>`, and an `@gen` line
-may have no case under it yet. If `ref` fails on a case (a crash, or too
+ends at a blank line), or have nothing after the `=>`, an `@gen` line
+may have no case under it yet, and an `@full` line no hash. If `ref` fails on a case (a crash, or too
 slow), nothing is written: the case most likely breaks the constraints.
 
 ## lc check
@@ -176,14 +276,19 @@ or every pack of the problem directory. For each pack:
    `@example`;
 3. the C and C++ stubs (what `lc start` writes) build with `lc`'s
    harness, for each compiler that is installed;
-4. `ref` builds and passes every case, and its slowest case takes at most
-   a third of the time limit (a warning otherwise: the limit should leave
-   room for slower machines and other correct solutions);
-5. every `@gen` case is what `gen.c` makes;
-6. `ref` and `brute` give the same results on 300 small random cases from
+4. every `@full` case is what `gen.c` makes (its hash), and `gen.c` makes
+   it in at most a third of the time limit (a warning otherwise);
+5. `ref` builds and passes every case, full-size ones included, and its
+   slowest case takes at most a third of the time limit (a warning
+   otherwise: the limit should leave room for slower machines and other
+   correct solutions);
+6. every `@gen` case is what `gen.c` makes;
+7. `ref` and `brute` give the same results on 300 small random cases from
    `gen.c` (`--count` and `--seed` change that), as the problem's
    `compare:` mode judges them: under `unordered 0` they may list a result
-   in different orders.
+   in different orders;
+8. unless `--quick`, on the full-size cases: `brute`'s time and results,
+   `slow`, and `ref` with the sanitizers ([Time limits](#time-limits)).
 
 A problem that needs something `lc` can't judge yet (a binary tree, say)
 has only its `problem.md` and `tests.txt` checked; it counts as "not

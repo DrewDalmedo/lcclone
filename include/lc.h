@@ -369,6 +369,16 @@ typedef struct lc_case {
     /* the arguments of its "@gen" line, such as "7" or "7 small", when the
      * pack's gen.c made it (docs/authoring.md), or NULL */
     const char *gen;
+    /*
+     * 1 for a full-size case, "@full SEED HASH": the pack's gen.c makes its
+     * inputs from the seed when it is judged, so it has no input lines
+     * (nargs is 0) until then (docs/problem-format.md, "tests.txt").
+     */
+    int full;
+    unsigned long long seed;  /* a full-size case's seed */
+    /* a full-size case's input hash, 8 lowercase hex digits; NULL in a
+     * case of your own (or for --regen) that gives none */
+    const char *hash;
     int line;                 /* line of the case's first input (of its
                                  @gen line when it has no input yet) */
     int last_line;            /* line of its last input; 0 when none */
@@ -567,6 +577,17 @@ typedef struct lc_case_result {
     const char *message;
     const char *const *inputs; /* the case's input literals, as written */
     size_t ninputs;
+    /*
+     * A full-size case (lc_case.full), made from `seed` by the pack's
+     * gen.c into an input whose hash is `hash`. Its `inputs` are written
+     * out only when short: sizes[i] is then NULL. A long one is shown by
+     * its size, such as "100000 items", in both sizes[i] and inputs[i].
+     * sizes is NULL for other cases.
+     */
+    int full;
+    unsigned long long seed;
+    const char *hash;
+    const char *const *sizes;
     const char *expected;     /* the expected result, as a literal */
     const char *output;       /* the program's result, as a literal; NULL
                                  when it gave none that could be read */
@@ -606,8 +627,8 @@ typedef struct lc_build {
     /* 1 for the problem's reference solution, which is built to work out
      * the expected results of cases that don't give one */
     int reference;
-    /* what is built: "solution" (yours), "reference", and for lc check
-     * "brute", "stub" and "generator" */
+    /* what is built: "solution" (yours), "reference", "generator" (gen.c,
+     * for full-size cases), and for lc check "brute", "stub" and "slow" */
     const char *role;
     const char *lang;         /* lc_lang.name: "c" or "cpp" */
     const char *std;          /* the standard used, e.g. "c++17" */
@@ -1036,6 +1057,9 @@ typedef struct lc_check_options {
      * and the expected results with ref (keeping those that already
      * match) */
     int regen;
+    /* leave out the slow checks on the full-size cases: brute's time,
+     * slow.c, and ref with the sanitizers */
+    int quick;
     unsigned long count;      /* random cases for the brute cross-check;
                                  0 means LC_CHECK_COUNT */
     unsigned long long seed;  /* the cross-check's first seed (lc check
@@ -1056,14 +1080,20 @@ typedef struct lc_check_report {
     size_t ncases;            /* in tests.txt */
     size_t nexamples;         /* of them, marked @example */
     size_t ngenerated;        /* of them, marked @gen */
+    size_t nfull;             /* of them, full-size cases (@full) */
     const char *ref;          /* the reference solution's file name, e.g.
                                  "ref.c", or NULL */
     const char *brute;        /* brute.c or brute.cpp, or NULL */
     const char *gen;          /* "gen.c", or NULL */
+    const char *slow;         /* slow.c or slow.cpp, or NULL */
     size_t stubs;             /* languages whose stub was built */
     size_t ref_passed;        /* cases of tests.txt the reference passed */
     long ref_max_ms;          /* its slowest case's CPU time */
     size_t cross;             /* random cases ref and brute agreed on */
+    /* brute's slowest full-size case it finished, in CPU time; -1 when
+     * brute didn't run on any (none, --quick, or it ran out of time on
+     * every one, ten times the limit) */
+    long brute_full_ms;
     size_t regen_changed;     /* --regen: expected results written */
     size_t regen_generated;   /* --regen: cases made with gen.c */
     int regen_written;        /* --regen: tests.txt was rewritten */

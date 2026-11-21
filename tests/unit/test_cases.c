@@ -390,6 +390,112 @@ static void test_gen_directive(void)
                  "it");
 }
 
+/* @full is a full-size case made when judged: its line, and maybe an "=>"
+ * line right after it. */
+static void test_full_directive(void)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    lc_cases *cs = parse_ok(ctx, "@full 7 0123abcd\n=> 4\n"
+                                 "@full  18446744073709551615 \t ffffffff\n"
+                                 "# a comment between\n=> [1,2]\n"
+                                 "@full 3 00000000\n\n"
+                                 "@full 4 11111111\n# no result\n"
+                                 "@example\n5\n=> 6\n"
+                                 "@full 8 22222222\n9\n=> 10\n"
+                                 "@full 11 33333333\n");
+
+    if (cs && cs->count == 8) {
+        CHECK_INT(cs->items[0].full, 1);
+        CHECK(cs->items[0].seed == 7);
+        CHECK_STR(cs->items[0].hash, "0123abcd");
+        CHECK_INT(cs->items[0].nargs, 0);
+        CHECK_STR(cs->items[0].expected, "4");
+        CHECK_INT(cs->items[0].line, 1);
+        CHECK_INT(cs->items[0].last_line, 0);
+        CHECK_INT(cs->items[0].expected_line, 2);
+        CHECK(cs->items[0].gen == NULL);
+        CHECK(cs->items[1].seed == 18446744073709551615ull);
+        CHECK_STR(cs->items[1].hash, "ffffffff");
+        CHECK_STR(cs->items[1].expected, "[1,2]");
+        CHECK_INT(cs->items[1].expected_line, 5);
+        /* No "=>": ref works the result out when it is judged. */
+        CHECK_INT(cs->items[2].full, 1);
+        CHECK(cs->items[2].expected == NULL);
+        CHECK_INT(cs->items[2].expected_line, 0);
+        CHECK(cs->items[3].seed == 4);
+        CHECK(cs->items[3].expected == NULL);
+        CHECK_INT(cs->items[4].full, 0);
+        CHECK_INT(cs->items[4].example, 1);
+        /* An input line ends the @full case and starts the next one. */
+        CHECK(cs->items[5].seed == 8);
+        CHECK(cs->items[5].expected == NULL);
+        CHECK_INT(cs->items[6].full, 0);
+        CHECK_INT(cs->items[6].line, 14);
+        CHECK_STR(cs->items[6].expected, "10");
+        CHECK(cs->items[7].seed == 11);
+        CHECK_INT(cs->items[7].line, 16);
+    } else {
+        CHECK(0);
+    }
+    lc_cases_free(cs);
+    lc_close(ctx);
+
+    expect_error("@full\n", "t.txt:1: expected '@full SEED HASH', where SEED "
+                 "is a number and HASH is 8 hex digits");
+    expect_error("@full 07 0123abcd\n", "t.txt:1: expected '@full SEED "
+                 "HASH', where SEED is a number and HASH is 8 hex digits");
+    expect_error("@full 7 0123ABCD\n", "t.txt:1: expected '@full SEED "
+                 "HASH', where SEED is a number and HASH is 8 hex digits");
+    expect_error("@full 7 0123abc\n", "t.txt:1: expected '@full SEED HASH', "
+                 "where SEED is a number and HASH is 8 hex digits");
+    expect_error("@full 7 0123abcd0\n", "t.txt:1: expected '@full SEED "
+                 "HASH', where SEED is a number and HASH is 8 hex digits");
+    expect_error("@full 7x\n", "t.txt:1: expected '@full SEED HASH', where "
+                 "SEED is a number and HASH is 8 hex digits");
+    expect_error("@full 7\n", "t.txt:1: @full has no hash of its input (run "
+                 "'lc check --regen' to add it)");
+    expect_error("@example\n@full 7 0123abcd\n", "t.txt:2: a case can't be "
+                 "both @example and @full");
+    expect_error("@gen 1\n@full 7 0123abcd\n", "t.txt:2: a case can't be "
+                 "both @gen and @full");
+    expect_error("1\n@full 7 0123abcd\n=> 2\n", "t.txt:2: @full inside a "
+                 "case (missing '=>'?)");
+    expect_error("@full 7 0123abcd\n=>\n", "t.txt:2: nothing after '=>'");
+    expect_error("@full 7 0123abcd\n\n=> 1\n", "t.txt:3: '=>' with no input "
+                 "lines before it");
+
+    /* Your cases and --regen may leave the hash out. */
+    ctx = lc_open(NULL);
+    cs = NULL;
+    CHECK_INT(lc_parse_user_cases(ctx, "1\n@full 7\n@full 8 0123abcd\n=> 3\n",
+                                  32, "c.txt", &cs), LC_OK);
+    if (cs && cs->count == 3) {
+        CHECK_INT(cs->items[0].full, 0);
+        CHECK(cs->items[0].expected == NULL);
+        CHECK_INT(cs->items[1].full, 1);
+        CHECK(cs->items[1].seed == 7);
+        CHECK(cs->items[1].hash == NULL);
+        CHECK(cs->items[1].expected == NULL);
+        CHECK_STR(cs->items[2].hash, "0123abcd");
+        CHECK_STR(cs->items[2].expected, "3");
+    } else {
+        CHECK(0);
+    }
+    lc_cases_free(cs);
+    cs = NULL;
+    CHECK_INT(lc_parse_regen_cases(ctx, "@full 7\n@full 8 0123abcd\n=>\n", 28,
+                                   "t.txt", &cs), LC_OK);
+    if (cs && cs->count == 2) {
+        CHECK(cs->items[0].hash == NULL);
+        CHECK(cs->items[1].expected == NULL);
+        CHECK_INT(cs->items[1].expected_line, 3);
+    } else {
+        CHECK(0);
+    }
+    lc_cases_free(cs);
+    lc_close(ctx);
+}
+
 /* --regen reads tests.txt leniently: cases may lack their "=>", and a
  * bare @gen line is a case still to be made. */
 static void test_regen_mode(void)
@@ -967,6 +1073,7 @@ int main(void)
     RUN(test_nul_byte);
     RUN(test_errors);
     RUN(test_gen_directive);
+    RUN(test_full_directive);
     RUN(test_regen_mode);
     RUN(test_filename_and_misuse);
     RUN(test_many_cases);

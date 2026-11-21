@@ -119,7 +119,10 @@ typedef struct pending {
     const char *explanation;
     const char *gen;          /* @gen arguments, in the arena */
     int gen_line;
-    int line;                 /* first input line */
+    int full;                 /* an @full line was read: its case is open */
+    unsigned long long seed;  /* @full's seed */
+    const char *hash;         /* @full's hash, in the arena, or NULL */
+    int line;                 /* first input line (the @full line) */
     int last_line;            /* last input line */
 } pending;
 
@@ -150,6 +153,9 @@ static int end_case(lc_arena *a, lc_case **items, size_t *n, size_t *cap,
     tmp[*n].example = pd->example;
     tmp[*n].explanation = pd->explanation;
     tmp[*n].gen = pd->gen;
+    tmp[*n].full = pd->full;
+    tmp[*n].seed = pd->seed;
+    tmp[*n].hash = pd->hash;
     tmp[*n].line = pd->line ? pd->line : pd->gen_line;
     tmp[*n].last_line = pd->last_line;
     tmp[*n].expected_line = expected_line;
@@ -169,22 +175,36 @@ static int end_case(lc_arena *a, lc_case **items, size_t *n, size_t *cap,
  * "SEED" or "SEED small", in `a`; NULL with *bad set when they are
  * malformed, or NULL alone when out of memory.
  */
+/*
+ * Reads a seed, a decimal number below 2^64 with no leading zeros, at *pp.
+ * Returns 1 and advances *pp past it, or 0 when there is none.
+ */
+static int parse_seed(const char **pp, const char *end,
+                      unsigned long long *seed)
+{
+    const char *p = *pp, *s;
+
+    *seed = 0;
+    for (s = p; p < end && *p >= '0' && *p <= '9'; p++) {
+        unsigned d = (unsigned)(*p - '0');
+        if (*seed > (18446744073709551615ull - d) / 10)
+            return 0;
+        *seed = *seed * 10 + d;
+    }
+    if (p == s || (p - s > 1 && *s == '0'))
+        return 0;
+    *pp = p;
+    return 1;
+}
+
 static const char *parse_gen(lc_arena *a, span args, int *bad)
 {
-    const char *p = args.p, *end = args.p + args.n, *s;
-    unsigned long long seed = 0;
+    const char *p = args.p, *end = args.p + args.n;
+    unsigned long long seed;
     int small = 0;
 
     *bad = 0;
-    for (s = p; p < end && *p >= '0' && *p <= '9'; p++) {
-        unsigned d = (unsigned)(*p - '0');
-        if (seed > (18446744073709551615ull - d) / 10) {
-            *bad = 1;
-            return NULL;
-        }
-        seed = seed * 10 + d;
-    }
-    if (p == s || (p - s > 1 && *s == '0')) {
+    if (!parse_seed(&p, end, &seed)) {
         *bad = 1;
         return NULL;
     }
@@ -198,6 +218,39 @@ static const char *parse_gen(lc_arena *a, span args, int *bad)
         small = 1;
     }
     return lc_arena_printf(a, "%llu%s", seed, small ? " small" : "");
+}
+
+/* Length of an input hash: 8 lowercase hex digits (lc_full_hash). */
+#define HASH_LEN 8
+
+/*
+ * Parses "@full ARGS": a seed, then optionally the input's hash. Sets
+ * *seed and *hash (a copy in `a`, or NULL when there is none). Returns
+ * LC_OK, LC_ERR_PARSE when they are malformed, or LC_ERR_NOMEM.
+ */
+static int parse_full(lc_arena *a, span args, unsigned long long *seed,
+                      const char **hash)
+{
+    const char *p = args.p, *end = args.p + args.n, *h;
+    size_t i;
+
+    *hash = NULL;
+    if (!parse_seed(&p, end, seed))
+        return LC_ERR_PARSE;
+    if (p == end)
+        return LC_OK;
+    if (!is_blank_char((unsigned char)*p))
+        return LC_ERR_PARSE;
+    while (p < end && is_blank_char((unsigned char)*p))
+        p++;
+    h = p;
+    if ((size_t)(end - h) != HASH_LEN)
+        return LC_ERR_PARSE;
+    for (i = 0; i < HASH_LEN; i++)
+        if (!((h[i] >= '0' && h[i] <= '9') || (h[i] >= 'a' && h[i] <= 'f')))
+            return LC_ERR_PARSE;
+    *hash = lc_arena_strndup(a, h, HASH_LEN);
+    return *hash ? LC_OK : LC_ERR_NOMEM;
 }
 
 /* What parse_cases reads. */
@@ -272,6 +325,11 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
             rc = parse_error(ctx, filename, lineno, "line contains a NUL byte");
             goto fail;
         }
+        /* An @full case is its line alone, or that and an "=>" line right
+         * after it (comments aside). Anything else ends it first. */
+        if (pd.full && !(ln.n > 0 && ln.p[0] == '#') &&
+            !(ln.n >= 2 && ln.p[0] == '=' && ln.p[1] == '>'))
+            FLUSH();
         if (ln.n == 0) {
             /* An @gen must be followed right away by its case, so that a
              * bare "@gen 7" line is a case for --regen to make. */
@@ -294,38 +352,66 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
 
         if (ln.p[0] == '@') {
             size_t w = 1;
-            int is_gen;
+            int is_gen, is_full, is_example;
 
             while (w < ln.n && !is_blank_char((unsigned char)ln.p[w]))
                 w++;
             is_gen = w == 4 && memcmp(ln.p, "@gen", 4) == 0;
-            if (!is_gen && (w != 8 || memcmp(ln.p, "@example", 8) != 0)) {
+            is_full = w == 5 && memcmp(ln.p, "@full", 5) == 0;
+            is_example = w == 8 && memcmp(ln.p, "@example", 8) == 0;
+            if (!is_gen && !is_full && !is_example) {
                 rc = parse_error(ctx, filename, lineno, "unknown directive "
                                  "'%.*s%s'", quote_len(ln.p, w), ln.p,
                                  w > QUOTE_MAX ? "..." : "");
                 goto fail;
             }
-            if (mode == MODE_USER) {
+            if (mode == MODE_USER && !is_full) {
                 rc = parse_error(ctx, filename, lineno, "%.*s is only for a "
                                  "problem's tests.txt", (int)w, ln.p);
                 goto fail;
             }
-            if (mode == MODE_REGEN && (OPEN || pd.gen))
+            if (mode != MODE_TESTS && (OPEN || pd.gen))
                 FLUSH();
             if (OPEN) {
                 rc = parse_error(ctx, filename, lineno, "%.*s inside a case "
                                  "(missing '=>'?)", (int)w, ln.p);
                 goto fail;
             }
-            if ((is_gen && pd.gen) || (!is_gen && pd.example)) {
+            if ((is_gen && pd.gen) || (is_example && pd.example)) {
                 rc = parse_error(ctx, filename, lineno, "two %.*s lines in a "
                                  "row", (int)w, ln.p);
                 goto fail;
             }
             if (pd.gen || pd.example) {
                 rc = parse_error(ctx, filename, lineno, "a case can't be "
-                                 "both @example and @gen");
+                                 "both %s and %s",
+                                 pd.example || is_example ? "@example"
+                                                          : "@gen",
+                                 is_full ? "@full" : "@gen");
                 goto fail;
+            }
+            if (is_full) {
+                rc = parse_full(&box->arena, trim((span){ln.p + w, ln.n - w}),
+                                &pd.seed, &pd.hash);
+                if (rc == LC_ERR_NOMEM) {
+                    rc = lc_oom(ctx);
+                    goto fail;
+                }
+                if (rc != LC_OK) {
+                    rc = parse_error(ctx, filename, lineno, "expected '@full "
+                                     "SEED HASH', where SEED is a number and "
+                                     "HASH is 8 hex digits");
+                    goto fail;
+                }
+                if (!pd.hash && mode == MODE_TESTS) {
+                    rc = parse_error(ctx, filename, lineno, "@full has no "
+                                     "hash of its input (run 'lc check "
+                                     "--regen' to add it)");
+                    goto fail;
+                }
+                pd.full = 1;
+                pd.line = lineno;
+                continue;
             }
             if (is_gen) {
                 int bad;
@@ -361,7 +447,7 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
 
         if (ln.n >= 2 && ln.p[0] == '=' && ln.p[1] == '>') {
             span expected = trim((span){ln.p + 2, ln.n - 2});
-            if (!OPEN && !(mode == MODE_REGEN && pd.gen)) {
+            if (!OPEN && !pd.full && !(mode == MODE_REGEN && pd.gen)) {
                 rc = parse_error(ctx, filename, lineno, "'=>' with no input "
                                  "lines before it");
                 goto fail;
@@ -415,7 +501,8 @@ static int parse_cases(lc_ctx *ctx, const char *text, size_t len,
             args[nargs++] = ln;
         }
     }
-    if ((OPEN && mode != MODE_TESTS) || (mode == MODE_REGEN && pd.gen)) {
+    if ((OPEN && mode != MODE_TESTS) || (mode == MODE_REGEN && pd.gen) ||
+        pd.full) {
         FLUSH();
     } else if (OPEN) {
         rc = parse_error(ctx, filename, pd.line, "case has no '=>' line");
@@ -591,6 +678,9 @@ int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
     *expected = NULL;
     sig = p->sig;
     want = sig ? sig->nparams + p->nhidden : c->nargs;
+    /* A full-size case whose inputs aren't made yet: only its result. */
+    if (c->full && c->nargs == 0)
+        want = 0;
     if (c->nargs != want) {
         lc_str names = LC_STR_INIT;
         for (i = 0; i < want; i++) {

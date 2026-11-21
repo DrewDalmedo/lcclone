@@ -30,7 +30,8 @@ problems/0001-two-sum/
   tests.txt      test cases; lc show shows the ones marked @example
   ref.c          the reference solution (or ref.cpp)
   brute.c        optional: a slow, obviously right solution (or brute.cpp)
-  gen.c          optional: makes random cases (authoring.md)
+  gen.c          optional: makes random cases and the full-size ones (authoring.md)
+  slow.c         optional: a right solution that must run out of time (or slow.cpp)
 ```
 
 **The reference solution** is written like any solution: just the
@@ -369,6 +370,25 @@ them, and `lc submit` runs every case.
   right away: a blank line after an `@gen` line with no inputs yet is an
   error, which `lc check --regen` fixes by making the case. Judging treats
   it as any other case. A case can't be both `@gen` and `@example`.
+- **`@full SEED HASH`** on its own line is a **full-size case**: one at the
+  limits of the problem's constraints, too big to keep in tests.txt, which
+  the pack's `gen.c` makes from SEED when it is judged
+  ([authoring.md](authoring.md#full-size-cases)). HASH is the hash of the
+  input it makes, 8 lowercase hex digits; a case whose input has another
+  hash can't be judged, which says the generator makes something else on
+  this system. The line is the whole case, with no input lines; an `=>`
+  line right after it (comments may come between) gives its expected
+  result, when that is short enough to keep. Without one, the reference
+  solution works the result out when the case is judged. `lc check
+  --regen` writes the hash and the result. A case can't be `@full` and
+  `@example` or `@gen` too.
+
+  ```
+  @full 101 3f2a9c1e
+  => 99999
+
+  @full 102 77c0d2e1
+  ```
 - **Every line is trimmed** of spaces and tabs first, so `#`, `@example`,
   `@gen` and `=>` may be indented.
 - **Blank lines and `#` comment lines** are ignored between cases. A comment
@@ -384,7 +404,10 @@ them, and `lc submit` runs every case.
   - an `@example` that is not followed by a case, or two in a row;
   - an `@gen` with a bad seed, not followed right away by a case, or two
     in a row; `@gen` and `@example` on one case;
-  - a line starting with `@` other than `@example` and `@gen`;
+  - an `@full` with a bad seed or hash, or with no hash (`lc check
+    --regen` adds it); an `@full` inside a case, or on a case that is
+    also `@example` or `@gen`;
+  - a line starting with `@` other than `@example`, `@gen` and `@full`;
   - a case still open at the end of the file;
   - a NUL byte;
   - a file larger than 256 MiB.

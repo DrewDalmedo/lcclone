@@ -75,6 +75,8 @@ typedef struct child_setup {
     const char *cwd;
     int fd[NSTREAMS];         /* the child's ends, by stream; -1 for none */
     int status_fd;            /* write end of the exec status pipe */
+    int report_fd;            /* write end of the harness's report pipe
+                                 (lc_run_spec.measure), or -1 */
     int nlimits;
     int limit_res[5];
     struct rlimit limit[5];
@@ -104,8 +106,23 @@ extern char **environ;
  */
 #define RUN_TZ "TZ=UTC0"
 
-/* `env` (lc's environment when NULL) with TZ set to RUN_TZ, in `a`. */
-static char **run_env(lc_arena *a, char *const *env)
+/*
+ * Whether harnesses measure the solution themselves (lc_run_spec.measure).
+ * Linux counts, in a program's peak memory, the pages it inherited from
+ * lc through fork(); macOS and the BSDs don't need it.
+ */
+#if defined(__linux__)
+#define MEASURE 1
+#else
+#define MEASURE 0
+#endif
+
+/* Asks a harness to report on fd 4 (lc_run_spec.measure). */
+#define RUN_MEASURE "LC_RT_MEASURE=4"
+
+/* `env` (lc's environment when NULL) with TZ set to RUN_TZ, and with
+ * RUN_MEASURE when `measure` (and only then), in `a`. */
+static char **run_env(lc_arena *a, char *const *env, int measure)
 {
     size_t n = 0, i, k = 0;
     char **out;
@@ -114,13 +131,16 @@ static char **run_env(lc_arena *a, char *const *env)
         env = environ;
     while (env[n])
         n++;
-    out = lc_arena_array(a, n + 2, sizeof *out);
+    out = lc_arena_array(a, n + 3, sizeof *out);
     if (!out)
         return NULL;
     for (i = 0; i < n; i++)
-        if (strncmp(env[i], "TZ=", 3) != 0)
+        if (strncmp(env[i], "TZ=", 3) != 0 &&
+            strncmp(env[i], "LC_RT_MEASURE=", 14) != 0)
             out[k++] = env[i];
     out[k++] = RUN_TZ;
+    if (measure)
+        out[k++] = RUN_MEASURE;
     out[k] = NULL;
     return out;
 }
@@ -172,7 +192,7 @@ static void run_child(const child_setup *cs)
 {
     struct sigaction sa;
     sigset_t none;
-    int fd[NSTREAMS], st, i;
+    int fd[NSTREAMS], st, rep, i;
 
     /* A group of its own, which the parent can kill as a whole. */
     setpgid(0, 0);
@@ -186,22 +206,24 @@ static void run_child(const child_setup *cs)
     sigprocmask(SIG_SETMASK, &none, NULL);
 
     /*
-     * The pipes go to fds 0-3 and the status pipe to 4. First move every
-     * one of them above 4, so that no dup2() below can overwrite one that
-     * is still needed (they can be low when the front-end runs with fd 0,
-     * 1 or 2 closed).
+     * The pipes go to fds 0-3, the harness's report pipe (if any) to 4
+     * and the status pipe to 5. First move every one of them above 5, so
+     * that no dup2() below can overwrite one that is still needed (they
+     * can be low when the front-end runs with fd 0, 1 or 2 closed).
      */
     st = cs->status_fd;
-    if (st <= 4) {
-        st = fcntl(st, F_DUPFD, 5);
+    if (st <= 5) {
+        st = fcntl(st, F_DUPFD, 6);
         if (st < 0)
             _exit(127);
     }
-    for (i = 0; i < NSTREAMS; i++) {
-        fd[i] = cs->fd[i];
-        if (fd[i] >= 0 && fd[i] <= 4) {
-            fd[i] = fcntl(fd[i], F_DUPFD, 5);
-            if (fd[i] < 0)
+    for (i = 0; i <= NSTREAMS; i++) {
+        int *f = i < NSTREAMS ? &fd[i] : &rep;
+
+        *f = i < NSTREAMS ? cs->fd[i] : cs->report_fd;
+        if (*f >= 0 && *f <= 5) {
+            *f = fcntl(*f, F_DUPFD, 6);
+            if (*f < 0)
                 child_fail(st, STAGE_FD);
         }
     }
@@ -211,14 +233,18 @@ static void run_child(const child_setup *cs)
         else if (dup2(fd[i], i) < 0)
             child_fail(st, STAGE_FD);
     }
-    if (dup2(st, 4) < 0)
+    if (rep < 0)
+        close(4);
+    else if (dup2(rep, 4) < 0)
         child_fail(st, STAGE_FD);
-    st = 4;
+    if (dup2(st, 5) < 0)
+        child_fail(st, STAGE_FD);
+    st = 5;
     /* Closed by a successful exec, which is how the parent learns of it. */
     fcntl(st, F_SETFD, FD_CLOEXEC);
     /* Whatever else is open: the originals above, and anything the
      * front-end left without FD_CLOEXEC. */
-    close_from(5, cs->close_max);
+    close_from(6, cs->close_max);
 
     for (i = 0; i < cs->nlimits; i++)
         setrlimit(cs->limit_res[i], &cs->limit[i]);
@@ -392,16 +418,118 @@ typedef struct run_loop {
     int killed;
     long long grace_end;
     int err;                  /* errno when poll() failed */
+    int report;               /* read end of the report pipe, or -1 */
+    char rbuf[192];           /* what the harness reported so far */
+    size_t rlen;
+    int report_eof;           /* the harness closed the report pipe */
+    int killed_solution;      /* kill_group killed only the solution's
+                                 process, whose harness then reports */
 } run_loop;
+
+/* Reads what the harness has reported so far (lc_run_spec.measure). */
+static void read_report(run_loop *lp)
+{
+    while (lp->report >= 0 && lp->rlen < sizeof lp->rbuf - 1) {
+        ssize_t n = read(lp->report, lp->rbuf + lp->rlen,
+                         sizeof lp->rbuf - 1 - lp->rlen);
+
+        if (n > 0) {
+            lp->rlen += (size_t)n;
+        } else if (n < 0 && errno == EINTR) {
+            continue;
+        } else {
+            if (n == 0)
+                lp->report_eof = 1;
+            break;
+        }
+    }
+    lp->rbuf[lp->rlen] = '\0';
+}
+
+/* Longest lc waits for a harness's report after killing the solution's
+ * process: it comes as soon as the harness is scheduled. */
+#define REPORT_WAIT_MS 2000
+
+/* Waits until the harness has written its report and exited (it closes
+ * the pipe), or REPORT_WAIT_MS. */
+static void await_report(run_loop *lp)
+{
+    long long end = now_ms() + REPORT_WAIT_MS;
+
+    for (;;) {
+        struct pollfd pfd;
+        long long left = end - now_ms();
+
+        read_report(lp);
+        if (lp->report_eof || lp->rlen >= sizeof lp->rbuf - 1 || left <= 0)
+            return;
+        pfd.fd = lp->report;
+        pfd.events = POLLIN;
+        pfd.revents = 0;
+        if (poll(&pfd, 1, (int)left) < 0 && errno != EINTR)
+            return;
+    }
+}
+
+/*
+ * The numbers of a report line "<tag> N N ...", which must be followed
+ * by exactly `n` numbers and a newline. Returns 1 when the line is there
+ * and well formed.
+ */
+static int report_line(const char *buf, const char *tag, long long *v,
+                       int n)
+{
+    size_t len = strlen(tag);
+    const char *p = buf;
+    int k;
+
+    /* The line that starts with the tag and a space. */
+    while (strncmp(p, tag, len) != 0 || p[len] != ' ') {
+        p = strchr(p, '\n');
+        if (!p)
+            return 0;
+        p++;
+    }
+    p += len;
+    for (k = 0; k < n; k++) {
+        long long x = 0;
+        const char *s;
+
+        if (*p++ != ' ')
+            return 0;
+        s = p;
+        while (*p >= '0' && *p <= '9' && x < 1000000000000LL)
+            x = x * 10 + (*p++ - '0');
+        if (p == s)
+            return 0;
+        v[k] = x;
+    }
+    return *p == '\n';
+}
 
 /* Kills the program and everything in its group, once. */
 static void kill_group(run_loop *lp, long long now)
 {
+    long long pid;
+
     if (lp->killed)
         return;
-    kill(-lp->pid, SIGKILL);
     lp->killed = 1;
     lp->grace_end = now + GRACE_MS;
+    /*
+     * A harness that measures the solution (lc_run_spec.measure) said
+     * which process runs it. Kill that one first: the harness then
+     * reports its CPU time and memory, and exits. The rest of the group
+     * goes when the run is over.
+     */
+    read_report(lp);
+    if (report_line(lp->rbuf, "lc-rt-pid", &pid, 1) && pid > 1 &&
+        pid != (long long)lp->pid) {
+        kill((pid_t)pid, SIGKILL);
+        lp->killed_solution = 1;
+        return;
+    }
+    kill(-lp->pid, SIGKILL);
 }
 
 /* Writes more of the input. A program that stops reading (EPIPE) just
@@ -470,9 +598,41 @@ static void abandon(run_loop *lp)
 
     for (i = 0; i < NSTREAMS; i++)
         close_fd(&lp->fd[i]);
+    close_fd(&lp->report);
     kill(-lp->pid, SIGKILL);
     while (waitpid(lp->pid, NULL, 0) < 0 && errno == EINTR)
         ;
+}
+
+/*
+ * Puts the report of a harness that measured the solution itself (see
+ * lc_run_spec.measure) in *r: how the solution ended, and the CPU time
+ * and peak memory of its own process, which the counts of the harness's
+ * process don't separate from what it inherited from lc. A missing or
+ * malformed report (the harness was killed before it wrote one) leaves
+ * *r as wait4() filled it.
+ */
+static void apply_report(run_loop *lp, lc_run_result *r)
+{
+    long long v[4];
+    int status;
+
+    read_report(lp);
+    if (!report_line(lp->rbuf, "lc-rt", v, 4))
+        return;
+    /* An lvalue: macOS's W* macros take their argument's address. */
+    status = (int)v[0];
+    r->exited = 0;
+    r->exit_code = 0;
+    r->signal = 0;
+    if (WIFEXITED(status)) {
+        r->exited = 1;
+        r->exit_code = WEXITSTATUS(status);
+    } else if (WIFSIGNALED(status)) {
+        r->signal = WTERMSIG(status);
+    }
+    r->max_rss_kb = (long)v[1];
+    r->cpu_ms = (long)((v[2] + v[3]) / 1000);
 }
 
 /*
@@ -587,7 +747,8 @@ static int start_failed(lc_ctx *ctx, const lc_run_spec *spec,
 
 int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r)
 {
-    int p[NSTREAMS][2], stp[2] = {-1, -1}, i, rc, status, msg[2];
+    int p[NSTREAMS][2], stp[2] = {-1, -1}, rp[2] = {-1, -1}, i, rc, status;
+    int msg[2];
     char *argv0[2];
     child_setup cs;
     run_loop lp;
@@ -623,7 +784,7 @@ int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r)
     argv0[0] = (char *)spec->path;
     argv0[1] = NULL;
     cs.argv = spec->argv ? spec->argv : argv0;
-    cs.envp = run_env(&tmp, spec->envp);
+    cs.envp = run_env(&tmp, spec->envp, MEASURE && spec->measure);
     cs.cwd = spec->cwd;
     if (!cs.envp) {
         lc_arena_free(&tmp);
@@ -652,10 +813,13 @@ int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r)
     }
     if (cloexec_pipe(stp) != 0)
         goto pipe_failed;
+    if (MEASURE && spec->measure && cloexec_pipe(rp) != 0)
+        goto pipe_failed;
     cs.fd[S_IN] = p[S_IN][0];
     for (i = S_OUT; i < NSTREAMS; i++)
         cs.fd[i] = p[i][1];
     cs.status_fd = stp[1];
+    cs.report_fd = rp[1];
 
     w = fork();
     if (w < 0) {
@@ -666,6 +830,8 @@ int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r)
         }
         close_fd(&stp[0]);
         close_fd(&stp[1]);
+        close_fd(&rp[0]);
+        close_fd(&rp[1]);
         lc_arena_free(&tmp);
         return lc_set_errno(ctx, LC_ERR_IO, e, "cannot run '%s': fork",
                             spec->path);
@@ -678,6 +844,10 @@ int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r)
     lc_arena_free(&tmp);
     memset(&lp, 0, sizeof lp);
     lp.pid = w;
+    lp.report = rp[0];
+    close_fd(&rp[1]);
+    if (lp.report >= 0)
+        set_nonblock(lp.report);
     lp.fd[S_IN] = p[S_IN][1];
     for (i = S_OUT; i < NSTREAMS; i++)
         lp.fd[i] = p[i][0];
@@ -735,6 +905,10 @@ int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r)
     r->wall_ms = (long)(now_ms() - start);
     for (i = 0; i < NSTREAMS; i++)
         close_fd(&lp.fd[i]);
+    /* The rest of the group goes next: first the harness's report on the
+     * solution that was killed. */
+    if (lp.killed_solution)
+        await_report(&lp);
     /* Anything still left in the group: the program itself if it was
      * killed, or what it started and left running. Safe while the program
      * is unreaped (see child_exited). */
@@ -765,6 +939,10 @@ int lc_run(lc_ctx *ctx, const lc_run_spec *spec, lc_run_result *r)
 #else
     r->max_rss_kb = (long)ru.ru_maxrss;          /* KiB elsewhere */
 #endif
+    if (lp.report >= 0) {
+        apply_report(&lp, r);
+        close_fd(&lp.report);
+    }
     return LC_OK;
 
 pipe_failed:
@@ -776,6 +954,8 @@ pipe_failed:
         }
         close_fd(&stp[0]);
         close_fd(&stp[1]);
+        close_fd(&rp[0]);
+        close_fd(&rp[1]);
         lc_arena_free(&tmp);
         return lc_set_errno(ctx, LC_ERR_IO, e, "cannot run '%s': cannot "
                             "create a pipe", spec->path);

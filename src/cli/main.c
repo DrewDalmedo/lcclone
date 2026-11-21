@@ -213,8 +213,8 @@ static const cli_cmd commands[] = {
      "  -h, --help         show this help\n",
      CLI_OPT_COLOR | CLI_OPT_MANIFEST, 0, 0, NULL, cmd_stats},
     {"check", "Check problem packs (for authors)",
-     "lc check [<pack>...] [--regen] [--count N] [--seed N] [--json] "
-     "[--color=WHEN]",
+     "lc check [<pack>...] [--regen] [--quick] [--count N] [--seed N] "
+     "[--json] [--color=WHEN]",
      "Check problem packs: each <pack> is a pack directory, an ID or a\n"
      "slug; without one, every pack of the problem directory. For each\n"
      "pack, lc checks that:\n"
@@ -222,11 +222,16 @@ static const cli_cmd commands[] = {
      "  - problem.md loads, and agrees with MANIFEST.tsv if there is one;\n"
      "  - tests.txt reads, and every case fits the signature;\n"
      "  - the C and C++ stubs build with lc's harness;\n"
+     "  - the full-size cases (@full) are what gen.c makes;\n"
      "  - the reference solution (ref.c or ref.cpp) passes every case,\n"
      "    using at most a third of the time limit;\n"
      "  - the cases marked @gen are what gen.c makes;\n"
      "  - ref and brute.c (or brute.cpp) give the same results on random\n"
-     "    small cases from gen.c.\n"
+     "    small cases from gen.c;\n"
+     "  - on the full-size cases, the time limit tells slow methods from\n"
+     "    fast ones: brute's time is reported as a multiple of the limit,\n"
+     "    slow.c (or slow.cpp), if there is one, runs out of time, and\n"
+     "    ref passes them with the sanitizers too.\n"
      "\n"
      "A problem that needs something lc can't judge yet only has its\n"
      "tests.txt checked. Problems are printed as file:line: messages. The\n"
@@ -235,7 +240,10 @@ static const cli_cmd commands[] = {
      "Options:\n"
      "  --regen            first rewrite tests.txt: make the @gen cases with\n"
      "                     gen.c, and work out every expected result with\n"
-     "                     ref (results that already match are kept)\n"
+     "                     ref (results that already match are kept), and\n"
+     "                     the hashes of the @full cases\n"
+     "  --quick            leave out the slow checks on the full-size cases\n"
+     "                     (brute's time, slow.c and the sanitizers)\n"
      "  --count N          random cases to compare ref and brute on\n"
      "                     (default 300)\n"
      "  --seed N           the seed of the first random case (default 1)\n"
@@ -243,7 +251,8 @@ static const cli_cmd commands[] = {
      "  --color=WHEN       colour the output: auto (the default), always or\n"
      "                     never\n"
      "  -h, --help         show this help\n",
-     CLI_OPT_COLOR | CLI_OPT_REGEN | CLI_OPT_COUNT | CLI_OPT_SEED, 0,
+     CLI_OPT_COLOR | CLI_OPT_REGEN | CLI_OPT_QUICK | CLI_OPT_COUNT |
+         CLI_OPT_SEED, 0,
      (size_t)-1, NULL, cmd_check},
     {"help", "Show help for lc or for one command",
      "lc help [<command>] [--json]",
@@ -609,7 +618,7 @@ static int cmd_version(cli *c)
 
 enum {
     O_JSON, O_HELP, O_COLOR, O_NO_PAGER, O_DIFFICULTY, O_TAG, O_LANG, O_STD,
-    O_SANITIZE, O_CASE, O_NO_EDIT, O_STATUS, O_MANIFEST, O_REGEN, O_COUNT,
+    O_SANITIZE, O_CASE, O_NO_EDIT, O_STATUS, O_MANIFEST, O_REGEN, O_QUICK, O_COUNT,
     O_SEED
 };
 
@@ -634,6 +643,7 @@ static const struct opt_def {
     {"--status", CLI_OPT_STATUS, 1, O_STATUS},
     {"--manifest", CLI_OPT_MANIFEST, 0, O_MANIFEST},
     {"--regen", CLI_OPT_REGEN, 0, O_REGEN},
+    {"--quick", CLI_OPT_QUICK, 0, O_QUICK},
     {"--count", CLI_OPT_COUNT, 1, O_COUNT},
     {"--seed", CLI_OPT_SEED, 1, O_SEED},
 };
@@ -785,6 +795,9 @@ static void apply_option(cli *c, const struct opt_def *o, const char *value,
         break;
     case O_REGEN:
         c->regen = 1;
+        break;
+    case O_QUICK:
+        c->quick = 1;
         break;
     case O_COUNT: {
         int ok;

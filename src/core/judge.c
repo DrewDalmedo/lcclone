@@ -341,6 +341,8 @@ typedef struct judge_run {
     lc_arena *arena;          /* the report's */
     size_t first_custom;      /* index of the first case of your own */
     int sanitizer_check;      /* lc_judge_opts.sanitizer_check */
+    const char *gen_exe;      /* lc_judge_opts.gen_exe */
+    int gen_cancelled;        /* the cancel flag stopped gen */
 } judge_run;
 
 /*
@@ -389,6 +391,12 @@ static int check_result(judge_run *jr, const lc_value *expected,
     cr->output = copy_bytes(jr->arena, jr->text.data, jr->text.len);
     if (!cr->output)
         return LC_ERR_NOMEM;
+    /* No expected result (lc check running ref on a full-size case whose
+     * result tests.txt doesn't give): any result that reads will do. */
+    if (!expected) {
+        cr->verdict = LC_ACCEPTED;
+        return LC_OK;
+    }
     rc = lc_value_match(jr->ctx, &jr->p->compare, expected, got, &match);
     if (rc != LC_OK)
         return rc;
@@ -405,14 +413,36 @@ static int judge_case(judge_run *jr, const lc_case *c, size_t index,
 {
     lc_ctx *ctx = jr->ctx;
     const lc_value *args, *expected;
+    lc_cases *made = NULL;
+    char hash[LC_FULL_HASH_LEN + 1];
     lc_pool *pool;
-    char **inputs;
+    char **inputs, **sizes = NULL;
     size_t i;
     int rc;
 
+    /* A full-size case: gen.c makes its inputs now. */
+    if (c->full && c->nargs == 0) {
+        int stopped;
+
+        if (!jr->gen_exe)
+            return lc_set_error(ctx, LC_ERR_INVALID, "%s:%d: this full-size "
+                                "case needs the pack's gen.c, which makes it",
+                                c->file ? c->file : "tests.txt", c->line);
+        rc = lc_full_make(ctx, jr->p, jr->gen_exe, c, jr->spec.cancel, &made,
+                          hash, NULL, NULL, &stopped);
+        if (rc != LC_OK)
+            return rc;
+        if (stopped) {
+            jr->gen_cancelled = 1;
+            return LC_OK;
+        }
+        c = &made->items[0];
+    }
     pool = lc_pool_new();
-    if (!pool)
+    if (!pool) {
+        lc_cases_free(made);
         return lc_oom(ctx);
+    }
     rc = lc_case_values(ctx, jr->p, c, pool, &args, &expected);
     if (rc != LC_OK)
         goto done;
@@ -470,18 +500,35 @@ static int judge_case(judge_run *jr, const lc_case *c, size_t index,
                             sizeof *inputs);
     if (!inputs)
         goto nomem;
+    if (made) {
+        /* Megabytes of input are shown by their size. */
+        cr->full = 1;
+        cr->seed = c->seed;
+        cr->hash = lc_arena_strdup(jr->arena, hash);
+        sizes = lc_arena_array(jr->arena, c->nargs ? c->nargs : 1,
+                               sizeof *sizes);
+        if (!cr->hash || !sizes)
+            goto nomem;
+        cr->sizes = (const char *const *)sizes;
+    }
     for (i = 0; i < c->nargs; i++) {
-        inputs[i] = lc_arena_strdup(jr->arena, c->args[i]);
+        if (made && lc_full_size(jr->arena, input_type(jr->p, i), &args[i],
+                                 c->args[i], (const char **)&sizes[i]) != LC_OK)
+            goto nomem;
+        inputs[i] = sizes && sizes[i] ? sizes[i]
+                                      : lc_arena_strdup(jr->arena, c->args[i]);
         if (!inputs[i])
             goto nomem;
     }
     cr->inputs = (const char *const *)inputs;
     cr->ninputs = c->nargs;
     lc_str_clear(&jr->text);
-    if (lc_value_print(expected, &jr->text) != LC_OK)
+    if (expected && lc_value_print(expected, &jr->text) != LC_OK)
         goto nomem;
-    cr->expected = copy_bytes(jr->arena, jr->text.data, jr->text.len);
-    if (!cr->expected ||
+    cr->expected = expected ? copy_bytes(jr->arena, jr->text.data,
+                                         jr->text.len)
+                            : NULL;
+    if ((expected && !cr->expected) ||
         keep_head(jr->arena, &jr->run.out, (jr->run.overflow & LC_RUN_STDOUT) != 0,
                   &cr->stdout_text, &cr->stdout_len,
                   &cr->stdout_truncated) != LC_OK ||
@@ -496,6 +543,7 @@ nomem:
     rc = lc_oom(ctx);
 done:
     lc_pool_free(pool);
+    lc_cases_free(made);
     return rc;
 }
 
@@ -564,10 +612,12 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
     jr.first_custom = opts && opts->ncustom <= ncases ? ncases - opts->ncustom
                                                       : ncases;
     jr.sanitizer_check = opts && opts->sanitizer_check;
+    jr.gen_exe = opts ? opts->gen_exe : NULL;
     jr.spec.path = exe;
     jr.spec.envp = opts ? opts->envp : NULL;
     jr.spec.cwd = opts ? opts->cwd : NULL;
     jr.spec.result_fd = 1;
+    jr.spec.measure = 1;
     jr.spec.cancel = hooks ? hooks->cancel : NULL;
     lc_limits_apply(&jr.lim, &jr.spec);
     lc_run_result_init(&jr.run);
@@ -591,7 +641,7 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
         rc = judge_case(&jr, &cases[i], i, cr);
         if (rc != LC_OK)
             break;
-        if (jr.run.cancelled) {
+        if (jr.run.cancelled || jr.gen_cancelled) {
             report->cancelled = 1;
             break;
         }
@@ -652,7 +702,7 @@ extern char **environ;
  * LeakSanitizer turned off. Solutions written for LeetCode don't free
  * what they allocate, and neither does the harness.
  */
-static char **sanitize_env(lc_arena *a)
+char **lc_sanitize_env(lc_arena *a)
 {
     const char *asan = NULL;
     size_t n = 0, i, k = 0;
@@ -871,6 +921,54 @@ static int ref_expected(lc_ctx *ctx, const lc_problem *p, const char *exe,
     return rc;
 }
 
+/* The file a case is in, for messages: its own, else the pack's
+ * tests.txt (in `a`, or "tests.txt" when out of memory). */
+static const char *case_file(const lc_problem *p, const lc_case *c,
+                             lc_arena *a)
+{
+    const char *path;
+
+    if (c->file)
+        return c->file;
+    path = lc_path_join(a, p->dir, "tests.txt");
+    return path ? path : "tests.txt";
+}
+
+/*
+ * The expected result of full-size case `c`, which tests.txt doesn't
+ * give: from the cache, or worked out by the reference solution `rexe`
+ * on the input the generator `gexe` makes, and then kept in the cache.
+ * Sets c->expected, in `a`.
+ */
+static int full_expected(lc_ctx *ctx, const lc_problem *p, const char *gexe,
+                         const char *rexe, const char *rdir, lc_case *c,
+                         const lc_hooks *hooks, lc_arena *a, int *cancelled)
+{
+    lc_cases *made = NULL;
+    const char *res;
+    int rc;
+
+    *cancelled = 0;
+    rc = lc_full_cache_get(ctx, p, gexe, rexe, c->seed, a, &res);
+    if (rc != LC_OK)
+        return rc;
+    if (res) {
+        c->expected = res;
+        return LC_OK;
+    }
+    rc = lc_full_make(ctx, p, gexe, c, hooks ? hooks->cancel : NULL, &made,
+                      NULL, NULL, NULL, cancelled);
+    if (rc != LC_OK || *cancelled)
+        return rc;
+    rc = ref_expected(ctx, p, rexe, rdir, &made->items[0], hooks, a, &res,
+                      cancelled);
+    lc_cases_free(made);
+    if (rc != LC_OK || *cancelled)
+        return rc;
+    c->expected = res;
+    return lc_full_cache_put(ctx, p, gexe, rexe, c->seed, res);
+}
+
 char *lc_pack_source(lc_arena *a, const lc_problem *p, const char *base,
                      const lc_lang **lang, int *both)
 {
@@ -987,8 +1085,8 @@ static void check_cancelled(lc_report *rep)
 static int sanitizer_check(lc_ctx *ctx, const lc_problem *p,
                            const lc_lang *lang, const char *src,
                            const lc_judge_options *opts, const lc_case *cases,
-                           size_t n, size_t nuser, const lc_hooks *hooks,
-                           lc_report *rep)
+                           size_t n, size_t nuser, const char *gen_exe,
+                           const lc_hooks *hooks, lc_report *rep)
 {
     report_priv *rp = rep->priv_;
     lc_arena *a = &rp->side;
@@ -996,7 +1094,7 @@ static int sanitizer_check(lc_ctx *ctx, const lc_problem *p,
     lc_build *b;
     lc_judge_opts jo;
     const char *exe, *why;
-    char **envp = sanitize_env(a);
+    char **envp = lc_sanitize_env(a);
     int rc, cancelled;
 
     if (!envp)
@@ -1039,6 +1137,7 @@ static int sanitizer_check(lc_ctx *ctx, const lc_problem *p,
     jo.build = b;
     jo.sanitizer_check = 1;
     jo.no_done = 1;
+    jo.gen_exe = gen_exe;
     if (!jo.cwd)
         return lc_oom(ctx);
     rc = lc_judge_exe(ctx, p, exe, cases, n, &jo, hooks, &rp->check);
@@ -1065,15 +1164,16 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     lc_cases *pack = NULL;
     lc_case *cases = NULL;
     const lc_cases *user;
-    lc_build *build, *rbuild;
-    const char *exe, *rexe;
+    lc_build *build, *rbuild, *gbuild;
+    const char *exe, *rexe = NULL, *gexe = NULL;
     const lc_lang *rlang = NULL;
-    char *ref, *rdir;
+    char *ref, *rdir, *gen = NULL;
     lc_judge_opts jo;
     lc_pool *pool = NULL;
     lc_event ev;
     struct stat st;
     size_t n = 0, npack = 0, nuser, i, need_ref = 0, first_need = 0;
+    size_t nfull = 0, first_full = 0;
     int rc, cancelled;
 
     if (!out)
@@ -1125,10 +1225,15 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     for (i = 0; pack && i < pack->count; i++)
         if (opts->all || pack->items[i].example)
             cases[n++] = pack->items[i];
-    for (i = 0; i < nuser; i++) {
-        if (!user->items[i].expected && need_ref++ == 0)
-            first_need = n;
+    for (i = 0; i < nuser; i++)
         cases[n++] = user->items[i];
+    /* Your cases without a result, and full-size cases whose result is
+     * too long for tests.txt, get theirs from ref. */
+    for (i = 0; i < n; i++) {
+        if (!cases[i].expected && need_ref++ == 0)
+            first_need = i;
+        if (cases[i].full && nfull++ == 0)
+            first_full = i;
     }
     /* Every case must fit the signature, before anything is built. */
     for (i = 0; i < n; i++) {
@@ -1147,10 +1252,24 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
         rc = lc_set_error(ctx, LC_ERR_INVALID, "%s:%d: this case has no "
                           "expected result ('=> ...'), and problem %d (%s) "
                           "has no reference solution to work one out",
-                          cases[first_need].file ? cases[first_need].file
-                                                 : "?",
+                          case_file(p, &cases[first_need], &side),
                           cases[first_need].line, p->id, p->slug);
         goto done;
+    }
+    if (nfull) {
+        gen = lc_path_join(&side, p->dir, "gen.c");
+        if (!gen) {
+            rc = lc_oom(ctx);
+            goto done;
+        }
+        if (!lc_is_file(gen)) {
+            rc = lc_set_error(ctx, LC_ERR_INVALID, "%s:%d: this full-size "
+                              "case is made by gen.c, which problem %d (%s) "
+                              "doesn't have",
+                              case_file(p, &cases[first_full], &side),
+                              cases[first_full].line, p->id, p->slug);
+            goto done;
+        }
     }
 
     rc = lc_build_step(ctx, p, lang, src, opts->std, opts->sanitize, 0,
@@ -1161,6 +1280,30 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     if (cancelled || !build->ok) {
         rc = build_report(ctx, &side, build, n, hooks, out);
         goto done;
+    }
+
+    if (nfull) {
+        const lc_lang *c = lc_lang_find("c");
+
+        rc = lc_build_step(ctx, p, c, gen, c->default_std, 0, 0, LC_ROLE_GEN,
+                           hooks, &side, &gbuild, &gexe, &cancelled);
+        if (rc != LC_OK) {
+            if (rc != LC_ERR_NOMEM && !ctx->err_nomem)
+                rc = lc_set_error(ctx, rc, "the full-size cases are made by "
+                                  "the pack's gen.c, which needs a C "
+                                  "compiler: %s", lc_last_error(ctx));
+            goto done;
+        }
+        if (cancelled) {
+            rc = build_report(ctx, &side, NULL, n, hooks, out);
+            goto done;
+        }
+        if (!gbuild->ok) {
+            rc = lc_set_error(ctx, LC_ERR_INVALID, "%s, which makes the "
+                              "full-size cases, does not compile:\n%s", gen,
+                              gbuild->output);
+            goto done;
+        }
     }
 
     if (need_ref) {
@@ -1187,8 +1330,12 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
         for (i = first_need; i < n; i++) {
             if (cases[i].expected)
                 continue;
-            rc = ref_expected(ctx, p, rexe, rdir, &cases[i], hooks, &side,
-                              &cases[i].expected, &cancelled);
+            if (cases[i].full)
+                rc = full_expected(ctx, p, gexe, rexe, rdir, &cases[i], hooks,
+                                   &side, &cancelled);
+            else
+                rc = ref_expected(ctx, p, rexe, rdir, &cases[i], hooks,
+                                  &side, &cases[i].expected, &cancelled);
             if (rc != LC_OK)
                 goto done;
             if (cancelled) {
@@ -1203,8 +1350,9 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     jo.stop_on_failure = opts->stop_on_failure;
     jo.ncustom = nuser;
     jo.sanitize = opts->sanitize;
-    jo.envp = opts->sanitize ? sanitize_env(&side) : NULL;
+    jo.envp = opts->sanitize ? lc_sanitize_env(&side) : NULL;
     jo.build = build;
+    jo.gen_exe = gexe;
     /* The sanitizer check, if any, sends LC_EV_DONE once it is over. */
     jo.no_done = opts->sanitizer_check && !opts->sanitize;
     if (!jo.cwd || (opts->sanitize && !jo.envp)) {
@@ -1219,7 +1367,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     if (jo.no_done) {
         if ((*out)->verdict == LC_ACCEPTED && !(*out)->cancelled)
             rc = sanitizer_check(ctx, p, lang, src, opts, cases, n, nuser,
-                                 hooks, *out);
+                                 gexe, hooks, *out);
         if (rc != LC_OK) {
             lc_report_free(*out);
             *out = NULL;

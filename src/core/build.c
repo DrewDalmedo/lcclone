@@ -122,6 +122,8 @@ const char *lc_role_name(int role)
         return "stub";
     case LC_ROLE_GEN:
         return "generator";
+    case LC_ROLE_SLOW:
+        return "slow";
     default:
         return "solution";
     }
@@ -199,6 +201,11 @@ static size_t flags(const lc_build_req *req, const char *std_arg,
      * with <> (see lc_build_source). */
     if (req->lang->id == LC_LANG_C)
         out[n++] = "-I.";
+    /* A seed must make the same case on every system, and clang on arm64
+     * would otherwise fuse a multiply and an add into one instruction,
+     * which rounds once instead of twice (docs/PLAN.md section 6.4). */
+    if (req->role == LC_ROLE_GEN)
+        out[n++] = "-ffp-contract=off";
     if (req->sanitize) {
         out[n++] = "-g";
         out[n++] = "-fsanitize=address,undefined";

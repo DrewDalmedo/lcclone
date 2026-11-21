@@ -37,6 +37,79 @@
 #define LC_RT_PRINTF(f, a)
 #endif
 
+/*
+ * Measuring the solution, on Linux (docs/judging.md, "Limits"). Linux
+ * counts, in a program's peak memory, the pages it inherited through
+ * fork(): lc's, megabytes when it holds a full-size case. So when lc asks
+ * for it, with LC_RT_MEASURE=4 in the environment and a pipe on fd 4, the
+ * program forks before anything else of it runs. The child goes on to
+ * run the solution, having inherited only the few pages of a program that
+ * has just started. The parent says which process that is, so that lc
+ * can kill it when it runs out of time, waits for it, and then writes how
+ * it ended (its wait status), its peak memory in KiB and its CPU time:
+ *
+ *     lc-rt-pid PID
+ *     lc-rt STATUS MAXRSS USER_US SYSTEM_US
+ *
+ * The parent closes its copies of the child's streams and never runs the
+ * solution's code: it forks before any constructor of the solution's.
+ * fork and wait4 are called under names of lc's own, with an asm label,
+ * so they can't clash with a solution's functions; <sys/resource.h> (for
+ * struct rusage) declares no name a solution is likely to use.
+ */
+#if defined(__linux__) && (defined(__GNUC__) || defined(__clang__))
+#include <sys/resource.h>
+
+extern int lc_rt_os_fork(void) __asm__("fork");
+extern int lc_rt_os_wait4(int pid, int *status, int options,
+                          struct rusage *ru) __asm__("wait4");
+
+__attribute__((constructor(101))) static void lc_rt_measure(void)
+{
+    const char *want = getenv("LC_RT_MEASURE");
+    struct rusage ru;
+    FILE *f;
+    int pid, st = 0, w;
+
+    if (!want || strcmp(want, "4") != 0)
+        return;
+    pid = lc_rt_os_fork();
+    if (pid < 0)
+        return; /* measured as a whole, then */
+    if (pid == 0) {
+        /* The solution's process: the report isn't its business. */
+        f = fdopen(4, "w");
+        if (f)
+            fclose(f);
+        return;
+    }
+    fclose(stdin);
+    fclose(stdout);
+    fclose(stderr);
+    f = fdopen(3, "w");
+    if (f)
+        fclose(f);
+    f = fdopen(4, "w");
+    if (f) {
+        fprintf(f, "lc-rt-pid %d\n", pid);
+        fflush(f);
+    }
+    memset(&ru, 0, sizeof ru);
+    do
+        w = lc_rt_os_wait4(pid, &st, 0, &ru);
+    while (w < 0 && errno == EINTR);
+    if (f && w == pid)
+        fprintf(f, "lc-rt %d %ld %lld %lld\n", st, (long)ru.ru_maxrss,
+                (long long)ru.ru_utime.tv_sec * 1000000 +
+                    (long long)ru.ru_utime.tv_usec,
+                (long long)ru.ru_stime.tv_sec * 1000000 +
+                    (long long)ru.ru_stime.tv_usec);
+    if (f)
+        fclose(f);
+    _Exit(0);
+}
+#endif
+
 /* Exit status when the harness can't go on (EX_SOFTWARE). */
 #define LC_RT_FAIL 70
 /* The descriptor the result goes to. */

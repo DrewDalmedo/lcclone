@@ -336,6 +336,8 @@ static void build_line(ui *u, const lc_build *b)
     lc_str_puts(&u->out, "Building ");
     if (b->reference)
         lc_str_puts(&u->out, "the reference solution");
+    else if (strcmp(b->role, "generator") == 0)
+        lc_str_puts(&u->out, "gen.c, which makes the full-size cases");
     else
         lc_str_puts(&u->out, u->t->src_shown.data);
     lc_str_printf(&u->out, " (%s, %s%s)\n",
@@ -481,6 +483,14 @@ static void failure(ui *u, const lc_report *rep, const lc_case_result *r)
         lc_str_printf(&u->out, " (%s)", r->message);
     lc_str_putc(&u->out, '\n');
 
+    if (r->full) {
+        lc_str_printf(&u->out, "  Case:     @full %llu %s", r->seed,
+                      r->hash ? r->hash : "");
+        if (!r->custom)
+            lc_str_puts(&u->out, " (full size; this line in cases.txt runs "
+                        "it with lc test)");
+        lc_str_putc(&u->out, '\n');
+    }
     lc_str_puts(&u->out, "  Input:   ");
     if (r->ninputs == p->narg_names) {
         for (i = 0; i < r->ninputs; i++) {
@@ -652,14 +662,35 @@ static void json_case(lc_json *j, const lc_problem *p,
     lc_json_string(j, lc_verdict_id(r->verdict));
     lc_json_key(j, "message");
     lc_json_string(j, r->message);
+    lc_json_key(j, "full");
+    lc_json_bool(j, r->full);
+    /* A string: seeds go up to 2^64 - 1, past what a JSON reader that
+     * keeps numbers as doubles can hold. */
+    lc_json_key(j, "seed");
+    if (r->full) {
+        char seed[24];
+
+        snprintf(seed, sizeof seed, "%llu", r->seed);
+        lc_json_string(j, seed);
+    } else {
+        lc_json_null(j);
+    }
+    lc_json_key(j, "hash");
+    lc_json_string(j, r->full ? r->hash : NULL);
     lc_json_key(j, "inputs");
     lc_json_begin_array(j);
     for (i = 0; i < r->ninputs; i++) {
+        const char *size = r->sizes ? r->sizes[i] : NULL;
+
         lc_json_begin_object(j);
         lc_json_key(j, "name");
         lc_json_string(j, named ? p->arg_names[i] : NULL);
+        /* A long input of a full-size case is left out: its size and
+         * the seed say what it is. */
         lc_json_key(j, "value");
-        lc_json_string(j, r->inputs[i]);
+        lc_json_string(j, size ? NULL : r->inputs[i]);
+        lc_json_key(j, "size");
+        lc_json_string(j, size);
         lc_json_end_object(j);
     }
     lc_json_end_array(j);

@@ -60,7 +60,13 @@ lc submit                   # every case, stopping at the first failure
   next to the solution (or the file given with `--case FILE`). Every case
   runs; the failures are shown at the end.
 - **`lc submit`** runs every case of the problem, the hidden ones too, and
-  stops at the first that fails, as LeetCode does. When they all pass, it
+  stops at the first that fails, as LeetCode does. That includes the
+  full-size cases: cases at the limits of the problem's constraints,
+  which a solution that is right but too slow fails, as on LeetCode. They
+  are made when they are judged, by the problem's own generator, which
+  `lc` builds the first time ("Building gen.c, which makes the full-size
+  cases"), so `lc submit` needs a C compiler for them, even for a C++
+  solution. When they all pass, it
   checks the solution with AddressSanitizer and UBSan, which LeetCode
   builds with: it runs the cases again built with them, and a crash or a
   sanitizer's report there fails the submission ([judging.md](judging.md#the-sanitizer-check)).
@@ -116,6 +122,20 @@ a function without parameters, a case's only input line is `()`.
 Lines starting with `#` are comments. A case whose input breaks the
 problem's constraints may make the reference solution fail; `lc` then
 says so instead of guessing.
+
+A full-size case is shown by its seed, and its inputs by their size when
+they are long:
+
+```
+solution.cpp:1: Time Limit Exceeded on case 23 of 25 (used 2010 ms of CPU time; the limit is 1000 ms)
+  Case:     @full 102 77c0d2e1 (full size; this line in cases.txt runs it with lc test)
+  Input:    prices = 100000 items
+  Expected: 9998
+```
+
+The `@full` line runs it again from `cases.txt`, so you can time it with
+`lc test` without submitting. The hash after the seed may be left out
+there; with it, `lc` checks that the generator makes the same case here.
 
 For a problem solved in place, such as Move Zeroes or Remove Duplicates
 from Sorted Array, the result is the array after the call (or its first k
