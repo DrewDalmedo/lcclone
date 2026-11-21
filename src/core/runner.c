@@ -615,18 +615,21 @@ static void abandon(run_loop *lp)
 static void apply_report(run_loop *lp, lc_run_result *r)
 {
     long long v[4];
+    int status;
 
     read_report(lp);
     if (!report_line(lp->rbuf, "lc-rt", v, 4))
         return;
+    /* An lvalue: macOS's W* macros take their argument's address. */
+    status = (int)v[0];
     r->exited = 0;
     r->exit_code = 0;
     r->signal = 0;
-    if (WIFEXITED((int)v[0])) {
+    if (WIFEXITED(status)) {
         r->exited = 1;
-        r->exit_code = WEXITSTATUS((int)v[0]);
-    } else if (WIFSIGNALED((int)v[0])) {
-        r->signal = WTERMSIG((int)v[0]);
+        r->exit_code = WEXITSTATUS(status);
+    } else if (WIFSIGNALED(status)) {
+        r->signal = WTERMSIG(status);
     }
     r->max_rss_kb = (long)v[1];
     r->cpu_ms = (long)((v[2] + v[3]) / 1000);
