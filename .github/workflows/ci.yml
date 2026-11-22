@@ -4,12 +4,18 @@ on:
   push:
     branches: ['**']
   pull_request:
+  schedule:
+    # Mondays at 04:23 UTC: the full checks over every pack (see the packs
+    # job), and every job on the runners' newest images.
+    - cron: '23 4 * * 1'
+  workflow_dispatch:  # by hand: also the full checks over every pack
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  # By event too, so that a push to main doesn't cancel the weekly run.
+  group: ci-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -17,8 +23,68 @@ env:
   WFLAGS: -Wall -Wextra -Wpedantic -Werror -Wshadow -Wstrict-prototypes -Wmissing-prototypes
 
 jobs:
+  packs:
+    # Picks the packs that Linux, Alpine and macOS check in full, with lc
+    # check's slow checks on the full-size cases: brute's time against the
+    # limit, slow.c, and ref with the sanitizers (docs/PLAN.md section
+    # 6.4). Over every pack those would take hours, so they run on the
+    # packs a push or PR changes, and on every pack when lc's runtime
+    # changes, weekly, and when the workflow is run by hand. Every job
+    # checks every pack without them (lc check --quick, in make test).
+    name: Packs to check in full
+    runs-on: ubuntu-latest
+    outputs:
+      all: ${{ steps.which.outputs.all }}
+      packs: ${{ steps.which.outputs.packs }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # the history, to compare with the base
+      - name: Find them
+        id: which
+        shell: bash  # adds -o pipefail, so a failing full-packs.sh fails the step
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          # The commit to compare with; none means every pack.
+          base=
+          case $EVENT in
+          pull_request)
+            # What the PR changes: the first parent of the merge commit
+            # that is checked out is the PR's base.
+            base=HEAD^1 ;;
+          push)
+            # What the push changes. On main, that is what the merged PRs
+            # change: their own runs checked those packs, but against the
+            # base they had, so this also covers two PRs merged one after
+            # the other (a runtime change, then a pack). Checking every
+            # pack on each merge would take hours for packs nothing
+            # touched; the weekly run covers the rest. After a force-push
+            # the old commit is gone: on a branch, compare with where it
+            # leaves main, as for a new branch; on main, check every pack.
+            if git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+              base=$BEFORE
+            elif [ "$GITHUB_REF" != "refs/heads/$DEFAULT_BRANCH" ]; then
+              base=$(git merge-base "origin/$DEFAULT_BRANCH" HEAD) || base=
+            fi ;;
+          esac
+          echo "Comparing with: ${base:-nothing}"
+          packs=$(sh tools/full-packs.sh "$base" | xargs)
+          if [ "$packs" = all ]; then
+            echo "Checking every pack in full"
+            echo "all=true" >>"$GITHUB_OUTPUT"
+            echo "packs=" >>"$GITHUB_OUTPUT"
+          else
+            echo "Checking in full: ${packs:-no pack}"
+            echo "all=false" >>"$GITHUB_OUTPUT"
+            echo "packs=$packs" >>"$GITHUB_OUTPUT"
+          fi
+
   linux:
     name: Linux (${{ matrix.cc }})
+    needs: packs
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -32,10 +98,19 @@ jobs:
         run: $CC --version
       - name: Build and test
         run: make CC="$CC" CFLAGS="-O2 $WFLAGS" test
-      - name: Check the problem packs
-        # Every pack: its stubs build, ref passes every case, and ref and
-        # brute agree on 300 random cases (make test uses fewer).
-        run: make CC="$CC" CFLAGS="-O2 $WFLAGS" check-packs
+      - name: Check ${{ needs.packs.outputs.all == 'true' && 'every pack' || 'the changed packs' }} in full
+        # What the next step checks, and the slow checks on the full-size
+        # cases (see the packs job).
+        if: needs.packs.outputs.all == 'true' || needs.packs.outputs.packs != ''
+        env:
+          PACKS: ${{ needs.packs.outputs.packs }}
+        run: make CC="$CC" CFLAGS="-O2 $WFLAGS" check-packs PACKS="$PACKS"
+      - name: Check every pack (--quick)
+        # Every pack: its stubs build, ref passes every case, full-size
+        # ones included, and ref and brute agree on 300 random cases (make
+        # test uses fewer). Not the slow checks on the full-size cases.
+        if: needs.packs.outputs.all != 'true'
+        run: make CC="$CC" CFLAGS="-O2 $WFLAGS" check-packs CHECKFLAGS=--quick
       - name: Incremental rebuilds
         run: |
           # test_fs.c and test_md.c #include core sources, so their objects
@@ -113,6 +188,7 @@ jobs:
 
   alpine:
     name: Alpine (musl)
+    needs: packs
     runs-on: ubuntu-latest
     container: alpine:latest
     steps:
@@ -121,9 +197,18 @@ jobs:
       - uses: actions/checkout@v5
       - name: Build and test
         run: make CFLAGS="-O2 $WFLAGS" test
+      - name: Check ${{ needs.packs.outputs.all == 'true' && 'every pack' || 'the changed packs' }} in full
+        # As on the other systems, so that a slow.c that musl or its gcc
+        # lets pass is noticed. musl's gcc has no sanitizers: lc check
+        # notes that it leaves that check out.
+        if: needs.packs.outputs.all == 'true' || needs.packs.outputs.packs != ''
+        env:
+          PACKS: ${{ needs.packs.outputs.packs }}
+        run: make CFLAGS="-O2 $WFLAGS" check-packs PACKS="$PACKS"
 
   macos:
     name: macOS (clang)
+    needs: packs
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v5
@@ -131,8 +216,14 @@ jobs:
         run: clang --version
       - name: Build and test
         run: make CC=clang CFLAGS="-O2 $WFLAGS" test
-      - name: Check the problem packs
-        run: make CC=clang CFLAGS="-O2 $WFLAGS" check-packs
+      - name: Check ${{ needs.packs.outputs.all == 'true' && 'every pack' || 'the changed packs' }} in full
+        if: needs.packs.outputs.all == 'true' || needs.packs.outputs.packs != ''
+        env:
+          PACKS: ${{ needs.packs.outputs.packs }}
+        run: make CC=clang CFLAGS="-O2 $WFLAGS" check-packs PACKS="$PACKS"
+      - name: Check every pack (--quick)
+        if: needs.packs.outputs.all != 'true'
+        run: make CC=clang CFLAGS="-O2 $WFLAGS" check-packs CHECKFLAGS=--quick
 
   install:
     # Installs, then runs lc with no LC_PROBLEMS and an empty HOME, so the

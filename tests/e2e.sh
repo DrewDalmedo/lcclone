@@ -1548,10 +1548,65 @@ printf '1\n2\n=> 3\n' >"$RG/0001-good/tests.txt"
 rm "$RG/0001-good/ref.c"
 check err-check-regen-no-ref LC_PROBLEMS="$RG" -- check --regen
 
-# The repository's own packs pass lc check.
-run LC_PROBLEMS=problems -- check --count 50
+# The repository's own packs pass lc check. --quick: CI runs the slow
+# checks on the full-size cases apart, on the packs a change touches
+# (tools/full-packs.sh).
+run LC_PROBLEMS=problems -- check --quick --count 50
 if [ "$st" = 0 ]; then ok; else
-    bad "LC_PROBLEMS=problems lc check" "$(grep -v ': ok (' "$TMP/out" | head -n 20) $(cat "$TMP/err")"
+    bad "LC_PROBLEMS=problems lc check --quick" "$(grep -v ': ok (' "$TMP/out" | head -n 20) $(cat "$TMP/err")"
+fi
+
+# tools/full-packs.sh, which tells CI which packs to check in full: the
+# packs that differ from the base commit, or every pack when lc's runtime
+# does.
+if command -v git >/dev/null 2>&1; then
+    FP=$TMP/full-packs
+    mkdir -p "$FP/runtime/gen" "$FP/problems/0001-a" "$FP/problems/0002-b" \
+        "$FP/problems/0003-c"
+    fp_git() {  # fp_git ARGS...: git in $FP, without the user's config
+        (cd "$FP" && HOME=$TMP/home XDG_CONFIG_HOME='' GIT_CONFIG_NOSYSTEM=1 \
+            git -c user.name=e2e -c user.email=e2e@example.invalid \
+            -c commit.gpgsign=false "$@") >/dev/null 2>&1
+    }
+    fp_commit() {  # fp_commit: commits every change in $FP
+        fp_git add -A && fp_git commit -q -m change
+    }
+    fp() {  # fp DESC BASE EXPECTED: what full-packs.sh BASE prints, on a line
+        got=$(cd "$FP/problems" && HOME=$TMP/home XDG_CONFIG_HOME='' \
+            GIT_CONFIG_NOSYSTEM=1 sh "$ROOT/tools/full-packs.sh" "$2" \
+            2>/dev/null | tr '\n' ' ')
+        if [ "$got" = "$3" ]; then ok; else
+            bad "tools/full-packs.sh ($1)" "printed '$got', not '$3'"
+        fi
+    }
+    for f in runtime/gen/lc_gen.h problems/0001-a/tests.txt \
+        problems/0002-b/tests.txt problems/0003-c/tests.txt \
+        problems/MANIFEST.tsv README.md; do
+        echo 1 >"$FP/$f"
+    done
+    fp_git init -q && fp_commit
+    echo 2 >"$FP/problems/0002-b/gen.c"
+    echo 2 >>"$FP/problems/MANIFEST.tsv"
+    echo 2 >>"$FP/README.md"
+    fp_commit
+    fp "a pack changed" HEAD~1 "problems/0002-b "
+    fp "nothing changed" HEAD ""
+    echo 3 >>"$FP/README.md"
+    fp_commit
+    fp "no pack changed" HEAD~1 ""
+    rm -r "$FP/problems/0003-c"
+    echo 4 >"$FP/problems/0001-a/problem.md"
+    fp_commit
+    fp "a pack removed" HEAD~1 "problems/0001-a "
+    fp "several commits" HEAD~3 "problems/0001-a problems/0002-b "
+    echo 5 >>"$FP/runtime/gen/lc_gen.h"
+    echo 5 >>"$FP/problems/0002-b/gen.c"
+    fp_commit
+    fp "lc_gen.h changed" HEAD~1 "all "
+    fp "no base" "" "all "
+    fp "an unknown base" no-such-commit "all "
+else
+    echo "note: skipped the tools/full-packs.sh tests (no git)"
 fi
 
 # ------------------------------------------------------------------
