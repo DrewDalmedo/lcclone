@@ -69,8 +69,9 @@ pack's own sources.
 **The build cache.** Builds go in
 `$XDG_CACHE_HOME/lcclone/build/<NNNN-slug>/<lang>-<std>/` (by default
 `~/.cache/lcclone/...`), as `prog-<key>`; the pack's own sources go in
-directories of their own: `ref-<lang>-<std>/`, and for `lc check`
-`brute-`, `stub-` and `generator-` ones ([authoring.md](authoring.md)). The key hashes everything that
+directories of their own: `ref-<lang>-<std>/`, `generator-c-c11/` for
+the full-size cases, and for `lc check` `brute-`, `stub-` and `slow-`
+ones ([authoring.md](authoring.md)). The key hashes everything that
 goes into the build: the whole source file above, the compiler flags, and
 the compiler's path, size and time stamp. Next to each program,
 `prog-<key>.log` keeps what the compiler printed. A build whose program
@@ -181,9 +182,16 @@ The same limits apply on every platform, with these differences:
 - **macOS** caps `RLIMIT_STACK` at 64 MB, so a case gets 64 MB of stack
   there.
 - **Linux** counts, in a program's peak memory, what it inherited from
-  `lc` before it started (the pages `fork()` copied). For `lc` itself that
-  is a few MB. A front-end that links `liblc` and holds a lot of memory
-  should keep this in mind.
+  the process that started it (the pages `fork()` copied): `lc`'s,
+  megabytes when it holds a full-size case, or a GUI's that links
+  `liblc`. So there the harness measures the solution itself: when `lc`
+  asks it to (with `LC_RT_MEASURE=4` in its environment and a pipe on fd
+  4), the program forks before any of its own code runs. The child runs
+  the solution, having inherited only the few pages of a program that has
+  just started; the parent waits for it and reports to `lc` how it ended,
+  its CPU time and its peak memory. When the program runs out of time,
+  `lc` kills the child first, so that the report still comes. macOS and
+  the BSDs don't count inherited pages, and need none of this.
 
 ## Verdicts
 
@@ -298,6 +306,32 @@ A process that judges (the `lc` CLI, or a GUI that links `liblc`) must:
 
 These limits are there to catch accidents such as infinite loops and
 runaway memory. They are not a sandbox: you are running your own code.
+
+## Full-size cases
+
+A case at the limits of a problem's constraints can be megabytes, so a
+pack's `tests.txt` keeps only a line for it, `@full SEED HASH`
+([problem-format.md](problem-format.md#teststxt)), and the case is made
+when it is judged:
+
+- **The generator.** `lc` builds the pack's `gen.c` with the C compiler
+  (`cc`, even for a C++ solution) and `-ffp-contract=off`, and runs it for
+  the seed right before the case runs. The case's input is gone again
+  once the case has run.
+- **The hash.** The input must have the hash the line gives, else the
+  generator made another case here than where the line was written (a C
+  library or a compiler that rounds differently, say), and `lc` stops
+  with an error that names the seed. That is no verdict on the solution,
+  and nothing is recorded. A case of your own may leave the hash out.
+- **The expected result** is the line's `=> ...` when it has one. When it
+  is too long to keep there, the reference solution works it out on the
+  input, as for your own cases (below), and `lc` keeps it in
+  `$XDG_CACHE_HOME/lcclone/full/<NNNN-slug>/`, named after the build keys
+  of `gen` and `ref` and the seed; the input itself isn't kept, since
+  making it again takes milliseconds. So a second run costs nothing more.
+- **Showing it.** A full-size case is shown by its seed and the size of
+  its long inputs (`nums = 100000 items`), and `--json` leaves those
+  inputs out ([json.md](json.md#case_start-case_done)).
 
 ## Your cases and the reference solution
 

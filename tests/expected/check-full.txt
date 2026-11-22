@@ -1,0 +1,6 @@
+--- stdout
+0020-top-k: ok (5 cases, 4 full-size; ref.c slowest N ms)
+
+Checked 1 pack: 1 ok, 0 not judged yet, 0 failed
+--- stderr
+--- exit 0

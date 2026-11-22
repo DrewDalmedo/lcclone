@@ -19,9 +19,13 @@
  *      results from ref;
  *   3. tests.txt reads, and every case fits the signature;
  *   4. the C and C++ stubs build with lc's harness;
- *   5. ref builds and passes every case, well within the time limit;
- *   6. the @gen cases are what gen.c makes now;
- *   7. ref and brute agree on random small cases from gen.c.
+ *   5. the full-size cases (@full) are what gen.c makes, quickly;
+ *   6. ref builds and passes every case, well within the time limit;
+ *   7. the @gen cases are what gen.c makes now;
+ *   8. ref and brute agree on random small cases from gen.c;
+ *   9. (unless --quick) on the full-size cases, the time limit tells slow
+ *      methods from fast ones: brute's time as a multiple of the limit,
+ *      slow.c running out of time, and ref with the sanitizers.
  *
  * A problem lc can't judge yet stops after step 3.
  */
@@ -38,16 +42,18 @@
 
 /* Failures of ref listed one by one; past this, only counted. */
 #define MAX_CASE_FINDINGS 10
-/* Largest output kept from gen. */
-#define GEN_OUTPUT_MAX (256 * LC_MIB)
-/* Limits for running gen. */
-#define GEN_CPU_SEC 20
-#define GEN_WALL_MS 60000
-#define GEN_MEMORY ((unsigned long long)2048 << 20)
 /* ref may use at most this share of the time limit. */
 #define TIME_SHARE 3
 /* Longest value shown whole in a finding's detail. */
 #define VALUE_MAX 200
+/* Longest result of a full-size case that --regen writes in tests.txt;
+ * ref works out longer ones when the case is judged. */
+#define FULL_RESULT_MAX 100
+/* On full-size cases, brute runs under this many times the time limit,
+ * and is compared with ref when it finishes. */
+#define BRUTE_SHARE 10
+/* Lines of a sanitizer's report kept in a finding. */
+#define REPORT_LINES 12
 
 const char *lc_finding_level_name(lc_finding_level level)
 {
@@ -81,10 +87,17 @@ typedef struct checker {
     char *problem_md;         /* <dir>/problem.md */
     char *tests;              /* <dir>/tests.txt */
     char *ref, *brute, *gen;  /* the pack's sources, or NULL */
-    const lc_lang *ref_lang, *brute_lang;
+    char *slow;
+    const lc_lang *ref_lang, *brute_lang, *slow_lang;
     const char *ref_exe, *brute_exe, *gen_exe; /* built programs */
+    const char *slow_exe;
     int ref_tried, brute_tried, gen_tried;     /* a build was attempted */
+    int slow_tried;
     int gen_failed;           /* running gen failed (and was reported) */
+    unsigned char *full_ok;   /* by case: a full-size case gen.c makes as
+                                 tests.txt says (malloc'ed) */
+    const char **full_out;    /* by case: ref's result on a full-size case,
+                                 in `tmp`, or NULL (malloc'ed) */
     int regen_bailed;         /* --regen stopped at something a later step
                                  reports */
 } checker;
@@ -322,6 +335,16 @@ static int ensure_gen(checker *ck)
     return LC_OK;
 }
 
+static int ensure_slow(checker *ck)
+{
+    if (!ck->slow_tried && ck->slow) {
+        ck->slow_tried = 1;
+        return build(ck, ck->slow_lang, ck->slow, LC_ROLE_SLOW,
+                     short_name(ck, ck->slow), &ck->slow_exe);
+    }
+    return LC_OK;
+}
+
 static int ensure_brute(checker *ck)
 {
     if (!ck->brute_tried && ck->brute) {
@@ -346,34 +369,14 @@ static int run_gen(checker *ck, unsigned long long seed, int small,
                    unsigned long long count, const char *at_file, int at_line,
                    const char *about, lc_cases **cases)
 {
-    lc_run_spec spec;
     lc_run_result r;
     lc_str why = LC_STR_INIT, name = LC_STR_INIT;
-    char seedbuf[24], countbuf[24];
-    char *argv[5];
     int rc;
 
     *cases = NULL;
-    snprintf(seedbuf, sizeof seedbuf, "%llu", seed);
-    snprintf(countbuf, sizeof countbuf, "%llu", count);
-    argv[0] = (char *)ck->gen_exe;
-    argv[1] = seedbuf;
-    argv[2] = small ? "small" : "large";
-    argv[3] = countbuf;
-    argv[4] = NULL;
-    memset(&spec, 0, sizeof spec);
-    spec.path = ck->gen_exe;
-    spec.argv = argv;
-    spec.cwd = lc_dir_of(&ck->tmp, ck->gen_exe);
-    spec.cpu_sec = GEN_CPU_SEC;
-    spec.wall_ms = GEN_WALL_MS;
-    spec.as_bytes = GEN_MEMORY;
-    spec.stdout_max = GEN_OUTPUT_MAX;
-    spec.cancel = ck->quiet.cancel;
-    if (!spec.cwd)
-        return lc_oom(ck->ctx);
     lc_run_result_init(&r);
-    rc = lc_run(ck->ctx, &spec, &r);
+    rc = lc_gen_run(ck->ctx, ck->gen_exe, seed, small, count, ck->quiet.cancel,
+                    &ck->tmp, &r);
     if (rc != LC_OK) {
         rc = ck->ctx->err_nomem ? LC_ERR_NOMEM
                                 : finding(ck, LC_FINDING_ERROR, ck->gen, 0,
@@ -385,20 +388,8 @@ static int run_gen(checker *ck, unsigned long long seed, int small,
         ck->r->cancelled = 1;
         goto done;
     }
-    if (!r.exited || r.exit_code != 0 || r.overflow) {
+    if (lc_gen_failed(&r, &why)) {
         ck->gen_failed = 1;
-        if (r.overflow & LC_RUN_STDOUT)
-            lc_str_puts(&why, "printed more than 256 MiB");
-        else if (r.overflow)
-            lc_str_puts(&why, "wrote more than 1 MiB on stderr");
-        else if (r.timed_out)
-            lc_str_printf(&why, "still running after %d s", GEN_WALL_MS / 1000);
-        else if (r.signal)
-            lc_str_printf(&why, "killed by %s", lc_signal_name(r.signal)
-                                                    ? lc_signal_name(r.signal)
-                                                    : "a signal");
-        else
-            lc_str_printf(&why, "exit status %d", r.exit_code);
         rc = why.failed ? lc_oom(ck->ctx)
                         : finding(ck, LC_FINDING_ERROR, at_file, at_line,
                                   lc_str_cstr(&r.err), "gen.c failed making "
@@ -549,6 +540,9 @@ typedef struct text_line {
 typedef struct regen_case {
     const lc_case *new_inputs; /* gen's case, or NULL to keep them */
     const char *expected;      /* the new "=>" value, or NULL to keep it */
+    const char *full_line;     /* a new "@full SEED HASH", or NULL */
+    int drop_expected;         /* remove the "=>" line (a full-size case
+                                  whose result is too long to keep) */
 } regen_case;
 
 /* 1 if a line is a comment ('#' after any blanks). */
@@ -636,6 +630,22 @@ static int compose(checker *ck, const char *text, size_t len,
                 ins = c->line;
             }
         }
+        if (rg[i].full_line) {
+            const text_line *l = &lines[c->line - 1];
+            size_t ind = 0;
+
+            while (ind < l->n && (l->p[ind] == ' ' || l->p[ind] == '\t'))
+                ind++;
+            replace[c->line] = lc_arena_printf(
+                &ck->tmp, "%.*s%s%.*s", (int)ind, l->p, rg[i].full_line,
+                (int)(l->raw - l->n), l->p + l->n);
+            if (!replace[c->line]) {
+                rc = lc_oom(ck->ctx);
+                goto done;
+            }
+        }
+        if (rg[i].drop_expected && c->expected_line > 0)
+            replace[c->expected_line] = "";
         if (!rg[i].expected)
             continue;
         if (c->expected_line > 0) {
@@ -749,7 +759,7 @@ static int regen(checker *ck)
         goto done;
     }
     for (i = 0; i < cases->count; i++)
-        any_gen |= cases->items[i].gen != NULL;
+        any_gen |= cases->items[i].gen != NULL || cases->items[i].full;
     if (!ck->ref || (any_gen && !ck->gen)) {
         rc = bail(ck);
         goto done;
@@ -794,6 +804,38 @@ static int regen(checker *ck)
             c.args = made[i]->items[0].args;
             c.nargs = made[i]->items[0].nargs;
         }
+        if (c.full) {
+            lc_case probe = c;
+            char hash[LC_FULL_HASH_LEN + 1];
+
+            /* Made afresh: the hash is what --regen writes. */
+            probe.hash = NULL;
+            rc = lc_full_make(ck->ctx, ck->p, ck->gen_exe, &probe,
+                              ck->quiet.cancel, &made[i], hash, NULL, NULL,
+                              &stopped);
+            if (rc != LC_OK) {
+                if (rc != LC_ERR_NOMEM) {
+                    ck->gen_failed = 1;
+                    rc = error_finding(ck, LC_FINDING_ERROR, NULL);
+                }
+                goto done;
+            }
+            if (stopped) {
+                ck->r->cancelled = 1;
+                goto done;
+            }
+            if (!c.hash || strcmp(c.hash, hash) != 0) {
+                rg[i].full_line = lc_arena_printf(&ck->tmp, "@full %llu %s",
+                                                  c.seed, hash);
+                if (!rg[i].full_line) {
+                    rc = lc_oom(ck->ctx);
+                    goto done;
+                }
+                generated++;
+            }
+            c.args = made[i]->items[0].args;
+            c.nargs = made[i]->items[0].nargs;
+        }
         /* Every case must fit before ref runs on it. */
         c.expected = NULL;
         pool = lc_pool_new();
@@ -830,7 +872,8 @@ static int regen(checker *ck)
 
             /* A case that already has its result: checking ref on every
              * case reports it. */
-            if (cases->items[i].expected && !rg[i].new_inputs) {
+            if (cases->items[i].expected && !rg[i].new_inputs &&
+                !rg[i].full_line) {
                 rc = bail(ck);
                 goto done;
             }
@@ -846,9 +889,18 @@ static int regen(checker *ck)
             lc_str_free(&detail);
             goto done;
         }
-        keep = rg[i].new_inputs ? 0 : still_matches(ck,
-                                                     cases->items[i].expected,
-                                                     now);
+        if (c.full && strlen(now) > FULL_RESULT_MAX) {
+            /* Too long to keep: ref works it out when the case is
+             * judged. */
+            if (c.expected_line > 0) {
+                rg[i].drop_expected = 1;
+                changed++;
+            }
+            continue;
+        }
+        keep = rg[i].new_inputs || rg[i].full_line
+                   ? 0
+                   : still_matches(ck, cases->items[i].expected, now);
         if (keep < 0) {
             rc = lc_oom(ck->ctx);
             goto done;
@@ -923,6 +975,7 @@ static int check_tests(checker *ck, lc_cases **cases, int *bad)
         ck->r->ncases++;
         ck->r->nexamples += c->example != 0;
         ck->r->ngenerated += c->gen != NULL;
+        ck->r->nfull += c->full != 0;
         rc = lc_case_values(ck->ctx, ck->p, c, pool, &args, &exp);
         if (rc == LC_ERR_NOMEM)
             break;
@@ -1012,7 +1065,75 @@ static int check_stubs(checker *ck)
 }
 
 /* ------------------------------------------------------------------ */
-/* 5. The reference solution                                           */
+/* 5. Full-size cases                                                  */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Makes each full-size case with gen.c, as judging does, and checks that
+ * it is the case tests.txt has (its hash), and that gen.c is quick about
+ * it: it runs on every machine that judges the case. Sets ck->full_ok.
+ */
+static int check_full(checker *ck, const lc_cases *cases)
+{
+    size_t i;
+    int rc;
+
+    ck->full_ok = calloc(cases->count ? cases->count : 1, 1);
+    if (!ck->full_ok)
+        return lc_oom(ck->ctx);
+    for (i = 0; i < cases->count; i++) {
+        const lc_case *c = &cases->items[i];
+        char hash[LC_FULL_HASH_LEN + 1];
+        lc_cases *made = NULL;
+        int mismatch, stopped;
+        long ms;
+
+        if (!c->full)
+            continue;
+        if (!ck->gen) {
+            rc = finding(ck, LC_FINDING_ERROR, ck->tests, c->line, NULL,
+                         "@full needs the pack's gen.c, which makes this "
+                         "case");
+            if (rc != LC_OK)
+                return rc;
+            continue;
+        }
+        rc = ensure_gen(ck);
+        if (rc != LC_OK || !ck->gen_exe || ck->r->cancelled)
+            return rc;
+        rc = lc_full_make(ck->ctx, ck->p, ck->gen_exe, c, ck->quiet.cancel,
+                          &made, hash, &mismatch, &ms, &stopped);
+        lc_cases_free(made);
+        if (rc == LC_ERR_NOMEM || ck->ctx->err_nomem)
+            return LC_ERR_NOMEM;
+        if (stopped) {
+            ck->r->cancelled = 1;
+            return LC_OK;
+        }
+        if (rc != LC_OK && mismatch)
+            rc = finding(ck, LC_FINDING_ERROR, ck->tests, c->line, NULL,
+                         "this case is not what gen.c makes for '@full %llu' "
+                         "now (its hash is %s); run 'lc check --regen' to "
+                         "make it again", c->seed, hash);
+        else if (rc != LC_OK)
+            rc = error_finding(ck, LC_FINDING_ERROR, NULL);
+        else {
+            ck->full_ok[i] = 1;
+            if (ms * TIME_SHARE > ck->p->time_limit_ms)
+                rc = finding(ck, LC_FINDING_WARNING, ck->tests, c->line,
+                             NULL, "gen.c takes %ld ms to make this case, "
+                             "more than a third of the time limit (%d ms); "
+                             "it runs on every machine that judges the case",
+                             ms, ck->p->time_limit_ms);
+        }
+        if (rc != LC_OK)
+            return rc;
+    }
+    return LC_OK;
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. The reference solution                                           */
 /* ------------------------------------------------------------------ */
 
 static int check_ref(checker *ck, const lc_cases *cases)
@@ -1020,18 +1141,33 @@ static int check_ref(checker *ck, const lc_cases *cases)
     const char *name = short_name(ck, ck->ref);
     lc_judge_opts jo;
     lc_report *rep = NULL;
-    size_t i, shown = 0, slowest = 0;
+    lc_case *run;
+    size_t *idx, i, n = 0, shown = 0, slowest = 0;
     int rc;
 
     rc = ensure_ref(ck);
     if (rc != LC_OK || !ck->ref_exe || !cases->count)
         return rc;
+    /* The full-size cases gen.c doesn't make right were reported. */
+    run = lc_arena_array(&ck->tmp, cases->count, sizeof *run);
+    idx = lc_arena_array(&ck->tmp, cases->count, sizeof *idx);
+    ck->full_out = calloc(cases->count, sizeof *ck->full_out);
+    if (!run || !idx || !ck->full_out)
+        return lc_oom(ck->ctx);
+    for (i = 0; i < cases->count; i++)
+        if (!cases->items[i].full || (ck->full_ok && ck->full_ok[i])) {
+            idx[n] = i;
+            run[n++] = cases->items[i];
+        }
+    if (n == 0)
+        return LC_OK;
     memset(&jo, 0, sizeof jo);
     jo.cwd = lc_dir_of(&ck->tmp, ck->ref_exe);
+    jo.gen_exe = ck->gen_exe;
     if (!jo.cwd)
         return lc_oom(ck->ctx);
-    rc = lc_judge_exe(ck->ctx, ck->p, ck->ref_exe, cases->items, cases->count,
-                      &jo, &ck->quiet, &rep);
+    rc = lc_judge_exe(ck->ctx, ck->p, ck->ref_exe, run, n, &jo, &ck->quiet,
+                      &rep);
     if (rc != LC_OK)
         return ck->ctx->err_nomem ? LC_ERR_NOMEM
                                   : error_finding(ck, LC_FINDING_ERROR, NULL);
@@ -1048,6 +1184,15 @@ static int check_ref(checker *ck, const lc_cases *cases)
 
         if (res->time_ms > rep->results[slowest].time_ms)
             slowest = i;
+        /* What ref says a full-size case gives, for brute and slow.c. */
+        if (res->verdict == LC_ACCEPTED && res->full && res->output) {
+            ck->full_out[idx[res->index]] = lc_arena_strdup(&ck->tmp,
+                                                            res->output);
+            if (!ck->full_out[idx[res->index]]) {
+                rc = lc_oom(ck->ctx);
+                break;
+            }
+        }
         if (res->verdict == LC_ACCEPTED || shown++ >= MAX_CASE_FINDINGS)
             continue;
         case_detail(&detail, ck->p, res->inputs, res->ninputs, "Expected:",
@@ -1090,7 +1235,7 @@ static int check_ref(checker *ck, const lc_cases *cases)
 }
 
 /* ------------------------------------------------------------------ */
-/* 6. @gen cases are up to date                                        */
+/* 7. @gen cases are up to date                                        */
 /* ------------------------------------------------------------------ */
 
 static int check_gen_cases(checker *ck, const lc_cases *cases)
@@ -1131,7 +1276,7 @@ static int check_gen_cases(checker *ck, const lc_cases *cases)
 }
 
 /* ------------------------------------------------------------------ */
-/* 7. ref and brute agree                                              */
+/* 8. ref and brute agree                                              */
 /* ------------------------------------------------------------------ */
 
 static int cross_check(checker *ck, const lc_check_options *opts)
@@ -1293,6 +1438,303 @@ done:
 }
 
 /* ------------------------------------------------------------------ */
+/* 9. Time limits that tell methods apart                              */
+/* ------------------------------------------------------------------ */
+
+/*
+ * The full-size cases that can be run (gen.c makes them as tests.txt
+ * says), each with the result it should give: tests.txt's, else ref's.
+ * *n is 0 when there are none.
+ */
+static int full_cases(checker *ck, const lc_cases *cases, lc_case **out,
+                      size_t *n)
+{
+    lc_case *fc = lc_arena_array(&ck->tmp, cases->count, sizeof *fc);
+    size_t i;
+
+    *n = 0;
+    *out = fc;
+    if (!fc)
+        return lc_oom(ck->ctx);
+    for (i = 0; i < cases->count; i++) {
+        const lc_case *c = &cases->items[i];
+
+        if (!c->full || !ck->full_ok || !ck->full_ok[i] ||
+            (!c->expected && !(ck->full_out && ck->full_out[i])))
+            continue;
+        fc[*n] = *c;
+        if (!c->expected)
+            fc[*n].expected = ck->full_out[i];
+        (*n)++;
+    }
+    return LC_OK;
+}
+
+/* Runs `exe` on the full-size cases with `jo`; *rep is NULL after a
+ * finding or when cancelled. */
+static int run_full(checker *ck, const char *exe, lc_case *fc, size_t n,
+                    lc_judge_opts *jo, lc_report **rep)
+{
+    int rc;
+
+    *rep = NULL;
+    jo->cwd = lc_dir_of(&ck->tmp, exe);
+    jo->gen_exe = ck->gen_exe;
+    if (!jo->cwd)
+        return lc_oom(ck->ctx);
+    rc = lc_judge_exe(ck->ctx, ck->p, exe, fc, n, jo, &ck->quiet, rep);
+    if (rc != LC_OK)
+        return ck->ctx->err_nomem ? LC_ERR_NOMEM
+                                  : error_finding(ck, LC_FINDING_ERROR, NULL);
+    if ((*rep)->cancelled) {
+        ck->r->cancelled = 1;
+        lc_report_free(*rep);
+        *rep = NULL;
+    }
+    return LC_OK;
+}
+
+/* A finding about one of a run's cases, with its input, results and,
+ * for a sanitizer's report, the first lines of its stderr. */
+static int case_finding(checker *ck, lc_finding_level level,
+                        const lc_case_result *res, int with_stderr,
+                        const char *fmt, ...) LC_PRINTF(5, 6);
+
+static int case_finding(checker *ck, lc_finding_level level,
+                        const lc_case_result *res, int with_stderr,
+                        const char *fmt, ...)
+{
+    lc_str detail = LC_STR_INIT, msg = LC_STR_INIT;
+    va_list ap;
+    int rc;
+
+    case_detail(&detail, ck->p, res->inputs, res->ninputs, "Expected:",
+                res->expected, res->output ? "Output:" : NULL, res->output);
+    if (with_stderr && res->stderr_len) {
+        const char *p = res->stderr_text, *end = p + res->stderr_len;
+        int lines = 0;
+
+        lc_str_puts(&detail, "Stderr:\n");
+        while (p < end && lines++ < REPORT_LINES) {
+            const char *nl = memchr(p, '\n', (size_t)(end - p));
+            size_t len = nl ? (size_t)(nl - p) : (size_t)(end - p);
+
+            lc_str_puts(&detail, "    ");
+            lc_str_append(&detail, p, len);
+            lc_str_putc(&detail, '\n');
+            p = nl ? nl + 1 : end;
+        }
+    }
+    va_start(ap, fmt);
+    lc_str_vprintf(&msg, fmt, ap);
+    va_end(ap);
+    rc = detail.failed || msg.failed
+             ? lc_oom(ck->ctx)
+             : finding(ck, level, ck->tests, res->line, detail.data, "%s",
+                       msg.data);
+    lc_str_free(&detail);
+    lc_str_free(&msg);
+    return rc;
+}
+
+/*
+ * brute on the full-size cases, under BRUTE_SHARE times the time limit:
+ * its time as a multiple of the limit, a warning where the verdict would
+ * depend on the machine or the compiler, and its results against ref's.
+ */
+static int time_brute(checker *ck, lc_case *fc, size_t n)
+{
+    const char *brute = short_name(ck, ck->brute);
+    const char *ref = short_name(ck, ck->ref);
+    int limit = ck->p->time_limit_ms;
+    lc_judge_opts jo;
+    lc_report *rep;
+    size_t i, over = 0;
+    long most = -1;
+    int rc;
+
+    rc = ensure_brute(ck);
+    if (rc != LC_OK || !ck->brute_exe || ck->r->cancelled)
+        return rc;
+    memset(&jo, 0, sizeof jo);
+    jo.time_ms = limit <= INT_MAX / BRUTE_SHARE ? limit * BRUTE_SHARE
+                                                : INT_MAX;
+    rc = run_full(ck, ck->brute_exe, fc, n, &jo, &rep);
+    if (rc != LC_OK || !rep)
+        return rc;
+    for (i = 0; i < rep->nresults && rc == LC_OK; i++) {
+        const lc_case_result *res = &rep->results[i];
+
+        if (res->verdict == LC_TIME_LIMIT_EXCEEDED) {
+            over++;
+        } else if (res->verdict == LC_WRONG_ANSWER) {
+            rc = case_finding(ck, LC_FINDING_ERROR, res, 0, "%s and %s "
+                              "disagree on this full-size case (Expected: "
+                              "is %s's)", ref, brute, ref);
+        } else if (res->verdict != LC_ACCEPTED) {
+            rc = case_finding(ck, LC_FINDING_NOTE, res, 0, "%s gets %s on "
+                              "this full-size case (%s), so it isn't "
+                              "compared with %s", brute,
+                              lc_verdict_name(res->verdict),
+                              res->message ? res->message : "", ref);
+        } else {
+            if (res->time_ms > most)
+                most = res->time_ms;
+            /* Between a third of the limit and three times it, whether a
+             * method this slow passes depends on where it runs. */
+            if (res->time_ms * 3 > limit && res->time_ms < 3L * limit)
+                rc = finding(ck, LC_FINDING_WARNING, ck->tests, res->line,
+                             NULL, "%s takes %ld ms on this full-size case, "
+                             "%.1f times the time limit (%d ms): whether a "
+                             "method this slow passes would depend on the "
+                             "machine and the compiler", brute, res->time_ms,
+                             (double)res->time_ms / limit, limit);
+        }
+    }
+    ck->r->brute_full_ms = most;
+    if (rc == LC_OK && most >= 0 && most * 10 >= limit)
+        rc = finding(ck, LC_FINDING_NOTE, ck->brute, 0, NULL, "%s takes up "
+                     "to %ld ms on the full-size cases, %.1f times the time "
+                     "limit (%d ms)%s", brute, most, (double)most / limit,
+                     limit, over ? ", and more than ten times it on some"
+                                 : "");
+    else if (rc == LC_OK && most >= 0)
+        rc = finding(ck, LC_FINDING_NOTE, ck->brute, 0, NULL, "%s takes up "
+                     "to %ld ms on the full-size cases, well within the time "
+                     "limit (%d ms)%s", brute, most, limit,
+                     over ? ", and more than ten times it on some" : "");
+    else if (rc == LC_OK && over)
+        rc = finding(ck, LC_FINDING_NOTE, ck->brute, 0, NULL, "%s takes more "
+                     "than ten times the time limit (%d ms) on every "
+                     "full-size case", brute, limit);
+    lc_report_free(rep);
+    return rc;
+}
+
+/* slow.c on the full-size cases: right, but out of time on one at least. */
+static int check_slow(checker *ck, lc_case *fc, size_t n)
+{
+    const char *slow = short_name(ck, ck->slow);
+    lc_judge_opts jo;
+    lc_report *rep;
+    size_t i, over = 0, wrong = 0;
+    int rc;
+
+    rc = ensure_slow(ck);
+    if (rc != LC_OK || !ck->slow_exe || ck->r->cancelled)
+        return rc;
+    memset(&jo, 0, sizeof jo);
+    rc = run_full(ck, ck->slow_exe, fc, n, &jo, &rep);
+    if (rc != LC_OK || !rep)
+        return rc;
+    for (i = 0; i < rep->nresults && rc == LC_OK; i++) {
+        const lc_case_result *res = &rep->results[i];
+
+        if (res->verdict == LC_TIME_LIMIT_EXCEEDED) {
+            over++;
+        } else if (res->verdict != LC_ACCEPTED) {
+            wrong++;
+            rc = case_finding(ck, LC_FINDING_ERROR, res, 0, "%s gets %s on "
+                              "this full-size case%s%s%s; it should be right, "
+                              "only too slow", slow,
+                              lc_verdict_name(res->verdict),
+                              res->message ? " (" : "",
+                              res->message ? res->message : "",
+                              res->message ? ")" : "");
+        }
+    }
+    if (rc == LC_OK && !over && !wrong)
+        rc = finding(ck, LC_FINDING_ERROR, ck->slow, 0, NULL, "%s passes "
+                     "every full-size case in time (its slowest takes %ld "
+                     "ms; the limit is %d ms): a method that slow should run "
+                     "out of time, as on LeetCode", slow, rep->max_time_ms,
+                     ck->p->time_limit_ms);
+    lc_report_free(rep);
+    return rc;
+}
+
+/* ref with the sanitizers on the full-size cases: UBSan catches a signed
+ * overflow there that the small cases never reach. */
+static int sanitized_ref(checker *ck, lc_case *fc, size_t n)
+{
+    const char *ref = short_name(ck, ck->ref), *why, *exe;
+    lc_compiler cc;
+    lc_judge_opts jo;
+    lc_report *rep;
+    lc_build *b;
+    char **envp = lc_sanitize_env(&ck->tmp);
+    size_t i;
+    int rc, stopped;
+
+    if (!envp)
+        return lc_oom(ck->ctx);
+    rc = lc_compiler_get(ck->ctx, ck->ref_lang, &ck->tmp, &cc);
+    if (rc == LC_OK)
+        rc = lc_sanitizers_work(ck->ctx, ck->ref_lang, &cc, envp, &ck->tmp,
+                                &why);
+    if (rc != LC_OK)
+        return ck->ctx->err_nomem ? LC_ERR_NOMEM
+                                  : error_finding(ck, LC_FINDING_ERROR, NULL);
+    if (why)
+        return finding(ck, LC_FINDING_NOTE, ck->ref, 0, NULL, "%s was not "
+                       "run with the sanitizers on the full-size cases: %s",
+                       ref, why);
+    rc = lc_build_step(ck->ctx, ck->p, ck->ref_lang, ck->ref,
+                       ck->ref_lang->default_std, 1, 0, LC_ROLE_REF,
+                       ck->hooks, &ck->tmp, &b, &exe, &stopped);
+    if (rc != LC_OK)
+        return ck->ctx->err_nomem ? LC_ERR_NOMEM
+                                  : error_finding(ck, LC_FINDING_ERROR, NULL);
+    if (stopped) {
+        ck->r->cancelled = 1;
+        return LC_OK;
+    }
+    if (!b->ok)
+        return finding(ck, LC_FINDING_ERROR, ck->ref, 0, b->output, "%s "
+                       "does not compile with the sanitizers", ref);
+    memset(&jo, 0, sizeof jo);
+    jo.sanitize = 1;
+    jo.envp = envp;
+    rc = run_full(ck, exe, fc, n, &jo, &rep);
+    if (rc != LC_OK || !rep)
+        return rc;
+    for (i = 0; i < rep->nresults && rc == LC_OK; i++) {
+        const lc_case_result *res = &rep->results[i];
+
+        /* The sanitizers make it slower; the plain run judged the time. */
+        if (res->verdict == LC_ACCEPTED ||
+            res->verdict == LC_TIME_LIMIT_EXCEEDED)
+            continue;
+        rc = case_finding(ck, LC_FINDING_ERROR, res, 1, "%s gets %s on this "
+                          "full-size case with the sanitizers%s%s%s", ref,
+                          lc_verdict_name(res->verdict),
+                          res->message ? " (" : "",
+                          res->message ? res->message : "",
+                          res->message ? ")" : "");
+    }
+    lc_report_free(rep);
+    return rc;
+}
+
+static int check_timing(checker *ck, const lc_cases *cases)
+{
+    lc_case *fc;
+    size_t n;
+    int rc;
+
+    rc = full_cases(ck, cases, &fc, &n);
+    if (rc != LC_OK || n == 0)
+        return rc;
+    if (ck->brute)
+        rc = time_brute(ck, fc, n);
+    if (rc == LC_OK && ck->slow && !ck->r->cancelled)
+        rc = check_slow(ck, fc, n);
+    if (rc == LC_OK && ck->ref_exe && !ck->r->cancelled)
+        rc = sanitized_ref(ck, fc, n);
+    return rc;
+}
+
+/* ------------------------------------------------------------------ */
 /* lc_check                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -1353,6 +1795,8 @@ int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
         rc = find_source(&ck, "ref", &ck.ref, &ck.ref_lang);
     if (rc == LC_OK)
         rc = find_source(&ck, "brute", &ck.brute, &ck.brute_lang);
+    if (rc == LC_OK)
+        rc = find_source(&ck, "slow", &ck.slow, &ck.slow_lang);
     if (rc != LC_OK)
         goto done;
     ck.gen = lc_path_join(&ck.tmp, p->dir, "gen.c");
@@ -1368,7 +1812,12 @@ int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
                                              short_name(&ck, ck.brute))
                            : NULL;
     ck.r->gen = ck.gen ? "gen.c" : NULL;
-    if ((ck.ref && !ck.r->ref) || (ck.brute && !ck.r->brute)) {
+    ck.r->slow = ck.slow ? lc_arena_strdup(&ck.box->arena,
+                                           short_name(&ck, ck.slow))
+                         : NULL;
+    ck.r->brute_full_ms = -1;
+    if ((ck.ref && !ck.r->ref) || (ck.brute && !ck.r->brute) ||
+        (ck.slow && !ck.r->slow)) {
         rc = lc_oom(ctx);
         goto done;
     }
@@ -1415,17 +1864,29 @@ int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
     if (rc == LC_OK && !ck.ref)
         rc = finding(&ck, LC_FINDING_ERROR, NULL, 0, NULL, "no reference "
                      "solution: write ref.c or ref.cpp");
-    else if (rc == LC_OK && cases && !bad && !ck.r->cancelled)
+    if (rc == LC_OK && cases && ck.r->nfull && !ck.r->cancelled)
+        rc = check_full(&ck, cases);
+    if (rc == LC_OK && ck.ref && cases && !bad && !ck.r->cancelled)
         rc = check_ref(&ck, cases);
     if (rc == LC_OK && cases && !ck.r->cancelled)
         rc = check_gen_cases(&ck, cases);
     if (rc == LC_OK && ck.brute && ck.ref && !ck.r->cancelled)
         rc = cross_check(&ck, opts);
-    if (rc == LC_OK && ck.gen && !ck.brute && !ck.r->ngenerated)
+    if (rc == LC_OK && ck.slow && !ck.r->nfull)
+        rc = finding(&ck, LC_FINDING_WARNING, ck.slow, 0, NULL, "%s is not "
+                     "used: it runs on the full-size cases (@full), and "
+                     "tests.txt has none", ck.r->slow);
+    else if (rc == LC_OK && cases && ck.r->nfull && ck.ref &&
+             !ck.r->cancelled && !opts->quick)
+        rc = check_timing(&ck, cases);
+    if (rc == LC_OK && ck.gen && !ck.brute && !ck.r->ngenerated &&
+        !ck.r->nfull)
         rc = finding(&ck, LC_FINDING_WARNING, ck.gen, 0, NULL, "gen.c is not "
                      "used: add brute.c to compare ref with on random "
-                     "cases, or @gen cases to tests.txt");
+                     "cases, or @gen or @full cases to tests.txt");
 done:
+    free(ck.full_ok);
+    free(ck.full_out);
     lc_cases_free(cases);
     lc_arena_free(&ck.tmp);
     if (rc != LC_OK) {

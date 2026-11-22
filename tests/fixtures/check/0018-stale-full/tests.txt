@@ -1,0 +1,12 @@
+@example
+1
+2
+=> 3
+
+# Made by gen.c as it is.
+@full 5 8710e90e
+=> -520
+
+# Its hash is of another case: stale.
+@full 6 8710e90e
+=> -935

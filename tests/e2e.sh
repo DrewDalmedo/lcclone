@@ -836,6 +836,69 @@ expect_run "lc submit 0015-merge/realloc.c" 1 \
 expect_run "lc submit pastfree.c" 1 \
     '^    lc: merge wrote past the end of a (a\[5\])$' \
     -- submit $JFIX/0015-merge/pastfree.c
+# Full-size cases (@full): gen.c makes each when it is judged, and ref
+# works out a result too long to keep in tests.txt (k = n in the second).
+TK=$JFIX/0020-top-k
+expect_run "lc submit top-k" 0 \
+    '^Building gen.c, which makes the full-size cases (C, c11)$' \
+    '^Accepted: 4/4 cases passed' -- submit $TK/solution.c
+expect_run "lc submit top-k slow.c" 1 \
+    'slow.c:1: Time Limit Exceeded on case 4 of 4' \
+    '^  Case:     @full 2 eb5e98e0 (full size; this line in cases.txt runs it with lc test)$' \
+    '^  Input:    nums = 100000 items, k = 100000$' -- submit $TK/slow.c
+expect_run "lc submit top-k wrong.c" 1 'wrong.c:1: Wrong Answer on case 4 of 4' \
+    -- submit $TK/wrong.c
+# Your cases may hold @full lines too, with or without the hash.
+printf '@full 1\n\n@full 2 eb5e98e0\n' >"$TMP/full-cases.txt"
+expect_run "lc test top-k --case (full)" 1 \
+    "^$TMP/full-cases.txt:3: Time Limit Exceeded on your case" \
+    '^  Case:     @full 2 eb5e98e0$' -- test $TK/slow.c --case "$TMP/full-cases.txt"
+run LC_PROBLEMS=$JFIX -- test $TK/slow.c --case "$TMP/full-cases.txt" --json
+if [ -n "$PYTHON" ] && ! "$PYTHON" -c '
+import json, sys
+ev = [json.loads(l) for l in sys.stdin.read().splitlines()]
+done = [e for e in ev if e["event"] == "case_done"]
+small, big = done[1], done[2]
+assert small["full"] and small["seed"] == "1" and small["hash"] == "fd3d2546", small
+assert small["inputs"][0] == {"name": "nums", "value": None, "size": "100000 items"}, small
+assert small["inputs"][1] == {"name": "k", "value": "3", "size": None}, small
+assert small["verdict"] == "accepted", small
+assert big["seed"] == "2" and big["verdict"] == "time_limit_exceeded", big
+assert not done[0]["full"] and done[0]["seed"] is None and done[0]["hash"] is None
+assert done[0]["inputs"][0]["value"] == "[3,1,2]" and done[0]["inputs"][0]["size"] is None
+' <"$TMP/out"; then
+    bad "lc test --json (full-size cases)" "$(grep case_done "$TMP/out" | tail -n 2 | head -c 600)"
+else
+    ok
+fi
+# The memory a case reports is the solution's own, not what its process
+# inherited from lc when lc forked, holding the full-size case (Linux,
+# which counts that; the harness measures the solution itself there).
+# top-k's solution needs about 4 MB for 100000 numbers.
+if [ "$(uname -s)" = Linux ] && [ -n "$PYTHON" ]; then
+    run LC_PROBLEMS=$JFIX -- test $TK/solution.c --case "$TMP/full-cases.txt" --json
+    if "$PYTHON" -c '
+import json, sys
+ev = [json.loads(l) for l in sys.stdin.read().splitlines()]
+done = [e for e in ev if e["event"] == "case_done"]
+assert len(done) == 3 and all(e["verdict"] == "accepted" for e in done), done
+assert all(0 < e["memory_kb"] < 8000 for e in done), [e["memory_kb"] for e in done]
+' <"$TMP/out"; then
+        ok
+    else
+        bad "memory of a full-size case" "$(grep -o '"memory_kb":[0-9]*' "$TMP/out" | tr '\n' ' ')"
+    fi
+fi
+# A case other than the one tests.txt (or yours) has the hash of is no
+# verdict: gen.c makes another case here.
+printf '@full 2 00000000\n' >"$TMP/full-bad.txt"
+expect_run "lc test top-k (wrong hash)" 3 -- test $TK/solution.c --case "$TMP/full-bad.txt"
+grep -q "^lc: $TMP/full-bad.txt:1: gen.c made another case for '@full 2' than the one whose hash is 00000000 (its hash is eb5e98e0), so it can't be judged here$" "$TMP/err" ||
+    bad "lc test top-k (wrong hash)" "stderr: $(cat "$TMP/err")"
+printf '@full 1\n' >"$TMP/full-nogen.txt"
+expect_run "lc test (full, no gen.c)" 3 -- test $J/solution.c --case "$TMP/full-nogen.txt"
+grep -q "^lc: $TMP/full-nogen.txt:1: this full-size case is made by gen.c, which problem 10 (add) doesn't have$" "$TMP/err" ||
+    bad "lc test (full, no gen.c)" "stderr: $(cat "$TMP/err")"
 expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp" 0 '(C++, c++17)$' \
     LC_CXXSTD=c++17 -- test $J/cxx17.cpp
 expect_run "LC_CXXSTD=c++17 lc test cxx17.cpp --std c++14" 2 \
@@ -1408,6 +1471,60 @@ cp $CFIX/0015-inplace/* "$RG/ip/0015-inplace/"
 printf '@example\n[3,1,2,3,4]\n3\n=> [4,2,1]\n\n[5,5,1]\n5\n\n[1,2]\n9\n=> [2]\n' >"$RG/ip/0015-inplace/tests.txt"
 check check-regen-inplace LC_PROBLEMS="$RG/ip" -- check --regen --count 10
 files_golden check-regen-inplace-files "$RG/ip/0015-inplace" tests.txt
+# Full-size cases: --regen writes each one's hash, and its result when it
+# is short enough to keep (k = 3); a long one (k = n) is left to ref.
+mkdir -p "$RG/full/0020-top-k"
+cp $JFIX/0020-top-k/problem.md $JFIX/0020-top-k/ref.c $JFIX/0020-top-k/gen.c \
+    "$RG/full/0020-top-k/"
+printf '@example\n[3,1,2]\n2\n=> [3,2]\n\n# Kept.\n@full 1\n=> [1]\n\n@full 2\n=> [5]\n  @full 3 00000000\n\n@full 4 eb5e98e0\n' >"$RG/full/0020-top-k/tests.txt"
+check check-regen-full LC_PROBLEMS="$RG/full" -- check --regen
+files_golden check-regen-full-files "$RG/full/0020-top-k" tests.txt
+check check-full LC_PROBLEMS="$RG/full" -- check
+# On the full-size cases (unless --quick): brute's time as a multiple of
+# the limit, slow.c out of time, and ref with the sanitizers.
+TM=$TMP/timing/0020-top-k
+mkdir -p "$TM"
+cp $JFIX/0020-top-k/problem.md $JFIX/0020-top-k/ref.c $JFIX/0020-top-k/gen.c \
+    $JFIX/0020-top-k/tests.txt $JFIX/0020-top-k/slow.c "$TM/"
+cp $JFIX/0020-top-k/solution.c "$TM/brute.c"
+run LC_PROBLEMS="$TMP/timing" -- check --count 5
+if [ "$st" = 0 ] && grep -q '/brute.c: note: brute.c takes up to [0-9]* ms on the full-size cases, well within the time limit (500 ms)$' "$TMP/out"; then
+    ok
+else
+    bad "lc check (brute's time)" "exit $st: $(head -n 5 "$TMP/out")"
+fi
+# A slow.c that is in fact quick: the cases don't tell it from ref.
+cp $JFIX/0020-top-k/ref.c "$TM/slow.c"
+run LC_PROBLEMS="$TMP/timing" -- check --count 5
+if [ "$st" = 1 ] && grep -q '/slow.c: error: slow.c passes every full-size case in time (its slowest takes [0-9]* ms; the limit is 500 ms): a method that slow should run out of time, as on LeetCode$' "$TMP/out"; then
+    ok
+else
+    bad "lc check (quick slow.c)" "exit $st: $(head -n 5 "$TMP/out")"
+fi
+run LC_PROBLEMS="$TMP/timing" -- check --count 5 --quick
+if [ "$st" = 0 ] && ! grep -q 'slow.c\|brute.c: note' "$TMP/out"; then
+    ok
+else
+    bad "lc check --quick" "exit $st: $(head -n 5 "$TMP/out")"
+fi
+# A ref whose int sum overflows on the full-size case: the plain build
+# gets an answer, which --regen writes; only the sanitizers notice.
+if [ -n "$SAN" ]; then
+    OV=$TMP/overflow/0021-total
+    mkdir -p "$OV"
+    printf 'id: 21\nslug: total\ntitle: Total\ndifficulty: easy\nsignature: int total(int[] nums)\n---\nThe sum.\n' >"$OV/problem.md"
+    printf 'int total(int *nums, int numsSize)\n{\n    int s = 0, i;\n\n    for (i = 0; i < numsSize; i++)\n        s += nums[i];\n    return s;\n}\n' >"$OV/ref.c"
+    printf 'void gen(int small)\n{\n    int n = small ? 3 : 100000, i;\n\n    putchar(%s);\n    for (i = 0; i < n; i++)\n        printf("%%s%%d", i ? "," : "", small ? 1 : 100000);\n    puts("]");\n}\n' "'['" >"$OV/gen.c"
+    printf '@example\n[1,2]\n=> 3\n\n@full 1\n' >"$OV/tests.txt"
+    run LC_PROBLEMS="$TMP/overflow" -- check --regen
+    run LC_PROBLEMS="$TMP/overflow" -- check
+    if [ "$st" = 1 ] && grep -q '/tests.txt:5: error: ref.c gets Runtime Error on this full-size case with the sanitizers' "$TMP/out" &&
+        grep -q 'signed integer overflow' "$TMP/out"; then
+        ok
+    else
+        bad "lc check (ref with the sanitizers)" "exit $st: $(head -n 12 "$TMP/out")"
+    fi
+fi
 printf '1\n2\n=> 3\n' >"$RG/0001-good/tests.txt"
 rm "$RG/0001-good/ref.c"
 check err-check-regen-no-ref LC_PROBLEMS="$RG" -- check --regen
