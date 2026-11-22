@@ -2,7 +2,9 @@
 #
 #   make                  build liblc.a and lc
 #   make test             unit tests and end-to-end tests
-#   make check-packs      lc check over every pack in problems/
+#   make check-packs      lc check over every pack in problems/, or the
+#                         ones PACKS names; CHECKFLAGS=--quick leaves out
+#                         the slow checks on the full-size cases
 #   make install          install to $(DESTDIR)$(PREFIX)
 #   make clean
 #
@@ -227,10 +229,15 @@ test: all $(UNIT_TESTS) $(FIXTURE_PROGS)
 	if [ $$fail -ne 0 ]; then echo 'make test: FAILED'; exit 1; fi; \
 	echo 'make test: all passed'
 
-# Checks every shipped pack with lc check (docs/authoring.md), comparing
-# ref and brute on more random cases than make test does.
+# Checks the shipped packs with lc check (docs/authoring.md), comparing
+# ref and brute on more random cases than make test does: every pack, or
+# the ones PACKS names (pack directories, IDs or slugs). CHECKFLAGS adds
+# lc check options, such as --quick, which CI uses for the packs a change
+# doesn't touch (tools/full-packs.sh).
+PACKS      =
+CHECKFLAGS =
 check-packs: lc
-	LC_PROBLEMS=problems ./lc check
+	LC_PROBLEMS=problems ./lc check $(CHECKFLAGS) $(PACKS)
 
 # The installed files must be usable by everyone whatever the umask of the
 # checkout or of the installer: directories install creates get mode 755,
