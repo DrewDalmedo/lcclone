@@ -274,7 +274,12 @@ which tells clangd to read lc's prelude first and which standard to use,
 for C and C++ files separately. Completion, diagnostics and go to
 definition then work with Neovim's built-in LSP client and nothing else.
 `lc start` rewrites `.clangd` when the standard (`LC_CSTD`,
-`LC_CXXSTD`, or `cstd` and `cxxstd` in the config) changes. A `.clangd` that `lc` didn't write is left alone;
+`LC_CXXSTD`, or `cstd` and `cxxstd` in the config) changes. For a
+problem with linked lists or trees, `lc start` also writes a `.clangd` in
+the problem's directory, which clangd reads on top of that one: it
+defines `LC_LISTNODE`, `LC_TREENODE` or `LC_NARYNODE`, which make the
+prelude declare `ListNode`, `TreeNode` or the N-ary `Node`, as a build
+does for that problem only. A `.clangd` that `lc` didn't write is left alone;
 to keep your own changes to lc's, delete its first line.
 
 **`:make`.** In Vim or Neovim, with no plugin:

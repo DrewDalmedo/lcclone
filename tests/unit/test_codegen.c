@@ -69,7 +69,7 @@ static void test_golden(void)
     ctx = lc_open(&opt);
     CHECK_INT(lc_load(ctx), LC_OK);
     CHECK_INT(lc_warning_count(ctx), 0);
-    CHECK_INT(lc_problem_count(ctx), 14);
+    CHECK_INT(lc_problem_count(ctx), 18);
     for (i = 0; i < lc_problem_count(ctx); i++) {
         const lc_problem *p = lc_problem_at(ctx, i);
         lc_str got = LC_STR_INIT, want = LC_STR_INIT;
@@ -204,7 +204,8 @@ static void test_runtime_files(void)
 {
     static const char *const names[] = {
         "c/lc_prelude.h", "c/lc_rt.c", "c/lc_rt_libc.h", "c/uthash.h",
-        "common/lc_rt_core.h", "cpp/lc_prelude.hpp", "cpp/lc_rt.cpp",
+        "common/lc_rt_core.h", "common/lc_rt_nodes.h",
+        "common/lc_rt_stack.c", "cpp/lc_prelude.hpp", "cpp/lc_rt.cpp",
         "gen/lc_gen.h", "gen/lc_gen_main.c"};
     size_t i, k;
 

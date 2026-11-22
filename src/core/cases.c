@@ -661,6 +661,139 @@ static int case_error(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
                                           lc_last_error(ctx)));
 }
 
+static int case_fail(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
+                     const char *what, const char *fmt, ...) LC_PRINTF(5, 6);
+
+/* Fails the case with "<file>:<line>: <what>: <message>". */
+static int case_fail(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
+                     const char *what, const char *fmt, ...)
+{
+    lc_str msg = LC_STR_INIT;
+    va_list ap;
+    int rc;
+
+    va_start(ap, fmt);
+    lc_str_vprintf(&msg, fmt, ap);
+    va_end(ap);
+    if (msg.failed) {
+        lc_str_free(&msg);
+        return lc_oom(ctx);
+    }
+    if (c->file)
+        rc = lc_set_error(ctx, LC_ERR_PARSE, "%s:%d: %s: %s", c->file,
+                          c->line, what, msg.data);
+    else
+        rc = lc_set_error(ctx, LC_ERR_PARSE, "%s/tests.txt:%d: %s: %s",
+                          p->dir, c->line, what, msg.data);
+    lc_str_free(&msg);
+    return error_status(ctx, rc);
+}
+
+/* The index among the nodes of `in` (a list or tree value, in its own
+ * order) of the first node whose value is `val`, or -1. */
+static long long node_index(const lc_value *in, long long val)
+{
+    size_t i;
+    long long k = 0;
+
+    for (i = 0; i < in->len; i++) {
+        if (in->u.items[i].kind == LC_V_NULL)
+            continue;
+        if (in->u.items[i].u.i == val)
+            return k;
+        k++;
+    }
+    return -1;
+}
+
+/* The value a slot gets: its line's, or for a copy, its source's. */
+static const lc_value *slot_value(const lc_problem *p, const lc_value *vals,
+                                  size_t slot)
+{
+    size_t from;
+
+    while (lc_slot_copy_of(p, slot, &from))
+        slot = from;
+    return &vals[lc_slot_line(p, slot)];
+}
+
+static const char *slot_name(const lc_problem *p, size_t slot)
+{
+    return lc_problem_slot(p, slot)->name;
+}
+
+/* Checks the hidden inputs a builder takes against the lists it links,
+ * and that every node reference names a node. */
+static int check_built(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
+                       const lc_value *vals)
+{
+    size_t i;
+
+    for (i = 0; i < p->nbuilders; i++) {
+        const lc_builder *b = &p->builders[i];
+
+        if (b->kind == LC_BUILD_CYCLE) {
+            size_t n = slot_value(p, vals, b->args[0])->len;
+            long long pos = slot_value(p, vals, b->args[1])->u.i;
+
+            if (pos < -1 || pos >= (long long)n)
+                return case_fail(ctx, p, c, slot_name(p, b->args[1]),
+                                 "%lld is not a node of %s, which has %lu "
+                                 "node%s (-1 means no cycle)", pos,
+                                 slot_name(p, b->args[0]), (unsigned long)n,
+                                 n == 1 ? "" : "s");
+        } else if (b->kind == LC_BUILD_INTERSECT) {
+            const lc_value *la = slot_value(p, vals, b->args[0]);
+            const lc_value *lb = slot_value(p, vals, b->args[1]);
+            long long sa = slot_value(p, vals, b->args[2])->u.i;
+            long long sb = slot_value(p, vals, b->args[3])->u.i;
+            long long na = (long long)la->len, nb = (long long)lb->len, k;
+
+            if (sa < 0 || sa > na)
+                return case_fail(ctx, p, c, slot_name(p, b->args[2]),
+                                 "%lld is not from 0 to %lld, the length of "
+                                 "%s", sa, na, slot_name(p, b->args[0]));
+            if (sb < 0 || sb > nb)
+                return case_fail(ctx, p, c, slot_name(p, b->args[3]),
+                                 "%lld is not from 0 to %lld, the length of "
+                                 "%s", sb, nb, slot_name(p, b->args[1]));
+            if ((sa == na) != (sb == nb))
+                return case_fail(ctx, p, c, slot_name(p, b->args[3]),
+                                 "either both lists are whole (%s = %lld, "
+                                 "%s = %lld: they don't join) or neither is",
+                                 slot_name(p, b->args[2]), na,
+                                 slot_name(p, b->args[3]), nb);
+            if (na - sa != nb - sb)
+                return case_fail(ctx, p, c, slot_name(p, b->args[1]),
+                                 "it has %lld node%s from node %lld on, but "
+                                 "%s has %lld from node %lld on, where they "
+                                 "join", nb - sb, nb - sb == 1 ? "" : "s", sb,
+                                 slot_name(p, b->args[0]), na - sa, sa);
+            for (k = 0; k < na - sa; k++)
+                if (la->u.items[sa + k].u.i != lb->u.items[sb + k].u.i)
+                    return case_fail(ctx, p, c, slot_name(p, b->args[1]),
+                                     "node %lld is %lld, but the node of %s "
+                                     "it joins there is %lld", sb + k,
+                                     lb->u.items[sb + k].u.i,
+                                     slot_name(p, b->args[0]),
+                                     la->u.items[sa + k].u.i);
+        }
+    }
+    for (i = 0; i < p->nrefs; i++) {
+        const lc_ref *r = &p->refs[i];
+        long long val;
+
+        if (r->slot == LC_SLOT_RETURN)
+            continue;
+        val = vals[lc_slot_line(p, r->slot)].u.i;
+        if (node_index(slot_value(p, vals, r->in), val) < 0)
+            return case_fail(ctx, p, c, slot_name(p, r->slot),
+                             "%s has no node whose value is %lld",
+                             slot_name(p, r->in), val);
+    }
+    return LC_OK;
+}
+
 int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
                    lc_pool *pool, const lc_value **args,
                    const lc_value **expected)
@@ -677,17 +810,15 @@ int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
     *args = NULL;
     *expected = NULL;
     sig = p->sig;
-    want = sig ? sig->nparams + p->nhidden : c->nargs;
+    want = sig ? lc_line_count(p) : c->nargs;
     /* A full-size case whose inputs aren't made yet: only its result. */
     if (c->full && c->nargs == 0)
         want = 0;
     if (c->nargs != want) {
         lc_str names = LC_STR_INIT;
-        for (i = 0; i < want; i++) {
-            const lc_param *pr = i < sig->nparams ? &sig->params[i]
-                                                  : &p->hidden[i - sig->nparams];
-            lc_str_printf(&names, "%s%s", i ? ", " : "", pr->name);
-        }
+        for (i = 0; i < want; i++)
+            lc_str_printf(&names, "%s%s", i ? ", " : "",
+                          slot_name(p, lc_line_slot(p, i)));
         if (names.failed) {
             lc_str_free(&names);
             return lc_oom(ctx);
@@ -710,24 +841,32 @@ int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
         return error_status(ctx, rc);
     }
 
-    vals = lc_arena_array(&pool->arena, c->nargs, sizeof *vals);
+    vals = lc_arena_array(&pool->arena, c->nargs ? c->nargs : 1,
+                          sizeof *vals);
     if (!vals)
         return lc_oom(ctx);
     for (i = 0; i < c->nargs; i++) {
         const lc_param *pr = NULL;
         const lc_value *v;
+        lc_type t = {LC_T_VOID, 0};
         char label[32];
 
-        if (sig)
-            pr = i < sig->nparams ? &sig->params[i]
-                                  : &p->hidden[i - sig->nparams];
-        rc = lc_value_parse(ctx, pool, pr ? &pr->type : NULL, c->args[i],
+        if (sig) {
+            pr = lc_problem_slot(p, lc_line_slot(p, i));
+            t = lc_line_type(p, i);
+        }
+        rc = lc_value_parse(ctx, pool, pr ? &t : NULL, c->args[i],
                             strlen(c->args[i]), &v);
         if (rc != LC_OK) {
             snprintf(label, sizeof label, "input %lu", (unsigned long)i + 1);
             return case_error(ctx, p, c, pr ? pr->name : label, rc);
         }
         vals[i] = *v;
+    }
+    if (sig && c->nargs) {
+        rc = check_built(ctx, p, c, vals);
+        if (rc != LC_OK)
+            return rc;
     }
     if (c->expected) {
         const lc_type *rt = lc_result_type(p);
@@ -740,4 +879,29 @@ int lc_case_values(lc_ctx *ctx, const lc_problem *p, const lc_case *c,
     }
     *args = vals;
     return LC_OK;
+}
+
+int lc_case_wire(lc_ctx *ctx, const lc_problem *p, const lc_value *args,
+                 lc_str *out)
+{
+    size_t slot;
+    int rc;
+
+    for (slot = 0; slot < lc_slot_count(p); slot++) {
+        const lc_ref *r = lc_slot_ref(p, slot);
+        const lc_value *v = slot_value(p, args, slot);
+
+        if (r) {
+            /* The harness gets the node's index; lc_case_values made sure
+             * there is one. */
+            lc_str_printf(out, "%lld\n",
+                          node_index(slot_value(p, args, r->in), v->u.i));
+            continue;
+        }
+        rc = lc_wire_encode(ctx, &lc_problem_slot(p, slot)->type, v, out);
+        if (rc != LC_OK)
+            return rc;
+        lc_str_putc(out, '\n');
+    }
+    return out->failed ? lc_oom(ctx) : LC_OK;
 }

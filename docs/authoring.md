@@ -123,6 +123,56 @@ different orders, so the case would depend on the compiler.
 | `put_strings(char *const *a, int n)` | `["ab","c"]` |
 | `put_int_grid(const int *a, int rows, int cols)` | `[[1,2],[3,4]]`, from `a` row by row; also `put_char_grid` |
 | `put_raw(const char *literal)` | any literal, as written |
+| `put_list(const int *a, int n)` | a `ListNode`, `[1,2,3]` |
+| `put_tree(const gen_tree *t)` | a `TreeNode` in level order, `[1,null,2]` (below) |
+| `put_nary(const int *val, const int *parent, int n)` | an `NaryNode` in LeetCode's level order, `[1,null,3,2,4,null,5,6]`, from each node's parent (below) |
+
+**Lists and trees.** A list is an array of its values, printed with
+`put_list`. A binary tree is a `gen_tree`, which `gen.c` builds node by
+node: nodes are numbered from 0 in the order they are added, and
+`t->val`, `t->left` and `t->right` are indexed by that number (`-1` for
+a missing child; `t->root` is `-1` while the tree is empty, and `t->n`
+counts the nodes). The shapes add `n` nodes of value 0 to an empty tree,
+so set the values afterwards, by number or in order:
+
+| Function | What it does |
+|----------|--------------|
+| `gen_tree *tree_new(void)`, `void tree_free(gen_tree *t)` | an empty tree; freeing one |
+| `int tree_add(gen_tree *t, int parent, int side, int v)` | adds a node of value `v`: the root when `parent` is -1, else the left (`side` 0) or right (1) child of `parent`; returns its number |
+| `void tree_random(gen_tree *t, int n)` | a random shape: each node goes to a free child slot, each as likely, as random keys inserted into a search tree do (depth about 4.3 ln n) |
+| `void tree_chain(gen_tree *t, int n, int how)` | a path as deep as it is long: each node the left child of the one before (`TREE_LEFT`), the right one (`TREE_RIGHT`), each in turn (`TREE_ZIGZAG`), or either at random (`TREE_ANY`) |
+| `void tree_complete(gen_tree *t, int n)` | level by level, left to right: as shallow as `n` nodes allow |
+| `int tree_bst_insert(gen_tree *t, int v)` | inserts `v` into a binary search tree (smaller to the left); sorted keys make a path |
+| `void tree_inorder(const gen_tree *t, int *order)` | the node numbers in order (left subtree, node, right subtree): giving them sorted values makes any shape a search tree |
+| `int tree_depth(const gen_tree *t)` | the number of levels |
+
+An N-ary tree is given by its nodes' values and parents: node 0 is the
+root (`parent[0]` is -1), and each node's children are the nodes whose
+parent it is, in increasing order, so `parent[i] = rnd(0, i - 1)` makes
+a random tree and `parent[i] = i - 1` a path. None of these recurse, so
+a tree of 10^5 nodes may be as deep as it is long.
+
+```c
+/* 700, Search in a BST: a search tree of distinct values, random or a
+ * path, and a value to look for. */
+void gen(int small)
+{
+    gen_tree *t = tree_new();
+    int n = small ? (int)rnd(1, 8) : 5000, i, *order = malloc(n * sizeof *order);
+
+    if (small || gen_seed() % 2)
+        tree_random(t, n);
+    else
+        tree_chain(t, n, TREE_RIGHT);
+    tree_inorder(t, order);
+    for (i = 0; i < n; i++)
+        t->val[order[i]] = 2 * i + 1;
+    put_tree(t);
+    put_int(rnd(0, 2 * n));
+    tree_free(t);
+    free(order);
+}
+```
 
 The program `lc` builds is run as `gen SEED small|large [COUNT]`, and
 prints COUNT cases for the seeds SEED, SEED+1, ..., with a blank line
@@ -217,6 +267,21 @@ statement, not only the sizes.
 method: a duplicate turns up early, or the answer sits near the start.
 Use the seed to pick among shapes (`gen_seed() % 3`), and make some of
 them the slowest for the naive method.
+
+**Lists and trees at full size.** For a tree, the deepest shape is the
+one that matters: a path of as many nodes as the constraints allow
+(`tree_chain`), alongside a random shape. A tree that deep is what a
+recursive solution meets on LeetCode, and it must get through it here
+too: every system gives a case at least 64 MB of stack, which holds a
+recursion of 10^5 calls (judging.md, "Limits"). So the full-size cases of
+a list or tree problem should include the longest list and the deepest
+tree the statement allows, and `ref.c`, which works out the results, is
+best written without recursion. A solution whose recursion overflows the
+stack gets a Runtime Error that says so. For `build:` problems, `gen.c`
+prints the hidden inputs too (141's `pos`, 160's `skipA` and `skipB`),
+in the ranges the builder accepts, and for a node reference the value of
+a node that is there (`ref:`, problem-format.md); with `build: copy`, the
+copy has no line to print.
 
 ## Time limits
 

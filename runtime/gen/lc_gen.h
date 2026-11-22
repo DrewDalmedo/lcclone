@@ -322,4 +322,300 @@ static void put_char_grid(const char *a, int rows, int cols)
     puts("]");
 }
 
+/* ------------------------------------------------------------------ */
+/* Lists and trees                                                     */
+/* ------------------------------------------------------------------ */
+
+/* A ListNode: its values in order, e.g. [1,2,3]. */
+static void put_list(const int *a, int n)
+{
+    put_ints(a, n);
+}
+
+static void *lc_gen_alloc(size_t n, size_t size)
+{
+    void *p = calloc(n ? n : 1, size);
+
+    if (!p)
+        lc_gen_fail("out of memory");
+    return p;
+}
+
+/*
+ * A binary tree that gen.c builds node by node and put_tree prints. The
+ * nodes are numbered from 0 in the order they are added; val, left and
+ * right are indexed by that number, and a missing child is -1. Nothing
+ * here recurses, so a tree may be as deep as it is long.
+ */
+typedef struct gen_tree {
+    int n, cap;
+    int root;          /* -1 while the tree is empty */
+    int *val;
+    int *left, *right;
+} gen_tree;
+
+static gen_tree *tree_new(void)
+{
+    gen_tree *t = (gen_tree *)lc_gen_alloc(1, sizeof *t);
+
+    t->root = -1;
+    return t;
+}
+
+static void tree_free(gen_tree *t)
+{
+    if (!t)
+        return;
+    free(t->val);
+    free(t->left);
+    free(t->right);
+    free(t);
+}
+
+/* Adds a node of value v: the root when parent is -1, else the left
+ * (side 0) or right (side 1) child of parent, which must have none there
+ * yet. Returns the new node's number. */
+static int tree_add(gen_tree *t, int parent, int side, int v)
+{
+    int i = t->n;
+
+    if (parent < -1 || parent >= t->n || (parent == -1) != (t->root == -1))
+        lc_gen_fail("tree_add: no such parent, or a second root");
+    if (parent >= 0 && (side ? t->right : t->left)[parent] != -1)
+        lc_gen_fail("tree_add: that child is there already");
+    if (t->n == t->cap) {
+        t->cap = t->cap ? 2 * t->cap : 64;
+        t->val = (int *)realloc(t->val, (size_t)t->cap * sizeof *t->val);
+        t->left = (int *)realloc(t->left, (size_t)t->cap * sizeof *t->left);
+        t->right = (int *)realloc(t->right,
+                                  (size_t)t->cap * sizeof *t->right);
+        if (!t->val || !t->left || !t->right)
+            lc_gen_fail("out of memory");
+    }
+    t->val[i] = v;
+    t->left[i] = t->right[i] = -1;
+    t->n++;
+    if (parent < 0)
+        t->root = i;
+    else if (side)
+        t->right[parent] = i;
+    else
+        t->left[parent] = i;
+    return i;
+}
+
+/* Shapes. Each adds n nodes of value 0 to an empty tree; set t->val
+ * afterwards, by node number or with tree_inorder. */
+
+/* A random shape: each node goes to one of the free child slots, each as
+ * likely (as inserting random keys into a binary search tree does). Its
+ * depth is about 4.3 ln n. */
+static void tree_random(gen_tree *t, int n)
+{
+    int *slot = (int *)lc_gen_alloc(2 * (size_t)n + 2, sizeof *slot);
+    int nslots = 0, i;
+
+    if (n <= 0)
+        goto done;
+    tree_add(t, -1, 0, 0);
+    slot[nslots++] = 0;
+    slot[nslots++] = 1;
+    for (i = 1; i < n; i++) {
+        int k = (int)rnd(0, nslots - 1), s = slot[k];
+
+        slot[k] = slot[--nslots];
+        tree_add(t, s / 2, s % 2, 0);
+        slot[nslots++] = 2 * i;
+        slot[nslots++] = 2 * i + 1;
+    }
+done:
+    free(slot);
+}
+
+enum { TREE_LEFT, TREE_RIGHT, TREE_ZIGZAG, TREE_ANY };
+
+/* A path of n nodes, as deep as it is long: each node the left child of
+ * the one before (TREE_LEFT), the right child (TREE_RIGHT), each in turn
+ * (TREE_ZIGZAG), or either at random (TREE_ANY). The deepest shape a
+ * recursive solution meets. */
+static void tree_chain(gen_tree *t, int n, int how)
+{
+    int i, last = -1;
+
+    for (i = 0; i < n; i++) {
+        int side = how == TREE_RIGHT    ? 1
+                   : how == TREE_ZIGZAG ? i % 2
+                   : how == TREE_ANY    ? (int)rnd(0, 1)
+                                        : 0;
+
+        last = tree_add(t, last, side, 0);
+    }
+}
+
+/* A complete tree: level by level, left to right, as shallow as n nodes
+ * allow. */
+static void tree_complete(gen_tree *t, int n)
+{
+    int i;
+
+    for (i = 0; i < n; i++)
+        tree_add(t, i ? (i - 1) / 2 : -1, i ? (i - 1) % 2 : 0, 0);
+}
+
+/* Inserts v into a binary search tree (smaller to the left, the rest to
+ * the right) and returns its node. Keys inserted in sorted order make a
+ * chain. */
+static int tree_bst_insert(gen_tree *t, int v)
+{
+    int p = t->root;
+
+    if (p < 0)
+        return tree_add(t, -1, 0, v);
+    for (;;) {
+        int side = v >= t->val[p], next = side ? t->right[p] : t->left[p];
+
+        if (next < 0)
+            return tree_add(t, p, side, v);
+        p = next;
+    }
+}
+
+/* The nodes in order (left subtree, node, right subtree) into
+ * order[0..t->n): give a shape sorted values that way, and it is a
+ * binary search tree. */
+static void tree_inorder(const gen_tree *t, int *order)
+{
+    int *stack = (int *)lc_gen_alloc((size_t)t->n + 1, sizeof *stack);
+    int top = 0, k = 0, p = t->root;
+
+    while (p >= 0 || top > 0) {
+        while (p >= 0) {
+            stack[top++] = p;
+            p = t->left[p];
+        }
+        p = stack[--top];
+        order[k++] = p;
+        p = t->right[p];
+    }
+    free(stack);
+}
+
+/* The number of levels: 0 for an empty tree. */
+static int tree_depth(const gen_tree *t)
+{
+    int *depth = (int *)lc_gen_alloc((size_t)t->n + 1, sizeof *depth);
+    int *queue = (int *)lc_gen_alloc((size_t)t->n + 1, sizeof *queue);
+    int head = 0, tail = 0, most = 0;
+
+    if (t->root >= 0) {
+        queue[tail++] = t->root;
+        depth[t->root] = 1;
+    }
+    while (head < tail) {
+        int p = queue[head++], k;
+
+        if (depth[p] > most)
+            most = depth[p];
+        for (k = 0; k < 2; k++) {
+            int c = k ? t->right[p] : t->left[p];
+
+            if (c >= 0) {
+                depth[c] = depth[p] + 1;
+                queue[tail++] = c;
+            }
+        }
+    }
+    free(depth);
+    free(queue);
+    return most;
+}
+
+/* A TreeNode in LeetCode's level order: [1,null,2], [] when empty. */
+static void put_tree(const gen_tree *t)
+{
+    int *queue = (int *)lc_gen_alloc(2 * (size_t)t->n + 1, sizeof *queue);
+    int head = 0, tail = 0, end, i;
+
+    /* Slots in level order, -1 for a missing child; the nulls after the
+     * last node are left out. */
+    if (t->root >= 0)
+        queue[tail++] = t->root;
+    while (head < tail) {
+        int p = queue[head++];
+
+        if (p < 0)
+            continue;
+        queue[tail++] = t->left[p];
+        queue[tail++] = t->right[p];
+    }
+    for (end = tail; end > 0 && queue[end - 1] < 0; end--)
+        ;
+    putchar('[');
+    for (i = 0; i < end; i++) {
+        if (i)
+            putchar(',');
+        if (queue[i] < 0)
+            fputs("null", stdout);
+        else
+            printf("%d", t->val[queue[i]]);
+    }
+    puts("]");
+    free(queue);
+}
+
+/*
+ * An NaryNode in LeetCode's level order ([1,null,3,2,4,null,5,6]), from
+ * node values and parents: node 0 is the root (parent[0] is -1), and each
+ * node's children are the nodes whose parent it is, in increasing order.
+ * Any parent works, so a chain (parent[i] = i - 1) gives the deepest
+ * shape.
+ */
+static void put_nary(const int *val, const int *parent, int n)
+{
+    int *first = (int *)lc_gen_alloc((size_t)n + 1, sizeof *first);
+    int *kids = (int *)lc_gen_alloc((size_t)n + 1, sizeof *kids);
+    int *queue = (int *)lc_gen_alloc((size_t)n + 1, sizeof *queue);
+    int *fill = (int *)lc_gen_alloc((size_t)n + 1, sizeof *fill);
+    int i, head = 0, tail = 0, nulls = 0;
+
+    /* The children of node p are kids[first[p] .. first[p + 1]). */
+    for (i = 1; i < n; i++) {
+        if (parent[i] < 0 || parent[i] >= n || parent[i] == i)
+            lc_gen_fail("put_nary: a node's parent is not a node");
+        first[parent[i] + 1]++;
+    }
+    for (i = 0; i < n; i++)
+        first[i + 1] += first[i];
+    for (i = 1; i < n; i++)
+        kids[first[parent[i]] + fill[parent[i]]++] = i;
+    putchar('[');
+    if (n > 0) {
+        if (parent[0] != -1)
+            lc_gen_fail("put_nary: node 0 is the root, whose parent is -1");
+        printf("%d", val[0]);
+        queue[tail++] = 0;
+        nulls = 1;
+    }
+    while (head < tail) {
+        int p = queue[head++], k;
+
+        for (k = first[p]; k < first[p + 1]; k++) {
+            /* The nulls before a value end the groups before it; the ones
+             * after the last value are left out. */
+            for (; nulls > 0; nulls--)
+                fputs(",null", stdout);
+            printf(",%d", val[kids[k]]);
+            queue[tail++] = kids[k];
+        }
+        nulls++;
+    }
+    if (tail != n)
+        lc_gen_fail("put_nary: some nodes don't reach the root (a cycle)");
+    puts("]");
+    free(first);
+    free(kids);
+    free(queue);
+    free(fill);
+}
+
 #endif /* LC_GEN_H */

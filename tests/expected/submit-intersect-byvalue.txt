@@ -1,0 +1,11 @@
+--- stdout
+Building tests/fixtures/judge/0024-intersect/byvalue.c (C, c11)
+
+tests/fixtures/judge/0024-intersect/byvalue.c:1: Wrong Answer on case 1 of 5
+  Input:    headA = [4,1,8,4,5], headB = [5,6,1,8,4,5], skipA = 2, skipB = 3
+  Output:   [4,1,8,4,5]
+  Expected: [8,4,5]
+
+Wrong Answer: 0/5 cases passed
+--- stderr
+--- exit 1

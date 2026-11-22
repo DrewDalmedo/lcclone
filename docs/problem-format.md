@@ -102,6 +102,8 @@ You have a list of integers `nums` and a goal value `target`. ...
 | `tags`            | no       | comma-separated; each tag uses lowercase letters, digits and dashes. Empty entries (`a,,b` or a trailing comma) are errors |
 | `signature`       | no       | e.g. `int[] twoSum(int[] nums, int target)`; see below |
 | `hidden`          | no       | extra inputs that only shape test data, e.g. `int pos`; see below |
+| `build`           | no       | builders that link lists in ways a literal can't say: `cycle LIST POS`, `intersect A B SKIPA SKIPB`, `copy TO FROM`; see below |
+| `ref`             | no       | node references: `NAME in INPUT` (a parameter that is a node of another input), `return in INPUT` (the result must be one of INPUT's nodes); see below |
 | `check`           | no       | for a problem solved in place: `param NAME` or `prefix NAME`, a parameter that is the result; see below |
 | `compare`         | no       | how a result is checked: `exact`, `float [TOL]`, `unordered LEVELS` or `checker`; see below |
 | `time_limit_ms`   | no       | positive integer, default 1000 |
@@ -140,8 +142,9 @@ hidden: int pos
   the function can't share a name with a parameter.
 - **Argument names.** To show an example as `nums = [1,2], target = 3`, a
   case's inputs are named after the signature's parameters followed by the
-  hidden inputs (`lc_problem.arg_names`). Without a `signature` there are no
-  names, but `hidden` is still checked.
+  hidden inputs (`lc_problem.arg_names`), leaving out a parameter that
+  `build: copy` makes, which has no line in a case. Without a `signature`
+  there are no names, but `hidden` is still checked.
 - **Errors** skip the pack, as for any other field:
   `signature has no parentheses`, `signature: parameter 2 is empty`,
   `signature: parameter 'int' has no name`,
@@ -152,6 +155,85 @@ hidden: int pos
   `signature: 'class' can't be used as a name`,
   `signature: unexpected 'const' after ')'`,
   `hidden: 'x' is already a parameter of the signature`, and the like.
+
+### build and ref
+
+Some problems hand the solution lists or nodes that a literal alone
+can't describe: a list whose last node links back into it, two lists
+that share their tail, or a node that is part of another argument.
+`build:` and `ref:` describe them. Both name the problem's **inputs**,
+the signature's parameters and the `hidden:` ones, and both are checked
+against the signature when the pack loads.
+
+```
+signature: bool hasCycle(ListNode head)
+hidden: int pos
+build: cycle head pos
+```
+
+```
+signature: ListNode getIntersectionNode(ListNode headA, ListNode headB)
+hidden: int skipA, int skipB
+build: intersect headA headB skipA skipB
+```
+
+```
+signature: TreeNode getTargetCopy(TreeNode original, TreeNode cloned, TreeNode target)
+build: copy cloned original
+ref: target in original, return in cloned
+```
+
+**`build:`** is a comma-separated list of builders, each a name and the
+inputs it takes. An input takes part in one builder at most.
+
+| Builder | Inputs | What it does |
+|---------|--------|--------------|
+| `cycle LIST POS` | a `ListNode`, an `int` | the last node of LIST links back to its node at index POS (from 0), or to none when POS is -1 (LeetCode 141) |
+| `intersect A B SKIPA SKIPB` | two `ListNode`s, two `int`s | from node SKIPB of B on, B's nodes are A's from node SKIPA on (LeetCode 160). When SKIPA is A's length and SKIPB is B's, the lists don't join |
+| `copy TO FROM` | two parameters of one node type | TO is a copy of FROM, with nodes of its own (LeetCode 1379). TO has no line in a case: `cloned` above is the same tree as `original` |
+
+POS, SKIPA and SKIPB are usually `hidden:` inputs, since the solution
+isn't told them. Each case is checked before it runs, and a case that
+doesn't fit is an error in the case, naming its line:
+`pos: 4 is not a node of head, which has 4 nodes (-1 means no cycle)`,
+`skipA: 3 is not from 0 to 2, the length of headA`, `skipB: either both
+lists are whole (skipA = 2, skipB = 1: they don't join) or neither is`,
+`headB: node 2 is 4, but the node of headA it joins there is 3` (B's
+literal must repeat the values of the nodes it shares with A).
+
+**`ref:`** is a comma-separated list of node references:
+
+- **`NAME in INPUT`**: the parameter NAME is a node of INPUT, which has
+  its type (`ListNode`, `TreeNode` or `NaryNode`, not an array). A case
+  gives NAME as the node's value, an `int` (`target = 3` above), and the
+  solution gets the first node of INPUT with that value, in the order of
+  INPUT's literal (level order for a tree). A value no node has is an
+  error in the case: `target: original has no node whose value is 9`.
+- **`return in INPUT`**: the function must return one of INPUT's nodes,
+  or NULL. Its result is shown and compared as usual, as the list or
+  tree from that node, but a node of another input, even one with the
+  same values, is a Runtime Error that says so
+  ([judging.md](judging.md#verdicts)). In 1379, returning `target` itself,
+  a node of `original`, is wrong, though its subtree is the same.
+
+Without `ref:`, a function that returns a node of its input, such as
+160's, is judged by the list or tree from the node it returns. For lists
+that join, that tells the right node from the others: each node's list
+runs to the shared end, so only nodes as far from the end as the right
+one give a list as long, and in two lists that join those are the same
+node.
+
+**Errors** skip the pack: `build: unknown builder 'loop' (expected
+cycle, intersect or copy)`, `build: cycle takes 2 inputs: 'cycle LIST
+POS'`, `build: 'p' is not an input (a parameter of the signature, or
+hidden)`, `build: cycle needs a ListNode, but 'h' is TreeNode`,
+`build: copy makes a parameter, but 'b' is a hidden input`,
+`build: 'p' is used twice`, `ref: expected 'NAME in INPUT' or 'return in
+INPUT', got 't of o'`, `ref: 't' is TreeNode, so 'o' must be one too, not
+ListNode`, `ref: return needs a function that returns a ListNode,
+TreeNode or NaryNode, not int`, `ref: 't' is made by build: copy, so it
+can't be a reference too`, `ref: 'b' is changed by build: intersect, so
+'t' can't refer to its nodes`, and the like.
 
 ### compare
 
@@ -203,7 +285,8 @@ compare: unordered 0
 
 - **NAME** is a parameter of the signature (not a `hidden:` input). For
   `param` it is an array of any depth (`int[]`, `char[][]`, ...), and for
-  `prefix` a one-dimensional array. Lists and trees can't be checked yet.
+  `prefix` a one-dimensional array. Lists and trees can't be checked yet:
+  the easy problems return the list or tree they change.
 - **The result's type** is NAME's type: expected outputs in tests.txt are
   written as NAME's value (`=> [1,3,0,0]`), or for `prefix` as its first k
   elements, so the count is their length (`=> [1,2]`, not `2`). That is
@@ -283,6 +366,15 @@ children of each node in level order, each node's group of children ended
 by `null`. In `[1,null,3,2,4,null,5,6]` node 1 has children 3, 2 and 4,
 and node 3 has children 5 and 6. A `null` that would start the children of
 a node that doesn't exist is an error, and trailing `null`s are dropped.
+
+**In a solution** these are LeetCode's structs, which the stub that
+`lc start` writes describes in a comment: `struct ListNode*`, `struct TreeNode*` and
+`struct Node*` in C, where an N-ary node has `int numChildren` and an
+array `struct Node** children`; `ListNode*`, `TreeNode*` and `Node*` in
+C++, where it has `vector<Node*> children`. An empty list or tree is
+NULL. An array of them is an array of pointers (`struct ListNode**
+lists, int listsSize`, or `vector<ListNode*>&`). How the harness builds
+and writes them is in [judging.md](judging.md#building).
 
 ## Literals
 

@@ -185,6 +185,47 @@ static void test_classify(void)
     CHECK_INT(lc_classify(&l, &r, &r.out), LC_TIME_LIMIT_EXCEEDED);
     lc_str_free(&r.out);
 
+    /* A stack overflow: the harness says so on fd 3 when the fault was
+     * at the end of the stack (lc_rt_stack.c). It comes before memory,
+     * since the stack it filled counts in its peak. */
+    r = clean_run();
+    r.exited = 0;
+    r.signal = SIGSEGV;
+    r.max_rss_kb = 300 * 1024;
+    lc_str_puts(&r.result, "lc-rt stack-overflow 67092480\n");
+    expect(&l, &r, LC_RUNTIME_ERROR, "killed by SIGSEGV: stack overflow, "
+           "past the 64 MB of stack: a recursion too deep, or a local array "
+           "too large");
+    r.signal = SIGBUS;
+    r.max_rss_kb = 2048;
+    lc_str_clear(&r.result);
+    lc_str_puts(&r.result, "lc-rt stack-overflow 268435456\n");
+    expect(&l, &r, LC_RUNTIME_ERROR, "killed by SIGBUS: stack overflow, "
+           "past the 256 MB of stack: a recursion too deep, or a local array "
+           "too large");
+    /* Anything else on fd 3, or another signal, is no such report. */
+    r.signal = SIGABRT;
+    expect(&l, &r, LC_RUNTIME_ERROR, "killed by SIGABRT");
+    r.signal = SIGSEGV;
+    lc_str_clear(&r.result);
+    lc_str_puts(&r.result, "lc-rt stack-overflow 1x\n");
+    expect(&l, &r, LC_RUNTIME_ERROR, "killed by SIGSEGV");
+    lc_str_clear(&r.result);
+    lc_str_puts(&r.result, "3 1 2 3");
+    expect(&l, &r, LC_RUNTIME_ERROR, "killed by SIGSEGV");
+    lc_run_result_free(&r);
+    /* AddressSanitizer reports it itself, and the program exits 1. */
+    r = clean_run();
+    r.exit_code = 1;
+    lc_str_puts(&r.err, "==1==ERROR: AddressSanitizer: stack-overflow on "
+                "address 0x16f\n");
+    expect(&l, &r, LC_RUNTIME_ERROR, "exited with status 1: AddressSanitizer "
+           "found a stack overflow: a recursion too deep, or a local array "
+           "too large");
+    r.exit_code = 0;
+    expect(&l, &r, LC_VERDICT_NONE, "");
+    lc_run_result_free(&r);
+
     /* No limits: only the exit matters. */
     lc_limits_init(&l, 0, 0);
     r = clean_run();

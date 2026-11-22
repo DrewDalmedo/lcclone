@@ -1,0 +1,15 @@
+--- stdout
+0013-tree: ok (9 cases, 4 full-size; ref.c slowest N ms)
+0021-reverse-list: ok (6 cases, 1 full-size; ref.c slowest N ms)
+0022-mirror: ok (7 cases, 2 full-size; ref.c slowest N ms)
+0023-cycle: ok (7 cases; ref.c slowest N ms)
+0024-intersect: ok (5 cases; ref.c slowest N ms)
+0025-target-copy: ok (3 cases; ref.c slowest N ms)
+0026-invert: ok (8 cases, 2 full-size; ref.c slowest N ms)
+0027-chains: ok (3 cases; ref.c slowest N ms)
+tests/fixtures/judge/0028-shapes/tests.txt: warning: no case is marked @example, so the statement shows no examples
+0028-shapes: ok (2 cases; ref.c slowest N ms)
+
+Checked 9 packs: 9 ok, 0 not judged yet, 0 failed
+--- stderr
+--- exit 0

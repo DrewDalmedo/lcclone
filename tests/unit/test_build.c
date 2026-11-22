@@ -235,7 +235,9 @@ static void test_types(void)
         int cpp;                  /* 0 none, 1 default std, 2 also max */
     } packs[] = {{"1", 1}, {"2", 1}, {"3", 1}, {"4", 2}, {"5", 1}, {"6", 1},
                  {"7", 2}, {"8", 1}, {"9", 2}, {"10", 1}, {"11", 0},
-                 {"15", 1}, {"16", 2}, {"17", 1}, {"18", 1}};
+                 {"13", 2}, {"15", 1}, {"16", 2}, {"17", 1}, {"18", 1},
+                 {"21", 1}, {"22", 2}, {"23", 1}, {"24", 1}, {"25", 1},
+                 {"26", 1}, {"27", 2}};
     lc_ctx *ctx = open_ctx(JUDGE);
     size_t i;
 
@@ -674,6 +676,24 @@ static void test_verdicts(void)
              "lc: merge freed or reallocated a, which holds the result\n"},
             {"upper", "nullrow.c", LC_RUNTIME_ERROR, NULL,
              "lc: upper left grid[0] NULL, but its size is 2\n"},
+            /* Lists and trees the harness can't write, and a node that
+             * must be one of an input's (ref: return in cloned). */
+            {"reverse-list", "cycle.c", LC_RUNTIME_ERROR, NULL,
+             "lc: reverseList returned a list with a cycle: its node at "
+             "index 2 links back to the one at index 1\n"},
+            {"invert", "twice.c", LC_RUNTIME_ERROR, NULL,
+             "lc: invertTree returned a tree that reaches a node twice (a "
+             "cycle, or a node with two parents): the node whose value is "
+             "7\n"},
+            {"mirror", "twice.cpp", LC_RUNTIME_ERROR, NULL,
+             "lc: mirror returned a tree that reaches a node twice (a "
+             "cycle, or a node with two parents): the node whose value is "
+             "4\n"},
+            {"target-copy", "original.cpp", LC_RUNTIME_ERROR, NULL,
+             "lc: getTargetCopy returned a node that is not one of "
+             "cloned's\n"},
+            /* Lists that join are told apart by their nodes. */
+            {"intersect", "byvalue.c", LC_WRONG_ANSWER, "[4,1,8,4,5]", ""},
         };
 
         for (i = 0; i < sizeof inplace / sizeof inplace[0]; i++) {
@@ -692,6 +712,32 @@ static void test_verdicts(void)
             else
                 CHECK(rep->results[0].output == NULL);
             CHECK_STR(rep->results[0].stderr_text, inplace[i].err);
+            lc_report_free(rep);
+        }
+    }
+
+    /* A recursion without end is a stack overflow, in either language;
+     * the stack is 64 MB on macOS, 256 MB elsewhere. */
+    {
+        static const char *const src[] = {"endless.c", "endless.cpp"};
+
+        for (i = 0; i < sizeof src / sizeof src[0]; i++) {
+            lc_report *rep = judge(ctx, "tree", src[i], NULL, 1, NULL);
+            const char *m;
+
+            CHECK(rep && rep->nresults);
+            if (!rep || !rep->nresults) {
+                lc_report_free(rep);
+                continue;
+            }
+            m = rep->results[0].message;
+            CHECK_INT(rep->verdict, LC_RUNTIME_ERROR);
+            CHECK(m && strstr(m, "killed by SIG") == m &&
+                  strstr(m, ": stack overflow, past the ") &&
+                  strstr(m, " MB of stack: a recursion too deep, or a local "
+                            "array too large"));
+            if (!m || !strstr(m, "stack overflow"))
+                fprintf(stderr, "    %s: %s\n", src[i], m ? m : "(none)");
             lc_report_free(rep);
         }
     }
@@ -746,9 +792,6 @@ static void test_errors(void)
 
     expect_judge_error(ctx, "add", "missing.c", NULL, NULL, LC_ERR_NOTFOUND,
                        "cannot open '");
-    expect_judge_error(ctx, "tree", "x.c", NULL, NULL, LC_ERR_INVALID,
-                       "problem 13 (tree): TreeNode parameters are not "
-                       "supported yet");
     expect_judge_error(ctx, "unsigned", "x.c", NULL, NULL, LC_ERR_INVALID,
                        "problem 14 (unsigned) has no signature");
     expect_judge_error(ctx, "add", "solution.cpp", "c++98", NULL,

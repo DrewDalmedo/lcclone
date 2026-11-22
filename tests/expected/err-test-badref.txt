@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: tests/fixtures/judge/0025-target-copy/badref.txt:1: target: original has no node whose value is 9
+--- exit 3

@@ -205,6 +205,14 @@ int lc_write_file_atomic(lc_ctx *ctx, const char *path,
 int lc_parse_user_cases(lc_ctx *ctx, const char *text, size_t len,
                         const char *filename, lc_cases **out);
 
+/*
+ * Writes a case's inputs, which lc_case_values gave as `args`, in the
+ * wire format, each followed by a newline: one per slot, so a copy's
+ * source again, and for a node reference the index of the node.
+ */
+int lc_case_wire(lc_ctx *ctx, const lc_problem *p, const lc_value *args,
+                 lc_str *out);
+
 /* Parses tests.txt for --regen: like lc_parse_cases, except that a case
  * may leave out "=> expected" (or have nothing after it), and the case
  * after an @gen line may have no inputs yet. */
@@ -251,9 +259,60 @@ int lc_parse_check(const char *p, size_t n, const lc_sig *sig,
 const lc_type *lc_sig_result_type(const lc_sig *sig,
                                   const lc_result_check *check);
 
+/* The names the C harness gives hidden inputs must not clash with the
+ * signature's: the function's, and the sizes of arrays (<name>Size). */
+int lc_check_hidden_names(lc_arena *a, const lc_sig *sig,
+                          const lc_param *hidden, size_t nhidden,
+                          lc_str *err);
+
+/* The parameter or hidden input in `slot` (lc_ref), or NULL. */
+const lc_param *lc_slot_param(const lc_sig *sig, const lc_param *hidden,
+                              size_t nhidden, size_t slot);
+
+/*
+ * `build:`, such as "cycle head pos", against the signature and the
+ * hidden inputs: comma-separated builders, each a name and the inputs it
+ * takes.
+ */
+int lc_parse_builders(lc_arena *a, const char *p, size_t n,
+                      const lc_sig *sig, const lc_param *hidden,
+                      size_t nhidden, lc_builder **out, size_t *count,
+                      lc_str *err);
+
+/* 1 if a builder makes `slot` (build: copy), so that it has no line in a
+ * case; *from (may be NULL) gets the slot it is a copy of. */
+int lc_builders_make(const lc_builder *b, size_t nb, size_t slot,
+                     size_t *from);
+
+/* `ref:`, such as "target in original, return in cloned". */
+int lc_parse_refs(lc_arena *a, const char *p, size_t n, const lc_sig *sig,
+                  const lc_param *hidden, size_t nhidden,
+                  const lc_builder *builders, size_t nbuilders,
+                  lc_ref **out, size_t *count, lc_str *err);
+
 /* Deep copies into `a`. They return NULL only when out of memory. */
 lc_sig *lc_copy_sig(lc_arena *a, const lc_sig *sig);
 lc_param *lc_copy_params(lc_arena *a, const lc_param *params, size_t n);
+lc_builder *lc_copy_builders(lc_arena *a, const lc_builder *b, size_t n);
+lc_ref *lc_copy_refs(lc_arena *a, const lc_ref *r, size_t n);
+
+/*
+ * A problem's inputs. Its slots are the signature's parameters and then
+ * the hidden inputs (lc_ref); a case has a line for each slot that no
+ * builder makes, in slot order. A node reference's line is the node's
+ * value, an int.
+ */
+size_t lc_slot_count(const lc_problem *p);
+const lc_param *lc_problem_slot(const lc_problem *p, size_t slot);
+const lc_ref *lc_slot_ref(const lc_problem *p, size_t slot);
+int lc_slot_copy_of(const lc_problem *p, size_t slot, size_t *from);
+size_t lc_line_count(const lc_problem *p);
+size_t lc_line_slot(const lc_problem *p, size_t line); /* LC_SLOT_RETURN
+                                                           when past the
+                                                           end */
+size_t lc_slot_line(const lc_problem *p, size_t slot); /* a slot a builder
+                                                           doesn't make */
+lc_type lc_line_type(const lc_problem *p, size_t line);
 
 /* ------------------------------------------------------------------ */
 /* Values (value.c, wire.c)                                            */
@@ -578,6 +637,14 @@ int lc_codegen_harness(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
 /* Appends the #defines that make the prelude declare the node types the
  * problem uses (LC_LISTNODE and the like). */
 void lc_codegen_defines(const lc_problem *p, lc_str *out);
+
+/* 1 if the problem uses a node type, so that the build needs
+ * lc_rt_nodes.h. */
+int lc_codegen_uses_nodes(const lc_problem *p);
+
+/* The same macros as compiler flags, for .clangd: "-DLC_LISTNODE,
+ * -DLC_TREENODE" (comma-separated), or nothing. */
+void lc_codegen_define_flags(const lc_problem *p, lc_str *out);
 
 /* ------------------------------------------------------------------ */
 /* Building (build.c)                                                  */

@@ -47,6 +47,8 @@ enum {
     F_TAGS,
     F_SIGNATURE,
     F_HIDDEN,
+    F_BUILD,
+    F_REF,
     F_CHECK,
     F_COMPARE,
     F_TIME,
@@ -56,7 +58,7 @@ enum {
 
 static const char *const field_names[NFIELDS] = {
     "id", "slug", "title", "difficulty", "tags", "signature", "hidden",
-    "check", "compare", "time_limit_ms", "memory_limit_mb"
+    "build", "ref", "check", "compare", "time_limit_ms", "memory_limit_mb"
 };
 
 /* Scratch state for one lc_load call, reused from pack to pack. */
@@ -81,6 +83,10 @@ typedef struct loader {
     int has_sig;
     lc_param *hidden;    /* in `typed` */
     size_t nhidden;
+    lc_builder *builders; /* in `typed` */
+    size_t nbuilders;
+    lc_ref *refs;        /* in `typed` */
+    size_t nrefs;
     lc_result_check check;
     lc_compare cmp;
     lc_problem *probs;   /* accepted problems, in directory-name order */
@@ -480,8 +486,8 @@ static int typed_status(loader *L, int line, int rc)
 }
 
 /*
- * Parses `signature`, `hidden`, `check` and `compare` (types.c) into L,
- * and puts the argument names in L->args.
+ * Parses `signature`, `hidden`, `build`, `ref`, `check` and `compare`
+ * (types.c) into L, and puts the argument names in L->args.
  */
 static int parse_typed_fields(loader *L, const pack *pk)
 {
@@ -494,6 +500,10 @@ static int parse_typed_fields(loader *L, const pack *pk)
     L->has_sig = 0;
     L->hidden = NULL;
     L->nhidden = 0;
+    L->builders = NULL;
+    L->nbuilders = 0;
+    L->refs = NULL;
+    L->nrefs = 0;
     memset(&L->check, 0, sizeof L->check);
     lc_arena_free(&L->typed);
 
@@ -518,13 +528,40 @@ static int parse_typed_fields(loader *L, const pack *pk)
                     return pack_warn(L, h->line, "hidden: '%s' is already a "
                                      "parameter of the signature",
                                      L->hidden[i].name);
+        if (L->has_sig) {
+            rc = lc_check_hidden_names(&L->typed, &L->sig, L->hidden,
+                                       L->nhidden, &L->err);
+            if (rc != LC_OK)
+                return typed_status(L, h->line, rc);
+        }
+    }
+    if (pk->f[F_BUILD] != NONE) {
+        h = &L->lines[pk->f[F_BUILD]];
+        rc = lc_parse_builders(&L->typed, h->val.p, h->val.n,
+                               L->has_sig ? &L->sig : NULL, L->hidden,
+                               L->nhidden, &L->builders, &L->nbuilders,
+                               &L->err);
+        if (rc != LC_OK)
+            return typed_status(L, h->line, rc);
+    }
+    if (pk->f[F_REF] != NONE) {
+        h = &L->lines[pk->f[F_REF]];
+        rc = lc_parse_refs(&L->typed, h->val.p, h->val.n,
+                           L->has_sig ? &L->sig : NULL, L->hidden,
+                           L->nhidden, L->builders, L->nbuilders, &L->refs,
+                           &L->nrefs, &L->err);
+        if (rc != LC_OK)
+            return typed_status(L, h->line, rc);
     }
 
-    /* lc.h: no names without a signature. */
+    /* lc.h: no names without a signature, and none for what a builder
+     * makes, which has no line in a case. */
     for (i = 0; L->has_sig && i < L->sig.nparams + L->nhidden; i++) {
         const char *name = i < L->sig.nparams
                                ? L->sig.params[i].name
                                : L->hidden[i - L->sig.nparams].name;
+        if (lc_builders_make(L->builders, L->nbuilders, i, NULL))
+            continue;
         rc = push_span(L, &L->args, &L->nargs, &L->capargs,
                        mkspan(name, strlen(name)));
         if (rc != LC_OK)
@@ -756,6 +793,10 @@ static int add_problem(loader *L, const pack *pk)
     }
     p->hidden = lc_copy_params(a, L->hidden, L->nhidden);
     p->nhidden = L->nhidden;
+    p->builders = lc_copy_builders(a, L->builders, L->nbuilders);
+    p->nbuilders = L->nbuilders;
+    p->refs = lc_copy_refs(a, L->refs, L->nrefs);
+    p->nrefs = L->nrefs;
     p->check = L->check;
     p->compare = L->cmp;
     p->time_limit_ms = pk->time_ms;
@@ -768,7 +809,8 @@ static int add_problem(loader *L, const pack *pk)
     stmt = copy_text(a, pk->stmt, pk->stmt_len, &p->statement_len);
     p->statement = stmt;
     p->statement_line = pk->stmt_line;
-    if (!p->tags || !p->arg_names || !p->hidden || !p->dir || !stmt)
+    if (!p->tags || !p->arg_names || !p->hidden || !p->builders ||
+        !p->refs || !p->dir || !stmt)
         return lc_oom(L->ctx);
     L->nprobs++;
     return LC_OK;

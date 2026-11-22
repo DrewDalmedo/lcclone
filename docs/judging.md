@@ -18,7 +18,8 @@ the solution, and writes the result. The build is one source file made of:
    (`runtime/c/lc_rt_libc.h`, [below](#the-c-library));
 3. `#line 1 "<your file>"`, then **your source**, so the compiler's
    messages give your file's own line numbers;
-4. the **runtime** (`runtime/common/lc_rt_core.h`, then `runtime/c/lc_rt.c`
+4. the **runtime** (`runtime/common/lc_rt_core.h`, for a problem with
+   lists or trees `runtime/common/lc_rt_nodes.h`, then `runtime/c/lc_rt.c`
    or `runtime/cpp/lc_rt.cpp`): reading and writing the
    [wire format](wire.md) for every type;
 5. the **harness**, reported in messages as the file `lc_harness`. An error
@@ -30,6 +31,27 @@ else on disk to build. Because it is one file, the C++ harness sees
 `class Solution`. The runtime adds no POSIX header such as `<unistd.h>`,
 and calls only functions the prelude's headers declare, so a solution may
 name its own helpers `read`, `write`, `sleep` or `nice`, as on LeetCode.
+
+One more file is compiled and linked with it, as a unit of its own:
+`runtime/common/lc_rt_stack.c` (`lc_rt_stack.cpp` in a C++ build), which
+tells a stack overflow from other crashes ([Verdicts](#verdicts)). It
+needs `<signal.h>`, whose names (`kill`, `stack_t`, ...) a solution may
+use for its own, so it stays out of the solution's file. The generator
+(`gen.c`) is built without it.
+
+**Lists and trees.** For a problem with `ListNode`, `TreeNode` or
+`NaryNode`, `lc` defines `LC_LISTNODE`, `LC_TREENODE` or `LC_NARYNODE`
+first, and the prelude declares those structs, in LeetCode's form, only
+then. The harness builds each list and tree a case gives from its
+[wire form](wire.md), and writes the one the solution returns, without
+recursion either way, so a list of 10^5 nodes or a tree as deep as it is
+long costs the harness no stack. Each node is allocated on its own, with
+`malloc` in C (an N-ary node's `children` too, `NULL` when it has none)
+and `new` in C++, so a solution may free or delete the nodes it is given,
+as on LeetCode; the harness never frees them itself. A problem may
+link lists in ways a literal can't say (`build:`) and pass a node of
+another input (`ref:`); see
+[problem-format.md](problem-format.md#build-and-ref).
 
 **The C library.** LeetCode's C library is glibc. Where another one
 behaves differently in a way a solution can see, a C build calls a
@@ -144,7 +166,7 @@ A problem sets `time_limit_ms` (default 1000) and `memory_limit_mb`
 | Wall clock | 2 × the time limit + 1 s | stops a program that sleeps or blocks; room for a busy machine |
 | Peak resident memory | **`memory_limit_mb`** | the memory limit itself; checked when the program ends |
 | `RLIMIT_AS` | 2 × the memory limit + 64 MB | stops a runaway program soon after it passes the memory limit |
-| `RLIMIT_STACK` | 256 MB, or the system's hard limit if lower | deep recursion, common in tree problems |
+| `RLIMIT_STACK` | 256 MB, or the system's hard limit if lower | deep recursion, common in list and tree problems |
 | `RLIMIT_FSIZE` | 16 MB | solutions have no reason to write files |
 | `RLIMIT_CORE` | 0 | no core dumps |
 | stdout, stderr | 1 MiB each | more is Output Limit Exceeded |
@@ -180,7 +202,10 @@ The same limits apply on every platform, with these differences:
   barely touch it, and `malloc` returns NULL. On macOS the same allocation
   works, and only the memory touched counts.
 - **macOS** caps `RLIMIT_STACK` at 64 MB, so a case gets 64 MB of stack
-  there.
+  there. That holds a recursion 10^5 calls deep with frames of up to
+  about 600 bytes, so a recursive solution gets through a list of 10^5
+  nodes, or a tree as deep as it is long, on every system, also when
+  `lc submit` checks it with the sanitizers.
 - **Linux** counts, in a program's peak memory, what it inherited from
   the process that started it (the pages `fork()` copied): `lc`'s,
   megabytes when it holds a full-size case, or a GUI's that links
@@ -202,6 +227,7 @@ A case that ran gets the first verdict below whose rule applies.
 | Output Limit Exceeded | stdout or stderr passed 1 MiB, or the result passed 16 MiB; the program was killed on the spot |
 | Memory Limit Exceeded | the peak resident memory passed the memory limit, or `lc` killed the program at the address-space guard |
 | Time Limit Exceeded | the CPU time passed the time limit, or `RLIMIT_CPU` stopped the program, or it was still running at the wall-clock deadline |
+| Runtime Error | the program ran out of stack (checked before memory: the stack it filled counts in its peak) |
 | Runtime Error | the program was killed by a signal, or exited with a status other than 0 |
 | Runtime Error | it exited 0 without writing a result, or with a result that isn't valid wire format for the result's type, or with extra text after the result |
 | Wrong Answer | the result doesn't match the expected one under the problem's `compare:` mode |
@@ -218,6 +244,8 @@ Every verdict other than Accepted and Wrong Answer comes with a message
 that says why, for example:
 
 - `killed by SIGSEGV`
+- `killed by SIGSEGV: stack overflow, past the 64 MB of stack: a recursion
+  too deep, or a local array too large`
 - `exited with status 1`
 - `used 1630 ms of CPU time; the limit is 1000 ms`
 - `was still running after 3004 ms (it used 3 ms of CPU time; the limit is 1000 ms)`
@@ -228,6 +256,20 @@ that says why, for example:
 
 `lc submit` then checks an accepted run with the sanitizers, and a case
 that fails there gets that verdict instead ([below](#the-sanitizer-check)).
+
+**Stack overflows.** A recursion too deep is a crash like any other, and
+LeetCode reports it as a Runtime Error too. `lc` says so where it can
+tell: before `main()`, the program gets a handler for SIGSEGV and SIGBUS
+(`runtime/common/lc_rt_stack.c`), on a stack of its own. When the address
+that faulted lies at the end of the main stack, the handler writes
+`lc-rt stack-overflow SIZE` on fd 3, where the harness writes the result
+only once the solution has returned, and the program then dies of the
+signal as it would have anyway. `lc` turns that into the message above.
+Built with AddressSanitizer (`--sanitize`, and `lc submit`'s sanitizer
+check), the program has no such handler: ASan reports the overflow itself
+on stderr and exits with status 1, and `lc` says `exited with status 1:
+AddressSanitizer found a stack overflow: ...`. A crash elsewhere, or a
+fault far from the end of the stack, stays `killed by SIGSEGV`.
 
 When the harness can't write the result, because the solution handed back
 something it can't use, it stops with status 70 and says why on stderr:
@@ -240,6 +282,20 @@ past the end of arr (arr[8])`. That is a Runtime Error too, shown with the
 message (and `lc check` adds the message to its finding). Built with
 AddressSanitizer, the harness leaves out the spare element it catches such
 writes with, and ASan reports them itself ([Sanitizers](#sanitizers)).
+
+The harness checks the lists and trees a solution returns as it writes
+them, and stops the same way when it can't: a list with a cycle (`lc:
+reverseList returned a list with a cycle: its node at index 4 links back
+to the one at index 1`), a tree that reaches a node twice, through a
+cycle or a node with two parents (`lc: invertTree returned a tree that
+reaches a node twice (a cycle, or a node with two parents): the node
+whose value is 7`), an N-ary node with a NULL child, or, for a function
+that must return a node of one of its inputs
+([`ref: return in NAME`](problem-format.md#build-and-ref)), a node that
+isn't one of NAME's (`lc: getTargetCopy returned a node that is not one
+of cloned's`). LeetCode's harness would run on such a list until it ran
+out of time or memory, or, for a node of the wrong input, give Wrong
+Answer.
 
 A C solution may `realloc` or `free` an array it was given, as on
 LeetCode; say, `realloc(nums, 2 * numsSize * sizeof *nums)` to fill twice
@@ -330,8 +386,8 @@ when it is judged:
   of `gen` and `ref` and the seed; the input itself isn't kept, since
   making it again takes milliseconds. So a second run costs nothing more.
 - **Showing it.** A full-size case is shown by its seed and the size of
-  its long inputs (`nums = 100000 items`), and `--json` leaves those
-  inputs out ([json.md](json.md#case_start-case_done)).
+  its long inputs (`nums = 100000 items`, or for a list or tree `root =
+  100000 nodes`), and `--json` leaves those inputs out ([json.md](json.md#case_start-case_done)).
 
 ## Your cases and the reference solution
 

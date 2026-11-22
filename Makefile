@@ -68,6 +68,8 @@ RUNTIME = \
 	runtime/c/lc_rt_libc.h \
 	runtime/c/uthash.h \
 	runtime/common/lc_rt_core.h \
+	runtime/common/lc_rt_nodes.h \
+	runtime/common/lc_rt_stack.c \
 	runtime/cpp/lc_prelude.hpp \
 	runtime/cpp/lc_rt.cpp \
 	runtime/gen/lc_gen.h \

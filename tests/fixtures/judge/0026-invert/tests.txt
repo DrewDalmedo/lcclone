@@ -1,0 +1,24 @@
+@example
+[4,2,7,1,3,6,9]
+=> [4,7,2,9,6,3,1]
+
+[]
+=> []
+
+[1,2]
+=> [1,null,2]
+
+[1,null,2,null,3]
+=> [1,2,null,3]
+
+@gen 1 small
+[-93,46,-32,-56,42,null,25,-64,null,null,null,null,77]
+=> [-93,-32,46,25,null,42,-56,77,null,null,null,null,-64]
+@gen 2 small
+[-34,51,-76,null,-65,null,11,null,57]
+=> [-34,-76,51,11,null,-65,null,null,null,57]
+
+# Full-size: 100000 nodes, random, then a path (the results are too long
+# to keep here).
+@full 1 2748cbb1
+@full 2 30606feb

@@ -5,7 +5,21 @@ bool hasCycle(int* head, int headSize) {
 == C prototype
 bool hasCycle(int* head, int headSize)
 == C harness
-error: problem 9 (hidden): hidden inputs are not supported yet
+/* lc's harness for problem 9 (hidden). */
+int main(void)
+{
+    lc_rt_read_input();
+    int headSize;
+    int* head = lc_read_int_array(&headSize);
+    int pos = lc_read_int();
+    lc_rt_end_input();
+    (void)pos;
+    bool lc_ret = hasCycle(head, headSize);
+    lc_check_int_end("hasCycle", "head", head, headSize);
+    lc_write_bool("hasCycle", lc_ret);
+    lc_rt_flush();
+    return 0;
+}
 == C++ stub
 class Solution {
 public:
@@ -16,4 +30,19 @@ public:
 == C++ prototype
 bool Solution::hasCycle(vector<int>& head)
 == C++ harness
-error: problem 9 (hidden): hidden inputs are not supported yet
+// lc's harness for problem 9 (hidden).
+int main()
+{
+    lc_rt_read_input();
+    std::vector<int> head;
+    lc_get(head);
+    int pos{};
+    lc_get(pos);
+    lc_rt_end_input();
+    (void)pos;
+    Solution *lc_sol = new Solution();
+    bool lc_ret = lc_sol->hasCycle(head);
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}

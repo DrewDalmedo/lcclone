@@ -1,0 +1,123 @@
+== C stub
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     int numChildren;
+ *     struct Node** children;
+ * };
+ */
+/**
+ * Note: return an array of *returnSize elements. It must be malloced;
+ * the caller frees it.
+ */
+struct ListNode** split(struct TreeNode** trees, int treesSize, struct Node** forest, int forestSize, struct Node* root, int k, int* returnSize) {
+
+}
+== C prototype
+struct ListNode** split(struct TreeNode** trees, int treesSize, struct Node** forest, int forestSize, struct Node* root, int k, int* returnSize)
+== C harness
+/* lc's harness for problem 18 (node-arrays). */
+int main(void)
+{
+    lc_rt_read_input();
+    int treesSize;
+    struct TreeNode** trees = lc_read_tree_array(&treesSize);
+    int forestSize;
+    struct Node** forest = lc_read_nary_array(&forestSize);
+    struct Node* root = lc_read_nary();
+    int k = lc_read_int();
+    lc_rt_end_input();
+    int lc_ret_size = -1;
+    struct ListNode** lc_ret = split(trees, treesSize, forest, forestSize, root, k, &lc_ret_size);
+    lc_check_tree_end("split", "trees", trees, treesSize);
+    lc_check_nary_end("split", "forest", forest, forestSize);
+    lc_write_list_array("split", lc_ret, lc_ret_size);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    vector<Node*> children;
+
+    Node() {}
+
+    Node(int _val) {
+        val = _val;
+    }
+
+    Node(int _val, vector<Node*> _children) {
+        val = _val;
+        children = _children;
+    }
+};
+*/
+class Solution {
+public:
+    vector<ListNode*> split(vector<TreeNode*>& trees, vector<Node*>& forest, Node* root, int k) {
+
+    }
+};
+== C++ prototype
+vector<ListNode*> Solution::split(vector<TreeNode*>& trees, vector<Node*>& forest, Node* root, int k)
+== C++ harness
+// lc's harness for problem 18 (node-arrays).
+int main()
+{
+    lc_rt_read_input();
+    std::vector<TreeNode*> trees;
+    lc_get(trees);
+    std::vector<Node*> forest;
+    lc_get(forest);
+    Node* root{};
+    lc_get(root);
+    int k{};
+    lc_get(k);
+    lc_rt_end_input();
+    Solution *lc_sol = new Solution();
+    std::vector<ListNode*> lc_ret = lc_sol->split(trees, forest, root, k);
+    lc_rt_fn = "split";
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}

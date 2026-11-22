@@ -1,0 +1,12 @@
+--- stdout
+Building tests/fixtures/judge/0025-target-copy/original.cpp (C++, c++11)
+
+tests/fixtures/judge/0025-target-copy/original.cpp:1: Runtime Error on case 1 of 3 (exited with status 70)
+  Input:    original = [7,4,3,null,null,6,19], target = 3
+  Expected: [3,6,19]
+  Stderr:
+    lc: getTargetCopy returned a node that is not one of cloned's
+
+Runtime Error: 0/3 cases passed
+--- stderr
+--- exit 1

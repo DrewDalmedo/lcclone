@@ -28,7 +28,21 @@ struct TreeNode* build(struct ListNode* head, struct Node* root, struct TreeNode
 == C prototype
 struct TreeNode* build(struct ListNode* head, struct Node* root, struct TreeNode** trees, int treesSize)
 == C harness
-error: problem 7 (nodes): returning TreeNode is not supported yet
+/* lc's harness for problem 7 (nodes). */
+int main(void)
+{
+    lc_rt_read_input();
+    struct ListNode* head = lc_read_list();
+    struct Node* root = lc_read_nary();
+    int treesSize;
+    struct TreeNode** trees = lc_read_tree_array(&treesSize);
+    lc_rt_end_input();
+    struct TreeNode* lc_ret = build(head, root, trees, treesSize);
+    lc_check_tree_end("build", "trees", trees, treesSize);
+    lc_write_tree("build", lc_ret);
+    lc_rt_flush();
+    return 0;
+}
 == C++ stub
 /**
  * Definition for singly-linked list.
@@ -79,4 +93,21 @@ public:
 == C++ prototype
 TreeNode* Solution::build(ListNode* head, Node* root, vector<TreeNode*>& trees)
 == C++ harness
-error: problem 7 (nodes): returning TreeNode is not supported yet
+// lc's harness for problem 7 (nodes).
+int main()
+{
+    lc_rt_read_input();
+    ListNode* head{};
+    lc_get(head);
+    Node* root{};
+    lc_get(root);
+    std::vector<TreeNode*> trees;
+    lc_get(trees);
+    lc_rt_end_input();
+    Solution *lc_sol = new Solution();
+    TreeNode* lc_ret = lc_sol->build(head, root, trees);
+    lc_rt_fn = "build";
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}

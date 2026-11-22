@@ -177,6 +177,8 @@ static int make_unit(lc_ctx *ctx, const lc_build_req *req, const lc_str *src,
     if (src->len > 0 && src->data[src->len - 1] != '\n')
         lc_str_putc(tu, '\n');
     rc = put_rt(ctx, tu, "common/lc_rt_core.h", "lc_rt_core.h");
+    if (rc == LC_OK && lc_codegen_uses_nodes(req->p))
+        rc = put_rt(ctx, tu, "common/lc_rt_nodes.h", "lc_rt_nodes.h");
     if (rc == LC_OK)
         rc = put_rt(ctx, tu, c ? "c/lc_rt.c" : "cpp/lc_rt.cpp",
                     c ? "lc_rt.c" : "lc_rt.cpp");
@@ -486,8 +488,9 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
 {
     lc_arena tmp = {NULL};
     lc_str src = LC_STR_INIT, tu = LC_STR_INIT, out = LC_STR_INIT;
-    const lc_rt_file *uthash;
-    const char *cache, *extra, *fl[MAX_FLAGS], *args[MAX_FLAGS + 4];
+    const lc_rt_file *uthash, *stack;
+    const char *cache, *extra, *fl[MAX_FLAGS], *args[MAX_FLAGS + 5];
+    char *stack_src = NULL;
     char *dir, *prog, *prog_tmp, *unit, *unit_final, *std_arg, **argv;
     char *logfile, *dsym = NULL, *dsym_tmp = NULL;
     char key[17];
@@ -525,6 +528,12 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
                                         : NULL;
     if (uthash)
         h = fnv(h, uthash->text, uthash->len);
+    /* Every program but the generator tells a stack overflow from other
+     * crashes, with a unit of its own (lc_rt_stack.c says why). */
+    stack = req->role != LC_ROLE_GEN ? lc_rt_file_get("common/lc_rt_stack.c")
+                                     : NULL;
+    if (stack)
+        h = fnv(h, stack->text, stack->len);
     snprintf(key, sizeof key, "%016llx", (unsigned long long)h);
 
     cache = lc_cache_dir(ctx);
@@ -580,6 +589,13 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
                                          uthash->len)
                   : lc_oom(ctx);
     }
+    if (rc == LC_OK && stack) {
+        stack_src = lc_arena_printf(&tmp, "%s/lc_rt_stack.%s", dir,
+                                    req->lang->ext);
+        rc = stack_src ? lc_write_file_atomic(ctx, stack_src, stack->text,
+                                              stack->len)
+                       : lc_oom(ctx);
+    }
     if (rc != LC_OK)
         goto done;
     for (i = 0; i < nfl; i++)
@@ -587,6 +603,8 @@ int lc_build_source(lc_ctx *ctx, const lc_build_req *req, lc_arena *a,
     args[i++] = "-o";
     args[i++] = prog_tmp;
     args[i++] = unit;
+    if (stack_src)
+        args[i++] = stack_src;
     if (req->lang->id == LC_LANG_C)
         args[i++] = "-lm";
     argv = lc_compiler_argv(&tmp, req->cc, args, i, extra);

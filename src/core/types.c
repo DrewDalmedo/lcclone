@@ -8,7 +8,7 @@
 
 /*
  * types.c: the type table, and the problem.md fields built on it:
- * `signature:`, `hidden:`, `check:` and `compare:`
+ * `signature:`, `hidden:`, `build:`, `ref:`, `check:` and `compare:`
  * (docs/problem-format.md).
  */
 
@@ -376,6 +376,32 @@ static int check_c_names(span fname, const lc_param *params, size_t np,
     return LC_OK;
 }
 
+int lc_check_hidden_names(lc_arena *a, const lc_sig *sig,
+                          const lc_param *hidden, size_t nhidden,
+                          lc_str *err)
+{
+    lc_param *all;
+    size_t i;
+
+    lc_str_clear(err);
+    if (!sig || nhidden == 0)
+        return LC_OK;
+    /* The C harness declares hidden inputs next to the parameters. */
+    for (i = 0; i < nhidden; i++)
+        if (strcmp(hidden[i].name, sig->name) == 0)
+            return fail(err, "hidden: '%s' is the function's name",
+                        hidden[i].name);
+    all = lc_arena_array(a, sig->nparams + nhidden, sizeof *all);
+    if (!all)
+        return LC_ERR_NOMEM;
+    for (i = 0; i < sig->nparams; i++)
+        all[i] = sig->params[i];
+    for (i = 0; i < nhidden; i++)
+        all[sig->nparams + i] = hidden[i];
+    return check_c_names(mkspan(sig->name, strlen(sig->name)), all,
+                         sig->nparams + nhidden, "hidden", err);
+}
+
 int lc_parse_sig(lc_arena *a, const char *p, size_t n, const char *what,
                  lc_sig *out, lc_str *err)
 {
@@ -658,4 +684,411 @@ const lc_type *lc_sig_result_type(const lc_sig *sig,
         check->param < sig->nparams)
         return &sig->params[check->param].type;
     return &sig->ret;
+}
+
+/* ------------------------------------------------------------------ */
+/* Slots, build: and ref:                                              */
+/* ------------------------------------------------------------------ */
+
+const lc_param *lc_slot_param(const lc_sig *sig, const lc_param *hidden,
+                              size_t nhidden, size_t slot)
+{
+    size_t np = sig ? sig->nparams : 0;
+
+    if (slot < np)
+        return &sig->params[slot];
+    if (slot - np < nhidden)
+        return &hidden[slot - np];
+    return NULL;
+}
+
+int lc_builders_make(const lc_builder *b, size_t nb, size_t slot,
+                     size_t *from)
+{
+    size_t i;
+
+    for (i = 0; i < nb; i++)
+        if (b[i].kind == LC_BUILD_COPY && b[i].args[0] == slot) {
+            if (from)
+                *from = b[i].args[1];
+            return 1;
+        }
+    return 0;
+}
+
+/* The slot named `name` among the parameters and hidden inputs, or
+ * LC_SLOT_RETURN. */
+static size_t find_slot(span name, const lc_sig *sig, const lc_param *hidden,
+                        size_t nhidden)
+{
+    size_t i, np = sig ? sig->nparams : 0;
+
+    for (i = 0; i < np + nhidden; i++)
+        if (span_eq(name, lc_slot_param(sig, hidden, nhidden, i)->name))
+            return i;
+    return LC_SLOT_RETURN;
+}
+
+/* The next item of a comma-separated list in s[*i..), trimmed. */
+static span next_item(span s, size_t *i)
+{
+    const char *comma = memchr(s.p + *i, ',', s.n - *i);
+    size_t end = comma ? (size_t)(comma - s.p) : s.n;
+    span it = trim(mkspan(s.p + *i, end - *i));
+
+    *i = end + 1;
+    return it;
+}
+
+/* Splits s into at most `max` words; returns how many there were (up to
+ * max + 1, to say there were more). */
+static size_t split_words(span s, span *w, size_t max)
+{
+    size_t n = 0;
+    span rest;
+
+    s = trim(s);
+    while (s.n > 0) {
+        if (n == max)
+            return max + 1;
+        w[n++] = first_word(s, &rest);
+        s = rest;
+    }
+    return n;
+}
+
+static int is_node_type(lc_type t)
+{
+    return t.dims == 0 && is_node_kind(t.kind);
+}
+
+static int is_int_type(lc_type t)
+{
+    return t.dims == 0 && t.kind == LC_T_INT;
+}
+
+static const struct builder_info {
+    const char *name;
+    lc_builder_kind kind;
+    size_t nargs;
+    const char *usage;
+} builder_infos[] = {
+    {"cycle", LC_BUILD_CYCLE, 2, "'cycle LIST POS'"},
+    {"intersect", LC_BUILD_INTERSECT, 4, "'intersect A B SKIPA SKIPB'"},
+    {"copy", LC_BUILD_COPY, 2, "'copy TO FROM'"},
+};
+
+/* Checks one builder's arguments, already found as slots. */
+static int check_builder(const lc_builder *b, const lc_sig *sig,
+                         const lc_param *hidden, size_t nhidden, lc_str *err)
+{
+    const lc_param *pr[LC_BUILDER_ARGS];
+    char t0[LC_TYPE_NAME_MAX], t1[LC_TYPE_NAME_MAX];
+    size_t i;
+
+    for (i = 0; i < b->nargs; i++)
+        pr[i] = lc_slot_param(sig, hidden, nhidden, b->args[i]);
+    switch (b->kind) {
+    case LC_BUILD_CYCLE:
+        if (pr[0]->type.kind != LC_T_LIST || pr[0]->type.dims != 0)
+            return fail(err, "build: cycle needs a ListNode, but '%s' is %s",
+                        pr[0]->name, lc_type_name(pr[0]->type, t0));
+        if (!is_int_type(pr[1]->type))
+            return fail(err, "build: cycle's position must be an int, but "
+                        "'%s' is %s", pr[1]->name,
+                        lc_type_name(pr[1]->type, t0));
+        return LC_OK;
+    case LC_BUILD_INTERSECT:
+        for (i = 0; i < 4; i++) {
+            if (i < 2 && (pr[i]->type.kind != LC_T_LIST ||
+                          pr[i]->type.dims != 0))
+                return fail(err, "build: intersect needs two ListNodes, but "
+                            "'%s' is %s", pr[i]->name,
+                            lc_type_name(pr[i]->type, t0));
+            if (i >= 2 && !is_int_type(pr[i]->type))
+                return fail(err, "build: intersect's skips must be ints, but "
+                            "'%s' is %s", pr[i]->name,
+                            lc_type_name(pr[i]->type, t0));
+        }
+        return LC_OK;
+    case LC_BUILD_COPY:
+        if (b->args[0] >= (sig ? sig->nparams : 0))
+            return fail(err, "build: copy makes a parameter, but '%s' is a "
+                        "hidden input", pr[0]->name);
+        if (!is_node_type(pr[0]->type))
+            return fail(err, "build: copy makes a ListNode, TreeNode or "
+                        "NaryNode, but '%s' is %s", pr[0]->name,
+                        lc_type_name(pr[0]->type, t0));
+        if (pr[0]->type.kind != pr[1]->type.kind ||
+            pr[0]->type.dims != pr[1]->type.dims)
+            return fail(err, "build: copy needs inputs of one type, but '%s' "
+                        "is %s and '%s' is %s", pr[0]->name,
+                        lc_type_name(pr[0]->type, t0), pr[1]->name,
+                        lc_type_name(pr[1]->type, t1));
+        return LC_OK;
+    }
+    return LC_OK;
+}
+
+int lc_parse_builders(lc_arena *a, const char *p, size_t n,
+                      const lc_sig *sig, const lc_param *hidden,
+                      size_t nhidden, lc_builder **out, size_t *count,
+                      lc_str *err)
+{
+    span s = trim(mkspan(p, n)), w[LC_BUILDER_ARGS + 1];
+    lc_builder *b;
+    size_t nb = 0, i, k, j, nw;
+    int rc;
+
+    lc_str_clear(err);
+    *out = NULL;
+    *count = 0;
+    if (s.n > 0) {
+        for (i = 0; i <= s.n; nb++)
+            next_item(s, &i);
+        if (!sig)
+            return fail(err, "build: needs a signature");
+    }
+    b = lc_arena_array(a, nb ? nb : 1, sizeof *b);
+    if (!b)
+        return LC_ERR_NOMEM;
+    for (i = 0, k = 0; k < nb; k++) {
+        span item = next_item(s, &i);
+        const struct builder_info *bi = NULL;
+
+        if (item.n == 0)
+            return fail(err, "build: builder %lu is empty",
+                        (unsigned long)(k + 1));
+        nw = split_words(item, w, LC_BUILDER_ARGS + 1);
+        for (j = 0; j < sizeof builder_infos / sizeof builder_infos[0]; j++)
+            if (span_eq(w[0], builder_infos[j].name))
+                bi = &builder_infos[j];
+        if (!bi)
+            return fail(err, "build: unknown builder '%.*s%s' (expected "
+                        "cycle, intersect or copy)", QUOTE(w[0]));
+        if (nw != bi->nargs + 1)
+            return fail(err, "build: %s takes %lu inputs: %s", bi->name,
+                        (unsigned long)bi->nargs, bi->usage);
+        b[k].kind = bi->kind;
+        b[k].nargs = bi->nargs;
+        for (j = 0; j < bi->nargs; j++) {
+            size_t slot = find_slot(w[j + 1], sig, hidden, nhidden), m, q;
+
+            if (slot == LC_SLOT_RETURN)
+                return fail(err, "build: '%.*s%s' is not an input (a "
+                            "parameter of the signature, or hidden)",
+                            QUOTE(w[j + 1]));
+            /* An input may take part in one builder, once. */
+            for (m = 0; m <= k; m++)
+                for (q = 0; q < (m < k ? b[m].nargs : j); q++)
+                    if (b[m].args[q] == slot)
+                        return fail(err, "build: '%.*s%s' is used twice",
+                                    QUOTE(w[j + 1]));
+            b[k].args[j] = slot;
+        }
+        rc = check_builder(&b[k], sig, hidden, nhidden, err);
+        if (rc != LC_OK)
+            return rc;
+    }
+    *out = b;
+    *count = nb;
+    return LC_OK;
+}
+
+/* The builder that `slot` takes part in, or NULL. */
+static const lc_builder *builder_of(const lc_builder *b, size_t nb,
+                                    size_t slot)
+{
+    size_t i, k;
+
+    for (i = 0; i < nb; i++)
+        for (k = 0; k < b[i].nargs; k++)
+            if (b[i].args[k] == slot)
+                return &b[i];
+    return NULL;
+}
+
+int lc_parse_refs(lc_arena *a, const char *p, size_t n, const lc_sig *sig,
+                  const lc_param *hidden, size_t nhidden,
+                  const lc_builder *builders, size_t nbuilders,
+                  lc_ref **out, size_t *count, lc_str *err)
+{
+    span s = trim(mkspan(p, n)), w[4];
+    char t0[LC_TYPE_NAME_MAX], t1[LC_TYPE_NAME_MAX];
+    lc_ref *r;
+    size_t nr = 0, i, k, j;
+
+    lc_str_clear(err);
+    *out = NULL;
+    *count = 0;
+    if (s.n > 0) {
+        for (i = 0; i <= s.n; nr++)
+            next_item(s, &i);
+        if (!sig)
+            return fail(err, "ref: needs a signature");
+    }
+    r = lc_arena_array(a, nr ? nr : 1, sizeof *r);
+    if (!r)
+        return LC_ERR_NOMEM;
+    for (i = 0, k = 0; k < nr; k++) {
+        span item = next_item(s, &i);
+        const lc_param *who = NULL, *in;
+        const lc_builder *b;
+        lc_type wt;
+
+        if (item.n == 0)
+            return fail(err, "ref: reference %lu is empty",
+                        (unsigned long)(k + 1));
+        if (split_words(item, w, 3) != 3 || !span_eq(w[1], "in"))
+            return fail(err, "ref: expected 'NAME in INPUT' or 'return in "
+                        "INPUT', got '%.*s%s'", QUOTE(item));
+        if (span_eq(w[0], "return")) {
+            r[k].slot = LC_SLOT_RETURN;
+            wt = sig->ret;
+        } else {
+            r[k].slot = find_slot(w[0], sig, hidden, nhidden);
+            if (r[k].slot >= sig->nparams)
+                return fail(err, "ref: '%.*s%s' is not a parameter of the "
+                            "signature", QUOTE(w[0]));
+            who = &sig->params[r[k].slot];
+            wt = who->type;
+        }
+        r[k].in = find_slot(w[2], sig, hidden, nhidden);
+        if (r[k].in == LC_SLOT_RETURN)
+            return fail(err, "ref: '%.*s%s' is not an input (a parameter of "
+                        "the signature, or hidden)", QUOTE(w[2]));
+        in = lc_slot_param(sig, hidden, nhidden, r[k].in);
+        for (j = 0; j < k; j++)
+            if (r[j].slot == r[k].slot)
+                return fail(err, "ref: '%.*s%s' is listed twice",
+                            QUOTE(w[0]));
+        if (!is_node_type(wt)) {
+            if (!who)
+                return fail(err, "ref: return needs a function that returns "
+                            "a ListNode, TreeNode or NaryNode, not %s",
+                            lc_type_name(wt, t0));
+            return fail(err, "ref: '%s' is %s, but a reference is a "
+                        "ListNode, TreeNode or NaryNode", who->name,
+                        lc_type_name(wt, t0));
+        }
+        if (r[k].slot == r[k].in)
+            return fail(err, "ref: '%s' can't be a node of itself", in->name);
+        if (in->type.kind != wt.kind || in->type.dims != 0)
+            return fail(err, "ref: %s%s%s is %s, so '%s' must be one too, "
+                        "not %s", who ? "'" : "",
+                        who ? who->name : "the return value", who ? "'" : "",
+                        lc_type_name(wt, t0), in->name,
+                        lc_type_name(in->type, t1));
+        if (who && lc_builders_make(builders, nbuilders, r[k].slot, NULL))
+            return fail(err, "ref: '%s' is made by build: copy, so it can't "
+                        "be a reference too", who->name);
+        if (who && builder_of(builders, nbuilders, r[k].slot))
+            return fail(err, "ref: '%s' is used by build:, so it can't be a "
+                        "reference too", who->name);
+        b = builder_of(builders, nbuilders, r[k].in);
+        if (who && b && b->kind == LC_BUILD_INTERSECT)
+            return fail(err, "ref: '%s' is changed by build: intersect, so "
+                        "'%s' can't refer to its nodes", in->name, who->name);
+    }
+    /* A reference's line is a value, not the input itself. */
+    for (k = 0; k < nr; k++)
+        for (j = 0; j < nr; j++)
+            if (r[k].in == r[j].slot)
+                return fail(err, "ref: '%s' is itself a reference, so it has "
+                            "no nodes to refer to",
+                            sig->params[r[j].slot].name);
+    *out = r;
+    *count = nr;
+    return LC_OK;
+}
+
+lc_builder *lc_copy_builders(lc_arena *a, const lc_builder *b, size_t n)
+{
+    lc_builder *c = lc_arena_array(a, n ? n : 1, sizeof *c);
+
+    if (c && n)
+        memcpy(c, b, n * sizeof *c);
+    return c;
+}
+
+lc_ref *lc_copy_refs(lc_arena *a, const lc_ref *r, size_t n)
+{
+    lc_ref *c = lc_arena_array(a, n ? n : 1, sizeof *c);
+
+    if (c && n)
+        memcpy(c, r, n * sizeof *c);
+    return c;
+}
+
+/* ------------------------------------------------------------------ */
+/* A problem's slots and a case's lines                                */
+/* ------------------------------------------------------------------ */
+
+size_t lc_slot_count(const lc_problem *p)
+{
+    return (p->sig ? p->sig->nparams : 0) + p->nhidden;
+}
+
+const lc_param *lc_problem_slot(const lc_problem *p, size_t slot)
+{
+    return lc_slot_param(p->sig, p->hidden, p->nhidden, slot);
+}
+
+const lc_ref *lc_slot_ref(const lc_problem *p, size_t slot)
+{
+    size_t i;
+
+    for (i = 0; i < p->nrefs; i++)
+        if (p->refs[i].slot == slot)
+            return &p->refs[i];
+    return NULL;
+}
+
+int lc_slot_copy_of(const lc_problem *p, size_t slot, size_t *from)
+{
+    return lc_builders_make(p->builders, p->nbuilders, slot, from);
+}
+
+size_t lc_line_count(const lc_problem *p)
+{
+    size_t i, n = 0;
+
+    for (i = 0; i < lc_slot_count(p); i++)
+        n += !lc_slot_copy_of(p, i, NULL);
+    return n;
+}
+
+size_t lc_line_slot(const lc_problem *p, size_t line)
+{
+    size_t i;
+
+    for (i = 0; i < lc_slot_count(p); i++) {
+        if (lc_slot_copy_of(p, i, NULL))
+            continue;
+        if (line-- == 0)
+            return i;
+    }
+    return LC_SLOT_RETURN;
+}
+
+size_t lc_slot_line(const lc_problem *p, size_t slot)
+{
+    size_t i, line = 0;
+
+    for (i = 0; i < slot && i < lc_slot_count(p); i++)
+        line += !lc_slot_copy_of(p, i, NULL);
+    return line;
+}
+
+lc_type lc_line_type(const lc_problem *p, size_t line)
+{
+    size_t slot = lc_line_slot(p, line);
+    lc_type t;
+
+    t.kind = LC_T_INT;
+    t.dims = 0;
+    /* A node reference is written as the node's value. */
+    if (slot == LC_SLOT_RETURN || lc_slot_ref(p, slot))
+        return t;
+    return lc_problem_slot(p, slot)->type;
 }

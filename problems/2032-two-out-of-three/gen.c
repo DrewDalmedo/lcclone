@@ -2,7 +2,7 @@
  * overlap a lot, a little or not at all, and a narrow range repeats
  * values within a list. Small cases use values up to 10, sometimes moved
  * up next to 100. */
-static void put_list(int len, int top, int shift)
+static void put_range(int len, int top, int shift)
 {
     int nums[100], i, lo = (int)rnd(1, top), hi = (int)rnd(lo, top);
 
@@ -17,5 +17,5 @@ void gen(int small)
     int shift = small && rnd_chance(25) ? 100 - top : 0, k;
 
     for (k = 0; k < 3; k++)
-        put_list(small ? (int)rnd(1, 5) : 100, top, shift);
+        put_range(small ? (int)rnd(1, 5) : 100, top, shift);
 }

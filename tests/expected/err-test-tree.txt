@@ -1,4 +1,0 @@
---- stdout
---- stderr
-lc: problem 13 (tree): TreeNode parameters are not supported yet
---- exit 3

@@ -15,7 +15,15 @@ other side.
   each input.
 - A test case's inputs are written to the program's stdin one after another,
   in the order of the signature's parameters, then the `hidden:` inputs. A
-  case with no inputs writes nothing.
+  case with no inputs writes nothing. Two kinds of parameter are written
+  differently from their line in the case
+  ([`build:` and `ref:`](problem-format.md#build-and-ref)): a parameter
+  that `build: copy` makes has no line, and its source's value is written
+  again in its place; a node reference (`ref: NAME in INPUT`) is written as
+  the index of the node, counting from 0 in the order of INPUT's literal,
+  not as its value. The harness builds the lists and trees, then applies
+  the builders and looks up the references, once it has read every
+  input.
 - The harness writes the result in the same format on file descriptor 3, so
   whatever the solution prints on stdout stays separate. The result is what
   the function returns or, for a problem solved in place
@@ -56,7 +64,15 @@ write non-finite doubles in exactly those three spellings.
 
 **Trees** a harness sends back must be well formed: a null root is `0`, not
 `1 n`, and every item must have a parent (see problem-format.md, "Types").
-Trailing `n` tokens are accepted and dropped.
+Trailing `n` tokens are accepted and dropped. A list or tree the harness
+can't write that way, a list with a cycle or a tree that reaches a node
+twice, stops it with a message instead (judging.md, "Verdicts").
+
+**A stack overflow** is reported on fd 3 too, by the program's fault
+handler rather than the harness, as the line `lc-rt stack-overflow SIZE`
+(SIZE is the stack's size in bytes) before the program dies of the
+signal. `lc` reads it only from a program killed by SIGSEGV or SIGBUS,
+so it can't be taken for a result.
 
 ## Decoding results safely
 

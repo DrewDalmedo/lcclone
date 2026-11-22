@@ -1,0 +1,73 @@
+== C stub
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+struct TreeNode* getTargetCopy(struct TreeNode* original, struct TreeNode* cloned, struct TreeNode* target) {
+
+}
+== C prototype
+struct TreeNode* getTargetCopy(struct TreeNode* original, struct TreeNode* cloned, struct TreeNode* target)
+== C harness
+/* lc's harness for problem 17 (target-copy). */
+int main(void)
+{
+    lc_rt_read_input();
+    lc_rt_nodes lc_nodes_original;
+    struct TreeNode* original = lc_rt_read_tree(&lc_nodes_original);
+    lc_rt_nodes lc_nodes_cloned;
+    struct TreeNode* cloned = lc_rt_read_tree(&lc_nodes_cloned);
+    int lc_ref_target = lc_read_int();
+    lc_rt_end_input();
+    struct TreeNode* target = (struct TreeNode*)lc_rt_node_at(&lc_nodes_original, lc_ref_target);
+    struct TreeNode* lc_ret = getTargetCopy(original, cloned, target);
+    lc_rt_check_ref("getTargetCopy", lc_ret, &lc_nodes_cloned, "cloned");
+    lc_write_tree("getTargetCopy", lc_ret);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* getTargetCopy(TreeNode* original, TreeNode* cloned, TreeNode* target) {
+
+    }
+};
+== C++ prototype
+TreeNode* Solution::getTargetCopy(TreeNode* original, TreeNode* cloned, TreeNode* target)
+== C++ harness
+// lc's harness for problem 17 (target-copy).
+int main()
+{
+    lc_rt_read_input();
+    lc_rt_nodes lc_nodes_original;
+    TreeNode* original = lc_rt_read_tree(&lc_nodes_original);
+    lc_rt_nodes lc_nodes_cloned;
+    TreeNode* cloned = lc_rt_read_tree(&lc_nodes_cloned);
+    int lc_ref_target = 0;
+    lc_get(lc_ref_target);
+    lc_rt_end_input();
+    TreeNode* target = (TreeNode*)lc_rt_node_at(&lc_nodes_original, lc_ref_target);
+    Solution *lc_sol = new Solution();
+    TreeNode* lc_ret = lc_sol->getTargetCopy(original, cloned, target);
+    lc_rt_check_ref("getTargetCopy", lc_ret, &lc_nodes_cloned, "cloned");
+    lc_rt_fn = "getTargetCopy";
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}
