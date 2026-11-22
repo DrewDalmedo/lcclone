@@ -92,3 +92,15 @@
 "0yAYaY0"
 => true
 
+# Full-size cases: 2 * 10^5 characters, in a shape the seed picks (see gen.c).
+@full 1 8754797a
+=> false
+
+@full 2 938d6669
+=> true
+
+@full 3 58a05fb8
+=> false
+
+@full 4 6241107f
+=> true

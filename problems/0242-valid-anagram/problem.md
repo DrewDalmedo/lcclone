@@ -4,6 +4,7 @@ title: Valid Anagram
 difficulty: easy
 tags: hash-table, string, sorting
 signature: bool isAnagram(string s, string t)
+time_limit_ms: 100
 ---
 Decide whether the string `t` can be made by shuffling the string `s`: each
 letter of `s` moves to some position of `t`, and no letter is added,

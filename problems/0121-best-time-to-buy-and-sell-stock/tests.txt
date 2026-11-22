@@ -54,3 +54,16 @@
 @gen 3 small
 [10,5,20,7,19,11,0,1]
 => 15
+
+# Full-size cases: 10^5 days, in a shape the seed picks (see gen.c).
+@full 1 61b498a4
+=> 0
+
+@full 2 09558e1f
+=> 6776
+
+@full 3 1fb5629b
+=> 1374
+
+@full 4 95e4cfa6
+=> 10000

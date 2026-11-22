@@ -88,15 +88,16 @@
 25
 => true
 
-# Random full-size cases.
-@gen 1
-817674033
-=> true
-
-@gen 6
-966863236
+# Full-size cases: piles of 2^31 - 2^28 and more, in a shape the seed picks
+# (see gen.c).
+@full 1 bd656e31
 => false
 
-@gen 8
-2147483641
+@full 2 9897d4de
+=> true
+
+@full 3 f5878c80
+=> false
+
+@full 4 4ea5cb9b
 => true

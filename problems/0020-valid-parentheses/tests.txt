@@ -47,3 +47,41 @@
 # An extra closing bracket at the end.
 "()]"
 => false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+"{}}[})))["
+=> false
+
+@gen 2 small
+"[{}()]"
+=> true
+
+@gen 3 small
+"{[{}(}"
+=> false
+
+@gen 4 small
+"((()"
+=> false
+
+@gen 5 small
+"[([{[{}])]"
+=> false
+
+@gen 6 small
+"{)"
+=> false
+
+# Full-size cases: 10^4 brackets, in a shape the seed picks (see gen.c).
+@full 1 fa3fb00e
+=> false
+
+@full 2 d28fe388
+=> true
+
+@full 3 7892d2e2
+=> false
+
+@full 4 64167d31
+=> true

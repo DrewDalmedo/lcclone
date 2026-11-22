@@ -4,6 +4,7 @@ title: Pascal's Triangle
 difficulty: easy
 tags: array, dynamic-programming
 signature: int[][] generate(int numRows)
+time_limit_ms: 100
 ---
 **Pascal's triangle** is built one row at a time, from the top. Rows are
 numbered from 0, and so are the positions within a row, from the left. Row

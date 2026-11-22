@@ -97,3 +97,15 @@
 [-2,-2,-2]
 => -2
 
+# Full-size cases: 5 * 10^4 numbers or one fewer, in a shape the seed picks (see gen.c).
+@full 5 112e7e30
+=> 581077727
+
+@full 6 31fe7b63
+=> 1000000000
+
+@full 7 de9d905a
+=> 1000000000
+
+@full 8 7eb58bc5
+=> 696441685

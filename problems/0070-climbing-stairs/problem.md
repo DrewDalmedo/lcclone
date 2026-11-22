@@ -4,6 +4,7 @@ title: Climbing Stairs
 difficulty: easy
 tags: math, dynamic-programming, memoization
 signature: int climbStairs(int n)
+time_limit_ms: 100
 ---
 A staircase has `n` steps. You start at the bottom, and with each move you
 go up either **one** step or **two** steps. Return the number of different

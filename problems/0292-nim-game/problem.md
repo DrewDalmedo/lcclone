@@ -4,6 +4,7 @@ title: Nim Game
 difficulty: easy
 tags: brainteaser, math, game-theory
 signature: bool canWinNim(int n)
+time_limit_ms: 200
 ---
 A single pile holds `n` pebbles. Two players take turns removing pebbles
 from it, and you make the first move. A move removes one, two or three

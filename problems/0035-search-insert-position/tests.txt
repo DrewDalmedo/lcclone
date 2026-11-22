@@ -106,3 +106,19 @@
 [-10,-6,-3,-2,8,11]
 -10
 => 0
+
+# Full-size cases: 10^4 numbers, in a shape the seed picks (see gen.c).
+@full 1 c2f1359a
+=> 9999
+
+@full 2 15b8fb2d
+=> 0
+
+@full 3 f0767cc5
+=> 5181
+
+@full 4 8a2b6772
+=> 490
+
+@full 5 51dd7bbc
+=> 10000

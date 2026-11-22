@@ -37,3 +37,30 @@
 # The largest n; the answer still fits in a 32-bit int.
 45
 => 1836311903
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+19
+=> 6765
+
+@gen 2 small
+17
+=> 2584
+
+@gen 3 small
+16
+=> 1597
+
+@gen 4 small
+4
+=> 5
+
+# Full-size cases: n = 45, 44 and 43 (see gen.c).
+@full 1 222a0d75
+=> 1134903170
+
+@full 2 22769156
+=> 701408733
+
+@full 3 222a8560
+=> 1836311903

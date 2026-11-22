@@ -248,6 +248,95 @@ are slow. `lc check --quick` leaves them out; it still makes every
 full-size case and runs `ref` on it. CI runs them only on the packs a
 change touches ([CI](#ci)).
 
+## Giving a pack full-size cases and a time limit
+
+M7 gave full-size cases and measured time limits to the packs written
+before it, about 25 packs to a PR (`docs/PLAN.md` §6.3 and §6.4). A new
+pack goes through the same steps. For each pack:
+
+1. **Does it need `@full` lines?** It does when no case at the limits of
+   its constraints is stored: its full-size input, or its result, is
+   more than a few kilobytes, as with any `10^4` numbers. It does too
+   when the input is short but a method LeetCode rejects is slow only at
+   the limit, as plain recursion is for 70 at n = 45: `lc check` times
+   `brute` and `slow` on the `@full` cases only. A pack whose limits are
+   small stores its limit cases (as `@gen SEED` cases or by hand), needs
+   no `@full` lines, and keeps the default limit.
+2. **Name the methods.** From the constraints, write down what LeetCode
+   accepts at full size and what it rejects. As a rule, `O(n^2)` passes
+   at n = 10^4 and fails at 10^5; `O(n log n)` passes at 10^5 and 10^6;
+   `O(n^3)` passes at a few hundred and fails at a few thousand; an
+   exponential search fails past about 25 items; and at n ≤ 1000
+   anything polynomial short of `O(n^3)` passes. The "Left for M7"
+   sections of M6's batch PRs list the slow and overflowing wrong
+   solutions their reviews found; they are what the full-size cases must
+   catch.
+3. **Check `gen.c`'s full-size mode** against every guarantee of the
+   statement, one at a time: the largest sizes; values that reach their
+   limits and never pass them; an answer, sum or count that the
+   statement says fits in an `int` coming close to `2^31 - 1`; and
+   every promise such as "sorted", "distinct", "exactly one answer" or
+   "at least one". Then the shapes: the slowest ones for the rejected
+   method (no early exit, the answer at the far end, all items equal,
+   sorted the wrong way for it), and ones that defeat narrow storage
+   (counts past 32767, lengths past a buffer of a round size). The
+   answers should vary too: when every full-size case of 292 came out
+   `false`, a solution that always says so passed them all. The seed
+   picks the shape (`gen_seed() % k`), so seeds 1 to k make every shape.
+   A random shape whose speed for the slow method varies a lot is worth
+   leaving out: it can land in the band where `lc check` warns. Changing
+   only the full-size branch of `gen.c` leaves the stored small cases as
+   they were, as long as the small branch draws the same numbers in the
+   same order; `lc check --regen` says when a stored case changed.
+4. **Add `@full` lines** for seeds 1 to k at the end of `tests.txt`, under
+   a comment that gives the sizes, take out any comment saying that the
+   full-size cases come with M7, and run `lc check --regen ID`. Where a
+   short limit case was stored as an `@gen SEED` case (118's 30 rows,
+   292's piles), make it an `@full` line, so that `lc check` times the
+   slow methods on it.
+5. **Measure.** On a quiet machine, run `lc check ID` (not `--quick`)
+   once with clang and once with gcc (`CC=gcc-16 CXX=g++-16` on a Mac
+   with Homebrew's gcc), and note `ref`'s slowest time, `gen`'s, and
+   `brute`'s on the full-size cases. The compilers differ most on simple
+   loops, which clang vectorizes: 121's `O(n^2)` `brute` takes 0.19 s
+   with clang and 1.3 s with gcc on the same machine.
+6. **Set `time_limit_ms`.** The limit L must be
+   - at least three times `ref`'s and `gen`'s slowest times, as
+     `lc check` warns otherwise;
+   - at least three times the time of the slowest method LeetCode
+     accepts, built by the compiler that makes it slowest;
+   - at most a third of the time of the fastest method LeetCode rejects,
+     built by the compiler that makes it fastest.
+
+   Keep the default of 1000 when it meets all three. Otherwise take the
+   largest of 500, 200, 100 and 50 that does, and write it in
+   `problem.md`'s header (`time_limit_ms: 50`); the largest, because a
+   slower machine needs the room. When no value does, look at the
+   full-size shapes first (step 3). If the rejected method is still too
+   fast with one compiler for a limit of 50, the pack can't reject it:
+   take a limit that accepts it with every compiler instead (at least
+   three times its slowest time), so that its verdict doesn't depend on
+   the compiler, and say so in the PR. 169's `O(n^2)` count at
+   5 * 10^4 takes 47 ms with clang and 312 ms with gcc, so 169 keeps
+   1000 ms and accepts it.
+7. **`brute` and `slow`.** `brute` is either a method LeetCode accepts,
+   and must take at most a third of the limit on the full-size cases, or
+   the one it rejects, and must take at least three times the limit.
+   When `brute` is fast and LeetCode rejects a slower method at full
+   size, add that method as `slow.c`: `lc check` then makes sure that it
+   runs out of time, on every CI system. A `brute` meant only for small
+   cases, such as a search over every subset with a `1 << n` mask, must
+   not give a wrong answer at full size, where `lc check` compares it
+   with `ref`: make it stop at the start when n is past what it handles
+   (`if (n > 20) abort();`), and `lc check` notes that it failed there
+   and moves on.
+8. **Clear the warnings,** and run `lc check ID` again with each
+   compiler.
+9. **Review.** Read `gen.c` against the statement once more, and try the
+   wrong solutions of step 2 against the pack: the slow ones must run out
+   of time, and the overflowing ones and those with narrow storage must
+   fail on a full-size case.
+
 ## lc check --regen
 
 `lc check --regen` rewrites `tests.txt` before checking the pack:

@@ -1,11 +1,11 @@
 /* Small cases: a few values from a narrow window (near 0 or near either
  * bound, so they repeat often), distinct values with at most one repeat,
  * values of either sign drawn from a few magnitudes (x and -x), or picks
- * from both bounds and their neighbours. Full-size cases: 10^5 distinct
- * values reaching both bounds (no repeat: the slowest case for a scan
- * that stops early), the same with one repeat at the two ends, side by
- * side at the end or anywhere, 5 * 10^4 pairs x and -x, or values from a
- * random range, which repeat when it is narrow. */
+ * from both bounds and their neighbours. Full-size cases, as the seed
+ * picks: 10^5 distinct values reaching both bounds (no repeat: the
+ * slowest case for a scan that stops early), the same with one repeat
+ * side by side at the end or at the two ends, 5 * 10^4 pairs x and -x,
+ * or values from a range of 1001, which repeat at once. */
 
 #define BOUND 1000000000
 
@@ -25,10 +25,11 @@ static void distinct(int *a, int n)
     rnd_shuffle(a, n);
 }
 
-/* Copies one value onto another position, making a single repeat. */
-static void repeat(int *a, int n)
+/* Copies one value onto another position, making a single repeat: at
+ * the two ends (where 0), side by side at the end (1), or anywhere (2). */
+static void repeat(int *a, int n, int where)
 {
-    int p, q, where = (int)rnd(0, 2);
+    int p, q;
 
     if (where == 0) {
         p = 0;
@@ -61,7 +62,7 @@ static void small_case(int *a, int n)
     } else if (shape < 7) {
         distinct(a, n);
         if (n > 1 && rnd_chance(50))
-            repeat(a, n);
+            repeat(a, n, (int)rnd(0, 2));
     } else if (shape < 9) {
         int far = rnd_chance(30);
 
@@ -76,16 +77,19 @@ static void small_case(int *a, int n)
     }
 }
 
+/* The seed picks the shape. Each is either slow for comparing every pair
+ * (no repeat, or one only at the very end) or quick for it (a repeat
+ * found at once), never in between. */
 static void large_case(int *a, int n)
 {
-    int shape = (int)rnd(0, 9), i;
+    int shape = (int)(gen_seed() % 5), i;
 
-    if (shape < 4) {
+    if (shape == 0) {
         distinct(a, n);
-    } else if (shape < 7) {
+    } else if (shape <= 2) {
         distinct(a, n);
-        repeat(a, n);
-    } else if (shape < 9) {
+        repeat(a, n, shape == 1 ? 1 : 0);
+    } else if (shape == 3) {
         int half = n / 2;
         long long step = BOUND / half;
 
@@ -99,11 +103,10 @@ static void large_case(int *a, int n)
         }
         rnd_shuffle(a, n);
     } else {
-        long long w = rnd(1, 2LL * BOUND);
-        long long lo = rnd(-BOUND, BOUND - w);
+        long long lo = rnd(-BOUND, BOUND - 1000);
 
         for (i = 0; i < n; i++)
-            a[i] = (int)rnd(lo, lo + w);
+            a[i] = (int)rnd(lo, lo + 1000);
     }
 }
 

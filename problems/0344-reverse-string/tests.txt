@@ -81,3 +81,7 @@
 [";","p",">","e","v","J"]
 => ["J","v","e",">","p",";"]
 
+# Full-size cases: 10^5 characters.
+@full 1 7900ebb3
+
+@full 2 723aa8f7

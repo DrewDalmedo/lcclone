@@ -1,5 +1,8 @@
 /* Exactly one pair may add up to the target: draw the values and a pair,
- * and draw again while another pair has the same sum. */
+ * and draw again while another pair has the same sum. Small cases have up
+ * to 8 values from -20 to 20; full-size ones have 10^4 from -10^9 to
+ * 10^9, and the seed picks where the pair is: anywhere, or at the last
+ * two indices, the slowest for trying the pairs in order. */
 
 static int one_pair(const int *nums, int n, long long target)
 {
@@ -26,6 +29,10 @@ void gen(int small)
         do
             y = (int)rnd(0, n - 1);
         while (y == x);
+        if (!small && gen_seed() % 2 == 0) {
+            x = n - 2;
+            y = n - 1;
+        }
         target = (long long)nums[x] + nums[y];
     } while (target < -1000000000 || target > 1000000000 ||
              !one_pair(nums, n, target));

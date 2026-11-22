@@ -86,3 +86,12 @@
 [0,1,2]
 => 3
 
+# Full-size cases: 10^4 numbers, in a shape the seed picks (see gen.c).
+@full 1 e693a361
+=> 10000
+
+@full 2 28e4d830
+=> 2020
+
+@full 3 13eaf80c
+=> 0

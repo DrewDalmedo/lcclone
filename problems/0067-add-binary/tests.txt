@@ -102,3 +102,12 @@
 "11"
 "11"
 => "110"
+
+# Full-size cases: up to 10^4 bits each, in a shape the seed picks (see gen.c).
+@full 1 398b8822
+
+@full 2 98f97883
+
+@full 3 d8c58450
+
+@full 4 65549842

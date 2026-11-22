@@ -88,3 +88,15 @@
 "BBcc c c  "
 => 1
 
+# Full-size cases: 10^4 characters, in a shape the seed picks (see gen.c).
+@full 1 4c779655
+=> 1
+
+@full 2 4faeedbb
+=> 7
+
+@full 3 1d5b2d7f
+=> 5000
+
+@full 4 292fc1f0
+=> 10000

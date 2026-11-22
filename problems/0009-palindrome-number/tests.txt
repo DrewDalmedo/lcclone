@@ -59,3 +59,49 @@
 
 -1
 => false
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+6226
+=> true
+
+@gen 2 small
+22
+=> true
+
+@gen 3 small
+0
+=> true
+
+@gen 4 small
+2149
+=> false
+
+@gen 5 small
+44021
+=> false
+
+@gen 6 small
+98
+=> false
+
+# The ends of the int range, in a shape the seed picks (see gen.c).
+@gen 1
+1542338451
+=> false
+
+@gen 2
+1045931289
+=> false
+
+@gen 3
+-2147483648
+=> false
+
+@gen 4
+-1913784885
+=> false
+
+@gen 5
+1944444491
+=> true

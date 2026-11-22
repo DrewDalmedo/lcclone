@@ -4,6 +4,7 @@ title: Contains Duplicate
 difficulty: easy
 tags: array, hash-table, sorting
 signature: bool containsDuplicate(int[] nums)
+time_limit_ms: 200
 ---
 Look for a repeat in the integer list `nums`: two different positions that
 hold the same value.

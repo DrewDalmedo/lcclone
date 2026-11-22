@@ -126,3 +126,16 @@
 "accacaa"
 "ab"
 => -1
+
+# Full-size cases: up to 10^4 letters each, in a shape the seed picks (see gen.c).
+@full 1 20af955f
+=> -1
+
+@full 2 2a7e27c5
+=> 9958
+
+@full 3 a3dfb1c4
+=> -1
+
+@full 4 c50b2125
+=> -1

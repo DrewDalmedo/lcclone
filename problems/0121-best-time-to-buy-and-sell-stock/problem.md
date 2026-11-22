@@ -4,6 +4,7 @@ title: Best Time to Buy and Sell Stock
 difficulty: easy
 tags: array, dynamic-programming
 signature: int maxProfit(int[] prices)
+time_limit_ms: 50
 ---
 `prices[i]` is the price of a stock on day `i`. You may buy one share on one
 day and sell it on a **later** day. Return the largest profit (the selling
