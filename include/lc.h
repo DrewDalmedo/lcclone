@@ -153,8 +153,8 @@ const char *lc_warning_at(const lc_ctx *ctx, size_t i);
 
 /*
  * The config file holds `key = value` lines. The keys are cc, cxx,
- * cstd, cxxstd, cflags, cxxflags, workspace (used by the core), and
- * editor, lang, color and open_statement (for front-ends). lc_open reads
+ * cstd, cxxstd, cflags, cxxflags, workspace, time_scale (used by the
+ * core), and editor, lang, color and open_statement (for front-ends). lc_open reads
  * it; a line that can't be used, such as an unknown key or a bad value,
  * is skipped with a warning. A missing file at the default location is
  * no config; one named by lc_options.config_file or $LC_CONFIG that
@@ -712,6 +712,15 @@ typedef enum {
                                  cancelled */
 } lc_sancheck;
 
+/* Where a machine's time scale comes from (see lc_time_scale_get). */
+typedef enum {
+    LC_SCALE_MEASURED = 0,    /* this machine's measured speed */
+    LC_SCALE_OPTION,          /* lc_time_scale_override (--time-scale) */
+    LC_SCALE_ENV,             /* $LC_TIME_SCALE */
+    LC_SCALE_CONFIG,          /* the config's time_scale */
+    LC_SCALE_DEFAULT          /* it couldn't be measured: 1 */
+} lc_scale_source;
+
 /* The outcome of a judging run. Release it with lc_report_free. */
 typedef struct lc_report {
     /*
@@ -727,6 +736,14 @@ typedef struct lc_report {
     size_t nresults;
     long max_time_ms;         /* the largest time_ms of any case */
     long max_memory_kb;       /* the largest memory_kb of any case */
+    /*
+     * The problem's time limit on this machine: its time_limit_ms scaled
+     * by time_scale percent (lc_time_scale_get). lc's sanitizer runs get
+     * three times this.
+     */
+    int time_limit_ms;
+    int time_scale;
+    lc_scale_source time_scale_source;
     const lc_build *build;    /* lc_judge: how the solution was built */
     lc_sancheck sanitizer_check; /* lc_judge: how the sanitizer check went */
     /* LC_SANCHECK_SKIPPED: why, e.g. "cc has none"; else NULL */
@@ -896,6 +913,60 @@ typedef struct lc_judge_options {
 int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
              const char *src, const lc_judge_options *opts,
              const lc_hooks *hooks, lc_report **out);
+
+/* ------------------------------------------------------------------ */
+/* Time limits on this machine (docs/judging.md, "Slower machines")    */
+/* ------------------------------------------------------------------ */
+
+/*
+ * A pack's time_limit_ms is written for the reference machine. On a slower
+ * machine, judging multiplies it by a scale, a coarse step from 1 to 16
+ * worked out from how long a fixed loop takes here. The loop runs once per
+ * CPU, the first time something is judged, and its time is kept in
+ * <cache>/machine-speed. A setting replaces the measured scale: the most
+ * specific of lc_time_scale_override, $LC_TIME_SCALE and the config's
+ * time_scale, each "auto" (measure) or a number from 0.1 to 100.
+ */
+typedef struct lc_time_scale {
+    int percent;              /* the scale in use: 100 is the limits as
+                                 written, 250 is 2.5 times them. 0 only from
+                                 lc_time_scale_peek: not measured yet */
+    lc_scale_source source;   /* where `percent` comes from */
+    const char *cpu;          /* this CPU, e.g. "arm64: Apple M4"; valid
+                                 until lc_close */
+    long loop_us;             /* the loop's best time here; 0 if not known */
+    long reference_us;        /* its time on the reference machine */
+    int measured_percent;     /* the scale loop_us gives; 0 if not known */
+    int saved;                /* loop_us is kept in the cache */
+} lc_time_scale;
+
+/* Longest text of a scale, as lc_scale_text writes it, with its NUL. */
+#define LC_SCALE_TEXT_MAX 16
+
+/* A scale in percent as text: "2", "1.5", "0.25". Writes to buf; returns it. */
+const char *lc_scale_text(int percent, char *buf);
+/* "measured", "option", "env", "config" or "default". */
+const char *lc_scale_source_name(lc_scale_source s);
+
+/* Sets the scale for this context: "auto" or a number. LC_ERR_INVALID with
+ * a message for anything else. */
+int lc_time_scale_override(lc_ctx *ctx, const char *value);
+
+/*
+ * The scale judging uses, measuring this machine first if nothing says
+ * otherwise and no time is kept for this CPU. Fails when out of memory or
+ * when $LC_TIME_SCALE is invalid. When the time can't be kept, a warning
+ * says so.
+ */
+int lc_time_scale_get(lc_ctx *ctx, lc_time_scale *out);
+
+/* The same without measuring: out->percent is 0 when judging would measure
+ * first. */
+int lc_time_scale_peek(lc_ctx *ctx, lc_time_scale *out);
+
+/* Measures this machine now and keeps the time, replacing the one kept.
+ * *out is then the scale in use: a setting still takes precedence. */
+int lc_time_scale_measure(lc_ctx *ctx, lc_time_scale *out);
 
 /* ------------------------------------------------------------------ */
 /* Workspace (docs/workspace.md)                                       */
@@ -1154,8 +1225,13 @@ typedef struct lc_check_report {
  *
  * Findings arrive as LC_EV_FINDING events as they are found, with build
  * events; the runs themselves send none. What is wrong with the pack is a
- * finding, not a failure: lc_check fails only when out of memory or when
- * the cache can't be written.
+ * finding, not a failure: lc_check fails only when out of memory, when
+ * the cache can't be written, or when $LC_TIME_SCALE is invalid.
+ *
+ * Times are compared with the limit scaled for this machine, as judging
+ * does (lc_time_scale_get). slow.c is the exception that keeps the limit
+ * as written honest: passing within that limit is an error, and passing
+ * only within the scaled one is a warning.
  */
 int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
              const lc_check_options *opts, const lc_hooks *hooks,

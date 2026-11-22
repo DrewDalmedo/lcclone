@@ -15,6 +15,7 @@ Commands:
   submit    Run your solution on every case of the problem
   stats     Show how many problems you have solved
   check     Check problem packs (for authors)
+  calibrate Measure this machine's speed for the time limits
   help      Show help for lc or for one command
   version   Print the version
 
@@ -35,6 +36,10 @@ Environment:
   LC_CSTD, LC_CXXSTD
                the C and C++ standards (default: the config's cstd and
                cxxstd, else c11 and c++11)
+  LC_TIME_SCALE
+               what to multiply time limits by: a number, or auto to
+               measure this machine (default: the config's time_scale,
+               else auto; see 'lc help calibrate')
   VISUAL, EDITOR
                editor for 'lc start', unless the config sets editor
                (default: vi)

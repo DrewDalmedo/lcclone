@@ -341,6 +341,9 @@ except when your solution doesn't build with the sanitizers: its
 | `cancelled`     | boolean | ^C stopped it |
 | `max_time_ms`   | integer | the slowest case's CPU time |
 | `max_memory_kb` | integer | the largest peak memory of any case |
+| `time_limit_ms` | integer | the problem's time limit on this machine: its `time_limit_ms` times `time_scale` ([judging.md](judging.md#slower-machines)) |
+| `time_scale`    | number  | what the limit is multiplied by on this machine; `1` is the limit as written |
+| `time_scale_source` | string | where it comes from: `"measured"`, `"option"` (`--time-scale`), `"env"` (`LC_TIME_SCALE`), `"config"`, or `"default"` (it couldn't be measured: 1) |
 | `sanitizer_check` | string or null | how the sanitizer check went: `"passed"`, `"failed"` (the verdict is that of a case of the check), `"skipped"`, or `"cancelled"`; null when there was none (`lc test`, `--sanitize`, or a run that wasn't accepted) |
 | `sanitizer_check_note` | string or null | why it was skipped, e.g. `"cc has none"` |
 | `warnings`      | array   | as in other documents |
@@ -386,8 +389,24 @@ name, such as `"0001-two-sum"`, or null for `MANIFEST.tsv` as a whole).
   `gen` and `slow` name the pack's files, or are null. With `--regen`,
   `regen` is `written`, `changed` (expected results written) and
   `generated` (cases made, and `@full` hashes written).
-- **`done`**: the counts of packs, `manifest_ok`, and whether ^C
-  `cancelled` the run.
+- **`done`**: the counts of packs, `manifest_ok`, whether ^C `cancelled`
+  the run, and `time_scale` and `time_scale_source`, as for `lc test`.
+
+## `lc calibrate --json`
+
+```json
+{"schema":1,"time_scale":1,"time_scale_source":"measured","cpu":"arm64: Apple M4","loop_us":5812,"reference_us":6000,"measured_scale":1,"saved":true,"warnings":[]}
+```
+
+| Member           | Type           | Meaning |
+|------------------|----------------|---------|
+| `time_scale`     | number or null | the scale in use; null with `--show` when nothing is measured yet and no setting gives one |
+| `time_scale_source` | string or null | as in `done`, above |
+| `cpu`            | string         | this CPU, as its line in the cache names it |
+| `loop_us`        | integer or null | the loop's best round here, in microseconds; null when it wasn't measured |
+| `reference_us`   | integer        | its time on the reference machine |
+| `measured_scale` | number or null | the scale that time gives, whatever a setting says |
+| `saved`          | boolean        | the time is kept in the cache |
 
 ## `lc help --json`
 

@@ -1,5 +1,5 @@
 --- stdout
-usage: lc test [<solution>] [--lang LANG] [--std STD] [--sanitize] [--case FILE] [--json] [--color=WHEN]
+usage: lc test [<solution>] [--lang LANG] [--std STD] [--sanitize] [--case FILE] [--time-scale X] [--json] [--color=WHEN]
 
 Build your solution and run it on the problem's examples and on the
 cases in cases.txt next to it. Every case runs, and the failures are
@@ -22,6 +22,8 @@ Options:
                      c17, c23 or max for C
   --sanitize         build with AddressSanitizer and UBSan
   --case FILE        run the cases in FILE instead of cases.txt
+  --time-scale X     multiply the time limit by X, or auto to use this
+                     machine's measured speed (see 'lc help calibrate')
   --json             print JSON Lines: one object per event
   --color=WHEN       colour the output: auto (the default), always or
                      never

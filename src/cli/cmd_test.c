@@ -560,6 +560,14 @@ static void summary(ui *u, const lc_report *rep)
         lc_str_printf(&u->out, ", slowest %ld ms, peak memory %.1f MB",
                       rep->max_time_ms, rep->max_memory_kb / 1024.0);
     lc_str_putc(&u->out, '\n');
+    if (rep->time_scale != 100) {
+        char scale[LC_SCALE_TEXT_MAX];
+
+        lc_str_printf(&u->out, "Time limit: %d ms (%d ms x %s for this "
+                      "machine; see 'lc help calibrate')\n",
+                      rep->time_limit_ms, u->t->p->time_limit_ms,
+                      lc_scale_text(rep->time_scale, scale));
+    }
 }
 
 /* ------------------------------------------------------------------ */
@@ -830,6 +838,12 @@ static void json_done(ui *u, const lc_report *rep, const recorded *rec)
     lc_json_int(&j, rep->max_time_ms);
     lc_json_key(&j, "max_memory_kb");
     lc_json_int(&j, rep->max_memory_kb);
+    lc_json_key(&j, "time_limit_ms");
+    lc_json_int(&j, rep->time_limit_ms);
+    lc_json_key(&j, "time_scale");
+    lc_json_double(&j, rep->time_scale / 100.0);
+    lc_json_key(&j, "time_scale_source");
+    lc_json_string(&j, lc_scale_source_name(rep->time_scale_source));
     lc_json_key(&j, "sanitizer_check");
     lc_json_string(&j, sancheck_id(rep->sanitizer_check));
     lc_json_key(&j, "sanitizer_check_note");
@@ -938,6 +952,7 @@ static int run(cli *c, int submit)
     lc_judge_options opts;
     lc_hooks hooks;
     lc_report *rep = NULL;
+    lc_time_scale scale;
     struct sigaction sa, old;
     recorded rec;
     ui u;
@@ -956,6 +971,9 @@ static int run(cli *c, int submit)
         rc = judge_error(c, ctx, &t);
         goto done;
     }
+    rc = cli_time_scale(c, ctx, &scale);
+    if (rc != CLI_EXIT_OK)
+        goto done;
 
     memset(&opts, 0, sizeof opts);
     opts.std = c->std;

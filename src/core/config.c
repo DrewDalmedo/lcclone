@@ -32,7 +32,7 @@
 #define MAX_CONFIG LC_MIB
 
 /* What a key's value must look like. */
-enum { V_TEXT, V_PATH, V_LANG, V_CSTD, V_CXXSTD, V_COLOR, V_BOOL };
+enum { V_TEXT, V_PATH, V_LANG, V_CSTD, V_CXXSTD, V_COLOR, V_BOOL, V_SCALE };
 
 static const struct {
     const char *key;
@@ -42,6 +42,7 @@ static const struct {
     {"cxxstd", V_CXXSTD},    {"cflags", V_TEXT},  {"cxxflags", V_TEXT},
     {"editor", V_TEXT},      {"lang", V_LANG},    {"color", V_COLOR},
     {"workspace", V_PATH},   {"open_statement", V_BOOL},
+    {"time_scale", V_SCALE},
 };
 
 #define NKEYS (sizeof keys / sizeof keys[0])
@@ -97,8 +98,13 @@ static const char *check_value(lc_ctx *ctx, int kind, char **value)
     static const char *const colors[] = {"auto", "always", "never", NULL};
     const lc_lang *lang;
     char *v = *value;
+    int percent;
 
     switch (kind) {
+    case V_SCALE:
+        return lc_scale_parse(v, &percent) == 0
+                   ? NULL
+                   : "expected auto, or a number from 0.1 to 100";
     case V_LANG:
         return lc_lang_find(v) ? NULL : "expected c or cpp";
     case V_COLOR:

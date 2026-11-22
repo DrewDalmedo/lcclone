@@ -100,6 +100,9 @@ jobs:
         run: $CC --version
       - name: Build and test
         run: make CC="$CC" CFLAGS="-O2 $WFLAGS" test
+      - name: Measure this runner's speed
+        # For the log: the scale make check-packs uses here.
+        run: ./lc calibrate
       - name: Check ${{ needs.packs.outputs.all == 'true' && 'every pack' || 'the changed packs' }} in full
         # ref and brute on 300 random cases (make test's lc check uses 50),
         # and the slow checks on the full-size cases (see the packs job).
@@ -212,6 +215,8 @@ jobs:
       - uses: actions/checkout@v5
       - name: Build and test
         run: make CFLAGS="-O2 $WFLAGS" test
+      - name: Measure this runner's speed
+        run: ./lc calibrate
       - name: Check ${{ needs.packs.outputs.all == 'true' && 'every pack' || 'the changed packs' }} in full
         # As on the other systems, so that a slow.c that musl or its gcc
         # lets pass is noticed. musl's gcc has no sanitizers: lc check
@@ -231,6 +236,8 @@ jobs:
         run: clang --version
       - name: Build and test
         run: make CC=clang CFLAGS="-O2 $WFLAGS" test
+      - name: Measure this runner's speed
+        run: ./lc calibrate
       - name: Check ${{ needs.packs.outputs.all == 'true' && 'every pack' || 'the changed packs' }} in full
         if: needs.packs.outputs.all == 'true' || needs.packs.outputs.packs != ''
         env:

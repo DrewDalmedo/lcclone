@@ -49,6 +49,10 @@ static const char main_help_tail[] =
     "  LC_CSTD, LC_CXXSTD\n"
     "               the C and C++ standards (default: the config's cstd and\n"
     "               cxxstd, else c11 and c++11)\n"
+    "  LC_TIME_SCALE\n"
+    "               what to multiply time limits by: a number, or auto to\n"
+    "               measure this machine (default: the config's time_scale,\n"
+    "               else auto; see 'lc help calibrate')\n"
     "  VISUAL, EDITOR\n"
     "               editor for 'lc start', unless the config sets editor\n"
     "               (default: vi)\n"
@@ -145,7 +149,7 @@ static const cli_cmd commands[] = {
      "missing problem (an ID, slug or directory name)", cmd_start},
     {"test", "Run your solution on the examples and your own cases",
      "lc test [<solution>] [--lang LANG] [--std STD] [--sanitize] "
-     "[--case FILE] [--json] [--color=WHEN]",
+     "[--case FILE] [--time-scale X] [--json] [--color=WHEN]",
      "Build your solution and run it on the problem's examples and on the\n"
      "cases in cases.txt next to it. Every case runs, and the failures are\n"
      "shown at the end. Your cases may leave out the expected result: it\n"
@@ -167,15 +171,17 @@ static const cli_cmd commands[] = {
      "                     c17, c23 or max for C\n"
      "  --sanitize         build with AddressSanitizer and UBSan\n"
      "  --case FILE        run the cases in FILE instead of cases.txt\n"
+     "  --time-scale X     multiply the time limit by X, or auto to use this\n"
+     "                     machine's measured speed (see 'lc help calibrate')\n"
      "  --json             print JSON Lines: one object per event\n"
      "  --color=WHEN       colour the output: auto (the default), always or\n"
      "                     never\n"
      "  -h, --help         show this help\n",
      CLI_OPT_COLOR | CLI_OPT_LANG | CLI_OPT_STD | CLI_OPT_SANITIZE |
-         CLI_OPT_CASE, 0, 1, NULL, cmd_test},
+         CLI_OPT_CASE | CLI_OPT_TIME_SCALE, 0, 1, NULL, cmd_test},
     {"submit", "Run your solution on every case of the problem",
      "lc submit [<solution>] [--lang LANG] [--std STD] [--sanitize] "
-     "[--json] [--color=WHEN]",
+     "[--time-scale X] [--json] [--color=WHEN]",
      "Build your solution and run it on every case of the problem, hidden\n"
      "ones included, stopping at the first that fails. When they all pass,\n"
      "check it with AddressSanitizer and UBSan, as LeetCode builds with\n"
@@ -187,12 +193,14 @@ static const cli_cmd commands[] = {
      "  --std STD          the standard, as for 'lc test'\n"
      "  --sanitize         run only the build with the sanitizers (no\n"
      "                     memory limit, three times the time limit)\n"
+     "  --time-scale X     multiply the time limit by X, or auto to use this\n"
+     "                     machine's measured speed (see 'lc help calibrate')\n"
      "  --json             print JSON Lines: one object per event\n"
      "  --color=WHEN       colour the output: auto (the default), always or\n"
      "                     never\n"
      "  -h, --help         show this help\n",
-     CLI_OPT_COLOR | CLI_OPT_LANG | CLI_OPT_STD | CLI_OPT_SANITIZE, 0, 1,
-     NULL, cmd_submit},
+     CLI_OPT_COLOR | CLI_OPT_LANG | CLI_OPT_STD | CLI_OPT_SANITIZE |
+         CLI_OPT_TIME_SCALE, 0, 1, NULL, cmd_submit},
     {"stats", "Show how many problems you have solved",
      "lc stats [--manifest] [--json] [--color=WHEN]",
      "Show how many problems you have solved and attempted: in all, by\n"
@@ -214,7 +222,7 @@ static const cli_cmd commands[] = {
      CLI_OPT_COLOR | CLI_OPT_MANIFEST, 0, 0, NULL, cmd_stats},
     {"check", "Check problem packs (for authors)",
      "lc check [<pack>...] [--regen] [--quick] [--count N] [--seed N] "
-     "[--json] [--color=WHEN]",
+     "[--time-scale X] [--json] [--color=WHEN]",
      "Check problem packs: each <pack> is a pack directory, an ID or a\n"
      "slug; without one, every pack of the problem directory. For each\n"
      "pack, lc checks that:\n"
@@ -247,13 +255,37 @@ static const cli_cmd commands[] = {
      "  --count N          random cases to compare ref and brute on\n"
      "                     (default 300)\n"
      "  --seed N           the seed of the first random case (default 1)\n"
+     "  --time-scale X     multiply the time limits by X, or auto to use this\n"
+     "                     machine's measured speed. slow.c must also run out\n"
+     "                     of time under the limit as written\n"
      "  --json             print JSON Lines: one object per event\n"
      "  --color=WHEN       colour the output: auto (the default), always or\n"
      "                     never\n"
      "  -h, --help         show this help\n",
      CLI_OPT_COLOR | CLI_OPT_REGEN | CLI_OPT_QUICK | CLI_OPT_COUNT |
-         CLI_OPT_SEED, 0,
+         CLI_OPT_SEED | CLI_OPT_TIME_SCALE, 0,
      (size_t)-1, NULL, cmd_check},
+    {"calibrate", "Measure this machine's speed for the time limits",
+     "lc calibrate [--show] [--json]",
+     "Time limits are written for a reference machine (an Apple M4). On a\n"
+     "slower one, lc multiplies them by a scale from 1 to 16, worked out from\n"
+     "how long a fixed loop takes. It measures once per CPU, the first time\n"
+     "something is judged, and keeps the time in $XDG_CACHE_HOME/lcclone/\n"
+     "machine-speed, so that verdicts don't change from run to run.\n"
+     "\n"
+     "This command measures again and keeps the new time: run it when the\n"
+     "first measurement was made on a busy machine or on battery power.\n"
+     "\n"
+     "To set the scale yourself, use --time-scale X on 'lc test', 'lc submit'\n"
+     "or 'lc check', LC_TIME_SCALE=X, or time_scale = X in the config, in that\n"
+     "order of precedence. X is a number from 0.1 to 100, or auto to use the\n"
+     "measured scale.\n"
+     "\n"
+     "Options:\n"
+     "  --show             show the scale in use, without measuring\n"
+     "  --json             print JSON\n"
+     "  -h, --help         show this help\n",
+     CLI_OPT_SHOW, 0, 0, NULL, cmd_calibrate},
     {"help", "Show help for lc or for one command",
      "lc help [<command>] [--json]",
      "Show help for lc, or for one command.\n"
@@ -414,6 +446,24 @@ int cli_load_with(cli *c, const lc_options *opt, lc_ctx **out)
 int cli_load(cli *c, lc_ctx **out)
 {
     return cli_load_with(c, NULL, out);
+}
+
+int cli_time_scale(cli *c, lc_ctx *ctx, lc_time_scale *out)
+{
+    size_t before = lc_warning_count(ctx), i;
+
+    if (c->time_scale && lc_time_scale_override(ctx, c->time_scale) != LC_OK)
+        return cli_error(c, ctx, "--time-scale: %s", lc_last_error(ctx));
+    if (lc_time_scale_peek(ctx, out) != LC_OK)
+        return cli_error(c, ctx, "%s", lc_last_error(ctx));
+    if (out->percent == 0)
+        fputs("lc: note: measuring this machine's speed for the time limits "
+              "(once)\n", stderr);
+    if (lc_time_scale_get(ctx, out) != LC_OK)
+        return cli_error(c, ctx, "%s", lc_last_error(ctx));
+    for (i = before; i < lc_warning_count(ctx); i++)
+        cli_warn(lc_warning_at(ctx, i));
+    return CLI_EXIT_OK;
 }
 
 int cli_progress(cli *c, lc_ctx *ctx)
@@ -619,7 +669,7 @@ static int cmd_version(cli *c)
 enum {
     O_JSON, O_HELP, O_COLOR, O_NO_PAGER, O_DIFFICULTY, O_TAG, O_LANG, O_STD,
     O_SANITIZE, O_CASE, O_NO_EDIT, O_STATUS, O_MANIFEST, O_REGEN, O_QUICK, O_COUNT,
-    O_SEED
+    O_SEED, O_TIME_SCALE, O_SHOW
 };
 
 static const struct opt_def {
@@ -646,6 +696,8 @@ static const struct opt_def {
     {"--quick", CLI_OPT_QUICK, 0, O_QUICK},
     {"--count", CLI_OPT_COUNT, 1, O_COUNT},
     {"--seed", CLI_OPT_SEED, 1, O_SEED},
+    {"--time-scale", CLI_OPT_TIME_SCALE, 1, O_TIME_SCALE},
+    {"--show", CLI_OPT_SHOW, 0, O_SHOW},
 };
 
 static void parse_error(lc_str *err, const char *fmt, ...) LC_PRINTF(2, 3);
@@ -833,6 +885,12 @@ static void apply_option(cli *c, const struct opt_def *o, const char *value,
         break;
     case O_NO_EDIT:
         c->no_edit = 1;
+        break;
+    case O_TIME_SCALE:
+        c->time_scale = value;
+        break;
+    case O_SHOW:
+        c->show = 1;
         break;
     }
 }

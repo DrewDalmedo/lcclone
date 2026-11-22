@@ -53,6 +53,8 @@ CORE_OBJ = \
 	src/core/problem.o \
 	src/core/rt_files.o \
 	src/core/runner.o \
+	src/core/speed.o \
+	src/core/speed_loop.o \
 	src/core/store.o \
 	src/core/str.o \
 	src/core/types.o \
@@ -77,6 +79,7 @@ RUNTIME = \
 
 CLI_OBJ = \
 	src/cli/ansi.o \
+	src/cli/cmd_calibrate.o \
 	src/cli/cmd_check.o \
 	src/cli/cmd_list.o \
 	src/cli/cmd_show.o \
@@ -101,6 +104,7 @@ UNIT_TESTS = \
 	tests/unit/test_md \
 	tests/unit/test_problem \
 	tests/unit/test_runner \
+	tests/unit/test_speed \
 	tests/unit/test_store \
 	tests/unit/test_str \
 	tests/unit/test_types \
@@ -113,6 +117,12 @@ all: liblc.a lc
 	$(CC) $(LC_CFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(CORE_OBJ): include/lc.h src/core/internal.h
+
+# The loop that measures this machine's speed (docs/judging.md, "Slower
+# machines"). Its time is compared with a constant, so it is built the same
+# way whatever CFLAGS say: without -O0 or the sanitizers of a test build.
+src/core/speed_loop.o: src/core/speed_loop.c
+	$(CC) -std=c11 -O2 -c -o $@ src/core/speed_loop.c
 
 src/core/rt_files.c: tools/embed.awk $(RUNTIME)
 	LC_ALL=C awk -f tools/embed.awk $(RUNTIME) >$@.tmp
@@ -157,7 +167,8 @@ tests/unit/test_arena.o tests/unit/test_build.o tests/unit/test_cases.o \
 tests/unit/test_codegen.o tests/unit/test_compare.o tests/unit/test_config.o \
 tests/unit/test_ctx.o tests/unit/test_fs.o tests/unit/test_json.o \
 tests/unit/test_judge.o tests/unit/test_manifest.o tests/unit/test_md.o \
-tests/unit/test_problem.o tests/unit/test_runner.o tests/unit/test_store.o \
+tests/unit/test_problem.o tests/unit/test_runner.o tests/unit/test_speed.o \
+tests/unit/test_store.o \
 tests/unit/test_str.o tests/unit/test_types.o tests/unit/test_value.o \
 tests/unit/test_wire.o: \
 	include/lc.h src/core/internal.h tests/unit/test.h
@@ -195,6 +206,8 @@ tests/unit/test_problem: tests/unit/test_problem.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_problem.o liblc.a $(LDLIBS)
 tests/unit/test_runner: tests/unit/test_runner.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_runner.o liblc.a $(LDLIBS)
+tests/unit/test_speed: tests/unit/test_speed.o liblc.a
+	$(CC) $(LDFLAGS) -o $@ tests/unit/test_speed.o liblc.a $(LDLIBS)
 tests/unit/test_store: tests/unit/test_store.o liblc.a
 	$(CC) $(LDFLAGS) -o $@ tests/unit/test_store.o liblc.a $(LDLIBS)
 tests/unit/test_str: tests/unit/test_str.o liblc.a
@@ -225,7 +238,7 @@ check: test
 test: all $(UNIT_TESTS) $(FIXTURE_PROGS)
 	@fail=0; \
 	for t in $(UNIT_TESTS); do \
-		LC_CONFIG=tests/fixtures/config/empty ./$$t || fail=1; \
+		LC_CONFIG=tests/fixtures/config/empty LC_TIME_SCALE=1 ./$$t || fail=1; \
 	done; \
 	sh tests/e2e.sh ./lc || fail=1; \
 	if [ $$fail -ne 0 ]; then echo 'make test: FAILED'; exit 1; fi; \

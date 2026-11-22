@@ -125,6 +125,7 @@ lc start <id|slug> [--lang c|cpp] [--no-edit] [--json]
 lc test [<solution>] [--lang c|cpp] [--std STD] [--sanitize] [--case FILE] [--json]
 lc submit [<solution>] [--lang c|cpp] [--std STD] [--sanitize] [--json]
 lc stats [--manifest] [--json]
+lc calibrate [--show] [--json]
 lc check [<pack>...] [--regen] [--count N] [--seed N] [--json]
 lc help [<command>]
 lc version
@@ -162,6 +163,9 @@ lc version
   copy of the solution. `lc stats` counts what you have solved by
   difficulty and tag. See
   [docs/workspace.md](docs/workspace.md#progress-and-history).
+- `lc calibrate` measures how fast this machine is. Time limits are
+  written for an Apple M4, and `lc` scales them on a slower machine; it
+  measures once by itself, so this is for measuring again.
 - `lc check` is for problem authors: it checks problem packs, and with
   `--regen` rewrites their `tests.txt`
   ([docs/authoring.md](docs/authoring.md)). `lc stats --manifest`
