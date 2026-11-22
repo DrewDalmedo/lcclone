@@ -39,6 +39,9 @@ jobs:
     # test).
     name: Packs to check in full
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read  # to find the last run on main that passed
     outputs:
       all: ${{ steps.which.outputs.all }}
       packs: ${{ steps.which.outputs.packs }}
@@ -51,7 +54,7 @@ jobs:
         shell: bash  # adds -o pipefail, so a failing full-packs.sh fails the step
         env:
           EVENT: ${{ github.event_name }}
-          BEFORE: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           # The commit to compare with; none means every pack.
           base=
@@ -61,16 +64,20 @@ jobs:
             # that is checked out is the PR's base.
             base=HEAD^1 ;;
           push)
-            # What the push to main changes, that is, what the merged PRs
-            # change: their own runs checked those packs, but against the
+            # What main has gained since its last run that passed. The
+            # merged PRs' own runs checked those packs, but against the
             # base they had, so this also covers two PRs merged one after
-            # the other (a runtime change, then a pack). Checking every
-            # pack on each merge would take hours for packs nothing
-            # touched; the weekly run covers the rest. After a force-push
-            # the old commit is gone: check every pack.
-            if git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
-              base=$BEFORE
-            fi ;;
+            # the other (a runtime change, then a pack). It can't be just
+            # the commit before this push: a merge cancels the run before
+            # it, and that run's packs would go unchecked until Monday.
+            # Checking every pack on each merge would take hours for packs
+            # nothing touched; the weekly run covers the rest. With no
+            # such run in main's history, check every pack. If GitHub
+            # can't say, this job fails, and the next push covers these
+            # changes too.
+            passed=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=main&event=push&status=success&per_page=100" \
+              --jq ".workflow_runs[] | select(.id != $GITHUB_RUN_ID) | .head_sha")
+            base=$(printf '%s\n' "$passed" | sh tools/checked-base.sh) ;;
           esac
           echo "Comparing with: ${base:-nothing}"
           packs=$(sh tools/full-packs.sh "$base" | xargs)

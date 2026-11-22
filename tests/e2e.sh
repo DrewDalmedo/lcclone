@@ -1617,6 +1617,40 @@ if command -v git >/dev/null 2>&1; then
     fp "lc_gen.h changed" HEAD~1 "all "
     fp "no base" "" "all "
     fp "an unknown base" no-such-commit "all "
+
+    # tools/checked-base.sh, which picks the base for a push to main: the
+    # newest commit in HEAD's history whose run passed.
+    fp_out() {  # fp_out ARGS...: git in $FP, printing its output
+        (cd "$FP" && HOME=$TMP/home XDG_CONFIG_HOME='' GIT_CONFIG_NOSYSTEM=1 \
+            git -c user.name=e2e -c user.email=e2e@example.invalid \
+            -c commit.gpgsign=false "$@") 2>/dev/null
+    }
+    cb() {  # cb DESC COMMITS EXPECTED: what checked-base.sh prints for them
+        # shellcheck disable=SC2086  # COMMITS is a list
+        got=$(printf '%s\n' $2 | (cd "$FP" && HOME=$TMP/home \
+            XDG_CONFIG_HOME='' GIT_CONFIG_NOSYSTEM=1 \
+            sh "$ROOT/tools/checked-base.sh" 2>/dev/null))
+        if [ "$got" = "$3" ]; then ok; else
+            bad "tools/checked-base.sh ($1)" "printed '$got', not '$3'"
+        fi
+    }
+    cb_old=$(fp_out rev-parse HEAD~1)
+    cb_passed=$(fp_out rev-parse HEAD)
+    cb_side=$(fp_out commit-tree "$cb_old^{tree}" -p "$cb_old" -m side)
+    cb_none=0000000000000000000000000000000000000001
+    cb "the newest first" "$cb_passed $cb_old" "$cb_passed"
+    cb "a commit outside the history" "$cb_side $cb_old" "$cb_old"
+    cb "an unknown commit" "$cb_none $cb_old" "$cb_old"
+    cb "none in the history" "$cb_side $cb_none" ""
+    cb "no commits" "" ""
+    # Two merges after the last run that passed, the first one's run
+    # cancelled by the second: the packs of both are checked.
+    echo 6 >>"$FP/problems/0001-a/tests.txt"
+    fp_commit
+    echo 7 >>"$FP/problems/0002-b/tests.txt"
+    fp_commit
+    cb "a run cancelled since" "$cb_passed $cb_old" "$cb_passed"
+    fp "a run cancelled since" "$cb_passed" "problems/0001-a problems/0002-b "
 else
     echo "note: skipped the tools/full-packs.sh tests (no git)"
 fi

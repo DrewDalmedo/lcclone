@@ -919,7 +919,9 @@ cases yet.
   with `tools/full-packs.sh`: those with a file under `problems/NNNN-slug/`
   that differs from the base, or every pack when a file under `runtime/`
   does. The base is a PR's base branch, or for a push to `main` the
-  commit before it. (Until November 2026 Linux and macOS also ran
+  last commit whose run on `main` passed (`tools/checked-base.sh`): a
+  merge cancels the run before it, so the commit before the push may
+  never have been checked. (Until November 2026 Linux and macOS also ran
   `check-packs --quick` over every pack, about 20 minutes per job for the
   same fixed-seed cases each time; every branch ran on push as well as
   in its PR; and bmake's job ran every pack too.) On `main` that is what
