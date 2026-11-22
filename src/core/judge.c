@@ -876,6 +876,10 @@ int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
     spec.input = in.data;
     spec.input_len = in.len;
     spec.result_fd = 1;
+    /* The reference solution is a harness too: on Linux what it inherits
+     * from lc (megabytes of a full-size case, or a GUI's heap) must not
+     * count in its memory either. */
+    spec.measure = 1;
     spec.cancel = hooks ? hooks->cancel : NULL;
     rc = lc_run(ctx, &spec, &r);
     if (rc != LC_OK)
