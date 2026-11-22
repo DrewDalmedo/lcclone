@@ -130,8 +130,13 @@ jobs:
           check_dep tests/unit/test_fs.o src/core/arena.c src/core/str.c src/core/ctx.c src/core/fs.c
           check_dep tests/unit/test_md.o src/core/arena.c src/core/str.c src/core/md.c
           # PREFIX is compiled into problem.o and test_problem.o: changing it
-          # must rebuild both, or test_problem fails.
-          make CC="$CC" CFLAGS="-O2 $WFLAGS" PREFIX=/opt/pkg test
+          # must rebuild both, or test_problem fails. Nothing else uses it,
+          # so test_problem is the one test to run again, not all of make
+          # test. The grep shows that the two agree on the new PREFIX.
+          make CC="$CC" CFLAGS="-O2 $WFLAGS" PREFIX=/opt/pkg tests/unit/test_problem
+          LC_CONFIG=tests/fixtures/config/empty tests/unit/test_problem
+          grep -q -F /opt/pkg/share/lcclone tests/unit/test_problem || {
+            echo "test_problem does not have PREFIX=/opt/pkg compiled in" >&2; exit 1; }
 
   sanitizers:
     name: Linux (gcc, ASan + UBSan)
@@ -184,7 +189,14 @@ jobs:
           touch -t 203001010000 src/core/*.o src/cli/*.o liblc.a lc
           bmake PREFIX=/opt/c
           check_lc /opt/c /opt/b
-          bmake PREFIX=/opt/pkg test
+          # PREFIX is also compiled into test_problem.o, which fails unless
+          # it is rebuilt along with problem.o. Nothing else uses it, so
+          # test_problem is the one test to run again, not all of make test.
+          # The grep shows that the two agree on the new PREFIX.
+          bmake PREFIX=/opt/pkg tests/unit/test_problem
+          LC_CONFIG=tests/fixtures/config/empty tests/unit/test_problem
+          grep -q -F /opt/pkg/share/lcclone tests/unit/test_problem || {
+            echo "test_problem does not have PREFIX=/opt/pkg compiled in" >&2; exit 1; }
 
   alpine:
     name: Alpine (musl)
