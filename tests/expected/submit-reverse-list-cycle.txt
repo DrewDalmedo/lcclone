@@ -1,0 +1,14 @@
+--- stdout
+Building tests/fixtures/judge/0021-reverse-list/cycle.c (C, c11)
+Building gen.c, which makes the full-size cases (C, c11)
+Building the reference solution (C, c11)
+
+tests/fixtures/judge/0021-reverse-list/cycle.c:1: Runtime Error on case 1 of 6 (exited with status 70)
+  Input:    head = [1,2,3]
+  Expected: [3,2,1]
+  Stderr:
+    lc: reverseList returned a list with a cycle: its node at index 2 links back to the one at index 1
+
+Runtime Error: 0/6 cases passed
+--- stderr
+--- exit 1

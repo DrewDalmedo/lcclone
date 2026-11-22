@@ -260,6 +260,43 @@ typedef struct lc_result_check {
                      index in the signature */
 } lc_result_check;
 
+/*
+ * Lists and trees built specially (docs/problem-format.md, "build" and
+ * "ref"). They name a problem's inputs by slot: the signature's
+ * parameters are slots 0 to nparams - 1, and the `hidden:` inputs follow
+ * them.
+ */
+#define LC_SLOT_RETURN ((size_t)-1) /* what the function returns */
+
+/* A builder (`build:`), which links lists in ways a literal can't say. */
+typedef enum {
+    LC_BUILD_CYCLE = 1, /* cycle LIST POS: the last node of LIST links to
+                           its node POS (-1: none) */
+    LC_BUILD_INTERSECT, /* intersect A B SKIPA SKIPB: B's nodes from SKIPB
+                           on are A's from SKIPA on */
+    LC_BUILD_COPY       /* copy TO FROM: TO is a copy of FROM, and has no
+                           line of its own in a case */
+} lc_builder_kind;
+
+#define LC_BUILDER_ARGS 4
+
+typedef struct lc_builder {
+    lc_builder_kind kind;
+    size_t args[LC_BUILDER_ARGS]; /* slots, in the order written */
+    size_t nargs;
+} lc_builder;
+
+/*
+ * A node reference (`ref:`): the parameter in `slot` is a node of the
+ * input in slot `in`, written in a case as that node's value; or, with
+ * `slot` LC_SLOT_RETURN, the function must return a node of `in` (or
+ * NULL).
+ */
+typedef struct lc_ref {
+    size_t slot;
+    size_t in;
+} lc_ref;
+
 /* ------------------------------------------------------------------ */
 /* Problems                                                            */
 /* ------------------------------------------------------------------ */
@@ -298,6 +335,10 @@ typedef struct lc_problem {
     const lc_sig *sig;        /* the parsed signature, or NULL */
     const lc_param *hidden;   /* the parsed `hidden:` inputs */
     size_t nhidden;
+    const lc_builder *builders; /* the parsed `build:` */
+    size_t nbuilders;
+    const lc_ref *refs;       /* the parsed `ref:` */
+    size_t nrefs;
     /*
      * What the result is: what the function returns, or with `check:` a
      * parameter after the call (lc_result_type gives its type).
@@ -310,8 +351,9 @@ typedef struct lc_problem {
     lc_compare compare;
     /*
      * Names for the input lines of a test case, used to show examples as
-     * "nums = [1,2], target = 3": the signature's parameter names followed
-     * by the names from `hidden:`. Empty when the pack has no signature.
+     * "nums = [1,2], target = 3": the signature's parameter names, except
+     * those a builder makes (`build: copy`), followed by the names from
+     * `hidden:`. Empty when the pack has no signature.
      */
     const char *const *arg_names;
     size_t narg_names;

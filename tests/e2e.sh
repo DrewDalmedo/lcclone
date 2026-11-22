@@ -577,7 +577,8 @@ check start-867 LC_WORKSPACE="$WS" LC_PROBLEMS=problems -- start transpose-matri
 files_golden start-867-files "$WS" 0867-transpose-matrix/README.md \
     0867-transpose-matrix/solution.c 0867-transpose-matrix/cases.txt
 check start-104 LC_WORKSPACE="$WS" LC_PROBLEMS=problems -- start 104 --no-edit --json
-files_golden start-104-files "$WS" 0104-maximum-depth-of-binary-tree/solution.cpp
+files_golden start-104-files "$WS" 0104-maximum-depth-of-binary-tree/solution.cpp \
+    0104-maximum-depth-of-binary-tree/.clangd
 # In-place problems (check:): cases.txt says what the result is.
 check start-dedup LC_WORKSPACE="$WS" LC_PROBLEMS=$JFIX -- start dedup --lang c --no-edit
 files_golden start-dedup-files "$WS" 0016-dedup/solution.c 0016-dedup/cases.txt
@@ -708,7 +709,25 @@ check submit-upper-nullrow LC_PROBLEMS=$JFIX -- submit $JFIX/0018-upper/nullrow.
 check err-test-badcase LC_PROBLEMS=$JFIX -- test $J/solution.c --case $J/badcase.txt
 check err-test-no-ref LC_PROBLEMS=$JFIX -- test $JFIX/0011-reverse/solution.c
 check err-test-bad-ref LC_PROBLEMS=$JFIX -- test $JFIX/0012-bad-ref/solution.c
-check err-test-tree LC_PROBLEMS=$JFIX -- test $JFIX/0013-tree/problem.md --lang c
+# Lists and trees: recursive solutions get through paths of 100000 nodes
+# (full-size cases), and what the harness can't write, or a node that
+# isn't the input's it must be, is a Runtime Error that says why. A case
+# has no line for an input a builder makes (build: copy).
+check show-target-copy LC_PROBLEMS=$JFIX -- show target-copy --json
+check submit-tree LC_PROBLEMS=$JFIX -- submit $JFIX/0013-tree/solution.c
+check submit-tree-cpp LC_PROBLEMS=$JFIX -- submit $JFIX/0013-tree/solution.cpp
+check submit-tree-endless LC_PROBLEMS=$JFIX -- submit $JFIX/0013-tree/endless.c
+check submit-tree-endless-cpp LC_PROBLEMS=$JFIX -- submit $JFIX/0013-tree/endless.cpp
+check submit-reverse-list-cycle LC_PROBLEMS=$JFIX -- submit $JFIX/0021-reverse-list/cycle.c
+check submit-mirror-twice LC_PROBLEMS=$JFIX -- submit $JFIX/0022-mirror/twice.cpp
+check submit-target-copy-original LC_PROBLEMS=$JFIX -- submit $JFIX/0025-target-copy/original.cpp
+check submit-intersect-byvalue LC_PROBLEMS=$JFIX -- submit $JFIX/0024-intersect/byvalue.c
+# A case whose hidden inputs don't fit what the builder links, or whose
+# reference names no node, is an error in the case.
+check err-test-badpos LC_PROBLEMS=$JFIX -- test $JFIX/0023-cycle/solution.c --case $JFIX/0023-cycle/badpos.txt
+check err-test-badtail LC_PROBLEMS=$JFIX -- test $JFIX/0024-intersect/solution.cpp --case $JFIX/0024-intersect/badtail.txt
+check err-test-badref LC_PROBLEMS=$JFIX -- test $JFIX/0025-target-copy/solution.c --case $JFIX/0025-target-copy/badref.txt
+check check-nodes LC_PROBLEMS=$JFIX -- check tree reverse-list mirror cycle intersect target-copy invert chains shapes --quick
 check err-test-std LC_PROBLEMS=$JFIX -- test $J/solution.c --std c++17
 check err-test-std-env LC_CXXSTD=gnu++17 LC_PROBLEMS=$JFIX -- test $J/solution.cpp
 check err-test-case-missing LC_PROBLEMS=$JFIX -- test $J/solution.c --case $J/nope.txt

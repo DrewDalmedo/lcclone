@@ -247,3 +247,49 @@ LC_RT_ARRAYS(double, double, LC_RT_SPARE)
 LC_RT_ARRAYS(bool, bool, LC_RT_SPARE)
 LC_RT_ARRAYS(char, char, 1)
 LC_RT_ARRAYS(string, char *, LC_RT_SPARE)
+
+/* ------------------------------------------------------------------ */
+/* Lists and trees (lc_rt_nodes.h)                                     */
+/* ------------------------------------------------------------------ */
+
+#ifdef LC_LISTNODE
+LC_RT struct ListNode *lc_read_list(void)
+{
+    return lc_rt_read_list(NULL);
+}
+
+LC_RT void lc_write_list(const char *fn, struct ListNode *v)
+{
+    lc_rt_write_list(fn, v);
+}
+
+LC_RT_ARRAYS(list, struct ListNode *, LC_RT_SPARE)
+#endif
+
+#ifdef LC_TREENODE
+LC_RT struct TreeNode *lc_read_tree(void)
+{
+    return lc_rt_read_tree(NULL);
+}
+
+LC_RT void lc_write_tree(const char *fn, struct TreeNode *v)
+{
+    lc_rt_write_tree(fn, v);
+}
+
+LC_RT_ARRAYS(tree, struct TreeNode *, LC_RT_SPARE)
+#endif
+
+#ifdef LC_NARYNODE
+LC_RT struct Node *lc_read_nary(void)
+{
+    return lc_rt_read_nary(NULL);
+}
+
+LC_RT void lc_write_nary(const char *fn, struct Node *v)
+{
+    lc_rt_write_nary(fn, v);
+}
+
+LC_RT_ARRAYS(nary, struct Node *, LC_RT_SPARE)
+#endif

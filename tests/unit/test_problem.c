@@ -947,6 +947,38 @@ static void test_signature_and_hidden(void)
                ":5: signature: parameter 1 is empty");
     expect_bad("0001-a", HDR("1", "a") "signature: int f(int a, int b) \n"
                "hidden: int c,,int d\n---\n", ":6: hidden: parameter 2 is empty");
+
+    /* A parameter a builder makes has no line, so no name; build: and
+     * ref: are read in either order, after the signature. */
+    expect_args(HDR("1", "a") "ref: target in original\nbuild: copy cloned "
+                "original\nsignature: TreeNode getTargetCopy(TreeNode "
+                "original, TreeNode cloned, TreeNode target)\n---\n",
+                (const char *const[]){"original", "target"}, 2);
+    expect_args(HDR("1", "a") "signature: bool hasCycle(ListNode head)\n"
+                "hidden: int pos\nbuild: cycle head pos\n---\n",
+                (const char *const[]){"head", "pos"}, 2);
+    expect_bad("0001-a", HDR("1", "a") "signature: bool hasCycle(ListNode "
+               "head)\nhidden: int pos\nbuild: cycle head p\n---\n",
+               ":7: build: 'p' is not an input (a parameter of the "
+               "signature, or hidden)");
+    expect_bad("0001-a", HDR("1", "a") "build: cycle head pos\n---\n",
+               ":5: build: needs a signature");
+    /* The C harness declares hidden inputs next to the parameters. */
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int[] nums)\n"
+               "hidden: int numsSize\n---\n",
+               ":6: hidden: 'numsSize' can't be used as a name, as lc's C "
+               "code gives it to the size of 'nums'");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int numsSize)\n"
+               "hidden: int[] nums\n---\n",
+               ":6: hidden: 'numsSize' can't be used as a name, as lc's C "
+               "code gives it to the size of 'nums'");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(int x)\n"
+               "hidden: int f\n---\n", ":6: hidden: 'f' is the function's "
+               "name");
+    expect_bad("0001-a", HDR("1", "a") "signature: int f(TreeNode a, "
+               "TreeNode b)\nref: b in a, a in b\n---\n",
+               ":6: ref: 'a' is itself a reference, so it has no nodes to "
+               "refer to");
 }
 
 /* Checks a type against its kind and dims. */

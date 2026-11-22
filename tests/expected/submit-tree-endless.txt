@@ -1,0 +1,11 @@
+--- stdout
+Building tests/fixtures/judge/0013-tree/endless.c (C, c11)
+Building gen.c, which makes the full-size cases (C, c11)
+
+tests/fixtures/judge/0013-tree/endless.c:1: Runtime Error on case 1 of 9 (killed by SIGSEGV: stack overflow, past the N MB of stack: a recursion too deep, or a local array too large)
+  Input:    root = [1,2]
+  Expected: 2
+
+Runtime Error: 0/9 cases passed
+--- stderr
+--- exit 1

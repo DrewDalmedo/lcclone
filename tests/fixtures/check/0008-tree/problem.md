@@ -2,8 +2,10 @@ id: 8
 slug: tree
 title: Tree
 difficulty: easy
-signature: int depth(TreeNode root)
+signature: TreeNode build(int[] nums)
+compare: checker
 ---
-Return `a + b`.
+Build a balanced search tree from the sorted `nums`. Many trees are
+right, so a checker (not written yet) would judge them.
 
 @examples

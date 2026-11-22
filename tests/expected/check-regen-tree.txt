@@ -1,6 +1,6 @@
 --- stdout
 tests/fixtures/check/0008-tree/tests.txt: note: --regen: tests.txt was not rewritten, as nothing can be run yet
-tests/fixtures/check/0008-tree: note: nothing was built or run: problem 8 (tree): TreeNode parameters are not supported yet
+tests/fixtures/check/0008-tree: note: nothing was built or run: problem 8 (tree): compare: checker is not supported yet
 0008-tree: ok (2 cases; not judged yet)
 
 Checked 1 pack: 0 ok, 1 not judged yet, 0 failed

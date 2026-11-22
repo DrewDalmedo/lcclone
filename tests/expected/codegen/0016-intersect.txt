@@ -1,0 +1,77 @@
+== C stub
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* getIntersectionNode(struct ListNode* headA, struct ListNode* headB) {
+
+}
+== C prototype
+struct ListNode* getIntersectionNode(struct ListNode* headA, struct ListNode* headB)
+== C harness
+/* lc's harness for problem 16 (intersect). */
+int main(void)
+{
+    lc_rt_read_input();
+    lc_rt_nodes lc_nodes_headA;
+    struct ListNode* headA = lc_rt_read_list(&lc_nodes_headA);
+    lc_rt_nodes lc_nodes_headB;
+    struct ListNode* headB = lc_rt_read_list(&lc_nodes_headB);
+    int skipA = lc_read_int();
+    int skipB = lc_read_int();
+    int unused = lc_read_int();
+    lc_rt_end_input();
+    lc_rt_intersect(&lc_nodes_headA, &lc_nodes_headB, &headB, skipA, skipB);
+    (void)unused;
+    struct ListNode* lc_ret = getIntersectionNode(headA, headB);
+    lc_write_list("getIntersectionNode", lc_ret);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* getIntersectionNode(ListNode* headA, ListNode* headB) {
+
+    }
+};
+== C++ prototype
+ListNode* Solution::getIntersectionNode(ListNode* headA, ListNode* headB)
+== C++ harness
+// lc's harness for problem 16 (intersect).
+int main()
+{
+    lc_rt_read_input();
+    lc_rt_nodes lc_nodes_headA;
+    ListNode* headA = lc_rt_read_list(&lc_nodes_headA);
+    lc_rt_nodes lc_nodes_headB;
+    ListNode* headB = lc_rt_read_list(&lc_nodes_headB);
+    int skipA{};
+    lc_get(skipA);
+    int skipB{};
+    lc_get(skipB);
+    int unused{};
+    lc_get(unused);
+    lc_rt_end_input();
+    lc_rt_intersect(&lc_nodes_headA, &lc_nodes_headB, &headB, skipA, skipB);
+    (void)unused;
+    Solution *lc_sol = new Solution();
+    ListNode* lc_ret = lc_sol->getIntersectionNode(headA, headB);
+    lc_rt_fn = "getIntersectionNode";
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}

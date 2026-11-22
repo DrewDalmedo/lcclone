@@ -1,0 +1,14 @@
+--- stdout
+Building tests/fixtures/judge/0022-mirror/twice.cpp (C++, c++11)
+Building gen.c, which makes the full-size cases (C, c11)
+Building the reference solution (C, c11)
+
+tests/fixtures/judge/0022-mirror/twice.cpp:1: Runtime Error on case 1 of 7 (exited with status 70)
+  Input:    root = [1,null,3,2,4,null,5,6]
+  Expected: [1,null,4,2,3,null,null,null,6,5]
+  Stderr:
+    lc: mirror returned a tree that reaches a node twice (a cycle, or a node with two parents): the node whose value is 4
+
+Runtime Error: 0/7 cases passed
+--- stderr
+--- exit 1

@@ -1,0 +1,20 @@
+@example
+[1,null,3,2,4,null,5,6]
+=> [1,null,4,2,3,null,null,null,6,5]
+
+[]
+=> []
+
+[1]
+=> [1]
+
+[1,null,2,null,3,null,4]
+=> [1,null,2,null,3,null,4]
+
+@gen 1 small
+[4928,null,2261,7835,null,4098,4343,5282,null,null,2646,null,null,785]
+=> [4928,null,7835,2261,null,null,5282,4343,4098,null,785,null,null,2646]
+
+# Full-size: 10000 nodes, wide, then a path.
+@full 1 7c60a3ee
+@full 2 72720acb

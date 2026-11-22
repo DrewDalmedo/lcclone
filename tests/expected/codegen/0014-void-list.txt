@@ -12,7 +12,7 @@ void reorderList(struct ListNode* head) {
 == C prototype
 void reorderList(struct ListNode* head)
 == C harness
-error: problem 14 (void-list): ListNode parameters are not supported yet
+error: problem 14 (void-list): reorderList returns void and has no array parameter, so it has no result to judge
 == C++ stub
 /**
  * Definition for singly-linked list.
@@ -33,4 +33,4 @@ public:
 == C++ prototype
 void Solution::reorderList(ListNode* head)
 == C++ harness
-error: problem 14 (void-list): ListNode parameters are not supported yet
+error: problem 14 (void-list): reorderList returns void and has no array parameter, so it has no result to judge

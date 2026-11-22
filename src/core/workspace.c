@@ -463,6 +463,55 @@ done:
     return rc;
 }
 
+/*
+ * For a problem with lists or trees, a .clangd in its directory with the
+ * defines that make the preludes declare the node structs, as a build
+ * has them (lc_codegen_defines). clangd reads it on top of the
+ * workspace's .clangd, which can't have them: they would clash with a
+ * `struct Node` of a solution's own elsewhere.
+ */
+static int write_problem_clangd(lc_ctx *ctx, const lc_problem *p,
+                                const char *dir)
+{
+    lc_str flags = LC_STR_INIT, text = LC_STR_INIT, path = LC_STR_INIT;
+    lc_str old = LC_STR_INIT;
+    int rc = LC_OK;
+
+    lc_codegen_define_flags(p, &flags);
+    if (flags.len == 0 && !flags.failed)
+        goto done;
+    lc_str_printf(&text,
+                  "%s. It tells clangd which of lc's node structs "
+                  "(ListNode, TreeNode,\n"
+                  "# Node) this problem uses, as lc's builds do. lc "
+                  "rewrites it as needed; to keep\n"
+                  "# changes of your own, delete this first line and lc "
+                  "will leave it alone.\n"
+                  "CompileFlags:\n  Add: [%s]\n", CLANGD_MARK, flags.data);
+    lc_str_printf(&path, "%s/.clangd", dir);
+    if (flags.failed || text.failed || path.failed) {
+        rc = lc_oom(ctx);
+        goto done;
+    }
+    rc = lc_read_file(ctx, path.data, LC_MIB, &old);
+    if (rc == LC_ERR_NOMEM)
+        goto done;
+    if (rc == LC_OK && strncmp(lc_str_cstr(&old), CLANGD_MARK,
+                               sizeof CLANGD_MARK - 1) != 0) {
+        rc = lc_add_warning(ctx, "left %s alone: lc didn't write it, so "
+                            "clangd may not know about the node structs",
+                            path.data);
+        goto done;
+    }
+    rc = write_if_changed(ctx, path.data, text.data, text.len);
+done:
+    lc_str_free(&flags);
+    lc_str_free(&text);
+    lc_str_free(&path);
+    lc_str_free(&old);
+    return rc;
+}
+
 int lc_start(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
              lc_start_info *out)
 {
@@ -529,6 +578,8 @@ int lc_start(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
                     &out->created_cases);
     if (rc == LC_OK)
         rc = write_clangd(ctx, ws);
+    if (rc == LC_OK)
+        rc = write_problem_clangd(ctx, p, out->dir.data);
     if (rc != LC_OK)
         goto fail;
     lc_str_free(&text);

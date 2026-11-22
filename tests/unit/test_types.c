@@ -455,6 +455,226 @@ static void test_check_field(void)
     lc_arena_free(&a);
 }
 
+/* Parses `sig`, `hidden` and `build` (each may be NULL); then `ref` when
+ * it isn't NULL. Returns the status of the last field parsed, with its
+ * message in err, and the builders and references found. */
+static int parse_linked(lc_arena *a, const char *sig, const char *hidden,
+                        const char *build, const char *ref, lc_str *err,
+                        lc_builder **b, size_t *nb, lc_ref **r, size_t *nr)
+{
+    lc_sig s;
+    lc_param *h = NULL;
+    size_t nh = 0;
+    int rc;
+
+    *b = NULL;
+    *nb = 0;
+    *r = NULL;
+    *nr = 0;
+    if (sig)
+        CHECK_INT(lc_parse_sig(a, sig, strlen(sig), "signature", &s, err),
+                  LC_OK);
+    if (hidden)
+        CHECK_INT(lc_parse_params(a, hidden, strlen(hidden), "hidden", &h,
+                                  &nh, err), LC_OK);
+    rc = lc_parse_builders(a, build ? build : "", build ? strlen(build) : 0,
+                           sig ? &s : NULL, h, nh, b, nb, err);
+    if (rc != LC_OK || !ref)
+        return rc;
+    return lc_parse_refs(a, ref, strlen(ref), sig ? &s : NULL, h, nh, *b,
+                         *nb, r, nr, err);
+}
+
+static void build_bad(const char *sig, const char *hidden, const char *build,
+                      const char *msg)
+{
+    lc_arena a = {0};
+    lc_str err = LC_STR_INIT;
+    lc_builder *b;
+    lc_ref *r;
+    size_t nb, nr;
+
+    CHECK_INT(parse_linked(&a, sig, hidden, build, NULL, &err, &b, &nb, &r,
+                           &nr), LC_ERR_PARSE);
+    CHECK_STR(lc_str_cstr(&err), msg);
+    lc_str_free(&err);
+    lc_arena_free(&a);
+}
+
+static void ref_bad(const char *sig, const char *hidden, const char *build,
+                    const char *ref, const char *msg)
+{
+    lc_arena a = {0};
+    lc_str err = LC_STR_INIT;
+    lc_builder *b;
+    lc_ref *r;
+    size_t nb, nr;
+
+    CHECK_INT(parse_linked(&a, sig, hidden, build, ref, &err, &b, &nb, &r,
+                           &nr), LC_ERR_PARSE);
+    CHECK_STR(lc_str_cstr(&err), msg);
+    lc_str_free(&err);
+    lc_arena_free(&a);
+}
+
+static void test_build_ref_fields(void)
+{
+    lc_arena a = {0};
+    lc_str err = LC_STR_INIT;
+    lc_builder *b;
+    lc_ref *r;
+    size_t nb, nr;
+
+    /* Builders name inputs by slot: parameters, then hidden inputs. */
+    CHECK_INT(parse_linked(&a, "bool hasCycle(ListNode head)", "int pos",
+                           "cycle head pos", NULL, &err, &b, &nb, &r, &nr),
+              LC_OK);
+    CHECK_INT(nb, 1);
+    if (nb == 1) {
+        CHECK_INT(b[0].kind, LC_BUILD_CYCLE);
+        CHECK_INT(b[0].nargs, 2);
+        CHECK_INT(b[0].args[0], 0);
+        CHECK_INT(b[0].args[1], 1);
+    }
+    CHECK_INT(parse_linked(&a, "ListNode f(ListNode a, ListNode b)",
+                           "int x, int sa, int sb",
+                           " intersect\ta  b sa sb ", NULL, &err, &b, &nb, &r,
+                           &nr), LC_OK);
+    CHECK_INT(nb, 1);
+    if (nb == 1) {
+        CHECK_INT(b[0].kind, LC_BUILD_INTERSECT);
+        CHECK_INT(b[0].nargs, 4);
+        CHECK_INT(b[0].args[2], 3);
+        CHECK_INT(b[0].args[3], 4);
+    }
+    /* Two builders; an empty value has none. */
+    CHECK_INT(parse_linked(&a, "int f(TreeNode a, TreeNode b, ListNode l)",
+                           "int p", "copy b a, cycle l p", NULL, &err, &b,
+                           &nb, &r, &nr), LC_OK);
+    CHECK_INT(nb, 2);
+    if (nb == 2) {
+        CHECK_INT(b[0].kind, LC_BUILD_COPY);
+        CHECK_INT(b[1].kind, LC_BUILD_CYCLE);
+        CHECK_INT(lc_builders_make(b, nb, 1, NULL), 1);
+        CHECK_INT(lc_builders_make(b, nb, 0, NULL), 0);
+        CHECK_INT(lc_builders_make(b, nb, 2, NULL), 0);
+    }
+    CHECK_INT(parse_linked(&a, "int f(int x)", NULL, "  ", NULL, &err, &b,
+                           &nb, &r, &nr), LC_OK);
+    CHECK_INT(nb, 0);
+
+    /* References: a parameter's, and the return value's. */
+    CHECK_INT(parse_linked(&a, "TreeNode f(TreeNode o, TreeNode c, TreeNode t)",
+                           NULL, "copy c o", "t in o, return in c", &err, &b,
+                           &nb, &r, &nr), LC_OK);
+    CHECK_INT(nr, 2);
+    if (nr == 2) {
+        CHECK_INT(r[0].slot, 2);
+        CHECK_INT(r[0].in, 0);
+        CHECK(r[1].slot == LC_SLOT_RETURN);
+        CHECK_INT(r[1].in, 1);
+    }
+    /* Into a hidden input, and into a list with a cycle. */
+    CHECK_INT(parse_linked(&a, "void f(ListNode node)", "ListNode head", NULL,
+                           "node in head", &err, &b, &nb, &r, &nr), LC_OK);
+    CHECK_INT(nr, 1);
+    CHECK_INT(parse_linked(&a, "ListNode f(ListNode head)", "int pos",
+                           "cycle head pos", "return in head", &err, &b, &nb,
+                           &r, &nr), LC_OK);
+    CHECK_INT(nr, 1);
+
+    build_bad("int f(ListNode h)", NULL, "cycle h p",
+              "build: 'p' is not an input (a parameter of the signature, or "
+              "hidden)");
+    build_bad(NULL, "int p", "cycle h p", "build: needs a signature");
+    build_bad("int f(ListNode h)", "int p", "loop h p",
+              "build: unknown builder 'loop' (expected cycle, intersect or "
+              "copy)");
+    build_bad("int f(ListNode h)", "int p", "cycle h",
+              "build: cycle takes 2 inputs: 'cycle LIST POS'");
+    build_bad("int f(ListNode h)", "int p", "cycle h p p",
+              "build: cycle takes 2 inputs: 'cycle LIST POS'");
+    build_bad("int f(ListNode a, ListNode b)", "int p", "intersect a b p",
+              "build: intersect takes 4 inputs: 'intersect A B SKIPA "
+              "SKIPB'");
+    build_bad("int f(ListNode a, ListNode b)", NULL, "copy a",
+              "build: copy takes 2 inputs: 'copy TO FROM'");
+    build_bad("int f(ListNode h)", "int p", "cycle h p,",
+              "build: builder 2 is empty");
+    build_bad("int f(TreeNode h)", "int p", "cycle h p",
+              "build: cycle needs a ListNode, but 'h' is TreeNode");
+    build_bad("int f(ListNode[] h)", "int p", "cycle h p",
+              "build: cycle needs a ListNode, but 'h' is ListNode[]");
+    build_bad("int f(ListNode h)", "long p", "cycle h p",
+              "build: cycle's position must be an int, but 'p' is long");
+    build_bad("int f(ListNode a, int[] b)", "int x, int y",
+              "intersect a b x y",
+              "build: intersect needs two ListNodes, but 'b' is int[]");
+    build_bad("int f(ListNode a, ListNode b)", "int x, bool y",
+              "intersect a b x y",
+              "build: intersect's skips must be ints, but 'y' is bool");
+    build_bad("int f(ListNode a)", "ListNode b", "copy b a",
+              "build: copy makes a parameter, but 'b' is a hidden input");
+    build_bad("int f(int[] a, int[] b)", NULL, "copy b a",
+              "build: copy makes a ListNode, TreeNode or NaryNode, but 'b' "
+              "is int[]");
+    build_bad("int f(TreeNode a, ListNode b)", NULL, "copy b a",
+              "build: copy needs inputs of one type, but 'b' is ListNode and "
+              "'a' is TreeNode");
+    build_bad("int f(ListNode h)", "int p", "cycle h h",
+              "build: 'h' is used twice");
+    build_bad("int f(ListNode h, ListNode g)", "int p",
+              "cycle h p, cycle g p", "build: 'p' is used twice");
+    build_bad("int f(TreeNode a, TreeNode b, TreeNode c)", NULL,
+              "copy b a, copy c b", "build: 'b' is used twice");
+
+    ref_bad(NULL, NULL, NULL, "t in o", "ref: needs a signature");
+    ref_bad("int f(TreeNode o, TreeNode t)", NULL, NULL, "t of o",
+            "ref: expected 'NAME in INPUT' or 'return in INPUT', got 't of "
+            "o'");
+    ref_bad("int f(TreeNode o, TreeNode t)", NULL, NULL, "t in",
+            "ref: expected 'NAME in INPUT' or 'return in INPUT', got 't in'");
+    ref_bad("int f(TreeNode o, TreeNode t)", NULL, NULL, "t in o,",
+            "ref: reference 2 is empty");
+    ref_bad("int f(TreeNode o)", "TreeNode t", NULL, "t in o",
+            "ref: 't' is not a parameter of the signature");
+    ref_bad("int f(TreeNode o, TreeNode t)", NULL, NULL, "t in x",
+            "ref: 'x' is not an input (a parameter of the signature, or "
+            "hidden)");
+    ref_bad("int f(TreeNode o, TreeNode t)", NULL, NULL, "t in o, t in o",
+            "ref: 't' is listed twice");
+    ref_bad("int f(TreeNode o, int t)", NULL, NULL, "t in o",
+            "ref: 't' is int, but a reference is a ListNode, TreeNode or "
+            "NaryNode");
+    ref_bad("int f(TreeNode o)", NULL, NULL, "return in o",
+            "ref: return needs a function that returns a ListNode, TreeNode "
+            "or NaryNode, not int");
+    ref_bad("int f(TreeNode t)", NULL, NULL, "t in t",
+            "ref: 't' can't be a node of itself");
+    ref_bad("int f(ListNode o, TreeNode t)", NULL, NULL, "t in o",
+            "ref: 't' is TreeNode, so 'o' must be one too, not ListNode");
+    ref_bad("int f(TreeNode[] o, TreeNode t)", NULL, NULL, "t in o",
+            "ref: 't' is TreeNode, so 'o' must be one too, not TreeNode[]");
+    ref_bad("ListNode f(TreeNode o)", NULL, NULL, "return in o",
+            "ref: the return value is ListNode, so 'o' must be one too, not "
+            "TreeNode");
+    ref_bad("int f(TreeNode o, TreeNode t)", NULL, "copy t o", "t in o",
+            "ref: 't' is made by build: copy, so it can't be a reference "
+            "too");
+    ref_bad("int f(ListNode h, ListNode t)", "int p", "cycle t p", "t in h",
+            "ref: 't' is used by build:, so it can't be a reference too");
+    ref_bad("int f(ListNode a, ListNode b, ListNode t)", "int x, int y",
+            "intersect a b x y", "t in b",
+            "ref: 'b' is changed by build: intersect, so 't' can't refer to "
+            "its nodes");
+    ref_bad("int f(TreeNode a, TreeNode b, TreeNode c)", NULL, NULL,
+            "b in a, c in b",
+            "ref: 'b' is itself a reference, so it has no nodes to refer to");
+
+    lc_str_free(&err);
+    lc_arena_free(&a);
+}
+
 static void test_copy(void)
 {
     lc_arena a = {0}, b = {0};
@@ -488,6 +708,7 @@ int main(void)
     RUN(test_params);
     RUN(test_compare_field);
     RUN(test_check_field);
+    RUN(test_build_ref_fields);
     RUN(test_copy);
     return test_report();
 }

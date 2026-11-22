@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: tests/fixtures/judge/0023-cycle/badpos.txt:1: pos: 3 is not a node of head, which has 3 nodes (-1 means no cycle)
+--- exit 3

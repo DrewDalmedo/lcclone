@@ -406,6 +406,22 @@ as `hidden:` inputs and names a built-in builder (`cycle`, `intersect`).
 **Node references.** For problems like 1379, the declaration
 `ref target in cloned` makes the harness look up the matching node by value.
 
+(As built in M7: two fields, both naming the problem's inputs, the
+parameters and then the hidden ones. `build:` lists builders:
+`cycle head pos` (141), `intersect headA headB skipA skipB` (160), and
+`copy cloned original`, for 1379, whose `cloned` is the same tree as
+`original` and so has no line in a case. `ref:` lists references:
+`target in original`, a parameter written as a node's value and passed
+as the first node of `original` with it, and `return in cloned`, a
+result that must be one of `cloned`'s nodes, which the harness checks by
+address (returning `target` itself is the mistake 1379 is about). lc
+checks each case against its builders before it runs it (`pos` must be a
+node or -1, the lists of 160 must agree where they join) and sends a
+reference as the node's index; the harness builds the inputs, then links
+them and looks the references up. 160 needs no reference: its result,
+shown as the list from the node returned, can only match at the node
+where the lists join. See docs/problem-format.md, "build and ref".)
+
 **Design problems.** The tests use LeetCode's two-line format:
 
 ```
@@ -899,6 +915,47 @@ cases yet.
 - **Still to do:** scaling limits for slow machines, the CI split
   (`--quick` over every pack, the full checks for the packs a PR
   changes), the pass over the earlier packs, and lists and trees.)
+
+(As built in M7, lists and trees: the harness work, ahead of the 43
+packs of the `list`, `list-builder`, `tree`, `tree-ref` and `nary`
+groups.
+- **Types.** `ListNode`, `TreeNode` and `NaryNode`, and arrays of them,
+  as parameters and results, in both languages, with LeetCode's structs
+  and spellings (§5.1). The runtime's node code is shared by C and C++
+  (`runtime/common/lc_rt_nodes.h`): it builds each node on its own
+  (`malloc`, or `new`), so a solution may free them, and builds, writes
+  and checks lists and trees without recursion. A list with a cycle, or
+  a tree that reaches a node twice, can't be written, and the harness
+  stops with a message that says where, a Runtime Error; LeetCode would
+  run out of time or memory there. `check:` still takes arrays only.
+- **Deep recursion.** Measured on the M4 Mac: recursive C and C++
+  solutions get through lists of 10^5 nodes and paths of 10^5 nodes in
+  64 MB of stack, with the sanitizers too. The stack's size and the
+  verdict order are as before, except that a stack overflow is now
+  reported as one, before memory (the stack it filled counts in its
+  peak). The program gets a SIGSEGV and SIGBUS handler on a stack of its
+  own, in a second translation unit (`runtime/common/lc_rt_stack.c`,
+  linked with every solution but not the generator), so that
+  `<signal.h>`'s names stay out of the solution's file; when the address
+  that faulted lies at the end of the main stack, it writes `lc-rt
+  stack-overflow SIZE` on fd 3, and lc says `killed by SIGSEGV: stack
+  overflow, past the 64 MB of stack: ...`. Under ASan, which handles the
+  fault itself, lc reads ASan's report instead.
+- **Generators.** `lc_gen.h` has `put_list`, `put_tree` with a
+  `gen_tree` built node by node (`tree_random`, `tree_chain` for the
+  deepest shapes, `tree_complete`, `tree_bst_insert`, `tree_inorder`,
+  `tree_depth`) and `put_nary` from parent indexes, none of them
+  recursive (docs/authoring.md). A full-size case of a list or tree is
+  shown by its node count.
+- **Builders and references** as in §5.2.
+- **Editors.** The workspace's `.clangd` can't define `LC_TREENODE` and
+  the like for every problem, since they would clash with a `struct
+  Node` of a solution's own, so for a list or tree problem `lc start`
+  writes a `.clangd` in the problem's directory that adds them; clangd
+  reads both. lc.nvim needed nothing: it shows values as the literals lc
+  gives, and a failed case's inputs are its lines.
+- **The shipped draft of 104** got a `ref.c`, now that trees are judged;
+  its full-size cases come with the rest of the group.)
 
 ## 7. Source layout
 

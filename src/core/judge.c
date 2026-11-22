@@ -149,9 +149,38 @@ static void put_size(lc_str *s, size_t n)
         lc_str_printf(s, "%lu bytes", (unsigned long)n);
 }
 
+/*
+ * Whether the program died of a stack overflow. The harness's handler
+ * (runtime/common/lc_rt_stack.c) writes "lc-rt stack-overflow SIZE" on
+ * fd 3, where nothing else is written before the result, when the
+ * address that faulted lies at the end of the stack; *stack gets the
+ * stack's size. Built with AddressSanitizer, which handles the fault
+ * itself, the program exits saying so on stderr.
+ */
+static int stack_overflow(const lc_run_result *r, unsigned long long *stack)
+{
+    static const char mark[] = "lc-rt stack-overflow ";
+    static const char asan[] = "ERROR: AddressSanitizer: stack-overflow";
+    const char *res = lc_str_cstr(&r->result), *err = lc_str_cstr(&r->err);
+    char *end;
+
+    *stack = 0;
+    if (r->signal == SIGSEGV || r->signal == SIGBUS) {
+        if (strncmp(res, mark, sizeof mark - 1) != 0)
+            return 0;
+        *stack = strtoull(res + sizeof mark - 1, &end, 10);
+        return *end == '\n';
+    }
+    /* The report's first line; strstr stops at a NUL in the output. */
+    return r->exited && r->exit_code != 0 && r->err.len >= sizeof asan &&
+           strstr(err, asan) != NULL;
+}
+
 lc_verdict lc_classify(const lc_limits *l, const lc_run_result *r,
                        lc_str *why)
 {
+    unsigned long long stack;
+
     lc_str_clear(why);
     if (r->overflow) {
         if (r->overflow & LC_RUN_STDOUT) {
@@ -167,6 +196,20 @@ lc_verdict lc_classify(const lc_limits *l, const lc_run_result *r,
             put_size(why, l->result_max);
         }
         return LC_OUTPUT_LIMIT_EXCEEDED;
+    }
+    /* Before memory: the stack it used counts in its peak, which may
+     * pass the memory limit. */
+    if (stack_overflow(r, &stack)) {
+        if (r->signal)
+            lc_str_printf(why, "killed by %s: stack overflow, past the %llu "
+                          "MB of stack: a recursion too deep, or a local "
+                          "array too large", lc_signal_name(r->signal),
+                          (stack + LC_MIB / 2) / LC_MIB);
+        else
+            lc_str_printf(why, "exited with status %d: AddressSanitizer "
+                          "found a stack overflow: a recursion too deep, or "
+                          "a local array too large", r->exit_code);
+        return LC_RUNTIME_ERROR;
     }
     if (l->memory_mb > 0 &&
         (r->mem_killed || r->max_rss_kb > (long)l->memory_mb * 1024)) {
@@ -320,14 +363,6 @@ static int is_space(int c)
     return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
-/* The type of input i: a parameter of the signature, then a hidden one. */
-static const lc_type *input_type(const lc_problem *p, size_t i)
-{
-    if (i < p->sig->nparams)
-        return &p->sig->params[i].type;
-    return &p->hidden[i - p->sig->nparams].type;
-}
-
 /* Per-run state shared by the cases. */
 typedef struct judge_run {
     lc_ctx *ctx;
@@ -448,16 +483,9 @@ static int judge_case(judge_run *jr, const lc_case *c, size_t index,
         goto done;
 
     lc_str_clear(&jr->input);
-    for (i = 0; i < c->nargs; i++) {
-        rc = lc_wire_encode(ctx, input_type(jr->p, i), &args[i], &jr->input);
-        if (rc != LC_OK)
-            goto done;
-        lc_str_putc(&jr->input, '\n');
-    }
-    if (jr->input.failed) {
-        rc = lc_oom(ctx);
+    rc = lc_case_wire(ctx, jr->p, args, &jr->input);
+    if (rc != LC_OK)
         goto done;
-    }
     jr->spec.input = jr->input.data;
     jr->spec.input_len = jr->input.len;
 
@@ -512,8 +540,10 @@ static int judge_case(judge_run *jr, const lc_case *c, size_t index,
         cr->sizes = (const char *const *)sizes;
     }
     for (i = 0; i < c->nargs; i++) {
-        if (made && lc_full_size(jr->arena, input_type(jr->p, i), &args[i],
-                                 c->args[i], (const char **)&sizes[i]) != LC_OK)
+        lc_type t = lc_line_type(jr->p, i);
+
+        if (made && lc_full_size(jr->arena, &t, &args[i], c->args[i],
+                                 (const char **)&sizes[i]) != LC_OK)
             goto nomem;
         inputs[i] = sizes && sizes[i] ? sizes[i]
                                       : lc_arena_strdup(jr->arena, c->args[i]);
@@ -820,7 +850,7 @@ int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
     lc_run_spec spec;
     lc_run_result r;
     lc_verdict v;
-    size_t i, pos = 0;
+    size_t pos = 0;
     int rc;
 
     *out = NULL;
@@ -831,12 +861,8 @@ int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
     if (!pool)
         return lc_oom(ctx);
     rc = lc_case_values(ctx, p, c, pool, &args, &exp);
-    for (i = 0; rc == LC_OK && i < c->nargs; i++) {
-        rc = lc_wire_encode(ctx, input_type(p, i), &args[i], &in);
-        lc_str_putc(&in, '\n');
-    }
-    if (rc == LC_OK && in.failed)
-        rc = lc_oom(ctx);
+    if (rc == LC_OK)
+        rc = lc_case_wire(ctx, p, args, &in);
     if (rc != LC_OK)
         goto done;
 

@@ -1,0 +1,64 @@
+== C stub
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+bool hasCycle(struct ListNode* head) {
+
+}
+== C prototype
+bool hasCycle(struct ListNode* head)
+== C harness
+/* lc's harness for problem 15 (cycle). */
+int main(void)
+{
+    lc_rt_read_input();
+    lc_rt_nodes lc_nodes_head;
+    struct ListNode* head = lc_rt_read_list(&lc_nodes_head);
+    int pos = lc_read_int();
+    lc_rt_end_input();
+    lc_rt_cycle(&lc_nodes_head, pos);
+    bool lc_ret = hasCycle(head);
+    lc_write_bool("hasCycle", lc_ret);
+    lc_rt_flush();
+    return 0;
+}
+== C++ stub
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    bool hasCycle(ListNode* head) {
+
+    }
+};
+== C++ prototype
+bool Solution::hasCycle(ListNode* head)
+== C++ harness
+// lc's harness for problem 15 (cycle).
+int main()
+{
+    lc_rt_read_input();
+    lc_rt_nodes lc_nodes_head;
+    ListNode* head = lc_rt_read_list(&lc_nodes_head);
+    int pos{};
+    lc_get(pos);
+    lc_rt_end_input();
+    lc_rt_cycle(&lc_nodes_head, pos);
+    Solution *lc_sol = new Solution();
+    bool lc_ret = lc_sol->hasCycle(head);
+    lc_put(lc_ret);
+    lc_rt_flush();
+    return 0;
+}

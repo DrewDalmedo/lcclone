@@ -16,3 +16,9 @@ public:
 
     }
 };
+--- 0104-maximum-depth-of-binary-tree/.clangd
+# Written by lc. It tells clangd which of lc's node structs (ListNode, TreeNode,
+# Node) this problem uses, as lc's builds do. lc rewrites it as needed; to keep
+# changes of your own, delete this first line and lc will leave it alone.
+CompileFlags:
+  Add: [-DLC_TREENODE]

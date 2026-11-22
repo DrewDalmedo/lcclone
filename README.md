@@ -56,9 +56,12 @@ Milestones **M0** to **M6** are in.
   are marked `draft` in `problems/MANIFEST.tsv` until they have been read
   over.
 
-677 problems are included. All but 104 can be judged; binary trees, linked
-lists, design problems and the like come in later milestones
-(`docs/PLAN.md` section 9). `lc list` shows them, and
+677 problems are included, and all of them can be judged. `lc` judges
+linked lists, binary trees and N-ary trees too, including lists built
+with a cycle or joined to another and arguments that are a node of
+another (see [docs/problem-format.md](docs/problem-format.md#build-and-ref));
+the packs for those problems, and design problems and the like, come in
+later milestones (`docs/PLAN.md` section 9). `lc list` shows them, and
 `problems/MANIFEST.tsv` lists every LeetCode Easy problem: 974, of which
 751 are in scope. `lc stats --manifest` shows how far the set is.
 

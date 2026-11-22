@@ -310,28 +310,13 @@ int lc_prototype(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
 
 int lc_codegen_supported(lc_ctx *ctx, const lc_problem *p)
 {
-    char name[LC_TYPE_NAME_MAX];
-    size_t i;
     int rc = need_sig(ctx, p);
 
     if (rc != LC_OK)
         return rc;
-    if (p->nhidden)
-        return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): hidden "
-                            "inputs are not supported yet", p->id, p->slug);
     if (p->compare.mode == LC_CMP_CHECKER)
         return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): compare: "
                             "checker is not supported yet", p->id, p->slug);
-    if (is_node(p->sig->ret.kind))
-        return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): "
-                            "returning %s is not supported yet", p->id,
-                            p->slug, lc_type_name(p->sig->ret, name));
-    for (i = 0; i < p->sig->nparams; i++)
-        if (is_node(p->sig->params[i].type.kind))
-            return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s): "
-                                "%s parameters are not supported yet", p->id,
-                                p->slug,
-                                lc_type_name(p->sig->params[i].type, name));
     return LC_OK;
 }
 
@@ -394,6 +379,115 @@ static void c_write_param(lc_str *s, const lc_problem *p)
                       pr->name);
 }
 
+/* 1 if the harness keeps a table of the nodes of `slot`: a builder links
+ * them, or a reference points into them. */
+static int needs_table(const lc_problem *p, size_t slot)
+{
+    size_t i, k;
+
+    for (i = 0; i < p->nrefs; i++)
+        if (p->refs[i].in == slot)
+            return 1;
+    for (i = 0; i < p->nbuilders; i++)
+        for (k = 0; k < p->builders[i].nargs; k++)
+            if (p->builders[i].kind != LC_BUILD_COPY &&
+                p->builders[i].args[k] == slot &&
+                is_node(lc_problem_slot(p, slot)->type.kind))
+                return 1;
+    return 0;
+}
+
+/* 1 if a builder uses the hidden input in `slot`. */
+static int builder_uses(const lc_problem *p, size_t slot)
+{
+    size_t i, k;
+
+    for (i = 0; i < p->nbuilders; i++)
+        for (k = 0; k < p->builders[i].nargs; k++)
+            if (p->builders[i].args[k] == slot)
+                return 1;
+    return 0;
+}
+
+static const char *slot_name(const lc_problem *p, size_t slot)
+{
+    return lc_problem_slot(p, slot)->name;
+}
+
+/* The builders, then the node references, once every input is read. */
+static void put_links(lc_str *s, const lc_problem *p, int c)
+{
+    size_t i;
+
+    for (i = 0; i < p->nbuilders; i++) {
+        const lc_builder *b = &p->builders[i];
+
+        if (b->kind == LC_BUILD_CYCLE)
+            lc_str_printf(s, "    lc_rt_cycle(&lc_nodes_%s, %s);\n",
+                          slot_name(p, b->args[0]), slot_name(p, b->args[1]));
+        else if (b->kind == LC_BUILD_INTERSECT)
+            lc_str_printf(s, "    lc_rt_intersect(&lc_nodes_%s, &lc_nodes_%s, "
+                          "&%s, %s, %s);\n", slot_name(p, b->args[0]),
+                          slot_name(p, b->args[1]), slot_name(p, b->args[1]),
+                          slot_name(p, b->args[2]), slot_name(p, b->args[3]));
+    }
+    for (i = 0; i < p->nrefs; i++) {
+        const lc_ref *r = &p->refs[i];
+        const lc_param *pr;
+
+        if (r->slot == LC_SLOT_RETURN)
+            continue;
+        pr = lc_problem_slot(p, r->slot);
+        lc_str_puts(s, "    ");
+        if (c)
+            put_c_type(s, pr->type, 0);
+        else
+            put_cpp_type(s, pr->type, 1);
+        lc_str_printf(s, " %s = (", pr->name);
+        if (c)
+            put_c_type(s, pr->type, 0);
+        else
+            put_cpp_type(s, pr->type, 1);
+        lc_str_printf(s, ")lc_rt_node_at(&lc_nodes_%s, lc_ref_%s);\n",
+                      slot_name(p, r->in), pr->name);
+    }
+    /* Hidden inputs no builder uses are read and left alone. */
+    for (i = p->sig->nparams; i < lc_slot_count(p); i++) {
+        const lc_param *pr = lc_problem_slot(p, i);
+
+        if (builder_uses(p, i))
+            continue;
+        lc_str_printf(s, "    (void)%s;\n", pr->name);
+        if (c && pr->type.dims >= 1)
+            lc_str_printf(s, "    (void)%sSize;\n", pr->name);
+        if (c && pr->type.dims == 2)
+            lc_str_printf(s, "    (void)%sColSize;\n", pr->name);
+    }
+}
+
+/* Reads a list or tree into a variable, keeping a table of its nodes. */
+static void put_read_table(lc_str *s, const lc_param *pr, int c)
+{
+    lc_str_printf(s, "    lc_rt_nodes lc_nodes_%s;\n    ", pr->name);
+    if (c)
+        put_c_type(s, pr->type, 0);
+    else
+        put_cpp_type(s, pr->type, 1);
+    lc_str_printf(s, " %s = lc_rt_read_%s(&lc_nodes_%s);\n", pr->name,
+                  kinds[pr->type.kind].rt, pr->name);
+}
+
+/* With `ref: return in NAME`, the result must be one of NAME's nodes. */
+static void put_ref_return(lc_str *s, const lc_problem *p)
+{
+    const lc_ref *r = lc_slot_ref(p, LC_SLOT_RETURN);
+
+    if (r)
+        lc_str_printf(s, "    lc_rt_check_ref(\"%s\", lc_ret, &lc_nodes_%s, "
+                      "\"%s\");\n", p->sig->name, slot_name(p, r->in),
+                      slot_name(p, r->in));
+}
+
 static void c_harness(lc_str *s, const lc_problem *p)
 {
     const lc_sig *sig = p->sig;
@@ -403,11 +497,16 @@ static void c_harness(lc_str *s, const lc_problem *p)
     lc_str_printf(s, "/* lc's harness for problem %d (%s). */\n"
                   "int main(void)\n{\n    lc_rt_read_input();\n",
                   p->id, p->slug);
-    for (i = 0; i < sig->nparams; i++) {
-        const lc_param *pr = &sig->params[i];
+    for (i = 0; i < lc_slot_count(p); i++) {
+        const lc_param *pr = lc_problem_slot(p, i);
 
         rt = kinds[pr->type.kind].rt;
-        if (pr->type.dims == 0) {
+        if (lc_slot_ref(p, i)) {
+            lc_str_printf(s, "    int lc_ref_%s = lc_read_int();\n",
+                          pr->name);
+        } else if (needs_table(p, i)) {
+            put_read_table(s, pr, 1);
+        } else if (pr->type.dims == 0) {
             lc_str_puts(s, "    ");
             put_c_type(s, pr->type, 0);
             lc_str_printf(s, " %s = lc_read_%s();\n", pr->name, rt);
@@ -425,6 +524,7 @@ static void c_harness(lc_str *s, const lc_problem *p)
         }
     }
     lc_str_puts(s, "    lc_rt_end_input();\n");
+    put_links(s, p, 1);
 
     rt = kinds[sig->ret.kind].rt;
     if (sig->ret.dims >= 1)
@@ -465,6 +565,7 @@ static void c_harness(lc_str *s, const lc_problem *p)
                           "%sSize);\n", kinds[sig->params[i].type.kind].rt,
                           sig->name, sig->params[i].name,
                           sig->params[i].name, sig->params[i].name);
+    put_ref_return(s, p);
     if (p->check.mode != LC_RESULT_RETURN)
         c_write_param(s, p);
     else if (sig->ret.dims == 0)
@@ -486,9 +587,18 @@ static void cpp_harness(lc_str *s, const lc_problem *p)
     lc_str_printf(s, "// lc's harness for problem %d (%s).\n"
                   "int main()\n{\n    lc_rt_read_input();\n",
                   p->id, p->slug);
-    for (i = 0; i < sig->nparams; i++) {
-        const lc_param *pr = &sig->params[i];
+    for (i = 0; i < lc_slot_count(p); i++) {
+        const lc_param *pr = lc_problem_slot(p, i);
 
+        if (lc_slot_ref(p, i)) {
+            lc_str_printf(s, "    int lc_ref_%s = 0;\n    lc_get(lc_ref_%s);\n",
+                          pr->name, pr->name);
+            continue;
+        }
+        if (needs_table(p, i)) {
+            put_read_table(s, pr, 0);
+            continue;
+        }
         lc_str_puts(s, "    ");
         put_cpp_type(s, pr->type, 1);
         lc_str_printf(s, " %s%s;\n    lc_get(%s);\n", pr->name,
@@ -496,8 +606,9 @@ static void cpp_harness(lc_str *s, const lc_problem *p)
                                                                     : "{}",
                       pr->name);
     }
-    lc_str_puts(s, "    lc_rt_end_input();\n"
-                "    Solution *lc_sol = new Solution();\n    ");
+    lc_str_puts(s, "    lc_rt_end_input();\n");
+    put_links(s, p, 0);
+    lc_str_puts(s, "    Solution *lc_sol = new Solution();\n    ");
     if (p->check.mode == LC_RESULT_PREFIX) {
         lc_str_puts(s, "long long lc_ret = ");
     } else if (sig->ret.kind != LC_T_VOID) {
@@ -508,7 +619,11 @@ static void cpp_harness(lc_str *s, const lc_problem *p)
     for (i = 0; i < sig->nparams; i++)
         lc_str_printf(s, "%s%s", i ? ", " : "", sig->params[i].name);
     lc_str_puts(s, ");\n");
+    put_ref_return(s, p);
     if (p->check.mode == LC_RESULT_RETURN) {
+        /* A list or tree that can't be written is reported by name. */
+        if (is_node(sig->ret.kind))
+            lc_str_printf(s, "    lc_rt_fn = \"%s\";\n", sig->name);
         lc_str_puts(s, "    lc_put(lc_ret);\n");
     } else {
         /* check: the parameter after the call is the result; for prefix,
@@ -537,6 +652,29 @@ int lc_codegen_harness(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     else
         cpp_harness(out, p);
     return out->failed ? lc_oom(ctx) : LC_OK;
+}
+
+void lc_codegen_define_flags(const lc_problem *p, lc_str *out)
+{
+    static const struct {
+        lc_kind kind;
+        const char *flag;
+    } nodes[] = {{LC_T_LIST, "-DLC_LISTNODE"}, {LC_T_TREE, "-DLC_TREENODE"},
+                 {LC_T_NARY, "-DLC_NARYNODE"}};
+    size_t i;
+    int any = 0;
+
+    for (i = 0; i < sizeof nodes / sizeof nodes[0]; i++)
+        if (uses_kind(p, nodes[i].kind)) {
+            lc_str_printf(out, "%s%s", any ? ", " : "", nodes[i].flag);
+            any = 1;
+        }
+}
+
+int lc_codegen_uses_nodes(const lc_problem *p)
+{
+    return uses_kind(p, LC_T_LIST) || uses_kind(p, LC_T_TREE) ||
+           uses_kind(p, LC_T_NARY);
 }
 
 void lc_codegen_defines(const lc_problem *p, lc_str *out)

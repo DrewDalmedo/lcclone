@@ -1,0 +1,4 @@
+--- stdout
+--- stderr
+lc: tests/fixtures/judge/0024-intersect/badtail.txt:1: headB: node 2 is 4, but the node of headA it joins there is 3
+--- exit 3

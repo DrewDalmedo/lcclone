@@ -909,6 +909,132 @@ static void test_case_values(void)
     lc_arena_free(&a);
 }
 
+/* make_problem with `build:` and `ref:` too (either may be NULL). */
+static lc_problem make_linked(lc_arena *a, const char *sig,
+                              const char *hidden, const char *build,
+                              const char *ref)
+{
+    lc_problem p = make_problem(a, sig, hidden);
+    lc_str err = LC_STR_INIT;
+    lc_builder *b = NULL;
+    lc_ref *r = NULL;
+    size_t nb = 0, nr = 0;
+
+    if (build)
+        CHECK_INT(lc_parse_builders(a, build, strlen(build), p.sig, p.hidden,
+                                    p.nhidden, &b, &nb, &err), LC_OK);
+    if (ref)
+        CHECK_INT(lc_parse_refs(a, ref, strlen(ref), p.sig, p.hidden,
+                                p.nhidden, b, nb, &r, &nr, &err), LC_OK);
+    p.builders = b;
+    p.nbuilders = nb;
+    p.refs = r;
+    p.nrefs = nr;
+    lc_str_free(&err);
+    return p;
+}
+
+/* The wire text lc sends the harness for the one case in `text`. */
+static void expect_wire(const lc_problem *p, const char *text,
+                        const char *wire)
+{
+    lc_ctx *ctx = lc_open(NULL);
+    lc_pool *pool = lc_pool_new();
+    lc_cases *cs = parse_ok(ctx, text);
+    const lc_value *args, *exp;
+    lc_str out = LC_STR_INIT;
+
+    if (cs && cs->count == 1) {
+        CHECK_INT(lc_case_values(ctx, p, &cs->items[0], pool, &args, &exp),
+                  LC_OK);
+        CHECK_INT(lc_case_wire(ctx, p, args, &out), LC_OK);
+        CHECK_STR(lc_str_cstr(&out), wire);
+    }
+    lc_str_free(&out);
+    lc_cases_free(cs);
+    lc_pool_free(pool);
+    lc_close(ctx);
+}
+
+/* Builders and node references: a case's lines, the checks of its hidden
+ * inputs, and what the harness gets. */
+static void test_linked_values(void)
+{
+    lc_arena a = {0};
+    lc_pool *pool = lc_pool_new();
+    const lc_value *args = NULL, *exp = NULL;
+    lc_problem p;
+
+    p = make_linked(&a, "bool hasCycle(ListNode head)", "int pos",
+                    "cycle head pos", NULL);
+    case_values(&p, "[3,2,0,-4]\n1\n=> true\n", NULL, pool, &args, &exp);
+    case_values(&p, "[3,2,0,-4]\n3\n=> true\n", NULL, pool, &args, &exp);
+    case_values(&p, "[3,2,0,-4]\n-1\n=> false\n", NULL, pool, &args, &exp);
+    case_values(&p, "[]\n-1\n=> false\n", NULL, pool, &args, &exp);
+    case_values(&p, "[3,2,0,-4]\n4\n=> true\n", "d/tests.txt:1: pos: 4 is "
+                "not a node of head, which has 4 nodes (-1 means no cycle)",
+                pool, &args, &exp);
+    case_values(&p, "[1]\n-2\n=> true\n", "d/tests.txt:1: pos: -2 is not a "
+                "node of head, which has 1 node (-1 means no cycle)", pool,
+                &args, &exp);
+    case_values(&p, "[]\n0\n=> true\n", "d/tests.txt:1: pos: 0 is not a "
+                "node of head, which has 0 nodes (-1 means no cycle)", pool,
+                &args, &exp);
+    expect_wire(&p, "[3,2]\n1\n=> true\n", "2 3 2\n1\n");
+
+    p = make_linked(&a, "ListNode f(ListNode headA, ListNode headB)",
+                    "int skipA, int skipB",
+                    "intersect headA headB skipA skipB", NULL);
+    case_values(&p, "[4,1,8,4,5]\n[5,6,1,8,4,5]\n2\n3\n=> [8,4,5]\n", NULL,
+                pool, &args, &exp);
+    case_values(&p, "[2,6,4]\n[1,5]\n3\n2\n=> []\n", NULL, pool, &args,
+                &exp);
+    case_values(&p, "[]\n[]\n0\n0\n=> []\n", NULL, pool, &args, &exp);
+    case_values(&p, "[1]\n[1]\n0\n0\n=> [1]\n", NULL, pool, &args, &exp);
+    case_values(&p, "[1,2]\n[3]\n3\n1\n=> []\n", "d/tests.txt:1: skipA: 3 "
+                "is not from 0 to 2, the length of headA", pool, &args, &exp);
+    case_values(&p, "[1,2]\n[3]\n1\n-1\n=> []\n", "d/tests.txt:1: skipB: "
+                "-1 is not from 0 to 1, the length of headB", pool, &args,
+                &exp);
+    case_values(&p, "[1,2]\n[3]\n2\n0\n=> []\n", "d/tests.txt:1: skipB: "
+                "either both lists are whole (skipA = 2, skipB = 1: they "
+                "don't join) or neither is", pool, &args, &exp);
+    case_values(&p, "[1,2]\n[3,2,9]\n1\n1\n=> [2]\n", "d/tests.txt:1: "
+                "headB: it has 2 nodes from node 1 on, but headA has 1 from "
+                "node 1 on, where they join", pool, &args, &exp);
+    case_values(&p, "[1,2,3]\n[9,2,4]\n1\n1\n=> [2,3]\n", "d/tests.txt:1: "
+                "headB: node 2 is 4, but the node of headA it joins there is "
+                "3", pool, &args, &exp);
+    expect_wire(&p, "[1,2]\n[3,2]\n1\n1\n=> [2]\n",
+                "2 1 2\n2 3 2\n1\n1\n");
+
+    /* A copy has no line, and a reference's line is a node's value: the
+     * first in level order that has it, sent as its index. */
+    p = make_linked(&a, "TreeNode getTargetCopy(TreeNode original, TreeNode "
+                    "cloned, TreeNode target)", NULL,
+                    "copy cloned original",
+                    "target in original, return in cloned");
+    case_values(&p, "[7,4,3,null,null,6,19]\n3\n=> [3,6,19]\n", NULL, pool,
+                &args, &exp);
+    case_values(&p, "[7,4,3]\n[7,4,3]\n3\n=> [3]\n", "d/tests.txt:1: case "
+                "has 3 inputs, expected 2 (original, target)", pool, &args,
+                &exp);
+    case_values(&p, "[7,4,3]\n9\n=> [3]\n", "d/tests.txt:1: target: "
+                "original has no node whose value is 9", pool, &args, &exp);
+    case_values(&p, "[7,4,3]\n[3]\n=> [3]\n", "d/tests.txt:1: target: "
+                "column 1: expected int, got an array", pool, &args, &exp);
+    expect_wire(&p, "[7,null,4,null,3,3]\n3\n=> [3]\n",
+                "6 7 n 4 n 3 3\n6 7 n 4 n 3 3\n2\n");
+
+    p = make_linked(&a, "NaryNode f(NaryNode root, NaryNode node)", NULL,
+                    NULL, "node in root");
+    expect_wire(&p, "[1,null,3,2,4,null,5,6]\n5\n=> []\n",
+                "8 1 n 3 2 4 n 5 6\n4\n");
+
+    lc_pool_free(pool);
+    lc_arena_free(&a);
+}
+
 /* Every case of every pack in `dir` must fit its problem's signature. */
 /* Cases parsed from a file remember it, and their errors name it. */
 static void test_case_file(void)
@@ -1078,6 +1204,7 @@ int main(void)
     RUN(test_filename_and_misuse);
     RUN(test_many_cases);
     RUN(test_load_cases);
+    RUN(test_linked_values);
     RUN(test_no_inputs);
     RUN(test_case_values);
     RUN(test_case_file);
