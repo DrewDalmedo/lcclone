@@ -324,16 +324,20 @@ checks only those, and `CHECKFLAGS` adds options such as `--quick`).
 
 ## CI
 
-CI checks every pack on each push and PR, leaving out the slow checks on
-the full-size cases (`--quick`): in `make test` on every system, and with
-`make check-packs CHECKFLAGS=--quick` on Linux (gcc and clang) and macOS
-too. Over every pack those checks would take hours, so they run, on those
-systems and on Alpine (musl), only for
+CI runs on each PR and each push to `main`. A branch is checked by its
+PR's runs, so open a draft PR to check one that has none. `make test`
+checks every pack on every system, leaving out the slow checks on the
+full-size cases (`--quick`, with 50 random cases); the bmake job, which
+builds the same `lc` as Linux (gcc), leaves the packs to that job
+(`LC_E2E_SKIP_PACKS`). `make check-packs`, with 300 random cases and the
+slow checks, runs on Linux (gcc and clang), macOS and Alpine (musl). Over
+every pack it would take hours, and `lc check`'s random cases come from a
+fixed seed, so a pack and an `lc` that haven't changed would get the same
+ones again. It runs only for
 
-- the packs the push or PR changes: those with a file under
+- the packs the PR or push changes: those with a file under
   `problems/NNNN-slug/` that differs from the base. For a PR that is its
-  base branch; for a push, the commit before it, or for a new branch,
-  where it leaves `main`;
+  base branch; for a push to `main`, the commit before it;
 - every pack, when a file under `runtime/` changes (`lc_gen.h`
   included), on Mondays, and when the workflow is run by hand
   (`gh workflow run CI --ref BRANCH`). Run it by hand for a change to how
