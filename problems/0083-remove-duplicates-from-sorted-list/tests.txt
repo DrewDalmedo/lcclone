@@ -1,0 +1,83 @@
+# Remove Duplicates from Sorted List. Lists are written from head to tail.
+
+@example The runs of 4 and of 9 shrink to one node each.
+[4,4,7,9,9,9,12]
+=> [4,7,9,12]
+
+@example A list of one repeated value becomes a single node.
+[-3,-3,-3]
+=> [-3]
+
+@example With nothing repeated, the list stays as it is.
+[2,5,8]
+=> [2,5,8]
+
+# The empty list.
+[]
+=> []
+
+# A single node.
+[6]
+=> [6]
+
+# Both value limits, repeated.
+[-100,-100,100,100]
+=> [-100,100]
+
+# A run at the head only.
+[8,8,9]
+=> [8,9]
+
+# A run at the tail only.
+[1,2,2]
+=> [1,2]
+
+# A run of four: removing one node per step is not enough.
+[7,7,7,7,8]
+=> [7,8]
+
+# Runs of every length, across zero.
+[-2,-1,-1,0,0,0,5,5]
+=> [-2,-1,0,5]
+
+# Every value doubled.
+[0,0,1,1,2,2]
+=> [0,1,2]
+
+@gen 1 small
+[-1,0]
+=> [-1,0]
+
+@gen 2 small
+[-2,-1,-1,0,1,1,2]
+=> [-2,-1,0,1,2]
+
+@gen 3 small
+[-2,-2,-1,0,1]
+=> [-2,-1,0,1]
+
+@gen 4 small
+[0]
+=> [0]
+
+@gen 5 small
+[-1,-1,0]
+=> [-1,0]
+
+@gen 6 small
+[-1,1,2]
+=> [-1,1,2]
+
+# Full size: 300 random values, 300 equal, all 201 values once, runs of two,
+# and one low value before a run of 299.
+@full 1 ada90f21
+
+@full 2 d46f67b1
+=> [-100]
+
+@full 3 c700c40e
+
+@full 4 cfb3cad9
+
+@full 5 89fa2bd4
+=> [-100,100]

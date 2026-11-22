@@ -1,0 +1,79 @@
+# N-ary Tree Preorder Traversal. Trees are written level by level, with a
+# null closing each node's group of children.
+
+@example 8's subtree (8, then 4) comes before the root's second child, 2.
+[5,null,8,2,null,4]
+=> [5,8,4,2]
+
+@example Node 4's descendants follow it, after its leaf siblings.
+[1,null,2,3,4,null,null,null,5,null,6]
+=> [1,2,3,4,5,6]
+
+@example An empty tree.
+[]
+=> []
+
+# A lone root.
+[7]
+=> [7]
+
+# A root with many children keeps their order.
+[1,null,5,4,3,2]
+=> [1,5,4,3,2]
+
+# A path.
+[4,null,3,null,2,null,1]
+=> [4,3,2,1]
+
+# Two levels of two children: not level order.
+[1,null,2,3,null,4,5,null,6,7]
+=> [1,2,4,5,3,6,7]
+
+# Repeated values.
+[3,null,3,3,null,3]
+=> [3,3,3,3]
+
+# The value limits.
+[10000,null,0,10000,null,0]
+=> [10000,0,0,10000]
+
+# The middle child has the subtree.
+[1,null,2,3,4,null,null,5,6]
+=> [1,2,3,5,6,4]
+
+@gen 1 small
+[4,null,5]
+=> [4,5]
+
+@gen 2 small
+[4,null,2,null,2,0,null,0,0,null,null,4]
+=> [4,2,2,0,4,0,0]
+
+@gen 3 small
+[2,null,2,1,null,4,null,null,5]
+=> [2,2,4,5,1]
+
+@gen 4 small
+[3]
+=> [3]
+
+@gen 5 small
+[1,null,4,3]
+=> [1,4,3]
+
+@gen 6 small
+[4,null,1,2]
+=> [4,1,2]
+
+# Full size, 10^4 nodes: a path of 1000 with the rest hung at random, a root
+# with 9999 leaves, a random tree, a path of 1000 under the root's last
+# child, and a path of 1000 with leaves along it.
+@full 1 84b1d12e
+
+@full 2 c1ac984e
+
+@full 3 a463ee49
+
+@full 4 54ff8528
+
+@full 5 274e45be

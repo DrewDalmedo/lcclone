@@ -1,0 +1,105 @@
+# Merge Two Sorted Lists. Lists are written from head to tail.
+
+@example The two lists take turns in places, and 10 and 11 come last.
+[2,6,9]
+[3,4,10,11]
+=> [2,3,4,6,9,10,11]
+
+@example Equal values may come from either list.
+[5,5]
+[5,8]
+=> [5,5,5,8]
+
+@example With one list empty, the result is the other list.
+[]
+[-7,8]
+=> [-7,8]
+
+# Both lists empty.
+[]
+[]
+=> []
+
+# The second list empty.
+[-7,8]
+[]
+=> [-7,8]
+
+# One node each, the second smaller.
+[9]
+[-9]
+=> [-9,9]
+
+# Both value limits, in both lists.
+[-100,100]
+[-100,100]
+=> [-100,-100,100,100]
+
+# All of list1 comes first.
+[1,2,3]
+[7,8]
+=> [1,2,3,7,8]
+
+# All of list2 comes first.
+[7,8]
+[1,2,3]
+=> [1,2,3,7,8]
+
+# list1 has a long tail left after list2 runs out.
+[1,20,30,40]
+[2]
+=> [1,2,20,30,40]
+
+# Ties across the lists, and repeats inside each.
+[3,3,7]
+[3,8,8]
+=> [3,3,3,7,8,8]
+
+# Negative values, interleaved.
+[-50,-2]
+[-49,-3,0]
+=> [-50,-49,-3,-2,0]
+
+@gen 1 small
+[-3,2]
+[]
+=> [-3,2]
+
+@gen 2 small
+[-3,-3,-2,-1]
+[-2,2]
+=> [-3,-3,-2,-2,-1,2]
+
+@gen 3 small
+[-3,1,2,2,3]
+[-3,-2,-1,3]
+=> [-3,-3,-2,-1,1,2,2,3,3]
+
+@gen 4 small
+[3]
+[-3,-1,1,2]
+=> [-3,-1,1,2,3]
+
+@gen 5 small
+[-2,2,2]
+[0]
+=> [-2,0,2,2]
+
+@gen 6 small
+[-3,1,1]
+[-3,1,2]
+=> [-3,-3,1,1,1,2]
+
+# Full size, 50 nodes in each list: random, alternating, list1 below list2,
+# list2 below list1, all equal, and list1 empty.
+@full 1 c628d507
+
+@full 2 ec3f72cd
+
+@full 3 fc280f21
+
+@full 4 1a36ef40
+
+@full 5 72240ffd
+
+@full 6 f34f4c58

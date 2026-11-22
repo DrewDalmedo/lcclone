@@ -1,0 +1,112 @@
+# Remove Linked List Elements. A case is the list from head to tail, then
+# val.
+
+@example Both 9s go, and the rest keep their order.
+[4,9,2,9,5]
+9
+=> [4,2,5]
+
+@example The first two nodes are cut, so the result starts at a later node.
+[3,3,8]
+3
+=> [8]
+
+@example No node holds 7, so nothing changes.
+[5,6,8]
+7
+=> [5,6,8]
+
+# The empty list.
+[]
+5
+=> []
+
+# The empty list, val 0.
+[]
+0
+=> []
+
+# One node, cut.
+[1]
+1
+=> []
+
+# One node, kept.
+[1]
+2
+=> [1]
+
+# Every node cut.
+[6,6]
+6
+=> []
+
+# val 0 is allowed, but no node holds it.
+[5,6,7]
+0
+=> [5,6,7]
+
+# A run at the tail.
+[2,7,7]
+7
+=> [2]
+
+# Alternating, with val at both ends and the top value.
+[50,1,50,1,50]
+50
+=> [1,1]
+
+# Alternating, with val first.
+[1,50,1,50]
+1
+=> [50,50]
+
+# Adjacent nodes to cut in the middle.
+[3,8,3,3,8,3]
+3
+=> [8,8]
+
+@gen 1 small
+[2,3,3,3,3,2]
+2
+=> [3,3,3,3]
+
+@gen 2 small
+[2,3,3,1]
+0
+=> [2,3,3,1]
+
+@gen 3 small
+[3,3,2,2,3,1,2]
+2
+=> [3,3,3,1]
+
+@gen 4 small
+[1,2,1]
+2
+=> [1,1]
+
+@gen 5 small
+[2,2,1,1,2]
+1
+=> [2,2,2]
+
+@gen 6 small
+[2]
+1
+=> [2]
+
+# Full size, 10^4 nodes: random, all cut, none cut, every other node, runs
+# at both ends, and only the last node.
+@full 1 8bd9676b
+
+@full 2 bcd1eea2
+=> []
+
+@full 3 38c5b1bf
+
+@full 4 8a1e32f4
+
+@full 5 b8be2a19
+
+@full 6 e9d565e2

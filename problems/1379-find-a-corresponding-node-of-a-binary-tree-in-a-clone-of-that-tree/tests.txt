@@ -1,0 +1,116 @@
+# Find a Corresponding Node of a Binary Tree in a Clone of That Tree. A case
+# is original in level order, then the value of target. The result is the
+# subtree of the node returned, which must be a node of cloned.
+
+@example The twin of 5 in the copy, with its children 3 and 8.
+[12,5,9,3,8]
+5
+=> [5,3,8]
+
+@example A chain of left children: the twin of the middle node.
+[6,2,null,11]
+2
+=> [2,11]
+
+@example An inner node on the right, whose subtree comes along.
+[10,20,30,null,40,50,60]
+30
+=> [30,50,60]
+
+# A single node.
+[1]
+1
+=> [1]
+
+# The root is the target.
+[4,2,6]
+4
+=> [4,2,6]
+
+# A left leaf.
+[4,2,6]
+2
+=> [2]
+
+# A right leaf.
+[4,2,6]
+6
+=> [6]
+
+# Inside a path of right children.
+[1,null,2,null,3,null,4]
+3
+=> [3,null,4]
+
+# Inside a path of left children.
+[9,8,null,7,null,6]
+8
+=> [8,7,null,6]
+
+# A zigzag.
+[1,2,null,null,3,4]
+3
+=> [3,4]
+
+# The top value, at a leaf.
+[1,100000]
+100000
+=> [100000]
+
+# The last node of a complete tree.
+[1,2,3,4,5,6,7]
+7
+=> [7]
+
+# A node with a single left child, on the right side.
+[1,2,3,null,null,4]
+3
+=> [3,4]
+
+@gen 1 small
+[5]
+5
+=> [5]
+
+@gen 2 small
+[4,7,6,8,3]
+3
+=> [3]
+
+@gen 3 small
+[1,8,null,5,9,null,null,2,6,null,null,3]
+1
+=> [1,8,null,5,9,null,null,2,6,null,null,3]
+
+@gen 4 small
+[5]
+5
+=> [5]
+
+@gen 7 small
+[8]
+8
+=> [8]
+
+@gen 6 small
+[4,null,7,5,3,null,9,null,null,null,1]
+9
+=> [9,null,1]
+
+# Full size, 10^4 nodes: paths of left children, right children and a
+# zigzag with the deepest node as target, a random shape, and a complete
+# tree with its last node as target.
+@full 1 9a960d3a
+=> [54576]
+
+@full 2 4df26af3
+=> [64982]
+
+@full 3 3defac5b
+=> [90719]
+
+@full 4 d58116bc
+=> [5803,null,71544,66697,null,56597,46783,24581,null,34092,57042]
+
+@full 5 3a59b448
+=> [4293]

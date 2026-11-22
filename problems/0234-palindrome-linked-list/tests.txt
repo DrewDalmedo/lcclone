@@ -1,0 +1,98 @@
+# Palindrome Linked List. Lists are written from head to tail.
+
+@example An odd length: the 7 in the middle has no partner to match.
+[4,0,7,0,4]
+=> true
+
+@example The ends match, but the second digit is 9 and the third is 4.
+[2,9,4,2]
+=> false
+
+@example A single digit.
+[6]
+=> true
+
+# The smallest digit, alone.
+[0]
+=> true
+
+# Two equal digits.
+[3,3]
+=> true
+
+# Two different digits.
+[3,7]
+=> false
+
+# Odd length, true.
+[9,0,9]
+=> true
+
+# Odd length, the last digit differs.
+[9,0,8]
+=> false
+
+# Even length, true, with zeros inside.
+[5,0,0,5]
+=> true
+
+# Only the middle pair differs.
+[5,0,1,5]
+=> false
+
+# All equal.
+[7,7,7,7,7,7]
+=> true
+
+# All equal but the last.
+[7,7,7,7,7,8]
+=> false
+
+# The first half repeated rather than mirrored.
+[1,2,3,1,2,3]
+=> false
+
+# Sorted digits are not symmetric, though the middle looks it.
+[1,2,3,3,4]
+=> false
+
+@gen 1 small
+[1]
+=> true
+
+@gen 2 small
+[1,2,2,2,1]
+=> true
+
+@gen 3 small
+[2,2,1,1,1,2,2]
+=> true
+
+@gen 4 small
+[0]
+=> true
+
+@gen 5 small
+[1]
+=> true
+
+@gen 6 small
+[1,1,2,2,2,0]
+=> false
+
+# Full size: palindromes of 10^5 and 99999 nodes, a mismatch at the very
+# middle, 10^5 equal digits, and equal digits but for the last.
+@full 1 cd87a825
+=> true
+
+@full 2 2ca5d4df
+=> true
+
+@full 3 7ea92347
+=> false
+
+@full 4 eac5734a
+=> true
+
+@full 5 b188e6a7
+=> false
