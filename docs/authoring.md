@@ -491,7 +491,8 @@ ones again. It runs only for
 
 - the packs the PR or push changes: those with a file under
   `problems/NNNN-slug/` that differs from the base. For a PR that is its
-  base branch; for a push to `main`, the commit before it;
+  base branch; for a push to `main`, the last commit whose run on `main`
+  passed, so the next run covers one that failed or that a merge cancelled;
 - every pack, when a file under `runtime/` changes (`lc_gen.h`
   included), on Mondays, and when the workflow is run by hand
   (`gh workflow run CI --ref BRANCH`). Run it by hand for a change to how
