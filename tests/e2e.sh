@@ -14,6 +14,10 @@
 # LC_E2E_WRAP runs every lc under a wrapper, for example
 #   LC_E2E_WRAP='valgrind -q --leak-check=full --error-exitcode=9'
 #
+# LC_E2E_SKIP_PACKS=1 leaves out the two runs over every shipped pack (lc
+# submit of each reference solution, and lc check), which take most of the
+# time: for a CI job that tests how lc is built rather than the packs.
+#
 # The out-of-memory tests preload an allocator built with $CC (default cc)
 # and need LD_PRELOAD; the terminal tests need python3. Where they can't
 # run they are skipped with a note.
@@ -1194,7 +1198,11 @@ fi
 # Every shipped problem: its reference solution in C, any C solution in
 # tests/fixtures/solutions, and the C++ one there at c++11 and at the
 # newest standard, pass every case.
+if [ -n "$LC_E2E_SKIP_PACKS" ]; then
+    echo "note: skipped lc submit of every shipped pack (LC_E2E_SKIP_PACKS)"
+fi
 for d in problems/*/; do
+    [ -z "$LC_E2E_SKIP_PACKS" ] || break
     b=$(basename "$d")
     for c in "$d/ref.c" "tests/fixtures/solutions/$b.c"; do
         [ -f "$c" ] || continue
@@ -1532,9 +1540,13 @@ check err-check-regen-no-ref LC_PROBLEMS="$RG" -- check --regen
 # The repository's own packs pass lc check. --quick: CI runs the slow
 # checks on the full-size cases apart, on the packs a change touches
 # (tools/full-packs.sh).
-run LC_PROBLEMS=problems -- check --quick --count 50
-if [ "$st" = 0 ]; then ok; else
-    bad "LC_PROBLEMS=problems lc check --quick" "$(grep -v ': ok (' "$TMP/out" | head -n 20) $(cat "$TMP/err")"
+if [ -n "$LC_E2E_SKIP_PACKS" ]; then
+    echo "note: skipped lc check of every shipped pack (LC_E2E_SKIP_PACKS)"
+else
+    run LC_PROBLEMS=problems -- check --quick --count 50
+    if [ "$st" = 0 ]; then ok; else
+        bad "LC_PROBLEMS=problems lc check --quick" "$(grep -v ': ok (' "$TMP/out" | head -n 20) $(cat "$TMP/err")"
+    fi
 fi
 
 # tools/full-packs.sh, which tells CI which packs to check in full: the

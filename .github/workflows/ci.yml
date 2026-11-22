@@ -1,8 +1,13 @@
 name: CI
 
 on:
+  # Pushes to main only. A branch is checked by its pull request's runs: a
+  # push run too would do every job twice for each push to a PR's branch,
+  # and with several branches at once, jobs wait for runners. To check a
+  # branch without a PR, open a draft PR (a run by hand checks every pack
+  # in full, which takes hours).
   push:
-    branches: ['**']
+    branches: [main]
   pull_request:
   schedule:
     # Mondays at 04:23 UTC: the full checks over every pack (see the packs
@@ -29,8 +34,9 @@ jobs:
     # limit, slow.c, and ref with the sanitizers (docs/PLAN.md section
     # 6.4). Over every pack those would take hours, so they run on the
     # packs a push or PR changes, and on every pack when lc's runtime
-    # changes, weekly, and when the workflow is run by hand. Every job
-    # checks every pack without them (lc check --quick, in make test).
+    # changes, weekly, and when the workflow is run by hand. Every job but
+    # bmake's checks every pack without them (lc check --quick, in make
+    # test).
     name: Packs to check in full
     runs-on: ubuntu-latest
     outputs:
@@ -46,7 +52,6 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           BEFORE: ${{ github.event.before }}
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           # The commit to compare with; none means every pack.
           base=
@@ -56,18 +61,15 @@ jobs:
             # that is checked out is the PR's base.
             base=HEAD^1 ;;
           push)
-            # What the push changes. On main, that is what the merged PRs
+            # What the push to main changes, that is, what the merged PRs
             # change: their own runs checked those packs, but against the
             # base they had, so this also covers two PRs merged one after
             # the other (a runtime change, then a pack). Checking every
             # pack on each merge would take hours for packs nothing
             # touched; the weekly run covers the rest. After a force-push
-            # the old commit is gone: on a branch, compare with where it
-            # leaves main, as for a new branch; on main, check every pack.
+            # the old commit is gone: check every pack.
             if git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
               base=$BEFORE
-            elif [ "$GITHUB_REF" != "refs/heads/$DEFAULT_BRANCH" ]; then
-              base=$(git merge-base "origin/$DEFAULT_BRANCH" HEAD) || base=
             fi ;;
           esac
           echo "Comparing with: ${base:-nothing}"
@@ -99,18 +101,15 @@ jobs:
       - name: Build and test
         run: make CC="$CC" CFLAGS="-O2 $WFLAGS" test
       - name: Check ${{ needs.packs.outputs.all == 'true' && 'every pack' || 'the changed packs' }} in full
-        # What the next step checks, and the slow checks on the full-size
-        # cases (see the packs job).
+        # ref and brute on 300 random cases (make test's lc check uses 50),
+        # and the slow checks on the full-size cases (see the packs job).
+        # Not every pack each time: the random cases come from a fixed seed,
+        # so a pack and an lc that haven't changed would get the same ones
+        # again, for about 20 minutes per job.
         if: needs.packs.outputs.all == 'true' || needs.packs.outputs.packs != ''
         env:
           PACKS: ${{ needs.packs.outputs.packs }}
         run: make CC="$CC" CFLAGS="-O2 $WFLAGS" check-packs PACKS="$PACKS"
-      - name: Check every pack (--quick)
-        # Every pack: its stubs build, ref passes every case, full-size
-        # ones included, and ref and brute agree on 300 random cases (make
-        # test uses fewer). Not the slow checks on the full-size cases.
-        if: needs.packs.outputs.all != 'true'
-        run: make CC="$CC" CFLAGS="-O2 $WFLAGS" check-packs CHECKFLAGS=--quick
       - name: Incremental rebuilds
         run: |
           # test_fs.c and test_md.c #include core sources, so their objects
@@ -158,9 +157,13 @@ jobs:
           test
 
   bmake:
-    # Proves the Makefile is portable POSIX make, not GNU make only.
+    # Proves the Makefile is portable POSIX make, not GNU make only. The lc
+    # it builds is the Linux (gcc) job's, so the runs over every shipped
+    # pack, most of make test's time, are left to that job.
     name: Linux (bmake)
     runs-on: ubuntu-latest
+    env:
+      LC_E2E_SKIP_PACKS: 1
     steps:
       - uses: actions/checkout@v5
       - name: Install bmake
@@ -233,9 +236,6 @@ jobs:
         env:
           PACKS: ${{ needs.packs.outputs.packs }}
         run: make CC=clang CFLAGS="-O2 $WFLAGS" check-packs PACKS="$PACKS"
-      - name: Check every pack (--quick)
-        if: needs.packs.outputs.all != 'true'
-        run: make CC=clang CFLAGS="-O2 $WFLAGS" check-packs CHECKFLAGS=--quick
 
   install:
     # Installs, then runs lc with no LC_PROBLEMS and an empty HOME, so the

@@ -896,14 +896,17 @@ cases yet.
   sanitizers. A note reports `brute`'s time; 121's `O(n^2)` brute takes
   2.6 s at n = 10^5 with gcc in a Linux container, in the warning band of
   its 1 s limit, which the pass over the packs settles.
-- **CI** checks every pack with `--quick`: in `make test` on every job,
-  and with `make check-packs CHECKFLAGS=--quick` (300 random cases) on
-  Linux (gcc and clang) and macOS. A first job picks the packs that get
-  the full checks too, on those three and on Alpine, with
-  `tools/full-packs.sh`: those with a file under `problems/NNNN-slug/`
+- **CI** runs on PRs and on pushes to `main`, and checks every pack with
+  `--quick` in `make test` (50 random cases) on every job but bmake's.
+  A first job picks the packs that get `make check-packs` (300 random
+  cases and the full checks) on Linux (gcc and clang), macOS and Alpine,
+  with `tools/full-packs.sh`: those with a file under `problems/NNNN-slug/`
   that differs from the base, or every pack when a file under `runtime/`
-  does. The base is a PR's base branch, or for a push the commit before
-  it (for a new branch, where it leaves `main`). On `main` that is what
+  does. The base is a PR's base branch, or for a push to `main` the
+  commit before it. (Until November 2026 Linux and macOS also ran
+  `check-packs --quick` over every pack, about 20 minutes per job for the
+  same fixed-seed cases each time; every branch ran on push as well as
+  in its PR; and bmake's job ran every pack too.) On `main` that is what
   the merged PRs change: their own runs checked those packs, but against
   the base they had, so this also covers two PRs merged one after the
   other, a runtime change and then a pack; checking every pack on each

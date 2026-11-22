@@ -232,8 +232,8 @@ test: all $(UNIT_TESTS) $(FIXTURE_PROGS)
 # Checks the shipped packs with lc check (docs/authoring.md), comparing
 # ref and brute on more random cases than make test does: every pack, or
 # the ones PACKS names (pack directories, IDs or slugs). CHECKFLAGS adds
-# lc check options, such as --quick, which CI uses for the packs a change
-# doesn't touch (tools/full-packs.sh).
+# lc check options, such as --quick. CI runs it on the packs a change
+# touches (tools/full-packs.sh).
 PACKS      =
 CHECKFLAGS =
 check-packs: lc
