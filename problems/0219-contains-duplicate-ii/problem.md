@@ -4,6 +4,7 @@ title: Contains Duplicate II
 difficulty: easy
 tags: array, hash-table, sliding-window
 signature: bool containsNearbyDuplicate(int[] nums, int k)
+time_limit_ms: 200
 ---
 Positions in `nums` are numbered from `0`. Call two positions `i < j` a
 **near repeat** when they hold the same value and lie at most `k` apart:

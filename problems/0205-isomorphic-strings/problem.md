@@ -4,6 +4,7 @@ title: Isomorphic Strings
 difficulty: easy
 tags: hash-table, string
 signature: bool isIsomorphic(string s, string t)
+time_limit_ms: 100
 ---
 You are given two strings `s` and `t` of the same length. Decide whether
 `t` is `s` written in a **substitution code**: a table that gives each

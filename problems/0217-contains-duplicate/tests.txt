@@ -102,3 +102,19 @@
 @gen 8 small
 [1000000000,1000000000,1000000000,1000000000,1000000000,1000000000,1000000000]
 => true
+
+# Full-size cases: 10^5 numbers, in a shape the seed picks (see gen.c).
+@full 1 5e24ae13
+=> true
+
+@full 2 1b622670
+=> true
+
+@full 3 f40b7051
+=> false
+
+@full 4 0e051a30
+=> true
+
+@full 5 28602e3f
+=> false

@@ -9,7 +9,7 @@ void gen(int small)
 {
     int lo = small ? -12 : -10000, hi = small ? 12 : 10000;
     int n = small ? (int)rnd(1, 8) : 10000;
-    int shape = small ? 9 : (int)rnd(0, 4);
+    int shape = small ? 9 : (int)(gen_seed() % 5);
     int *nums = malloc((size_t)n * sizeof *nums);
     int need = n, left, v, k = 0, target;
 

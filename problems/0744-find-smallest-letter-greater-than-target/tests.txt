@@ -46,3 +46,47 @@
 ["a","z"]
 "a"
 => "z"
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["a","e"]
+"f"
+=> "a"
+
+@gen 2 small
+["a","a","c","c","c","e"]
+"b"
+=> "c"
+
+@gen 3 small
+["b","c","c","d","e","e","e","f"]
+"c"
+=> "d"
+
+@gen 4 small
+["d","e"]
+"a"
+=> "d"
+
+@gen 5 small
+["d","e"]
+"d"
+=> "e"
+
+@gen 6 small
+["b","c","c","d","d","e","f"]
+"b"
+=> "c"
+
+# Full-size cases: 10^4 letters, in a shape the seed picks (see gen.c).
+@full 1 bf346727
+=> "a"
+
+@full 2 67197f16
+=> "p"
+
+@full 3 af192c9b
+=> "b"
+
+@full 4 d4cb79f7
+=> "z"

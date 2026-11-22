@@ -1,13 +1,14 @@
-/* The numbers 0 to n but one. The missing one is 0 a quarter of the time,
- * n a quarter of the time, and otherwise any of 0 to n. The seed picks the
- * order: shuffled (half the time), sorted, or sorted in reverse. Small
- * cases have n from 1 to 9; full-size ones n = 10^4. */
+/* The numbers 0 to n but one, shuffled (half the time), sorted, or sorted
+ * in reverse. Small cases have n from 1 to 9, and the missing one is 0 a
+ * quarter of the time, n a quarter of the time, and otherwise any of 0 to
+ * n. Full-size ones have n = 10^4, and the seed picks the missing one: 0,
+ * n (the slowest for trying 0, 1, 2, ... in turn), or any. */
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 9) : 10000, miss, order, i, k = 0, t;
     int *nums = malloc((size_t)n * sizeof *nums);
 
-    switch (rnd(0, 3)) {
+    switch (small ? rnd(0, 3) : (long long)(gen_seed() % 3)) {
     case 0:
         miss = 0;
         break;

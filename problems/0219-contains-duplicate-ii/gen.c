@@ -3,13 +3,13 @@
  * repeat often), distinct values with one repeat at distance exactly k or
  * k + 1, values of either sign drawn from a few magnitudes (x and -x), or
  * picks from both bounds and their neighbours.
- * Full-size cases: 10^5 distinct values reaching both bounds with k at
- * least n - 1; k + 1 distinct values repeated over and over, so every
- * repeat is k + 1 apart, sometimes with one at distance exactly k at the
- * very end (both slow for checking k positions after each one); one value
- * every k + 1 positions and then once more at distance k or less (wrong
- * for a solution that keeps a value's first position); or values from a
- * random range with a random k. */
+ * Full-size cases, as the seed picks: 10^5 distinct values reaching both
+ * bounds with k at least n - 1; k + 1 distinct values repeated over and
+ * over, so every repeat is k + 1 apart, without or with one at distance
+ * exactly k at the very end, k then from n / 2 to n / 2 + 1000 (all three
+ * slow for checking the k positions after each one); or one value every
+ * k + 1 positions and then once more at distance k or less, with k at
+ * most 100 (wrong for a solution that keeps a value's first position). */
 
 #define BOUND 1000000000
 
@@ -65,28 +65,31 @@ static int small_case(int *a, int n)
     return k;
 }
 
+/* The seed picks the shape. Each is either slow for comparing every
+ * position with the k after it or quick for it, never in between. */
 static int large_case(int *a, int n)
 {
-    int shape = (int)rnd(0, 9), k, i;
+    int shape = (int)(gen_seed() % 4), k, i;
 
-    if (shape < 3) {
+    if (shape == 0) {
         k = (int)rnd(n - 1, 100000);
         distinct(a, n);
-    } else if (shape < 6) {
+    } else if (shape <= 2) {
         int *v;
 
-        k = (int)rnd(n / 2, n - 2);
+        /* With the near repeat at the end, k near n / 2 keeps it slow. */
+        k = (int)rnd(n / 2, shape == 1 ? n - 2 : n / 2 + 1000);
         v = malloc((size_t)(k + 1) * sizeof *v);
         distinct(v, k + 1);
         for (i = 0; i < n; i++)
             a[i] = v[i % (k + 1)];
-        if (rnd_chance(50))
+        if (shape == 2)
             a[n - 1] = a[n - 1 - k];
         free(v);
-    } else if (shape < 8) {
+    } else {
         int pos = 0, v;
 
-        k = (int)rnd(1, 2000);
+        k = (int)rnd(1, 100);
         distinct(a, n);
         v = a[0];
         while (pos + 2 * k + 1 <= n - 1) {
@@ -94,13 +97,6 @@ static int large_case(int *a, int n)
             a[pos] = v;
         }
         a[pos + (int)rnd(1, k)] = v;
-    } else {
-        long long w = rnd(1, 2LL * BOUND);
-        long long lo = rnd(-BOUND, BOUND - w);
-
-        k = rnd_chance(25) ? 0 : (int)rnd(0, 100000);
-        for (i = 0; i < n; i++)
-            a[i] = (int)rnd(lo, lo + w);
     }
     return k;
 }

@@ -124,3 +124,15 @@
 "'\\'\"\\'\\"
 => false
 
+# Full-size cases: 5 * 10^4 characters each, in a shape the seed picks (see gen.c).
+@full 1 49c14209
+=> true
+
+@full 2 71082b34
+=> false
+
+@full 3 49cb5e7d
+=> false
+
+@full 4 53473703
+=> true

@@ -11,7 +11,7 @@ void gen(int small)
     int lo = (pairs + 1) / 2 > 1 ? (pairs + 1) / 2 : 1;
     int top = small ? (int)rnd(lo, 6) : 30000;
     int span = 2 * top + 1, k = pairs + 1, n = 2 * pairs + 1;
-    int shape = small ? 0 : (int)rnd(0, 2), first = 0, i, j, t;
+    int shape = small ? 0 : (int)(gen_seed() % 3), first = 0, i, j, t;
     int *pool = malloc((size_t)span * sizeof *pool);
     int *nums = malloc((size_t)n * sizeof *nums);
 

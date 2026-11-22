@@ -80,3 +80,11 @@
 @gen 16 small
 [-1,-1,0,0,1,2]
 => [-1,0,1,2]
+
+# Full-size cases: 3 * 10^4 numbers, in a shape the seed picks (see gen.c).
+@full 1 8186b033
+=> [61]
+
+@full 2 dca5a4f3
+
+@full 3 145a54da

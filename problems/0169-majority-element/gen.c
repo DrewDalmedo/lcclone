@@ -2,10 +2,13 @@
  * that many, and the other elements all equal to one rival, all different
  * (only nearly so in full-size cases), or random, never equal to the
  * majority. Small cases use the values -4 to 4, or a quarter of the time
- * the whole range, where -10^9 and 10^9 come up often. The seed picks
- * the order: shuffled, the majority as one block at the start or at the
- * end, or alternating with the other elements. Full-size cases have
- * 5 * 10^4 elements or one fewer. */
+ * the whole range, where -10^9 and 10^9 come up often. The order is
+ * shuffled, the majority as one block at the start or at the end, or
+ * alternating with the other elements. Full-size cases have 5 * 10^4
+ * elements or one fewer, and the seed picks their shape: as many others
+ * as there can be, all different and before the majority (the slowest for
+ * counting the copies of each element in turn); as many, shuffled in; one
+ * rival alternating with the majority; or random others after it. */
 static int value(int wide)
 {
     if (!wide)
@@ -32,15 +35,28 @@ static int other(int wide, int maj)
 
 void gen(int small)
 {
+    /* Full-size shapes as {kind, order}: the slowest for counting the
+     * copies of each element in turn come first. */
+    static const int shapes[4][2] = {{1, 2}, {1, 0}, {0, 3}, {2, 1}};
     int n = small ? (int)rnd(1, 9) : 50000 - (int)rnd(0, 1);
     int need = n / 2 + 1;
     int m = rnd_chance(60) ? need : (int)rnd(need, n);
-    int r = n - m, wide = small ? rnd_chance(25) : 1;
-    int maj = value(wide), kind = (int)rnd(0, 2), order = (int)rnd(0, 3);
-    int *rest = malloc((size_t)(r + 1) * sizeof *rest);
-    int *nums = malloc((size_t)n * sizeof *nums);
+    int wide = small ? rnd_chance(25) : 1;
+    int maj = value(wide), kind, order, r;
+    int *rest, *nums = malloc((size_t)n * sizeof *nums);
     int i, j, k, a, b, turn;
 
+    if (small) {
+        kind = (int)rnd(0, 2);
+        order = (int)rnd(0, 3);
+    } else {
+        kind = shapes[gen_seed() % 4][0];
+        order = shapes[gen_seed() % 4][1];
+        if (kind == 1)
+            m = need; /* as many others as there can be */
+    }
+    r = n - m;
+    rest = malloc((size_t)(r + 1) * sizeof *rest);
     for (i = 0; i < r; i++) {
         if (kind == 0)
             rest[i] = i == 0 ? other(wide, maj) : rest[0];

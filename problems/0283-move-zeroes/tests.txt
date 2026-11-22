@@ -85,3 +85,11 @@
 [2,-5,0,-3,0,-9]
 => [2,-5,-3,-9,0,0]
 
+# Full-size cases: 10^4 numbers, in a shape the seed picks (see gen.c).
+@full 1 4d62a14e
+
+@full 2 34990fc3
+
+@full 3 7113696b
+
+@full 4 2dfdbdd3

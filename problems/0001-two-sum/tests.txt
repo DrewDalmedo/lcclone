@@ -80,3 +80,10 @@
 [0,19,20,6,6,-8,13,9]
 20
 => [0,2]
+
+# Full-size cases: 10^4 numbers, in a shape the seed picks (see gen.c).
+@full 1 9445bae0
+=> [407,5457]
+
+@full 2 3b0ea1ea
+=> [9998,9999]

@@ -42,7 +42,7 @@ void gen(int small)
             fill(nd, m, "ab");
         }
     } else {
-        shape = (int)rnd(0, 3);
+        shape = (int)(gen_seed() % 4);
         n = maxlen;
         if (shape == 0) {
             m = (int)rnd(4000, 6000);

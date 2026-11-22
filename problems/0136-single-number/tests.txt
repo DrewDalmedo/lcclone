@@ -90,3 +90,12 @@
 [0,0,1]
 => 1
 
+# Full-size cases: 3 * 10^4 - 1 numbers, in a shape the seed picks (see gen.c).
+@full 1 02d56f63
+=> 23200
+
+@full 2 8216554d
+=> -11051
+
+@full 3 f49ea780
+=> -6830

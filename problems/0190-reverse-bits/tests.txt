@@ -42,3 +42,45 @@
 
 1431655765
 => 2863311530
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+2422110729
+=> 2422110729
+
+@gen 2 small
+2168455169
+=> 2147484289
+
+@gen 3 small
+2124944766
+=> 2124944766
+
+@gen 4 small
+2290094081
+=> 2148008209
+
+@gen 5 small
+2143842441
+=> 2433618942
+
+@gen 6 small
+2088413817
+=> 2656394814
+
+# All 32 bits, in a pattern the seed picks (see gen.c).
+@gen 1
+2557539347
+=> 3358527001
+
+@gen 2
+4079588559
+=> 4079588559
+
+@gen 3
+25165824
+=> 384
+
+@gen 4
+233698763
+=> 3551508400

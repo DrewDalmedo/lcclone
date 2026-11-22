@@ -127,3 +127,18 @@
 "zaaazzzz"
 => true
 
+# Full-size cases: about 5 * 10^4 letters each, in a shape the seed picks (see gen.c).
+@full 1 3c89b364
+=> true
+
+@full 2 f8045568
+=> false
+
+@full 3 f99ac0b5
+=> false
+
+@full 4 ba3076c1
+=> false
+
+@full 5 d567479b
+=> true

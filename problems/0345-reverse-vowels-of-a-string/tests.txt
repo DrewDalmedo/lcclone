@@ -93,3 +93,14 @@
 @gen 8 small
 "i auaui"
 => "i uauai"
+
+# Full-size cases: 3 * 10^5 characters, in a shape the seed picks (see gen.c).
+@full 1 de4c0de8
+
+@full 2 370e4184
+
+@full 3 97eec88c
+
+@full 4 085deffc
+
+@full 5 9b1da39e

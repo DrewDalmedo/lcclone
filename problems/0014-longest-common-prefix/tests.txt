@@ -50,3 +50,38 @@
 # The mismatch is in a word in the middle.
 ["cartoon","car","carbon","dog","cart"]
 => ""
+
+# Random small cases from gen.c (lc check --regen makes them).
+@gen 1 small
+["aabbab","aab","aabaa","aabbaa"]
+=> "aab"
+
+@gen 2 small
+["ababb","ab"]
+=> "ab"
+
+@gen 3 small
+["a"]
+=> "a"
+
+@gen 4 small
+["abaaba","abaaba","abaaba","abaaba"]
+=> "abaaba"
+
+@gen 5 small
+["bbab","bbabb","bbabbb","bbabb","bbab"]
+=> "bbab"
+
+@gen 6 small
+["bababa","bababa"]
+=> "bababa"
+
+# Full-size cases: 200 words of up to 200 letters, in a shape the seed picks
+# (see gen.c). gen.c makes them when a solution is judged.
+@full 1 97ab10cf
+
+@full 2 9d2b7e20
+
+@full 3 c68a4d1a
+
+@full 4 99d14562

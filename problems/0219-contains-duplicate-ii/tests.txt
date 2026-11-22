@@ -126,3 +126,16 @@
 [2,-1,-1,0,2,-1,1]
 7
 => true
+
+# Full-size cases: 10^5 numbers, in a shape the seed picks (see gen.c).
+@full 1 a63f9226
+=> false
+
+@full 2 1abc0dcc
+=> true
+
+@full 3 c1151224
+=> true
+
+@full 4 a0a7b34e
+=> false
