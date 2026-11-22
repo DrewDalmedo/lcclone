@@ -5,7 +5,7 @@
  * the seed picks: all in one second with the largest duration (the
  * slowest input for walking through every second of every strike);
  * spread evenly from 0 to 10^7 with the largest duration (answers near
- * the largest); random times and duration; gaps around a small
+ * the largest); random times with a long duration; gaps around a small
  * duration; or duration 0. */
 static int cmp_int(const void *a, const void *b)
 {
@@ -41,8 +41,8 @@ void gen(int small)
             for (i = 0; i < n; i++)
                 times[i] = (int)((long long)i * 10000000 / (n - 1));
             break;
-        case 2: /* random times and duration */
-            duration = (int)rnd(0, 10000000);
+        case 2: /* random times and a long duration */
+            duration = (int)rnd(7000000, 10000000);
             for (i = 0; i < n; i++)
                 times[i] = (int)rnd(0, 10000000);
             qsort(times, (size_t)n, sizeof *times, cmp_int);

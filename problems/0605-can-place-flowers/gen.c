@@ -5,7 +5,9 @@
  * bare, sparse or dense. Full-size cases, in a shape the seed picks: a
  * bare row of 2 * 10^4 or 2 * 10^4 - 1 plots (room for 10^4); random
  * flowers; flowers in every other plot; or bare stretches of up to 600
- * plots between single flowers. */
+ * plots between single flowers. Seeds 1 to 4 ask for the most that fit
+ * and seeds 5 to 8 for one more, so that both answers come up in each
+ * shape. */
 
 /* The most new flowers that fit, planting greedily from the left. */
 static int room(const int *bed, int len)
@@ -29,6 +31,8 @@ void gen(int small)
     int len = small ? (int)rnd(1, 10) : 20000;
     int shape = (int)rnd(0, 4), *bed, i, k = 0, percent = 0, cap, n, pick;
 
+    if (!small)
+        shape = (int)(gen_seed() % 4);
     if (!small && shape == 0 && rnd_chance(50))
         len--;
     bed = malloc((size_t)len * sizeof *bed);
@@ -57,6 +61,8 @@ void gen(int small)
     }
     cap = room(bed, len);
     pick = (int)rnd(0, 9);
+    if (!small)
+        pick = (gen_seed() - 1) % 8 < 4 ? 2 : 9;
     if (pick == 0)
         n = 0;
     else if (pick == 1)

@@ -112,3 +112,22 @@
 "zzaaaaazaa"
 => true
 
+# Full-size cases: s of 100 letters and t of 10^4, in a shape the seed picks
+# (see gen.c).
+@full 1 9a13ee2c
+=> false
+
+@full 2 ed63b7aa
+=> true
+
+@full 3 e1b6268c
+=> false
+
+@full 4 39de1d29
+=> true
+
+@full 5 31777fa7
+=> true
+
+@full 6 2d4920fe
+=> true

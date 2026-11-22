@@ -91,3 +91,18 @@
 "db"
 => 0
 
+# Full-size cases: 10^5 letters, in a shape the seed picks (see gen.c).
+@full 1 3c03a5da
+=> 99999
+
+@full 2 f6266222
+=> 99999
+
+@full 3 fdc9336d
+=> 0
+
+@full 4 6ab3b4e3
+=> -1
+
+@full 5 59372326
+=> -1

@@ -120,3 +120,29 @@
 [1,0,0,1,0,1,0]
 0
 => true
+
+# Full-size cases: rows of 2 * 10^4 plots, in a shape the seed picks (see
+# gen.c).
+@full 1 9468e4a1
+=> true
+
+@full 2 bbb9ee99
+=> true
+
+@full 3 5cbf7772
+=> true
+
+@full 4 8024d964
+=> true
+
+@full 5 aae5bea9
+=> false
+
+@full 6 09788f56
+=> false
+
+@full 7 f648ccdf
+=> false
+
+@full 8 802447d9
+=> false

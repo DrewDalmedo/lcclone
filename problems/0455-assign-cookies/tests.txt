@@ -123,3 +123,23 @@
 [2147483647,2147483647,2147483645]
 [2147483643,2147483647,2147483644]
 => 1
+
+# Full-size cases: 3 * 10^4 children and cookies, in a shape the seed picks
+# (see gen.c).
+@full 1 ed149ffa
+=> 29999
+
+@full 2 cb37a457
+=> 29999
+
+@full 3 17de6c9b
+=> 30000
+
+@full 4 255d43c2
+=> 0
+
+@full 5 c0ab559d
+=> 9670
+
+@full 6 afeac77c
+=> 29807

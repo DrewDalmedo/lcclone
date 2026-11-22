@@ -113,3 +113,19 @@
 4
 => 22
 
+# Full-size cases: 10^4 strikes, times and durations up to 10^7, in a shape
+# the seed picks (see gen.c).
+@full 1 e122d199
+=> 20000000
+
+@full 2 5f68a209
+=> 17847114
+
+@full 3 4e37cb81
+=> 3116674
+
+@full 4 25420e64
+=> 0
+
+@full 5 d28d71a8
+=> 10000000

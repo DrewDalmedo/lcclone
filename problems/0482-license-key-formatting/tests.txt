@@ -110,3 +110,14 @@
 "-99"
 2
 => "99"
+
+# Full-size cases: keys of 10^5 characters, in a shape the seed picks (see
+# gen.c).
+@full 1 5ebbbae5
+
+@full 2 217877ec
+
+@full 3 f7939f0a
+=> "1C6EQ"
+
+@full 4 f5b9e27c

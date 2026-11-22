@@ -7,8 +7,8 @@
  * strings of up to 10^5 letters, in a shape the seed picks: magazine a
  * shuffle of the note; a note of 5 * 10^4 z's against a magazine that
  * has its z's at the far end; a shuffle with one copy of the note's last
- * letter swapped for another letter; a note of 5 * 10^4 letters and a
- * magazine twice as long; or two unrelated strings. */
+ * letter swapped for another letter; a note of 8 * 10^4 letters and a
+ * magazine of 10^5; or two unrelated strings. */
 static const char letters[] = "abcdefghijklmnopqrstuvwxyz";
 
 static void shuffle(char *a, int n)
@@ -98,7 +98,7 @@ static void large_case(char *note, char *mag, int *n, int *m)
         random_letters(mag, *m - *n, "abcdefghijklmnopqrstuvwxy");
         memset(mag + (*m - *n), 'z', (size_t)*n);
     } else if (shape == 3) {
-        *n = 50000;
+        *n = 80000;
         *m = 100000;
         random_letters(note, *n, letters);
         memcpy(mag, note, (size_t)*n);

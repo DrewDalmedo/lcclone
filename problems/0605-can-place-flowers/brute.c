@@ -1,11 +1,15 @@
 /* Slow and obviously right, for short rows only: try every set of bare
  * plots as the new flowers, keep the sets that leave no two flowers side
- * by side, and see whether one of them has n plots. */
+ * by side, and see whether one of them has n plots. Past 20 plots it stops
+ * at once, since 1ul << n would shift past the width. */
 bool canPlaceFlowers(int *flowerbed, int flowerbedSize, int n)
 {
-    unsigned long set, all = 1ul << flowerbedSize;
+    unsigned long set, all;
     int i, count, ok, full[32];
 
+    if (flowerbedSize > 20)
+        abort();
+    all = 1ul << flowerbedSize;
     for (set = 0; set < all; set++) {
         ok = 1;
         count = 0;

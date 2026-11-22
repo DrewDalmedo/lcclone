@@ -3,7 +3,7 @@
  * leaves it as it is, changes one move to another letter, or, at full size,
  * swaps letters so that one axis is off by 256 or the up moves match the
  * left ones instead of the down ones. Small cases have up to 12 moves.
- * Full-size ones have 2 * 10^4 moves (even seeds) or a random number, and
+ * Full-size ones have 2 * 10^4 moves, the seed picks the shape, and they
  * also come as a long excursion (all the up moves, then right, then down,
  * then left), as random letters, or as a walk that ends one step from
  * (0, 0) along one axis and w steps along the other, so that a single
@@ -60,8 +60,8 @@ void gen(int small)
         put_string(moves);
         return;
     }
-    n = gen_seed() % 2 == 0 ? 20000 : 2 * (int)rnd(500, 10000);
-    shape = (int)rnd(0, 6);
+    n = 20000;
+    shape = (int)(gen_seed() % 7);
     if (shape == 6) {
         static const int weights[] = {2, 3, 10, 100, 256, 1000, 10000};
         int w, m;

@@ -91,3 +91,19 @@
 @gen 8 small
 [1,0,0]
 => 1
+
+# Full-size cases: 10^5 elements, in a shape the seed picks (see gen.c).
+@full 1 daa43d89
+=> 354
+
+@full 2 8c39a4a6
+=> 7371
+
+@full 3 2611034e
+=> 1
+
+@full 4 af0175ef
+=> 0
+
+@full 5 a766360e
+=> 100000

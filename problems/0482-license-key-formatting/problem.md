@@ -4,6 +4,7 @@ title: License Key Formatting
 difficulty: easy
 tags: string
 signature: string licenseKeyFormatting(string s, int k)
+time_limit_ms: 50
 ---
 A license key `s` is a string of letters, digits and dashes (`-`). The
 dashes can be anywhere: at either end, several in a row, or nowhere at all.

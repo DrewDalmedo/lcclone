@@ -81,3 +81,16 @@
 @gen 7 small
 [395789,657371,657442,327999,853914,2721]
 => ["4","Bronze Medal","Silver Medal","5","Gold Medal","6"]
+
+# Full-size cases: 10^4 scores, in a shape the seed picks (see gen.c).
+@full 1 97af6b33
+
+@full 2 68a4c626
+
+@full 3 f265e34a
+
+@full 4 6f7c6e7f
+
+@full 5 bca165f6
+
+@full 6 4e58321f

@@ -4,6 +4,7 @@ title: First Unique Character in a String
 difficulty: easy
 tags: queue, hash-table, string, counting
 signature: int firstUniqChar(string s)
+time_limit_ms: 100
 ---
 Call a letter of `s` **lonely** if it occurs exactly once in the whole
 string. Where the other copies of a letter stand doesn't matter: a letter

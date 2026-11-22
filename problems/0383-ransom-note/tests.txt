@@ -114,3 +114,20 @@
 "ccac"
 "caca"
 => false
+
+# Full-size cases: strings of up to 10^5 letters, in a shape the seed picks
+# (see gen.c).
+@full 1 95b79e27
+=> true
+
+@full 2 b8416a74
+=> false
+
+@full 3 39e2006d
+=> true
+
+@full 4 a968493f
+=> false
+
+@full 5 218089fb
+=> true

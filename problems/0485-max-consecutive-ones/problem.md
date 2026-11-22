@@ -4,6 +4,7 @@ title: Max Consecutive Ones
 difficulty: easy
 tags: array
 signature: int findMaxConsecutiveOnes(int[] nums)
+time_limit_ms: 200
 ---
 Every element of `nums` is either `0` or `1`. A **streak** is a stretch of
 neighbouring elements that are all `1`, with a `0` or an end of the array

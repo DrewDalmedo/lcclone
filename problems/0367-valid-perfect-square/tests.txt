@@ -90,15 +90,22 @@
 1443
 => false
 
-# Random full-size cases.
-@gen 1
-1893468195
-=> false
-
-@gen 3
-2147404029
-=> false
-
-@gen 4
-1701727504
+# Full-size cases, near 2^31, in a shape the seed picks (see gen.c): 2^31 - 1,
+# 46340^2 and its two neighbours, a large square, and a number that is no square.
+@full 1 ab6119f2
 => true
+
+@full 2 deef06a3
+=> false
+
+@full 3 ab60763f
+=> false
+
+@full 4 bd78a96e
+=> true
+
+@full 5 f85f8280
+=> false
+
+@full 6 4e9ff0d6
+=> false

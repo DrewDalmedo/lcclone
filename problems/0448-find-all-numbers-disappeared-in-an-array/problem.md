@@ -4,6 +4,7 @@ title: Find All Numbers Disappeared in an Array
 difficulty: easy
 tags: array, hash-table
 signature: int[] findDisappearedNumbers(int[] nums)
+time_limit_ms: 100
 compare: unordered 0
 ---
 `nums` holds `n` integers, where `n` is its length, and each of them is

@@ -101,3 +101,18 @@
 [-282855700,-282855696,-282855699,-282855699,-282855698,-282855696,-282855699]
 => 4
 
+# Full-size cases: 2 * 10^4 elements, in a shape the seed picks (see gen.c).
+@full 1 29d34f4b
+=> 0
+
+@full 2 78364a59
+=> 1032
+
+@full 3 f6b2b9c3
+=> 20000
+
+@full 4 9ad6e873
+=> 0
+
+@full 5 e4381ea5
+=> 0

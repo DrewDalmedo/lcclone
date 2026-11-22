@@ -2,8 +2,8 @@
  * values, zeros and negatives come up often, or now and then values within
  * 4 of a bound, -10^4 or 10^4. Full-size ones have 2 * 10^4 values, in a
  * shape the seed picks: random over the whole range; sorted (slow for a
- * quicksort that pivots on an end); sorted the other way; all equal; up to
- * 50 values with many copies each, about half of them an odd number of
+ * quicksort that pivots on an end); sorted the other way; all equal to a
+ * bound (the sum of largest size, 10^8 or -10^8); up to 50 values with many copies each, about half of them an odd number of
  * times (for counting sorts, which must carry the pairing from one value
  * to the next); or a random even length. */
 static void sort_values(int *a, int n, int down)
@@ -48,7 +48,7 @@ void gen(int small)
     nums = malloc((size_t)n * sizeof *nums);
     switch (shape) {
     case 3: /* every value the same */
-        v = (int)rnd(-10000, 10000);
+        v = rnd_chance(50) ? 10000 : -10000;
         for (i = 0; i < n; i++)
             nums[i] = v;
         break;
