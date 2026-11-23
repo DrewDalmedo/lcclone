@@ -72,3 +72,10 @@
 "Xb .7b"
 => "bX b7."
 
+# Full-size cases: lines of 5 * 10^4 characters, in a shape the seed picks
+# (see gen.c).
+@full 1 e5717cec
+
+@full 2 b6e3b59e
+
+@full 3 d762916c

@@ -1,10 +1,10 @@
 /* mat is 1 to 4 by 1 to 4 for small cases, with values from -3 to 3 half
  * the time (so repeats are common), else from -1000 to 1000; full-size ones
- * are 100 by 100 most of the time, else of a random size up to that. The
- * seed then picks the shape asked for:
- *   - most of the time, one with as many cells as mat: r a divisor of
- *     m * n with r and m * n / r both at most 300 (m by n and n by m among
- *     them);
+ * are 100 by 100, except for the last shape below, of a random size up to
+ * that. The shape asked for is drawn for small cases and picked by the seed
+ * for full-size ones:
+ *   - one with as many cells as mat: r a divisor of m * n with r and
+ *     m * n / r both at most 300 (m by n and n by m among them);
  *   - 300 by 300, far too many cells;
  *   - r == m, or c == n, with the other one random;
  *   - r and c both random.
@@ -12,13 +12,15 @@
  * may fit by chance. */
 void gen(int small)
 {
+    static const int full_kinds[] = {0, 6, 7, 8, 9};
     int m, n, r, c, k, cnt = 0, top, kind, cells, lim = small ? 8 : 300;
+    int shape = small ? 0 : (int)(gen_seed() % 5);
     int *mat, *divs;
 
     if (small) {
         m = (int)rnd(1, 4);
         n = (int)rnd(1, 4);
-    } else if (rnd_chance(60)) {
+    } else if (shape < 4) {
         m = 100;
         n = 100;
     } else {
@@ -30,7 +32,7 @@ void gen(int small)
     mat = malloc((size_t)cells * sizeof *mat);
     for (k = 0; k < cells; k++)
         mat[k] = (int)rnd(-top, top);
-    kind = (int)rnd(0, 9);
+    kind = small ? (int)rnd(0, 9) : full_kinds[shape];
     if (kind <= 5) {
         divs = malloc(300 * sizeof *divs);
         for (k = 1; k <= 300 && k <= cells; k++)

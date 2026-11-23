@@ -4,6 +4,7 @@ title: Assign Cookies
 difficulty: easy
 tags: greedy, array, two-pointers, sorting
 signature: int findContentChildren(int[] g, int[] s)
+time_limit_ms: 100
 ---
 A group of children is waiting for cookies, and you have a tray of
 cookies to share among them. Child `i` is picky: it is **content** only

@@ -4,6 +4,7 @@ title: Maximum Average Subarray I
 difficulty: easy
 tags: array, sliding-window
 signature: double findMaxAverage(int[] nums, int k)
+time_limit_ms: 6000
 ---
 Among all runs of exactly `k` consecutive elements of `nums`, find the one
 whose average is largest, and return that average.

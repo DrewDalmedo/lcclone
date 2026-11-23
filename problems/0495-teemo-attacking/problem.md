@@ -4,6 +4,7 @@ title: Teemo Attacking
 difficulty: easy
 tags: array, simulation
 signature: int findPoisonedDuration(int[] timeSeries, int duration)
+time_limit_ms: 200
 ---
 `timeSeries` lists the seconds at which a target is struck with poison,
 from earliest to latest; several strikes may land in the same second. A

@@ -4,6 +4,7 @@ title: Ransom Note
 difficulty: easy
 tags: hash-table, string, counting
 signature: bool canConstruct(string ransomNote, string magazine)
+time_limit_ms: 200
 ---
 You want to paste together the message `ransomNote` out of letters cut
 from the text `magazine`. A cut-out letter fills exactly one place in the

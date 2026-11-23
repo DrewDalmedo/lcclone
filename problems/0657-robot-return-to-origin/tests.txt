@@ -142,3 +142,25 @@
 @gen 8 small
 "DUL"
 => false
+
+# Full-size cases: 2 * 10^4 moves, in a shape the seed picks (see gen.c).
+@full 1 e469a1fe
+=> false
+
+@full 2 f1fa991b
+=> false
+
+@full 3 f89e77a4
+=> false
+
+@full 4 528048a8
+=> true
+
+@full 5 ecf1d791
+=> false
+
+@full 6 3ea0db7f
+=> false
+
+@full 7 558d233b
+=> true

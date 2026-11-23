@@ -109,3 +109,15 @@
 "4972"
 "99999"
 => "104971"
+
+# Full-size cases: numbers of 10^4 digits, in a shape the seed picks (see
+# gen.c).
+@full 1 66031ba2
+
+@full 2 12696cbe
+
+@full 3 a3217426
+
+@full 4 b68f3c5e
+
+@full 5 4d05aa94

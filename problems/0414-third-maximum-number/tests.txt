@@ -92,3 +92,16 @@
 @gen 8 small
 [1,1,2147483647,1,-2147483648,2147483647,-1]
 => -1
+
+# Full-size cases: 10^4 values, in a shape the seed picks (see gen.c).
+@full 1 f7a24d53
+=> 2146229849
+
+@full 2 07532784
+=> -2147483648
+
+@full 3 9d529715
+=> -747665867
+
+@full 4 99286df0
+=> 2146420597

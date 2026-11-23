@@ -2,8 +2,9 @@
  * the whole range, 0 and 10^6 included; or as a small number plus a
  * multiple of 65536, so that their low 16 bits are in a different order
  * from the scores. Small cases have up to 8 scores. Full-size ones have
- * 10^4 (even seeds) or a random number of them, in random, increasing or
- * decreasing order. */
+ * 10^4, drawn in the second or third way, in random, increasing or
+ * decreasing order: the seed picks which, and seeds 1 to 6 make every
+ * pairing. */
 static unsigned char used[1000001];
 
 static int draw(int mode)
@@ -35,9 +36,9 @@ void gen(int small)
         mode = (int)rnd(0, 2);
         order = 0;
     } else {
-        n = gen_seed() % 2 == 0 ? 10000 : (int)rnd(1, 10000);
-        mode = (int)rnd(1, 2);
-        order = (int)rnd(0, 2);
+        n = 10000;
+        mode = 1 + (int)(gen_seed() % 2);
+        order = (int)(gen_seed() % 3);
     }
     score = malloc((size_t)n * sizeof *score);
     memset(used, 0, sizeof used);

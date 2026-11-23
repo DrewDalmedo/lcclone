@@ -1,6 +1,6 @@
 /* A picture of 1 to 5 by 1 to 5 pixels for small cases; full-size ones are
- * 200 by 200 most of the time, else of a random size up to that. The seed
- * picks the brightnesses:
+ * 200 by 200. The brightnesses are drawn for small cases and picked by the
+ * seed for full-size ones:
  *   - any value from 0 to 255;
  *   - only 0 to 3, so that sums are small and many averages tie;
  *   - one value everywhere;
@@ -14,12 +14,10 @@ void gen(int small)
     if (small) {
         m = (int)rnd(1, 5);
         n = (int)rnd(1, 5);
-    } else if (rnd_chance(60)) {
+    } else {
         m = 200;
         n = 200;
-    } else {
-        m = (int)rnd(1, 200);
-        n = (int)rnd(1, 200);
+        kind = (int)(gen_seed() % 5);
     }
     img = malloc((size_t)m * n * sizeof *img);
     v = (int)rnd(0, 255);

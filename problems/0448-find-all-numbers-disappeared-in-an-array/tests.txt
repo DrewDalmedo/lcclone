@@ -79,3 +79,13 @@
 @gen 6 small
 [2,1]
 => []
+
+# Full-size cases: n = 10^5, in a shape the seed picks (see gen.c).
+@full 1 38782313
+
+@full 2 2aaa5d24
+
+@full 3 cd602310
+
+@full 4 d251364f
+=> []

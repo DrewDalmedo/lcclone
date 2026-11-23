@@ -1,6 +1,7 @@
 /* Slow and obviously right: try every way of handing out the cookies.
  * Child i either gets no cookie or any unused cookie it is content with;
- * keep the best count. Exponential, so only for small cases. */
+ * keep the best count. Exponential, so only for small cases: past 20
+ * children or cookies it stops at once. */
 static int best_from(int i, const int *g, int gSize, const int *s, int sSize,
                      char *used)
 {
@@ -22,9 +23,13 @@ static int best_from(int i, const int *g, int gSize, const int *s, int sSize,
 
 int findContentChildren(int *g, int gSize, int *s, int sSize)
 {
-    char *used = calloc((size_t)sSize + 1, 1);
-    int best = best_from(0, g, gSize, s, sSize, used);
+    char *used;
+    int best;
 
+    if (gSize > 20 || sSize > 20)
+        abort();
+    used = calloc((size_t)sSize + 1, 1);
+    best = best_from(0, g, gSize, s, sSize, used);
     free(used);
     return best;
 }

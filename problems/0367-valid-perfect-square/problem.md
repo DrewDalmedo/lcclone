@@ -4,6 +4,7 @@ title: Valid Perfect Square
 difficulty: easy
 tags: math, binary-search
 signature: bool isPerfectSquare(int num)
+time_limit_ms: 100
 ---
 You have `num` square tiles, all the same size. Can you lay every one of
 them out as a single solid square, with `k` rows of `k` tiles and none

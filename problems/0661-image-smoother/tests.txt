@@ -91,3 +91,15 @@
 @gen 8 small
 [[1,0,1],[0,3,1]]
 => [[1,1,1],[1,1,1]]
+
+# Full-size cases: pictures of 200 by 200, in a shape the seed picks (see
+# gen.c).
+@full 1 a685689e
+
+@full 2 8f7cba4c
+
+@full 3 387c72ae
+
+@full 4 528ddaa7
+
+@full 5 8a583de4

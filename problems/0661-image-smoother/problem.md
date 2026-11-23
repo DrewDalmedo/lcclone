@@ -4,6 +4,7 @@ title: Image Smoother
 difficulty: easy
 tags: array, matrix
 signature: int[][] imageSmoother(int[][] img)
+time_limit_ms: 100
 ---
 `img` is a grayscale picture `m` pixels high and `n` pixels wide:
 `img[i][j]` is the brightness of the pixel in row `i` and column `j`, from

@@ -78,3 +78,22 @@
 @gen 6 small
 [-1,-3,-5,2,3,0]
 => 45
+
+# Full-size cases: 10^4 values, in a shape the seed picks (see gen.c).
+@full 1 e7e44e8d
+=> 1000000000
+
+@full 2 49186038
+=> 1000000000
+
+@full 3 ae05ba91
+=> -1
+
+@full 4 73f78e33
+=> 3375
+
+@full 5 df46869d
+=> 95217600
+
+@full 6 c268e761
+=> 1000000000

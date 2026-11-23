@@ -4,6 +4,7 @@ title: Longest Harmonious Subsequence
 difficulty: easy
 tags: array, hash-table, counting, sorting, sliding-window
 signature: int findLHS(int[] nums)
+time_limit_ms: 3000
 ---
 Call a list of numbers **harmonious** when its largest value is exactly
 `1` more than its smallest one. So a list whose values are all the same

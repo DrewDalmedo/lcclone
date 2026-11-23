@@ -4,6 +4,7 @@ title: Reverse Words in a String III
 difficulty: easy
 tags: two-pointers, string
 signature: string reverseWords(string s)
+time_limit_ms: 100
 ---
 `s` is made of one or more words, with exactly one space between each word
 and the next and no space at either end; if `s` holds no space at all, the

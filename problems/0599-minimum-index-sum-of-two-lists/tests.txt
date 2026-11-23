@@ -109,3 +109,16 @@
 ["b ","A a","bA "," b"]
 ["a"," b","bA ","b "]
 => ["b "]
+
+# Full-size cases: 1000 strings in each list, in a shape the seed picks (see
+# gen.c).
+@full 1 73d9caa5
+
+@full 2 ab4602fc
+=> ["vMw"]
+
+@full 3 88d07896
+=> ["tVzc"]
+
+@full 4 81ed1433
+=> ["MwLYiQnIbTuFxCxp"]

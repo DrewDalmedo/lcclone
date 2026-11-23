@@ -1,12 +1,15 @@
 /* Slow and obviously right: try every choice of n / 2 candies (each subset
  * of the positions, as a bit mask, that has n / 2 members), count the
  * different kinds in it by comparing each chosen candy with the chosen
- * ones before it, and keep the largest count. Only for small n. */
+ * ones before it, and keep the largest count. Only for small n: past 20,
+ * it stops at once, since 1UL << n would shift past the width. */
 int distributeCandies(int *candyType, int candyTypeSize)
 {
     int n = candyTypeSize, best = 0, kinds, taken, i, j, dup;
     unsigned long mask;
 
+    if (n > 20)
+        abort();
     for (mask = 0; mask < 1UL << n; mask++) {
         taken = 0;
         for (i = 0; i < n; i++)
