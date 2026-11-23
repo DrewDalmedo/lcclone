@@ -109,6 +109,8 @@ void lc_limits_init(lc_limits *l, int time_ms, int memory_mb)
     l->memory_mb = memory_mb;
     l->output_max = LC_RUN_OUTPUT_MAX;
     l->result_max = LC_RESULT_MAX;
+    l->base_ms = 0;
+    l->scale_percent = 100;
 }
 
 void lc_limits_apply(const lc_limits *l, lc_run_spec *spec)
@@ -176,6 +178,18 @@ static int stack_overflow(const lc_run_result *r, unsigned long long *stack)
            strstr(err, asan) != NULL;
 }
 
+/* "the limit is 200 ms", and how a limit scaled for this machine came
+ * about. */
+static void put_time_limit(lc_str *s, const lc_limits *l)
+{
+    char scale[LC_SCALE_TEXT_MAX];
+
+    lc_str_printf(s, "the limit is %d ms", l->time_ms);
+    if (l->base_ms)
+        lc_str_printf(s, " (%d ms x %s for this machine)", l->base_ms,
+                      lc_scale_text(l->scale_percent, scale));
+}
+
 lc_verdict lc_classify(const lc_limits *l, const lc_run_result *r,
                        lc_str *why)
 {
@@ -228,14 +242,15 @@ lc_verdict lc_classify(const lc_limits *l, const lc_run_result *r,
                            || r->signal == SIGXCPU
 #endif
                            )) {
-        lc_str_printf(why, "used %ld ms of CPU time; the limit is %d ms",
-                      r->cpu_ms, l->time_ms);
+        lc_str_printf(why, "used %ld ms of CPU time; ", r->cpu_ms);
+        put_time_limit(why, l);
         return LC_TIME_LIMIT_EXCEEDED;
     }
     if (r->timed_out) {
         lc_str_printf(why, "was still running after %ld ms (it used %ld ms "
-                      "of CPU time; the limit is %d ms)", r->wall_ms,
-                      r->cpu_ms, l->time_ms);
+                      "of CPU time; ", r->wall_ms, r->cpu_ms);
+        put_time_limit(why, l);
+        lc_str_putc(why, ')');
         return LC_TIME_LIMIT_EXCEEDED;
     }
     if (r->signal) {
@@ -577,6 +592,15 @@ done:
     return rc;
 }
 
+/* What a report says about the time limit it was judged by. */
+static void set_report_limit(lc_report *report, const lc_problem *p,
+                             const lc_time_scale *scale)
+{
+    report->time_limit_ms = lc_scale_ms(p->time_limit_ms, scale->percent);
+    report->time_scale = scale->percent;
+    report->time_scale_source = scale->source;
+}
+
 int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
                  const lc_case *cases, size_t ncases,
                  const lc_judge_opts *opts, const lc_hooks *hooks,
@@ -587,8 +611,9 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
     report_priv *rp;
     lc_case_result *results;
     lc_event ev;
+    lc_time_scale scale;
     size_t i;
-    int rc = LC_OK, time_ms, memory_mb;
+    int rc = LC_OK, time_ms, base_ms, memory_mb;
 
     if (!out)
         return lc_set_error(ctx, LC_ERR_INVALID, "lc_judge_exe: bad arguments");
@@ -612,11 +637,15 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
     if (ncases == 0)
         return lc_set_error(ctx, LC_ERR_INVALID, "problem %d (%s) has no "
                             "test cases to run", p->id, p->slug);
+    rc = lc_time_scale_get(ctx, &scale);
+    if (rc != LC_OK)
+        return rc;
 
     report = new_report();
     if (!report)
         return lc_oom(ctx);
     rp = report->priv_;
+    set_report_limit(report, p, &scale);
     report->build = opts ? opts->build : NULL;
     results = lc_arena_array(&rp->arena, ncases, sizeof *results);
     if (!results) {
@@ -630,12 +659,20 @@ int lc_judge_exe(lc_ctx *ctx, const lc_problem *p, const char *exe,
     jr.ctx = ctx;
     jr.p = p;
     jr.arena = &rp->arena;
-    time_ms = opts && opts->time_ms > 0 ? opts->time_ms : p->time_limit_ms;
+    base_ms = opts && opts->time_ms > 0 ? opts->time_ms : p->time_limit_ms;
+    time_ms = opts && opts->time_exact ? base_ms
+                                       : lc_scale_ms(base_ms, scale.percent);
     memory_mb = opts && opts->memory_mb > 0 ? opts->memory_mb
                                             : p->memory_limit_mb;
     lc_limits_init(&jr.lim, time_ms, memory_mb);
+    if (time_ms != base_ms) {
+        jr.lim.base_ms = base_ms;
+        jr.lim.scale_percent = scale.percent;
+    }
     if (opts && opts->sanitize) {
         jr.lim.memory_mb = 0;
+        /* Three times the scaled limit: "100 ms x 2" would not add up. */
+        jr.lim.base_ms = 0;
         if (jr.lim.time_ms <= INT_MAX / 3)
             jr.lim.time_ms *= 3;
     }
@@ -850,8 +887,9 @@ int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
     lc_run_spec spec;
     lc_run_result r;
     lc_verdict v;
+    lc_time_scale scale;
     size_t pos = 0;
-    int rc;
+    int rc, limit;
 
     *out = NULL;
     *verdict = LC_VERDICT_NONE;
@@ -860,15 +898,17 @@ int lc_run_case(lc_ctx *ctx, const lc_problem *p, const char *exe,
     lc_run_result_init(&r);
     if (!pool)
         return lc_oom(ctx);
-    rc = lc_case_values(ctx, p, c, pool, &args, &exp);
+    rc = lc_time_scale_get(ctx, &scale);
+    if (rc == LC_OK)
+        rc = lc_case_values(ctx, p, c, pool, &args, &exp);
     if (rc == LC_OK)
         rc = lc_case_wire(ctx, p, args, &in);
     if (rc != LC_OK)
         goto done;
 
     memset(&spec, 0, sizeof spec);
-    lc_limits_init(&lim, p->time_limit_ms <= INT_MAX / 2
-                             ? 2 * p->time_limit_ms : p->time_limit_ms,
+    limit = lc_scale_ms(p->time_limit_ms, scale.percent);
+    lc_limits_init(&lim, limit <= INT_MAX / 2 ? 2 * limit : limit,
                    p->memory_limit_mb);
     lc_limits_apply(&lim, &spec);
     spec.path = exe;
@@ -1025,14 +1065,23 @@ char *lc_pack_source(lc_arena *a, const lc_problem *p, const char *base,
 
 /* A report for a run that stopped at a build: a compile error, or
  * cancelled. It takes over `side`. */
-static int build_report(lc_ctx *ctx, lc_arena *side, const lc_build *b,
-                        size_t total, const lc_hooks *hooks, lc_report **out)
+static int build_report(lc_ctx *ctx, const lc_problem *p, lc_arena *side,
+                        const lc_build *b, size_t total,
+                        const lc_hooks *hooks, lc_report **out)
 {
     lc_report *report = new_report();
+    lc_time_scale scale;
     lc_event ev;
+    int rc;
 
     if (!report)
         return lc_oom(ctx);
+    rc = lc_time_scale_get(ctx, &scale);
+    if (rc != LC_OK) {
+        lc_report_free(report);
+        return rc;
+    }
+    set_report_limit(report, p, &scale);
     ((report_priv *)report->priv_)->side = *side;
     side->head = NULL;
     report->build = b;
@@ -1219,6 +1268,15 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     rc = lc_codegen_check(ctx, p);
     if (rc != LC_OK)
         return rc;
+    /* Now rather than between the build and the cases: a bad
+     * $LC_TIME_SCALE stops the run before anything is built. */
+    {
+        lc_time_scale scale;
+
+        rc = lc_time_scale_get(ctx, &scale);
+        if (rc != LC_OK)
+            return rc;
+    }
     if (stat(given, &st) != 0 || !(src = lc_realpath(&side, given))) {
         rc = errno == ENOMEM ? lc_oom(ctx)
                              : lc_set_errno(ctx, errno == ENOENT ||
@@ -1308,7 +1366,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
     if (rc != LC_OK)
         goto done;
     if (cancelled || !build->ok) {
-        rc = build_report(ctx, &side, build, n, hooks, out);
+        rc = build_report(ctx, p, &side, build, n, hooks, out);
         goto done;
     }
 
@@ -1325,7 +1383,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
             goto done;
         }
         if (cancelled) {
-            rc = build_report(ctx, &side, NULL, n, hooks, out);
+            rc = build_report(ctx, p, &side, NULL, n, hooks, out);
             goto done;
         }
         if (!gbuild->ok) {
@@ -1343,7 +1401,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
         if (rc != LC_OK)
             goto done;
         if (cancelled) {
-            rc = build_report(ctx, &side, NULL, n, hooks, out);
+            rc = build_report(ctx, p, &side, NULL, n, hooks, out);
             goto done;
         }
         if (!rbuild->ok) {
@@ -1369,7 +1427,7 @@ int lc_judge(lc_ctx *ctx, const lc_problem *p, const lc_lang *lang,
             if (rc != LC_OK)
                 goto done;
             if (cancelled) {
-                rc = build_report(ctx, &side, NULL, n, hooks, out);
+                rc = build_report(ctx, p, &side, NULL, n, hooks, out);
                 goto done;
             }
         }

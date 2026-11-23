@@ -49,9 +49,11 @@
 /* Longest result of a full-size case that --regen writes in tests.txt;
  * ref works out longer ones when the case is judged. */
 #define FULL_RESULT_MAX 100
-/* On full-size cases, brute runs under this many times the time limit,
- * and is compared with ref when it finishes. */
+/* On full-size cases, brute runs under this many times the time limit as
+ * written, and is compared with ref when it finishes. */
 #define BRUTE_SHARE 10
+/* And under at least this many times the limit on this machine. */
+#define BRUTE_BAND 4
 /* Lines of a sanitizer's report kept in a finding. */
 #define REPORT_LINES 12
 
@@ -100,6 +102,10 @@ typedef struct checker {
                                  in `tmp`, or NULL (malloc'ed) */
     int regen_bailed;         /* --regen stopped at something a later step
                                  reports */
+    int limit;                /* the time limit on this machine: the pack's,
+                                 scaled (lc_time_scale_get) */
+    int scale;                /* that scale, in percent */
+    char limit_text[64];      /* "100 ms", or "200 ms: 100 ms x 2 here" */
 } checker;
 
 void lc_check_report_free(lc_check_report *report)
@@ -1119,12 +1125,12 @@ static int check_full(checker *ck, const lc_cases *cases)
             rc = error_finding(ck, LC_FINDING_ERROR, NULL);
         else {
             ck->full_ok[i] = 1;
-            if (ms * TIME_SHARE > ck->p->time_limit_ms)
+            if (ms * TIME_SHARE > ck->limit)
                 rc = finding(ck, LC_FINDING_WARNING, ck->tests, c->line,
                              NULL, "gen.c takes %ld ms to make this case, "
-                             "more than a third of the time limit (%d ms); "
+                             "more than a third of the time limit (%s); "
                              "it runs on every machine that judges the case",
-                             ms, ck->p->time_limit_ms);
+                             ms, ck->limit_text);
         }
         if (rc != LC_OK)
             return rc;
@@ -1225,11 +1231,11 @@ static int check_ref(checker *ck, const lc_cases *cases)
     /* Room for slower machines and other solutions (docs/PLAN.md, "Timing
      * noise"): the limit should be about three times ref's slowest case. */
     if (rc == LC_OK && rep->nresults &&
-        rep->max_time_ms * TIME_SHARE > ck->p->time_limit_ms)
+        rep->max_time_ms * TIME_SHARE > ck->limit)
         rc = finding(ck, LC_FINDING_WARNING, ck->tests,
                      rep->results[slowest].line, NULL, "%s takes %ld ms on "
-                     "this case, more than a third of the time limit (%d ms)",
-                     name, rep->max_time_ms, ck->p->time_limit_ms);
+                     "this case, more than a third of the time limit (%s)",
+                     name, rep->max_time_ms, ck->limit_text);
     lc_report_free(rep);
     return rc;
 }
@@ -1546,19 +1552,36 @@ static int time_brute(checker *ck, lc_case *fc, size_t n)
 {
     const char *brute = short_name(ck, ck->brute);
     const char *ref = short_name(ck, ck->ref);
-    int limit = ck->p->time_limit_ms;
+    int limit = ck->limit;
+    const char *shown = ck->limit_text;
     lc_judge_opts jo;
     lc_report *rep;
+    char past[64];
     size_t i, over = 0;
     long most = -1;
+    long long budget = (long long)ck->p->time_limit_ms * BRUTE_SHARE;
     int rc;
 
+    /*
+     * Ten times the limit as written, not the scaled one: on a runner
+     * three times slower, that would make each brute that runs out of
+     * time cost three times the CPU. Enough still to see the band the
+     * warning below is about, up to three times this machine's limit.
+     */
+    if (budget < (long long)limit * BRUTE_BAND)
+        budget = (long long)limit * BRUTE_BAND;
+    if (budget > INT_MAX)
+        budget = INT_MAX;
+    if (ck->scale == 100)
+        snprintf(past, sizeof past, "ten times");
+    else
+        snprintf(past, sizeof past, "%lld ms", budget);
     rc = ensure_brute(ck);
     if (rc != LC_OK || !ck->brute_exe || ck->r->cancelled)
         return rc;
     memset(&jo, 0, sizeof jo);
-    jo.time_ms = limit <= INT_MAX / BRUTE_SHARE ? limit * BRUTE_SHARE
-                                                : INT_MAX;
+    jo.time_ms = (int)budget;
+    jo.time_exact = 1;
     rc = run_full(ck, ck->brute_exe, fc, n, &jo, &rep);
     if (rc != LC_OK || !rep)
         return rc;
@@ -1585,36 +1608,47 @@ static int time_brute(checker *ck, lc_case *fc, size_t n)
             if (res->time_ms * 3 > limit && res->time_ms < 3L * limit)
                 rc = finding(ck, LC_FINDING_WARNING, ck->tests, res->line,
                              NULL, "%s takes %ld ms on this full-size case, "
-                             "%.1f times the time limit (%d ms): whether a "
+                             "%.1f times the time limit (%s): whether a "
                              "method this slow passes would depend on the "
                              "machine and the compiler", brute, res->time_ms,
-                             (double)res->time_ms / limit, limit);
+                             (double)res->time_ms / limit, shown);
         }
     }
     ck->r->brute_full_ms = most;
     if (rc == LC_OK && most >= 0 && most * 10 >= limit)
         rc = finding(ck, LC_FINDING_NOTE, ck->brute, 0, NULL, "%s takes up "
                      "to %ld ms on the full-size cases, %.1f times the time "
-                     "limit (%d ms)%s", brute, most, (double)most / limit,
-                     limit, over ? ", and more than ten times it on some"
-                                 : "");
+                     "limit (%s)%s%s%s", brute, most, (double)most / limit,
+                     shown, over ? ", and more than " : "", over ? past : "",
+                     over ? (ck->scale == 100 ? " it on some" : " on some")
+                          : "");
     else if (rc == LC_OK && most >= 0)
         rc = finding(ck, LC_FINDING_NOTE, ck->brute, 0, NULL, "%s takes up "
                      "to %ld ms on the full-size cases, well within the time "
-                     "limit (%d ms)%s", brute, most, limit,
-                     over ? ", and more than ten times it on some" : "");
+                     "limit (%s)%s%s%s", brute, most, shown,
+                     over ? ", and more than " : "", over ? past : "",
+                     over ? (ck->scale == 100 ? " it on some" : " on some")
+                          : "");
     else if (rc == LC_OK && over)
         rc = finding(ck, LC_FINDING_NOTE, ck->brute, 0, NULL, "%s takes more "
-                     "than ten times the time limit (%d ms) on every "
-                     "full-size case", brute, limit);
+                     "than %s%s (%s) on every full-size case", brute, past,
+                     ck->scale == 100 ? " the time limit" : " past the limit",
+                     shown);
     lc_report_free(rep);
     return rc;
 }
 
-/* slow.c on the full-size cases: right, but out of time on one at least. */
+/*
+ * slow.c on the full-size cases: right, but out of time on one at least,
+ * under this machine's limit. Passing within the limit as written is an
+ * error, wherever it runs. Passing only because the limit is scaled up is
+ * a warning: the scale is an estimate, and an error there would make CI's
+ * result depend on a noisy runner.
+ */
 static int check_slow(checker *ck, lc_case *fc, size_t n)
 {
     const char *slow = short_name(ck, ck->slow);
+    int written = ck->p->time_limit_ms;
     lc_judge_opts jo;
     lc_report *rep;
     size_t i, over = 0, wrong = 0;
@@ -1624,6 +1658,8 @@ static int check_slow(checker *ck, lc_case *fc, size_t n)
     if (rc != LC_OK || !ck->slow_exe || ck->r->cancelled)
         return rc;
     memset(&jo, 0, sizeof jo);
+    jo.time_ms = ck->limit > written ? ck->limit : written;
+    jo.time_exact = 1;
     rc = run_full(ck, ck->slow_exe, fc, n, &jo, &rep);
     if (rc != LC_OK || !rep)
         return rc;
@@ -1643,12 +1679,19 @@ static int check_slow(checker *ck, lc_case *fc, size_t n)
                               res->message ? ")" : "");
         }
     }
-    if (rc == LC_OK && !over && !wrong)
+    if (rc == LC_OK && !over && !wrong && rep->max_time_ms > written)
+        rc = finding(ck, LC_FINDING_WARNING, ck->slow, 0, NULL, "%s passes "
+                     "every full-size case under this machine's limit (%s), "
+                     "though its slowest, at %ld ms, is over the limit as "
+                     "written (%d ms): on this machine a method that slow "
+                     "would pass", slow, ck->limit_text, rep->max_time_ms,
+                     written);
+    else if (rc == LC_OK && !over && !wrong)
         rc = finding(ck, LC_FINDING_ERROR, ck->slow, 0, NULL, "%s passes "
                      "every full-size case in time (its slowest takes %ld "
                      "ms; the limit is %d ms): a method that slow should run "
                      "out of time, as on LeetCode", slow, rep->max_time_ms,
-                     ck->p->time_limit_ms);
+                     written);
     lc_report_free(rep);
     return rc;
 }
@@ -1758,6 +1801,7 @@ int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
 {
     lc_check_options defaults;
     lc_cases *cases = NULL;
+    lc_time_scale scale;
     checker ck;
     int rc, bad = 0, no_result = 0;
 
@@ -1770,9 +1814,23 @@ int lc_check(lc_ctx *ctx, const lc_problem *p, const lc_manifest *m,
         memset(&defaults, 0, sizeof defaults);
         opts = &defaults;
     }
+    rc = lc_time_scale_get(ctx, &scale);
+    if (rc != LC_OK)
+        return rc;
     memset(&ck, 0, sizeof ck);
     ck.ctx = ctx;
     ck.p = p;
+    ck.scale = scale.percent;
+    ck.limit = lc_scale_ms(p->time_limit_ms, scale.percent);
+    if (ck.limit == p->time_limit_ms) {
+        snprintf(ck.limit_text, sizeof ck.limit_text, "%d ms", ck.limit);
+    } else {
+        char text[LC_SCALE_TEXT_MAX];
+
+        snprintf(ck.limit_text, sizeof ck.limit_text, "%d ms: %d ms x %s "
+                 "here", ck.limit, p->time_limit_ms,
+                 lc_scale_text(scale.percent, text));
+    }
     ck.hooks = hooks;
     ck.quiet.cancel = hooks ? hooks->cancel : NULL;
     ck.box = calloc(1, sizeof *ck.box);

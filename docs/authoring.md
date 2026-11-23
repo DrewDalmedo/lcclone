@@ -288,12 +288,18 @@ copy has no line to print.
 A pack's `time_limit_ms` should reject what LeetCode rejects, such as an
 `O(n^2)` method at n = 10^5, and accept what it accepts, such as `O(n^2)`
 at n = 10^4; the default of a second can't do that for every problem.
-On the full-size cases, `lc check` measures what the limit is set from:
+The limit is written for the **reference machine, an Apple M4**. On another
+machine `lc` scales it ([judging.md](judging.md#slower-machines)), and `lc
+check` compares times with the scaled limit, so its findings mean the same
+on a slower machine; it says so when the scale isn't 1 (`Time limits x 2 on
+this machine`). On the full-size cases, `lc check` measures what the limit
+is set from:
 
 - **`ref`** must take at most a third of the limit on every case, as on
   the others: the limit leaves room for slower machines and for other
   right solutions.
-- **`brute`** runs on them under ten times the limit, and `lc check`
+- **`brute`** runs on them under ten times the limit as written (or four
+  times this machine's limit, if that is more), and `lc check`
   reports its slowest time as a multiple of the limit (a note). It warns
   when `brute` takes between a third of the limit and three times it on a
   case: there the verdict on a method that slow would depend on the
@@ -302,7 +308,10 @@ On the full-size cases, `lc check` measures what the limit is set from:
 - **`slow`** (`slow.c` or `slow.cpp`), if the pack has one, must run out
   of time on at least one full-size case, and be right where it doesn't.
   Since `lc check` runs on every CI system, a faster machine or compiler
-  that lets it pass is noticed.
+  that lets it pass is noticed. Passing within the limit as written is an
+  error on any machine. Passing only because this machine's limit is
+  scaled up is a warning: the scale is an estimate, and a noisy CI runner
+  must not fail a pack.
 - **`ref` with the sanitizers** runs them too, where the compiler has
   sanitizers (not musl's gcc: a note says so), so that UBSan catches a
   signed overflow that only the big numbers reach. It doesn't catch a
@@ -362,7 +371,9 @@ pack goes through the same steps. For each pack:
 5. **Measure.** On a quiet machine, run `lc check ID` (not `--quick`)
    once with clang and once with gcc (`CC=gcc-16 CXX=g++-16` on a Mac
    with Homebrew's gcc), and note `ref`'s slowest time, `gen`'s, and
-   `brute`'s on the full-size cases. The compilers differ most on simple
+   `brute`'s on the full-size cases. Limits are written for the reference
+   machine: on a slower one, divide the times by the scale `lc calibrate`
+   shows. The compilers differ most on simple
    loops, which clang vectorizes: 121's `O(n^2)` `brute` takes 0.19 s
    with clang and 1.3 s with gcc on the same machine.
 6. **Set `time_limit_ms`.** The limit L must be
@@ -500,6 +511,13 @@ ones again. It runs only for
 
 `tools/full-packs.sh BASE` prints the packs CI picks, and the first job,
 "Packs to check in full", shows them.
+
+**Timing on CI's runners.** `make test` runs at scale 1
+(`LC_TIME_SCALE=1`), so its checks don't depend on a runner's speed. Each
+job then prints what `lc calibrate` measures there, and `make check-packs`
+uses that scale. What fails a pack doesn't depend on it: a `slow.c` fails
+only by passing within the limit as written, and scaling only gives `ref`
+more room, so a noisy runner can change a warning but not the result.
 
 ## MANIFEST.tsv
 

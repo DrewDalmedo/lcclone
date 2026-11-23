@@ -104,6 +104,11 @@ struct lc_ctx {
     int loaded;             /* lc_load has run successfully */
 
     unsigned long tmp_counter; /* makes temp file names unique (fs.c) */
+
+    int scale_given;        /* lc_time_scale_override was called */
+    int scale_given_percent; /* what it asked for; 0: measure */
+    int scale_known;        /* `scale` is set (speed.c) */
+    lc_time_scale scale;    /* its cpu string is in `arena` */
 };
 
 /*
@@ -463,6 +468,10 @@ typedef struct lc_limits {
                                  Exceeded beyond it */
     size_t output_max;        /* stdout and stderr, each */
     size_t result_max;        /* the result on fd 3 */
+    /* When time_ms is a limit scaled for this machine: the limit as
+     * written and the scale, for messages. base_ms is 0 otherwise. */
+    int base_ms;
+    int scale_percent;
 } lc_limits;
 
 /* Limits with the given time and memory, and the default output caps. */
@@ -484,6 +493,9 @@ typedef struct lc_judge_opts {
     const char *cwd;          /* directory to run in; NULL keeps the caller's */
     int stop_on_failure;      /* stop after the first case not accepted */
     int time_ms;              /* 0: the problem's time_limit_ms */
+    /* time_ms is the limit to use, already scaled for this machine; else
+     * it is scaled (lc_time_scale_get) */
+    int time_exact;
     int memory_mb;            /* 0: the problem's memory_limit_mb */
     size_t ncustom;           /* the last ncustom cases are your own */
     /* the program is built with sanitizers: no address-space limit and
@@ -550,6 +562,27 @@ const char *lc_cache_dir(lc_ctx *ctx);
  * $XDG_DATA_HOME/lcclone or ~/.local/share/lcclone), the same way.
  */
 const char *lc_data_dir(lc_ctx *ctx);
+
+/* ------------------------------------------------------------------ */
+/* This machine's speed (speed.c)                                      */
+/* ------------------------------------------------------------------ */
+
+/* The time scales a setting may ask for, in percent: 0.1 to 100. */
+#define LC_SCALE_MIN 10
+#define LC_SCALE_MAX 10000
+
+/* The scale, in percent, for the calibration loop's time in microseconds. */
+int lc_scale_for_us(long us);
+
+/* `ms` scaled by `percent`, rounded up, at least 1 and at most INT_MAX. */
+int lc_scale_ms(int ms, int percent);
+
+/*
+ * Parses a time scale: "auto" (*percent is 0), or a number from 0.1 to 100
+ * with at most two decimals, whatever the locale. 0, or -1 when it isn't
+ * one.
+ */
+int lc_scale_parse(const char *s, int *percent);
 
 /* ------------------------------------------------------------------ */
 /* The harness runtime (runtime/, embedded by tools/embed.awk)         */

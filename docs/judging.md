@@ -161,7 +161,7 @@ A problem sets `time_limit_ms` (default 1000) and `memory_limit_mb`
 
 | What | Limit | Why |
 |------|-------|-----|
-| CPU time | **`time_limit_ms`**, user plus system | the time limit itself; checked when the program ends |
+| CPU time | **`time_limit_ms`**, scaled to this machine ([below](#slower-machines)), user plus system | the time limit itself; checked when the program ends |
 | `RLIMIT_CPU` | the time limit rounded up to whole seconds, plus 1 s | stops a program that spins (SIGXCPU, then SIGKILL a second later) |
 | Wall clock | 2 × the time limit + 1 s | stops a program that sleeps or blocks; room for a busy machine |
 | Peak resident memory | **`memory_limit_mb`** | the memory limit itself; checked when the program ends |
@@ -218,6 +218,84 @@ The same limits apply on every platform, with these differences:
   `lc` kills the child first, so that the report still comes. macOS and
   the BSDs don't count inherited pages, and need none of this.
 
+### Slower machines
+
+A pack's `time_limit_ms` is written for a **reference machine**, an Apple
+M4, and tells methods apart by a factor of about three on either side
+([authoring.md](authoring.md#time-limits)). On a machine four times slower,
+a method LeetCode accepts would run out of time: 121's `O(n^2)` at 10^4
+takes 13 ms on the M4 against a limit of 50 ms. So `lc` multiplies the limit
+by a **scale** for the machine it runs on. The CPU limit, the wall-clock
+deadline and `RLIMIT_CPU` all follow from the scaled limit.
+
+**Measuring.** `lc` times a fixed loop, built into it
+(`src/core/speed_loop.c`): loads that depend on the last one over a
+shuffled 128 KiB table, integer mixing, and a branch on a random bit. The
+Makefile builds that one file with its own flags, so `CFLAGS` such as `-O0`
+or the sanitizers don't change its time, and the loop is written so that
+compilers can't vectorize it or remove the branch: Apple clang and gcc 16
+are within 12% of each other. It runs 15 rounds of about 6 ms and keeps
+the **best** round, in CPU time, because noise only ever makes a round
+slower. On the M4, with every core busy, the best round is at most 15%
+slower than on a quiet machine.
+
+**When, and where it is kept.** Once per CPU, the first time something is
+judged (`lc: note: measuring this machine's speed for the time limits
+(once)`, on stderr, about 0.1 s). The time goes in
+`$XDG_CACHE_HOME/lcclone/machine-speed`, one line per kind of CPU, so a home
+directory shared by several machines works. Judging never measures again
+while that line is there, so **the scale doesn't change from one run to the
+next**. `lc calibrate` measures again, for example after a first
+measurement on battery power; a lock keeps two `lc` processes from
+measuring at once.
+
+**From a time to a scale.** The ratio to the reference machine's time
+picks one of a few coarse steps:
+
+| The loop takes, against the reference | Scale |
+|---|---|
+| under 1.35 times (or faster) | 1 |
+| 1.35 to 1.75 | 1.5 |
+| 1.75 to 2.5 | 2 |
+| 2.5 to 3.5 | 3 |
+| 3.5 to 5 | 4 |
+| 5 to 7 | 6 |
+| 7 to 10 | 8 |
+| 10 to 14 | 12 |
+| 14 or more | 16 |
+
+- **Never below 1.** A faster machine keeps the limits as written: a
+  program's start-up doesn't get faster with it, and tighter limits could
+  fail right solutions.
+- **Coarse on purpose.** A measurement that is off by 10%, or lands on the
+  far side of a step, changes the limit by at most about 1.5 times. Limits
+  leave three times the room on each side, so that doesn't flip the
+  verdict of a method LeetCode clearly accepts or rejects.
+- **Capped at 16,** so that a wild measurement (an emulator, say) can't
+  make limits meaningless.
+
+**Setting it yourself.** The most specific wins: `--time-scale X` on
+`lc test`, `lc submit` and `lc check`, then `LC_TIME_SCALE=X`, then
+`time_scale = X` in the [config](workspace.md#configuration). X is a number
+from 0.1 to 100, or `auto` for the measured scale. `--time-scale 1` judges
+by the limits as written.
+
+**Seeing it.** At scale 1 the output is as it always was. At any other,
+`lc test` and `lc submit` end with a line such as `Time limit: 200 ms
+(100 ms x 2 for this machine; see 'lc help calibrate')`, a message about
+time says `the limit is 200 ms (100 ms x 2 for this machine)`, and `lc
+check` starts with `Time limits x 2 on this machine (measured)`. `--json`
+gives `time_limit_ms`, `time_scale` and `time_scale_source`
+([json.md](json.md#done)). `lc calibrate --show` says what is in use and
+why.
+
+**What it can't do.** One loop can't predict every program: a vectorized
+loop, or one limited by memory, may slow down by more or less than the
+loop does. Neither does the scale follow a machine's speed from moment to
+moment, as on a laptop that slows down on battery: it is measured once, so
+that verdicts stay put. For both, the limits' threefold room is what's
+left, and `--time-scale` is there when it isn't enough.
+
 ## Verdicts
 
 A case that ran gets the first verdict below whose rule applies.
@@ -248,6 +326,7 @@ that says why, for example:
   too deep, or a local array too large`
 - `exited with status 1`
 - `used 1630 ms of CPU time; the limit is 1000 ms`
+- `used 250 ms of CPU time; the limit is 200 ms (100 ms x 2 for this machine)`
 - `was still running after 3004 ms (it used 3 ms of CPU time; the limit is 1000 ms)`
 - `used 300 MB of memory; the limit is 256 MB`
 - `printed more than 1 MiB on stdout`

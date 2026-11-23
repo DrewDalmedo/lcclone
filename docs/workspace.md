@@ -72,6 +72,10 @@ lc submit                   # every case, stopping at the first failure
   sanitizer's report there fails the submission ([judging.md](judging.md#the-sanitizer-check)).
 - A directory with both `solution.c` and `solution.cpp` needs `--lang c`
   or `--lang cpp`.
+- **Time limits follow your machine.** They are written for a fast
+  machine, so on a slower one `lc` multiplies them by a scale, which it
+  measures once ([judging.md](judging.md#slower-machines)). `lc calibrate`
+  measures again, and `--time-scale X` sets it for one run.
 
 Output looks like this:
 
@@ -250,6 +254,7 @@ workspace = ~/code/lc
 | `lang`           | the language `lc start` uses when there is no other hint: `c` or `cpp` |
 | `color`          | `auto`, `always` or `never`, as `--color` |
 | `workspace`      | the workspace directory: an absolute path, or one starting with `~/` |
+| `time_scale`     | what to multiply time limits by: a number from 0.1 to 100, or `auto` to measure this machine ([judging.md](judging.md#slower-machines)) |
 
 Spaces around the key and the value don't matter, and an empty value is
 the same as leaving the key out. A line `lc` can't use, such as an
@@ -257,7 +262,7 @@ unknown key or a bad value, is skipped with a warning naming the file and
 line; the rest still applies.
 
 **Which setting wins.** The most specific: a command-line option, then an
-`lc` variable (`LC_CXXSTD`, `LC_CSTD`, `LC_WORKSPACE`), then the config
+`lc` variable (`LC_CXXSTD`, `LC_CSTD`, `LC_WORKSPACE`, `LC_TIME_SCALE`), then the config
 file, then a general variable (`CC`, `CXX`, `VISUAL`, `EDITOR`,
 `NO_COLOR`), then the default. So `cxx = g++-14` in the config wins over
 a `CXX` set for other programs, and `--std` wins over everything.

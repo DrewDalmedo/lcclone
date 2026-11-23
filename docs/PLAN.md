@@ -829,11 +829,29 @@ has them, and the earlier packs get them in one pass.
   compiler. A pack may also keep a solution that must fail on time
   (`slow.c`), which `lc check` runs on every CI system, so a faster
   machine or compiler that lets it pass is noticed.
-- **Slow machines.** A limit set on CI's machines fails right solutions on
-  a machine several times slower, and `ref`'s own time is too short to
-  measure that by: it is mostly starting up and reading the input. How
-  `lc` scales limits is still to decide; one way is to time a fixed loop
-  that it ships, once per machine, and compare with CI's time for it.
+- **Slow machines.** A limit written on one machine fails right solutions
+  on a machine several times slower, and `ref`'s own time is too short to
+  measure that by: it is mostly starting up and reading the input. So
+  limits are written for a reference machine (an Apple M4), and `lc`
+  multiplies them by a scale for the machine it runs on
+  (docs/judging.md, "Slower machines"):
+  - **Measured once per CPU.** `lc` times a fixed loop built into it, 15
+    short rounds, keeps the best, and caches it in
+    `$XDG_CACHE_HOME/lcclone/machine-speed`. Judging doesn't measure again,
+    so verdicts don't change from run to run; `lc calibrate` measures
+    again on request.
+  - **Coarse steps** from 1 to 16, never below 1. Limits leave three times
+    the room on each side, so a step off doesn't flip a verdict.
+  - **Overrides:** `--time-scale`, `LC_TIME_SCALE`, the config's
+    `time_scale`. Output shows the scale only when it isn't 1, and `--json`
+    adds `time_limit_ms`, `time_scale` and `time_scale_source`.
+  - **`lc check`** compares times with the scaled limit, but a pack's
+    limit stays what was written. `slow.c` passing within the limit as
+    written is an error on every machine; passing only within a scaled one
+    is a warning, so that a noisy CI runner can't fail a pack.
+  - **CI:** `make test` runs at scale 1, so its timing checks are what
+    they were; `make check-packs` uses each runner's measured scale, and
+    each job prints it (`lc calibrate`).
 
 **Trusting the expected results:**
 
@@ -1098,8 +1116,9 @@ Possible later work:
   features fails under the C++11 default. When a C++ build fails, the error
   message says which standard was used and how to raise it.
 - **Timing noise and machine speed.** Judge on CPU time. A limit must leave
-  room for slower machines and other correct solutions, and still reject
-  the slow methods LeetCode rejects; §6.4 says how packs set it.
+  room for other correct solutions, and still reject the slow methods
+  LeetCode rejects; §6.4 says how packs set it, and how `lc` scales limits
+  to a slower machine.
 
 ## 11. Decisions so far
 

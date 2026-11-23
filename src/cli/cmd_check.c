@@ -508,6 +508,7 @@ int cmd_check(cli *c)
     lc_manifest *m = NULL;
     lc_check_options co;
     lc_hooks hooks;
+    lc_time_scale scale;
     pack *packs = NULL;
     char *root = NULL;
     struct sigaction sa, old;
@@ -536,6 +537,17 @@ int cmd_check(cli *c)
     rc = select_packs(c, ctx, &packs, &n);
     if (rc != CLI_EXIT_OK)
         goto done;
+    rc = cli_time_scale(c, ctx, &scale);
+    if (rc != CLI_EXIT_OK)
+        goto done;
+    if (!c->json && scale.percent != 100) {
+        char text[LC_SCALE_TEXT_MAX];
+
+        lc_str_printf(&r.out, "Time limits x %s on this machine (%s)\n",
+                      lc_scale_text(scale.percent, text),
+                      lc_scale_source_name(scale.source));
+        flush(&r);
+    }
 
     /* A broken manifest fails the check, but the packs are still
      * checked, without it. */
@@ -627,6 +639,10 @@ int cmd_check(cli *c)
         lc_json_bool(&j, !manifest_bad);
         lc_json_key(&j, "cancelled");
         lc_json_bool(&j, cancel_flag != 0);
+        lc_json_key(&j, "time_scale");
+        lc_json_double(&j, scale.percent / 100.0);
+        lc_json_key(&j, "time_scale_source");
+        lc_json_string(&j, lc_scale_source_name(scale.source));
         /* The warnings, except those about packs: those were findings. */
         lc_json_key(&j, "warnings");
         lc_json_begin_array(&j);

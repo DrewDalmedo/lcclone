@@ -135,7 +135,7 @@ lc_env() {
     set -- env -i PATH="$PATH" HOME="$TMP/home" \
         XDG_DATA_HOME="$TMP/home/.local/share" \
         XDG_CACHE_HOME="$TMP/cache" CC="$E2E_CC" CXX="$E2E_CXX" \
-        TERM=xterm LC_ALL=C COLUMNS=80 LC_PROBLEMS="$FIX" \
+        TERM=xterm LC_ALL=C COLUMNS=80 LC_PROBLEMS="$FIX" LC_TIME_SCALE=1 \
         ASAN_OPTIONS="${ASAN_OPTIONS-}" UBSAN_OPTIONS="${UBSAN_OPTIONS-}" \
         "$@"
     if [ -n "${PTY_COLS-}" ]; then
@@ -1555,6 +1555,182 @@ fi
 printf '1\n2\n=> 3\n' >"$RG/0001-good/tests.txt"
 rm "$RG/0001-good/ref.c"
 check err-check-regen-no-ref LC_PROBLEMS="$RG" -- check --regen
+
+# ------------------------------------------------------------------
+# Time limits on slower machines (docs/judging.md, "Slower machines").
+# A solution that burns 450 ms of CPU time, against 0010-add's 300 ms.
+SC=$TMP/scale/0010-add
+mkdir -p "$SC"
+cp $J/problem.md $J/tests.txt "$SC/"
+cat >"$SC/burn.c" <<'EOF'
+#include <time.h>
+
+int add(int a, int b)
+{
+    clock_t start = clock();
+
+    while (clock() - start < CLOCKS_PER_SEC * 45 / 100)
+        ;
+    return a + b;
+}
+EOF
+SCC=$TMP/scale-cache
+SF=$SCC/lcclone/machine-speed
+
+# run_scale DESC STATUS PATTERN [VAR=value...]: lc test burn.c $RS_ARGS
+run_scale() {
+    rs_desc=$1 rs_st=$2 rs_pat=$3
+    shift 3
+    # shellcheck disable=SC2086 # options, split into words
+    run LC_PROBLEMS="$TMP/scale" XDG_CACHE_HOME="$SCC" "$@" -- test "$SC/burn.c" $RS_ARGS
+    if [ "$st" = "$rs_st" ] && grep -q -e "$rs_pat" "$TMP/out"; then
+        ok
+    else
+        bad "$rs_desc" "exit $st: $(head -n 5 "$TMP/err") $(tail -n 4 "$TMP/out")"
+    fi
+}
+
+RS_ARGS=
+run_scale "scale 1: over the limit" 1 'the limit is 300 ms)$'
+run_scale "LC_TIME_SCALE=4: within it" 0 \
+    "^Time limit: 1200 ms (300 ms x 4 for this machine; see 'lc help calibrate')$" \
+    LC_TIME_SCALE=4
+run_scale "a scaled limit in the message" 1 \
+    'the limit is 360 ms (300 ms x 1.2 for this machine))$' LC_TIME_SCALE=1.2
+RS_ARGS="--time-scale 4"
+run_scale "--time-scale beats LC_TIME_SCALE" 0 '^Accepted' LC_TIME_SCALE=1
+RS_ARGS=
+printf 'time_scale = 4\n' >"$TMP/scale-config"
+run_scale "the config's time_scale" 0 '^Accepted' \
+    LC_CONFIG="$TMP/scale-config" LC_TIME_SCALE=
+run_scale "LC_TIME_SCALE beats the config" 1 'the limit is 300 ms)$' \
+    LC_CONFIG="$TMP/scale-config"
+
+run LC_PROBLEMS="$TMP/scale" LC_TIME_SCALE=4 -- test "$SC/burn.c" --json
+if [ "$st" = 0 ] && [ -n "$PYTHON" ]; then
+    if tail -n 1 "$TMP/out" | "$PYTHON" -c '
+import json, sys
+d = json.loads(sys.stdin.read())
+assert d["event"] == "done" and d["time_limit_ms"] == 1200, d
+assert d["time_scale"] == 4 and d["time_scale_source"] == "env", d'; then
+        ok
+    else
+        bad "lc test --json (time scale)" "$(tail -n 1 "$TMP/out")"
+    fi
+fi
+
+run LC_PROBLEMS="$TMP/scale" -- test "$SC/burn.c" --time-scale fast
+if [ "$st" = 3 ] && grep -q "time-scale: invalid time scale 'fast'" "$TMP/err"; then
+    ok
+else
+    bad "--time-scale fast" "exit $st: $(cat "$TMP/err")"
+fi
+run LC_PROBLEMS="$TMP/scale" LC_TIME_SCALE=fast -- test "$SC/burn.c"
+if [ "$st" = 3 ] && grep -q "LC_TIME_SCALE: invalid value 'fast'" "$TMP/err"; then
+    ok
+else
+    bad "LC_TIME_SCALE=fast" "exit $st: $(cat "$TMP/err")"
+fi
+
+# Measured once, kept, and not measured again.
+run XDG_CACHE_HOME="$SCC" LC_TIME_SCALE= -- calibrate --show
+if [ "$st" = 0 ] && grep -q 'not measured yet' "$TMP/out" && [ ! -e "$SF" ]; then
+    ok
+else
+    bad "lc calibrate --show (nothing kept)" "exit $st: $(cat "$TMP/out")"
+fi
+run LC_PROBLEMS="$TMP/scale" XDG_CACHE_HOME="$SCC" LC_TIME_SCALE=9 -- test "$SC/burn.c"
+if [ "$st" = 0 ] && [ ! -e "$SF" ]; then
+    ok
+else
+    bad "a set scale measures nothing" "exit $st"
+fi
+run XDG_CACHE_HOME="$SCC" LC_TIME_SCALE= -- calibrate --json
+check_json "lc calibrate --json"
+if [ "$st" = 0 ] && [ -s "$SF" ] && grep -q '"saved":true' "$TMP/out"; then
+    ok
+else
+    bad "lc calibrate" "exit $st: $(cat "$TMP/out")"
+fi
+
+# A machine four times slower than the reference, by editing what is kept.
+# Its line: version, CPU, the loop's time in microseconds, when.
+awk -F '\t' 'BEGIN { OFS = "\t" } /^#/ { print; next } { $3 = 24000; print }' \
+    "$SF" >"$SF.new" && mv "$SF.new" "$SF"
+cp "$SF" "$TMP/scale-kept"
+run_scale "a machine 4x slower: scale 4" 0 \
+    '^Time limit: 1200 ms (300 ms x 4 for this machine' LC_TIME_SCALE=
+run_scale "and again" 0 '^Accepted' LC_TIME_SCALE=
+if cmp -s "$SF" "$TMP/scale-kept"; then
+    ok
+else
+    bad "judging changed the kept time" "$(cat "$SF")"
+fi
+run XDG_CACHE_HOME="$SCC" LC_TIME_SCALE= -- calibrate --show
+if [ "$st" = 0 ] && grep -q '^In use:  4 (measured)$' "$TMP/out" &&
+    grep -q '^Loop:    24.0 ms, 4.00 times' "$TMP/out"; then
+    ok
+else
+    bad "lc calibrate --show (kept)" "exit $st: $(cat "$TMP/out")"
+fi
+
+# lc check: a slow.c that burns 700 ms on the full-size cases, whose limit
+# is 500 ms. Over the limit as written, it must run out of time at scale 1;
+# only within a scaled-up limit does it pass, which is a warning, not an
+# error. A slow.c within the limit as written fails at any scale.
+SK=$TMP/scale-check/0020-top-k
+mkdir -p "$SK"
+cp $JFIX/0020-top-k/problem.md $JFIX/0020-top-k/ref.c $JFIX/0020-top-k/gen.c \
+    $JFIX/0020-top-k/tests.txt "$SK/"
+{
+    printf '#include <time.h>\n'
+    sed 's/^int \*topK(int \*nums, int numsSize, int k, int \*returnSize)$/static int *real(int *nums, int numsSize, int k, int *returnSize)/' \
+        $JFIX/0020-top-k/ref.c
+    cat <<'EOF'
+
+int *topK(int *nums, int numsSize, int k, int *returnSize)
+{
+    clock_t start = clock();
+
+    if (numsSize >= 100000)
+        while (clock() - start < CLOCKS_PER_SEC * 7 / 10)
+            ;
+    return real(nums, numsSize, k, returnSize);
+}
+EOF
+} >"$SK/slow.c"
+run LC_PROBLEMS="$TMP/scale-check" -- check --count 5
+if [ "$st" = 0 ] && ! grep -q 'slow.c:' "$TMP/out"; then
+    ok
+else
+    bad "lc check: slow.c at scale 1" "exit $st: $(head -n 5 "$TMP/out")"
+fi
+run LC_PROBLEMS="$TMP/scale-check" LC_TIME_SCALE=2 -- check --count 5
+if [ "$st" = 0 ] && grep -q '^Time limits x 2 on this machine (env)$' "$TMP/out" &&
+    grep -q "slow.c: warning: slow.c passes every full-size case under this machine's limit (1000 ms: 500 ms x 2 here), though its slowest, at [0-9]* ms, is over the limit as written (500 ms)" "$TMP/out"; then
+    ok
+else
+    bad "lc check: slow.c within a scaled limit" "exit $st: $(head -n 5 "$TMP/out")"
+fi
+cp $JFIX/0020-top-k/ref.c "$SK/slow.c"
+run LC_PROBLEMS="$TMP/scale-check" LC_TIME_SCALE=2 -- check --count 5
+if [ "$st" = 1 ] && grep -q 'slow.c: error: slow.c passes every full-size case in time (its slowest takes [0-9]* ms; the limit is 500 ms)' "$TMP/out"; then
+    ok
+else
+    bad "lc check: quick slow.c at scale 2" "exit $st: $(head -n 5 "$TMP/out")"
+fi
+run LC_PROBLEMS="$TMP/scale-check" LC_TIME_SCALE=2 -- check --count 5 --json
+if [ -n "$PYTHON" ]; then
+    if tail -n 1 "$TMP/out" | "$PYTHON" -c '
+import json, sys
+d = json.loads(sys.stdin.read())
+assert d["event"] == "done" and d["time_scale"] == 2, d
+assert d["time_scale_source"] == "env", d'; then
+        ok
+    else
+        bad "lc check --json (time scale)" "$(tail -n 1 "$TMP/out")"
+    fi
+fi
 
 # The repository's own packs pass lc check. --quick: CI runs the slow
 # checks on the full-size cases apart, on the packs a change touches

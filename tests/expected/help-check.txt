@@ -1,5 +1,5 @@
 --- stdout
-usage: lc check [<pack>...] [--regen] [--quick] [--count N] [--seed N] [--json] [--color=WHEN]
+usage: lc check [<pack>...] [--regen] [--quick] [--count N] [--seed N] [--time-scale X] [--json] [--color=WHEN]
 
 Check problem packs: each <pack> is a pack directory, an ID or a
 slug; without one, every pack of the problem directory. For each
@@ -33,6 +33,9 @@ Options:
   --count N          random cases to compare ref and brute on
                      (default 300)
   --seed N           the seed of the first random case (default 1)
+  --time-scale X     multiply the time limits by X, or auto to use this
+                     machine's measured speed. slow.c must also run out
+                     of time under the limit as written
   --json             print JSON Lines: one object per event
   --color=WHEN       colour the output: auto (the default), always or
                      never

@@ -38,7 +38,9 @@ enum {
     CLI_OPT_REGEN = 1 << 11,
     CLI_OPT_COUNT = 1 << 12,
     CLI_OPT_SEED = 1 << 13,
-    CLI_OPT_QUICK = 1 << 14
+    CLI_OPT_QUICK = 1 << 14,
+    CLI_OPT_TIME_SCALE = 1 << 15,
+    CLI_OPT_SHOW = 1 << 16
 };
 
 typedef struct cli cli;
@@ -80,6 +82,8 @@ struct cli {
     unsigned long count;    /* --count (0: not given) */
     unsigned long long seed; /* --seed */
     int seed_given;
+    const char *time_scale; /* --time-scale */
+    int show;               /* --show */
     int quiet_packs;        /* cli_load: don't print the loader's warnings
                                about packs (lc check shows them itself) */
 };
@@ -100,6 +104,13 @@ int cli_usage(cli *c, const char *fmt, ...) LC_PRINTF(2, 3);
 
 /* Prints "lc: warning: <message>" on stderr. */
 void cli_warn(const char *msg);
+
+/*
+ * Applies --time-scale and works out the scale judging will use, saying
+ * on stderr when that takes measuring this machine. Returns CLI_EXIT_OK,
+ * or reports the error.
+ */
+int cli_time_scale(cli *c, lc_ctx *ctx, lc_time_scale *out);
 
 /*
  * Opens a context and loads the problem packs, printing the warnings of
@@ -148,6 +159,7 @@ int cmd_random(cli *c);
 
 int cmd_stats(cli *c);
 int cmd_check(cli *c);
+int cmd_calibrate(cli *c);
 
 /* ------------------------------------------------------------------ */
 /* cmd_start.c, cmd_test.c                                             */
