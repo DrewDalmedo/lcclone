@@ -1,0 +1,149 @@
+# Intersection of Two Linked Lists. A case is headA, headB (repeating the
+# shared values), skipA and skipB. The result is the list from the first
+# shared node, [] for none.
+
+@example After 7, 3 in A and 2 in B, both lists run through the nodes 5, 9.
+[7,3,5,9]
+[2,5,9]
+2
+1
+=> [5,9]
+
+@example Equal values, but separate nodes: nothing is shared.
+[4,6]
+[4,6]
+2
+2
+=> []
+
+@example Both heads are the same node, so the whole list is shared.
+[8,1,2]
+[8,1,2]
+0
+0
+=> [8,1,2]
+
+# One node, shared.
+[5]
+[5]
+0
+0
+=> [5]
+
+# One node each, separate.
+[5]
+[5]
+1
+1
+=> []
+
+# A is longer; only its last node is shared.
+[1,2,3,4,5]
+[9,5]
+4
+1
+=> [5]
+
+# B is longer; A is its last node.
+[5]
+[9,8,7,5]
+0
+3
+=> [5]
+
+# An equal value before the join, at another distance from the end.
+[3,3,6,7]
+[3,6,7]
+2
+1
+=> [6,7]
+
+# Equal values at the same distance from the end, but only the last node is
+# shared.
+[2,4,8]
+[1,4,8]
+2
+2
+=> [8]
+
+# All values equal, joined near the end.
+[1,1,1,1]
+[1,1,1]
+3
+2
+=> [1]
+
+# The top value.
+[100000]
+[1,100000]
+0
+1
+=> [100000]
+
+# Different lengths, nothing shared.
+[1,2,3]
+[4]
+3
+1
+=> []
+
+@gen 1 small
+[3,3]
+[3,3]
+2
+2
+=> []
+
+@gen 2 small
+[3]
+[3]
+1
+1
+=> []
+
+@gen 3 small
+[3,2,2]
+[3,1]
+3
+2
+=> []
+
+@gen 4 small
+[2,1,1,2]
+[1,2,2]
+3
+2
+=> [2]
+
+@gen 5 small
+[2,1]
+[1,1]
+1
+1
+=> [1]
+
+@gen 6 small
+[2,3,3]
+[3,3,3]
+1
+1
+=> [3,3]
+
+# Full size, 3 * 10^4 nodes: separate lists, only the last node shared, one
+# list twice, B as A's last node, separate lists of equal values, and a join
+# after 10 nodes of A and 20000 of B, with equal values.
+@full 1 cb1d3900
+=> []
+
+@full 2 4b66832e
+=> [76046]
+
+@full 3 95335471
+
+@full 4 26093ba5
+=> [65333]
+
+@full 5 ad047515
+=> []
+
+@full 6 850dc925
