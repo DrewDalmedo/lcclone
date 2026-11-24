@@ -100,3 +100,10 @@
 3122
 => [4,7,9,4]
 
+# Full-size cases: 10^4 digits, in a shape the seed picks (see gen.c); all 9s has an
+# answer of 10^4 + 1 digits.
+@full 1 5bbeb66b
+
+@full 2 82f5e598
+
+@full 3 a40d3d3a

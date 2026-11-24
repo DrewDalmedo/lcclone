@@ -105,3 +105,14 @@
 "dmdmmmmmmb"
 "b"
 => [9,8,7,6,5,4,3,2,1,0]
+
+# Full-size cases: 10^4 letters, and the seed picks where c is (see gen.c).
+@full 1 be756193
+
+@full 2 2ec97323
+
+@full 3 73e9a703
+
+@full 4 2eeb4d49
+
+@full 5 90c11ebe

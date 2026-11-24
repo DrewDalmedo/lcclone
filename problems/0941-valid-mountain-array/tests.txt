@@ -112,3 +112,19 @@
 @gen 8 small
 [0,2,3,9,8,3,1]
 => true
+
+# Full-size cases: 10^4 elements, in a shape the seed picks (see gen.c).
+@full 1 38af37e0
+=> true
+
+@full 2 eb36a368
+=> false
+
+@full 3 54d968a5
+=> false
+
+@full 4 9bb79499
+=> false
+
+@full 5 16ade47d
+=> true

@@ -88,3 +88,11 @@
 [2,2,0,3,3,3]
 => [2,2,0,0,3,3]
 
+# Full-size cases: 10^4 elements, and the seed picks the share of zeros (see gen.c).
+@full 1 7113696b
+
+@full 2 41c4af8d
+
+@full 3 38458134
+
+@full 4 3aa69570

@@ -106,3 +106,25 @@
 @gen 10 small
 "pppr"
 => true
+
+# Full-size cases: 10^5 letters, in a shape the seed picks (see gen.c).
+@full 1 5672a860
+=> true
+
+@full 2 6fa836df
+=> false
+
+@full 3 ecff0b18
+=> true
+
+@full 4 6c715671
+=> true
+
+@full 5 99712147
+=> false
+
+@full 6 b8af7a0e
+=> true
+
+@full 7 73710b64
+=> true

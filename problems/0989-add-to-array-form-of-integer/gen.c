@@ -2,7 +2,9 @@
  * digits, all 9s (the carry runs off the front), or random digits ending
  * in a run of 9s (the carry stops partway up). k is sometimes small,
  * sometimes up to 10^4, and now and then exactly 10^4. Small cases are a
- * few digits long, so k often has more digits than num. */
+ * few digits long, so k often has more digits than num. Full-size cases
+ * have 10^4 digits, and the seed picks the shape; the all-9s one has
+ * k = 10^4, so the answer has 10^4 + 1 digits. */
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 6) : 10000, i;
@@ -11,6 +13,11 @@ void gen(int small)
     int nines, k;
     int *num = malloc((size_t)n * sizeof *num);
 
+    if (!small) {
+        shape = 1 + (int)(gen_seed() % 3);
+        if (shape == 2)
+            kshape = 1;
+    }
     for (i = 0; i < n; i++)
         num[i] = (int)rnd(0, 9);
     if (shape == 2) {

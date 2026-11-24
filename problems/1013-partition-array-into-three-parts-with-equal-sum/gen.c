@@ -1,11 +1,11 @@
 /* The seed picks a shape: random values; three pieces built to share a sum
- * (sometimes nudged off by one); a zero-sum front followed by a rest that
- * also sums to 0, so the prefix sums come back to 0 at the last element
- * (where a cut would leave the back empty); values of -1, 0 and 1, whose
- * prefix sums hit the third many times; and, at full size only, a slow
- * false case: the front is the third and the prefix sums then swing
- * between the third and another value, never reaching two thirds before
- * the last element. Small cases have 3 to 9 elements from -3 to 3. */
+ * (in small cases, sometimes nudged off by one); a zero-sum front followed
+ * by a rest that also sums to 0, so the prefix sums come back to 0 at the
+ * last element (where a cut would leave the back empty); values of -1, 0
+ * and 1, whose prefix sums hit the third many times; and, at full size
+ * only, a slow false case: the front is the third and the prefix sums then
+ * swing between the third and another value, never reaching two thirds
+ * before the last element. Small cases have 3 to 9 elements from -3 to 3. */
 
 /* Nudges a[from..to) from its end, within [-top, top], to sum to target.
  * It reaches the target when |target| <= (to - from) * top. */
@@ -29,7 +29,7 @@ void gen(int small)
 {
     int n = small ? (int)rnd(3, 9) : 50000;
     int top = small ? 3 : 10000;
-    int shape = (int)rnd(0, small ? 3 : 5);
+    int shape = small ? (int)rnd(0, 3) : (int)(gen_seed() % 5);
     int *a = malloc((size_t)n * sizeof *a);
     int i, j, k, x, len, delta;
     long long t;
@@ -53,7 +53,7 @@ void gen(int small)
         fit(a, 0, i + 1, t, top);
         fit(a, i + 1, j, t, top);
         fit(a, j, n, t, top);
-        if (rnd_chance(30)) {
+        if (small && rnd_chance(30)) {
             k = (int)rnd(0, n - 1);
             delta = rnd_chance(50) ? 1 : -1;
             if (a[k] + delta >= -top && a[k] + delta <= top)

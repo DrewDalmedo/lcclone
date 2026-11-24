@@ -84,3 +84,12 @@
 ["aaba","aaaa","bbaa","baab"]
 => 2
 
+# Full-size cases: 100 strings of 1000 letters, in a shape the seed picks (see gen.c).
+@full 1 d38bff4b
+=> 489
+
+@full 2 1138c37e
+=> 0
+
+@full 3 2041f6eb
+=> 1000

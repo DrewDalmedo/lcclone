@@ -1,10 +1,10 @@
 /* A floor of 1 to 5 by 1 to 5 tiles for small cases; full-size ones are 50
- * by 50 most of the time, else of a random size up to that. The codes come
- * from a palette of 1 to 4 different values, 0 and 65535 among the likely
- * ones. The seed picks the layout:
- *   - noise (more than half the time): each tile has the first palette code
- *     with a chance picked by the seed, else another one, which makes
- *     patches of every shape;
+ * by 50. The codes come from a palette of 1 to 4 different values, 0 and
+ * 65535 among the likely ones. The seed picks the layout (at full size,
+ * seeds 1 to 5 make one of each, the two snakes apart):
+ *   - noise (more than half the time in small cases): each tile has the
+ *     first palette code with a chance picked by the seed, else another
+ *     one, which makes patches of every shape;
  *   - one code everywhere;
  *   - a snake of one code winding through the rest, row by row or column
  *     by column, or a spiral with a one-tile gap between its turns.
@@ -102,6 +102,7 @@ static void spiral(char *on)
 
 void gen(int small)
 {
+    static const int large_shapes[] = {5, 11, 12, 15, 17};
     int shape = (int)rnd(0, 19), path = 0, i, j, k, v, sr, sc, color, old, pct;
     int flip_r, flip_c;
     int *out;
@@ -110,12 +111,10 @@ void gen(int small)
     if (small) {
         R = (int)rnd(1, 5);
         C = (int)rnd(1, 5);
-    } else if (rnd_chance(60)) {
+    } else {
         R = 50;
         C = 50;
-    } else {
-        R = (int)rnd(1, 50);
-        C = (int)rnd(1, 50);
+        shape = large_shapes[gen_seed() % 5];
     }
     npal = (int)rnd(1, 4);
     for (k = 0; k < npal; k++) {

@@ -9,7 +9,8 @@
  * or "pqr". Most short strings can be fixed, so the seed picks the answer
  * of a small case (false for an odd seed, true for an even one), and
  * shapes are drawn until one has it. Full-size ones have 10^5 letters,
- * and the seed picks the shape. */
+ * and the seed picks the shape; there the one extra letter is among the
+ * first 1001 places, or for LATE_EXTRA among the last few. */
 enum { PALINDROME, ONE_EXTRA, TWO_EXTRA, TWO_CHANGED, TRAP, TRAP_REVERSED,
        STRAYS, RANDOM, LATE_EXTRA };
 
@@ -79,7 +80,7 @@ static void make(char *s, int n, int shape, const char *letters)
         break;
     case ONE_EXTRA:
         palindrome(s, n - 1, letters);
-        at = (int)rnd(0, n - 1);
+        at = (int)rnd(0, n > 1000 ? 1000 : n - 1);
         c = rnd_char(letters);
         insert(s, n - 1, at, c);
         break;

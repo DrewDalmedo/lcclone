@@ -90,3 +90,15 @@
 [3,5,1,5]
 => 5
 
+# Full-size cases: 10^4 elements, in a layout the seed picks (see gen.c).
+@full 1 b65e32bb
+=> 2681
+
+@full 2 24ca0c69
+=> 5058
+
+@full 3 22954c45
+=> 6233
+
+@full 4 4f607e58
+=> 10000

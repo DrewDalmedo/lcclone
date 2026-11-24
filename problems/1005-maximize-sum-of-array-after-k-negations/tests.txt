@@ -120,3 +120,13 @@
 [-4,3,0,-2,0,0]
 4
 => 9
+
+# Full-size cases: 10^4 values and k = 10^4, in a shape the seed picks (see gen.c).
+@full 1 ed6627ee
+=> 501374
+
+@full 2 e248677c
+=> 506493
+
+@full 3 583991b6
+=> 499186

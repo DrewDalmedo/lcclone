@@ -81,3 +81,17 @@
 "(())()()"
 => "()"
 
+# Full-size cases: 5 * 10^4 pairs, in a shape the seed picks (see gen.c), up to one
+# block nested 5 * 10^4 deep.
+@full 1 89425750
+
+@full 2 fe831870
+
+@full 3 c97ebbef
+
+@full 4 b699c581
+
+@full 5 e54f22a7
+=> ""
+
+@full 6 6ca7b319

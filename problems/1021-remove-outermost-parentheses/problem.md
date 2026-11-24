@@ -4,6 +4,7 @@ title: Remove Outermost Parentheses
 difficulty: easy
 tags: stack, string
 signature: string removeOuterParentheses(string s)
+time_limit_ms: 200
 ---
 The string `s` is made of `(` and `)`. Walk through it from left to right
 with a counter that starts at `0`, adding `1` at each `(` and subtracting

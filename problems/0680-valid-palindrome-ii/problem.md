@@ -4,6 +4,7 @@ title: Valid Palindrome II
 difficulty: easy
 tags: greedy, two-pointers, string
 signature: bool validPalindrome(string s)
+time_limit_ms: 500
 ---
 A **palindrome** is a string equal to its own reverse: in a palindrome `t`,
 `t[i] == t[t.length - 1 - i]` for every index `i`.

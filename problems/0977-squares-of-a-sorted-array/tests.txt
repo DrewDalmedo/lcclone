@@ -83,3 +83,9 @@
 [2,3]
 => [4,9]
 
+# Full-size cases: 10^4 values, all negative, all non-negative or mixed (see gen.c).
+@full 1 5ac049ed
+
+@full 2 6d77a0c0
+
+@full 3 32956b57

@@ -2,7 +2,7 @@
  * 9999), each seen X, 2X or 3X times for one X from 1 to 3, and in about
  * 40% of them one number's count is one more or one less, which usually
  * spoils the deal; the rest are 1 to 8 cards from 0, 1 and 2.
- * Full-size cases fill the deck up to 10^4 cards, and the seed picks:
+ * Full-size cases have up to 10^4 cards, and the seed picks:
  *   - one number on every card;
  *   - every card different;
  *   - counts that are all multiples of one X (2 to 12, 50, 97, 1000 or
@@ -57,7 +57,8 @@ void gen(int small)
         for (i = 0; i < 10000; i++)
             vals[i] = i;
         rnd_shuffle(vals, 10000);
-        size = rnd_chance(70) ? 10000 : (int)rnd(1, 10000);
+        size = 10000;
+        shape = (int)(gen_seed() % 6);
         if (shape == 0) {
             add(vals[0], size);
         } else if (shape == 1) {

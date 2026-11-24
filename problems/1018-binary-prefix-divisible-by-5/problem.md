@@ -4,6 +4,7 @@ title: Binary Prefix Divisible By 5
 difficulty: easy
 tags: bit-manipulation, array
 signature: bool[] prefixesDivBy5(int[] nums)
+time_limit_ms: 500
 ---
 The array `nums` holds bits, each `0` or `1`. Feed them one at a time, from
 `nums[0]` to the last, into a counter that starts at `0`. Each bit doubles

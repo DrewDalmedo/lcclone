@@ -92,3 +92,16 @@
 @gen 7 small
 [0,0,49999,49999,0,49999]
 => 4
+
+# Full-size cases: 5 * 10^4 elements, in a shape the seed picks (see gen.c).
+@full 1 f1d1af30
+=> 2
+
+@full 2 649e6ea9
+=> 50000
+
+@full 3 b410fa8e
+=> 48527
+
+@full 4 6420947c
+=> 1

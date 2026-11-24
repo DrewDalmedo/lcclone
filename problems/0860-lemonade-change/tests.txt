@@ -96,3 +96,18 @@
 [5,5,20,5,5,10,10]
 => false
 
+# Full-size cases: up to 10^5 bills, in a shape the seed picks (see gen.c).
+@full 1 069626c2
+=> false
+
+@full 2 c64c85dd
+=> false
+
+@full 3 00e00d1d
+=> true
+
+@full 4 dfbf9659
+=> false
+
+@full 5 883f7d02
+=> true

@@ -4,6 +4,7 @@ title: Degree of an Array
 difficulty: easy
 tags: array, hash-table
 signature: int findShortestSubArray(int[] nums)
+time_limit_ms: 100
 ---
 The **degree** of a list of numbers is the number of times its most common
 value occurs in it. The list `[4, 0, 4, 1, 0, 4]` has degree `3`: the value

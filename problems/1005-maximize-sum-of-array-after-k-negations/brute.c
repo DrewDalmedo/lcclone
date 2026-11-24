@@ -2,12 +2,15 @@
  * flipped an odd number of times. Try every set S of elements to end up
  * negated: k flips can do it when |S| <= k and k - |S| is even, since the
  * extra flips then go in pairs to any element. Exponential in the length
- * of nums, so only for the small random cases. */
+ * of nums, so only for small n: past 20, it stops at once, since
+ * 1u << n would shift past the width. */
 int largestSumAfterKNegations(int *nums, int numsSize, int k)
 {
     int best = 0, found = 0, size, sum, i;
     unsigned mask;
 
+    if (numsSize > 20)
+        abort();
     for (mask = 0; mask < (1u << numsSize); mask++) {
         size = 0;
         sum = 0;

@@ -1,10 +1,11 @@
 /* A string of m pairs, 2m characters. The seed picks a shape: a random walk
- * that opens and closes about equally often; a row of blocks of random
- * sizes; a walk that mostly opens (deep nesting); a single block nested m
- * deep, the longest result; a walk that mostly closes (many shallow
- * blocks); and, at full size only, m bare () blocks, an empty result. Small
- * cases have 1 to 8 pairs; full-size ones 5 * 10^4 pairs, so the deepest
- * ones pass what a 16-bit counter holds. */
+ * that opens and closes about equally often (at full size, opening a little
+ * more often, for one long block); a row of blocks of random sizes (up to
+ * 100 pairs at full size); a walk that mostly opens (deep nesting); a single
+ * block nested m deep, the longest result; a walk that mostly closes (many
+ * shallow blocks); and, at full size only, m bare () blocks, an empty
+ * result. Small cases have 1 to 8 pairs; full-size ones 5 * 10^4 pairs, so
+ * the deepest ones pass what a 16-bit counter holds. */
 
 /* Writes 2m characters: '(' with a chance of pct in 100 while one may
  * still be opened, ')' otherwise; the counter never goes below 0. */
@@ -27,13 +28,13 @@ static void walk(char *s, int m, int pct)
 void gen(int small)
 {
     int m = small ? (int)rnd(1, 8) : 50000;
-    int shape = (int)rnd(0, small ? 4 : 5);
-    int cap = small ? 4 : (int)rnd(2, 1000);
+    int shape = small ? (int)rnd(0, 4) : (int)(gen_seed() % 6);
+    int cap = small ? 4 : (int)rnd(2, 100);
     int pos = 0, k, i;
     char *s = malloc((size_t)2 * m + 1);
 
     if (shape == 0) {
-        walk(s, m, 50);
+        walk(s, m, small ? 50 : 55);
     } else if (shape == 1) {
         while (pos < 2 * m) {
             k = m - pos / 2 < cap ? m - pos / 2 : cap;

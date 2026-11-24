@@ -116,3 +116,16 @@
 [10000,9999,9986,9989]
 0
 => 14
+
+# Full-size cases: 10^4 values from 0 to 10^4, and the seed picks k (see gen.c).
+@full 1 2740c9e2
+=> 6998
+
+@full 2 4d76ad10
+=> 10000
+
+@full 3 7c719f0a
+=> 0
+
+@full 4 f42d49b8
+=> 9086

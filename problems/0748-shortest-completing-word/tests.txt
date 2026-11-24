@@ -116,3 +116,13 @@
 "b N24"
 ["bzbz","nz","zbbb","nz","bzbb","nn","nbb","bbbb"]
 => "nbb"
+
+# Full-size cases: 1000 words of up to 15 letters, nearly all near misses (see gen.c).
+@full 1 6ada99b3
+=> "kfyos"
+
+@full 2 4a2d5704
+=> "udgxuxldddlfubo"
+
+@full 3 16631b12
+=> "yednsxi"

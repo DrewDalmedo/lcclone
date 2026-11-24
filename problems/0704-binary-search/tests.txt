@@ -108,3 +108,19 @@
 [-12,-9,-1,7,10,11]
 7
 => 3
+
+# Full-size cases: 10^4 elements, and the seed picks the target (see gen.c).
+@full 1 d92f82b2
+=> 9999
+
+@full 2 a18291bf
+=> -1
+
+@full 3 80f2a017
+=> -1
+
+@full 4 db60f12a
+=> 1881
+
+@full 5 f868ab12
+=> -1

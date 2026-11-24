@@ -1,13 +1,13 @@
 /* Small cases have 1 to 8 values from -3 to 3, now and then -10^5 or 10^5,
- * so that level steps are common. Full-size ones have 10^5 values most of
- * the time, else a random number. The seed picks the shape:
+ * so that level steps are common. Full-size ones have 10^5 values. The seed
+ * picks the shape:
  *   - random values (nearly always a climb and a drop early on);
  *   - sorted, so the answer is true and the whole array must be read;
  *   - sorted, from only a few different values: long level runs;
  *   - sorted, then the last value set below the one before it, so that
  *     the only wrong step is the last one;
  *   - sorted, then one value somewhere set below the one before it;
- *   - all equal.
+ *   - all equal (in a small case, one value is then set lower).
  * Then, at random, every value is negated (sorted becomes the other way)
  * and the array reversed (a wrong last step becomes a wrong first step). */
 static int cmp_int(const void *a, const void *b)
@@ -15,6 +15,21 @@ static int cmp_int(const void *a, const void *b)
     int x = *(const int *)a, y = *(const int *)b;
 
     return (x > y) - (x < y);
+}
+
+/* Sorts a full-size array by counting its values, which leaves more of the
+ * time limit than qsort does. */
+static void sort_by_count(int *nums, int n)
+{
+    int *count = calloc(200001, sizeof *count);
+    int v, i, k = 0;
+
+    for (i = 0; i < n; i++)
+        count[nums[i] + 100000]++;
+    for (v = 0; v <= 200000; v++)
+        for (i = 0; i < count[v]; i++)
+            nums[k++] = v - 100000;
+    free(count);
 }
 
 static int value(int small, int few, const int *pool)
@@ -30,23 +45,23 @@ static int value(int small, int few, const int *pool)
 
 void gen(int small)
 {
-    int n, shape = (int)rnd(0, 5), i, p, t, lo, pool[3];
+    int n, shape = small ? (int)rnd(0, 5) : (int)(gen_seed() % 6);
+    int i, p, t, lo, pool[3];
     int *nums;
 
-    if (small)
-        n = (int)rnd(1, 8);
-    else if (rnd_chance(70))
-        n = 100000;
-    else
-        n = (int)rnd(1, 100000);
+    n = small ? (int)rnd(1, 8) : 100000;
     for (i = 0; i < 3; i++)
         pool[i] = value(small, 0, pool);
     nums = malloc((size_t)n * sizeof *nums);
     for (i = 0; i < n; i++)
         nums[i] = shape == 5 ? pool[0] : value(small, shape == 2, pool);
-    if (shape >= 1 && shape <= 4)
-        qsort(nums, (size_t)n, sizeof *nums, cmp_int);
-    if (shape >= 3 && n >= 2) {
+    if (shape >= 1 && shape <= 4) {
+        if (small)
+            qsort(nums, (size_t)n, sizeof *nums, cmp_int);
+        else
+            sort_by_count(nums, n);
+    }
+    if (shape >= 3 && (small || shape < 5) && n >= 2) {
         p = shape == 3 ? n - 1 : (int)rnd(1, n - 1);
         lo = small ? nums[p - 1] - 5 : -100000;
         if (lo < -100000)

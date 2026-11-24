@@ -21,7 +21,7 @@ static void add(int a, int b)
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 6) : 1000;
-    int shape = (int)rnd(0, 3);
+    int shape = small ? (int)rnd(0, 3) : (int)(gen_seed() % 4);
     int j = (int)rnd(1, n);
     int most = n * (n - 1) < 10000 ? n * (n - 1) : 10000;
     int skip = 0, i, a, b, c, ncand = 0, extra;
