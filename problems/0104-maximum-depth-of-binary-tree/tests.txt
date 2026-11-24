@@ -2,12 +2,12 @@
 # child, a missing node's children are not listed, and trailing nulls are
 # left out.
 
-@example The longest path from the root is 5 -> 3 -> 1 -> 2, so the deepest level is 4.
+@example Going 5, 3, 1, 2 reaches level 4, and nothing lies below it.
 [5,3,8,1,null,null,9,null,2]
 => 4
 
-@example Each node has only a right child, so every node is on a level of its own.
-[1,null,2,null,3]
+@example Each node has at most one child, so every node is on a level of its own.
+[6,null,4,9]
 => 3
 
 @example An empty tree has no levels.
@@ -41,3 +41,57 @@
 # Every value is the same.
 [0,0,0,0,null,null,0,null,null,0]
 => 4
+
+@gen 9 small
+[1,0,2,null,null,1,2,0]
+=> 4
+
+@gen 10 small
+[2,null,0,-3,null,null,3,2,null,null,-2,2]
+=> 7
+
+@gen 11 small
+[0,-1,2,-3,null,1,1]
+=> 3
+
+@gen 14 small
+[-2,null,2,-1,null,null,2]
+=> 4
+
+@gen 17 small
+[]
+=> 0
+
+@gen 31 small
+[-2,-2,1,-2,0,3]
+=> 3
+
+# Full size, 10^4 nodes: left path, right path, zigzag, random, complete, a
+# bushy left subtree beside a long right path, the widest level (4996), and
+# caterpillars with the spine down the left and the right.
+@full 1 f6a772bb
+=> 10000
+
+@full 2 3c7aec20
+=> 10000
+
+@full 3 f13b0831
+=> 10000
+
+@full 4 810c58c2
+=> 30
+
+@full 5 9407fdbf
+=> 14
+
+@full 6 104c7a66
+=> 5000
+
+@full 7 f8bede6c
+=> 16
+
+@full 8 d424c5ec
+=> 5001
+
+@full 9 51664aff
+=> 5001

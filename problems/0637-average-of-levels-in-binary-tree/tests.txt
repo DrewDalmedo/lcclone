@@ -1,0 +1,105 @@
+# Average of Levels in Binary Tree. A case is the tree in level order, with
+# null for a missing child; the result has the mean of each level, top level
+# first, and each entry may be off by up to 10^-5.
+
+@example The generations are 6, then 1 and 4, then 3 and 8.
+[6,1,4,3,null,null,8]
+=> [6.0,2.5,5.5]
+
+@example The third generation is 5 and -6, whose mean is negative and not whole.
+[-3,8,null,5,-6,0]
+=> [-3.0,8.0,-0.5,0.0]
+
+# A lone root at the top of the int range.
+[2147483647]
+=> [2147483647.0]
+
+# A lone root at the bottom of the int range.
+[-2147483648]
+=> [-2147483648.0]
+
+# Two of the largest value overflow a 32-bit sum.
+[5,2147483647,2147483647]
+=> [5.0,2147483647.0]
+
+# Two of the smallest value overflow it the other way.
+[5,-2147483648,-2147483648]
+=> [5.0,-2147483648.0]
+
+# The two limits nearly cancel.
+[1,2147483647,-2147483648]
+=> [1.0,-0.5]
+
+# A negative mean that integer division would cut to -2.
+[7,-2,-3]
+=> [7.0,-2.5]
+
+# Near 2^31 a float can't tell these apart from a whole number.
+[0,2147483647,2147483646]
+=> [0.0,2147483646.5]
+
+# A level of three, so the mean doesn't end.
+[10,3,-8,7,2,5]
+=> [10.0,-2.5,4.666666666666667]
+
+# A path of right children: one entry per node.
+[5,null,-4,null,9]
+=> [5.0,-4.0,9.0]
+
+# A level of one between levels of two.
+[2,3,4,null,8,null,null,6,7]
+=> [2.0,3.5,8.0,6.5]
+
+# A level holding the children of one side only.
+[9,1,null,2,3]
+=> [9.0,1.0,2.5]
+
+@gen 6 small
+[-2,2147483647,null,4,null,4,5,null,2147483647]
+=> [-2.0,2147483647.0,4.0,4.5,2147483647.0]
+
+@gen 9 small
+[1,3,-2147483648,-2147483648,2,2147483647]
+=> [1.0,-1073741822.5,0.3333333333333333]
+
+@gen 17 small
+[3,4,2,3,2147483647,null,null,null,null,null,-1]
+=> [3.0,3.0,1073741825.0,-1.0]
+
+@gen 20 small
+[-1,null,2147483647,5]
+=> [-1.0,2147483647.0,5.0]
+
+@gen 23 small
+[-2,-1,null,-2147483648,null,2147483647,null,5,null,-1,null,4]
+=> [-2.0,-1.0,-2147483648.0,2147483647.0,5.0,-1.0,4.0]
+
+@gen 26 small
+[-1,2147483647,1,2147483647,-4,0]
+=> [-1.0,1073741824.0,715827881.0]
+
+# Full size, 10^4 nodes: left path, right path of the two limits, zigzag,
+# complete at the top value; the widest level (4996) all top, all bottom, the
+# limits in turn, and near either limit in turn; a random shape; and
+# caterpillars with the spine down the left and the right.
+@full 1 b05b56eb
+
+@full 2 198dcea3
+
+@full 3 bb0c76eb
+
+@full 4 e79bfb5c
+
+@full 5 7234317e
+
+@full 6 b2d477b7
+
+@full 7 de97c17b
+
+@full 8 9fcd9927
+
+@full 9 d77e8148
+
+@full 10 82040568
+
+@full 11 a61766a2

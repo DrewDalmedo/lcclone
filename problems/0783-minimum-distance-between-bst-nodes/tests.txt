@@ -1,0 +1,109 @@
+# Minimum Distance Between BST Nodes. A case is the tree of station positions
+# in level order; the result is the distance between the two closest stations.
+
+@example The stations at 150 and 220 are 70 metres apart, the closest two on the line.
+[300,150,800,null,220]
+=> 70
+
+@example 4990 and 5000 are closest, though the node 1200 lies between them in the tree.
+[5000,1200,9000,null,4990,7000]
+=> 10
+
+@example Two stations, so there is only one distance to measure.
+[42,null,100000]
+=> 99958
+
+# Two stations, the second before the first.
+[6,5]
+=> 1
+
+# Two stations, the second after the first.
+[6,null,8]
+=> 2
+
+# Two stations at the two ends of the range: the answer is 10^5.
+[100000,0]
+=> 100000
+
+# The closest pair includes position 0, which a "previous value" of 0 would skip.
+[25,0,60,null,2]
+=> 2
+
+# A first position of 5 and a larger answer: a "previous value" of -1 would give 6.
+[5,null,80,70]
+=> 10
+
+# Every parent and child are at least 60 apart; the answer is 10.
+[200,100,300,40,190,210,360]
+=> 10
+
+# Neighbours along a level are no closer than 6; the answer is 3.
+[1000,400,1600,100,997,1003,1900]
+=> 3
+
+# A right path with the closest pair at its deep end.
+[3,null,90,null,700,null,702]
+=> 2
+
+# A left path with the closest pair at its deep end.
+[80000,50000,null,20000,null,19998]
+=> 2
+
+# The closest pair is the two smallest positions.
+[600,8,950,7]
+=> 1
+
+# The closest pair is the two largest positions.
+[250,60,640,null,null,638]
+=> 2
+
+# A zigzag whose closest pair is a grandparent and grandchild.
+[2000,30,null,null,1500,45]
+=> 15
+
+# Small random trees of distinct positions, some spanning the whole range.
+@gen 19 small
+[454,7]
+=> 447
+
+@gen 2 small
+[496,405,null,348,null,307,null,77,null,14]
+=> 41
+
+@gen 3 small
+[304,157,450,null,195,397,null,null,246,null,447,240]
+=> 3
+
+@gen 15 small
+[12,9,16,8,null,null,23,null,null,17,null,null,19]
+=> 1
+
+@gen 5 small
+[5,null,10]
+=> 5
+
+@gen 20 small
+[51490,0,65758,null,null,null,100000]
+=> 14268
+
+# Full size, 100 stations: a left path spaced 1010 apart (the largest possible
+# answer), a right path with the closest pair at the deep end, a zigzag whose
+# deepest node is in the closest pair, a random shape, a complete tree whose
+# root is in the closest pair, and a randomly turning path starting at 0 and 1.
+@full 1 c627e0a9
+=> 1010
+
+@full 2 13652cf8
+=> 1
+
+@full 3 aedd9156
+=> 3
+
+@full 4 75fbeb81
+=> 6
+
+@full 5 32905cc0
+=> 2
+
+@full 6 2b186cc9
+=> 1

@@ -1,0 +1,109 @@
+# Minimum Absolute Difference in BST. A case is the tree in level order; the
+# result is the smallest gap between the values of two different nodes.
+
+@example In sorted order the values are 10, 17, 20, 30, 35; the nearest two are 17 and 20.
+[20,10,35,null,17,30]
+=> 3
+
+@example 62 and 64 have the smallest gap, though 62 is a grandchild of 64.
+[64,20,90,null,62]
+=> 2
+
+@example Two nodes make a single pair.
+[9,3]
+=> 6
+
+# The smallest tree, child on the left, smallest values.
+[1,0]
+=> 1
+
+# Two nodes, child on the right, at both bounds: the answer is 10^5.
+[0,null,100000]
+=> 100000
+
+# Two nodes at the top of the range, child on the left.
+[100000,99999]
+=> 1
+
+# The closest pair includes 0: a "previous value" of 0 meaning unset skips it.
+[10,0,20,null,3]
+=> 3
+
+# A small first value and a larger answer: a "previous value" of -1 would give 3.
+[2,null,40,30]
+=> 10
+
+# Every parent and child are at least 15 apart; the answer is 5.
+[50,30,70,10,45,55,90]
+=> 5
+
+# Neighbours along a level are no closer than 6; the answer is 3.
+[50,20,80,5,47,53,95]
+=> 3
+
+# A right path with the closest pair at its deep end.
+[1,null,100,null,2000,null,2003]
+=> 3
+
+# A left path with the closest pair at its deep end.
+[90000,60000,null,30000,null,29999]
+=> 1
+
+# The closest pair is the two smallest values.
+[500,2,900,1]
+=> 1
+
+# The closest pair is the two largest values.
+[400,100,800,null,null,799]
+=> 1
+
+# A zigzag whose closest pair is a grandparent and grandchild.
+[1000,10,null,null,900,20]
+=> 10
+
+# Small random trees of distinct values, some spanning the whole range.
+@gen 1 small
+[5,2]
+=> 3
+
+@gen 2 small
+[290,177,null,175,null,80,null,42,null,3]
+=> 2
+
+@gen 3 small
+[201,0,288,null,18,202,null,null,168,null,235,19]
+=> 1
+
+@gen 4 small
+[0,null,3]
+=> 3
+
+@gen 5 small
+[12,null,19]
+=> 7
+
+@gen 6 small
+[96582,82278,null,51088,null,3453,55155,null,37700,null,null,30160]
+=> 4067
+
+# Full size, 10^4 nodes: a left and a right path with the closest pair at the
+# deep end, a zigzag with every neighbour 10 apart, a random shape, a complete
+# tree whose closest pair is the root and a distant descendant, and a randomly
+# turning path with one close pair inside.
+@full 1 b69055ad
+=> 1
+
+@full 2 1428e471
+=> 1
+
+@full 3 1cd899bd
+=> 10
+
+@full 4 58f6c740
+=> 1
+
+@full 5 10f1ec0e
+=> 3
+
+@full 6 6f19f9ee
+=> 7

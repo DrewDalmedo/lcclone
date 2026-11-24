@@ -1,0 +1,134 @@
+# Univalued Binary Tree. A case is the tree in level order, with null for a
+# missing child.
+
+@example All five nodes hold 4.
+[4,4,4,null,4,4]
+=> true
+
+@example One leaf on the right holds 7, and the rest hold 0.
+[0,0,0,0,null,null,7]
+=> false
+
+@example A single node is always one colour.
+[37]
+=> true
+
+# All zeros.
+[0,0,0]
+=> true
+
+# All zeros but the deepest node of a left path.
+[0,0,null,0,null,1]
+=> false
+
+# All non-zero but one leaf that is 0.
+[3,3,3,0]
+=> false
+
+# The top value everywhere.
+[99,99,99]
+=> true
+
+# An inner node differs, and its child matches the root.
+[6,9,6,6,null,null,6]
+=> false
+
+# Only the last node in level order differs.
+[2,2,2,null,2,null,2,3]
+=> false
+
+# A right path whose far end differs.
+[1,null,1,null,1,null,2]
+=> false
+
+# A left path of equal values.
+[8,8,null,8,null,8]
+=> true
+
+# 4 and 6 average out to the root's 5.
+[5,4,6]
+=> false
+
+# A left child of the right subtree differs.
+[7,7,7,null,7,8]
+=> false
+
+# A zigzag of equal values.
+[2,2,null,null,2,2]
+=> true
+
+# Only the last node in preorder differs.
+[1,1,1,null,null,null,2]
+=> false
+
+# The two 3s cancel under XOR, leaving the root's 5.
+[5,3,3]
+=> false
+
+# Random small cases.
+@gen 2 small
+[2,2,null,2,null,2,null,2]
+=> true
+
+@gen 3 small
+[2,2,null,2,null,2,null,2,null,2,null,2]
+=> true
+
+@gen 9 small
+[1,1,2,1,null,1,null,null,null,1]
+=> false
+
+@gen 16 small
+[0,0]
+=> true
+
+@gen 17 small
+[0,1,1,2,1,1]
+=> false
+
+@gen 18 small
+[1,null,1,null,1,null,1,null,2]
+=> false
+
+@gen 22 small
+[0,null,0,null,0,null,0,null,0,null,0,null,1]
+=> false
+
+# Full size, 100 nodes: paths, zigzag, random, complete and comb shapes, of one
+# value or with an odd node at the far end, or two that cancel out; then combs
+# going left, of one value and with the deepest node off.
+@full 1 f5835425
+=> true
+
+@full 2 7ca192a3
+=> false
+
+@full 3 d3bb5b31
+=> true
+
+@full 4 2423ac3f
+=> true
+
+@full 5 66e0efae
+=> false
+
+@full 6 a18f2291
+=> false
+
+@full 7 b8804c27
+=> false
+
+@full 8 d8d1c604
+=> false
+
+@full 9 2441ec04
+=> false
+
+@full 10 32176bb4
+=> true
+
+@full 11 a36366dc
+=> true
+
+@full 12 b8792393
+=> false

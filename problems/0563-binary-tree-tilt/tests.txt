@@ -1,0 +1,118 @@
+# Binary Tree Tilt. A case is the tree in level order, with null for an
+# absent child; the result is the sum over all nodes of the absolute
+# difference between the totals of their two subtrees.
+
+@example Node -2 has pans 1 and 0, tilt 1. The root has pans -1 and 3, tilt 4. The leaves add nothing.
+[5,-2,3,1]
+=> 5
+
+@example Node 6 has pans -3 and 2, tilt 5. The root has an empty left pan and 5 on its right, tilt 5.
+[4,null,6,-3,2]
+=> 10
+
+# An empty tree.
+[]
+=> 0
+
+# A lone node.
+[7]
+=> 0
+
+# Only a left child.
+[3,8]
+=> 8
+
+# Only a right child, negative.
+[3,null,-8]
+=> 8
+
+# Whole subtrees count, not just the children: 7 + |12 - 1|.
+[2,5,1,7]
+=> 18
+
+# A node's own value is on neither side: the root's pans are 5 and 5.
+[1000,3,5,2]
+=> 2
+
+# Subtrees of opposite signs: 1 + |-5 - 6|.
+[0,-4,6,null,-1]
+=> 12
+
+# Both negative: 1 + |-5 - -3|, where the root adds 2, not 8.
+[0,-4,-3,-1]
+=> 3
+
+# A subtree of large values whose total cancels to 0.
+[0,-1000,7,1000,0]
+=> 1007
+
+# A path of the lowest value: 1000 + 2000.
+[-1000,-1000,null,-1000]
+=> 3000
+
+# Alternating signs along a path: subtree totals -5, 0, -5.
+[5,-5,null,5,null,-5]
+=> 10
+
+# Single children on alternating sides: 6 + 8 + 11.
+[10,null,3,2,null,null,6]
+=> 25
+
+@gen 7 small
+[2,null,0,-5,null,-2,null,null,4]
+=> 12
+
+@gen 9 small
+[0,1,3,3,5,5]
+=> 8
+
+@gen 10 small
+[4,3,null,1,null,-4,null,null,2,null,-4,null,-2]
+=> 31
+
+@gen 11 small
+[4,-5,-2,-4,-1,-2]
+=> 11
+
+@gen 16 small
+[1,-4,-5,3,4]
+=> 9
+
+@gen 17 small
+[]
+=> 0
+
+# Full size, 10^4 nodes: paths totalling exactly 2^31 - 1 (left positive,
+# right negative, zigzag with 2072 values at the limit), an alternating path,
+# a caterpillar and a path above a complete tree scaled close to 2^31 - 1, a
+# complete tree split +1000 / -1000, a random shape, a random path, and the
+# caterpillar again with its spine down the right.
+@full 1 5c963467
+=> 2147483647
+
+@full 2 94ffb1f3
+=> 2147483647
+
+@full 3 861e762b
+=> 2147483647
+
+@full 4 e332657a
+=> 5000000
+
+@full 5 ddfe7b82
+=> 2147482516
+
+@full 6 df964f75
+=> 2147481348
+
+@full 7 5cd0ab39
+=> 12595000
+
+@full 8 0add869e
+=> 8290018
+
+@full 9 fb835b81
+=> 324205934
+
+@full 10 a0133542
+=> 2147482516

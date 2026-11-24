@@ -1,0 +1,179 @@
+# Range Sum of BST. A case is the tree in level order, then low, then high;
+# the result is the total of the values from low to high, both included.
+
+@example 18, 25, 33 and 40 are in the band, while 11, 64 and 90 are not: 116.
+[64,25,90,11,40,null,null,null,18,33]
+18
+40
+=> 116
+
+@example The band falls between 55 and 72, so nothing is in it.
+[72,30,null,15,55]
+56
+71
+=> 0
+
+@example The root is below the band, but 12 and 40 on its right are inside.
+[6,null,40,12,77]
+10
+50
+=> 52
+
+# One node inside a band of one number.
+[7]
+7
+7
+=> 7
+
+# One node outside the band.
+[7]
+1
+6
+=> 0
+
+# low == high on a value in the tree.
+[50,20,90]
+90
+90
+=> 90
+
+# low == high on a number that isn't in the tree.
+[50,20,90]
+21
+21
+=> 0
+
+# The band is above every value, up to the limit.
+[50,20,90]
+91
+100000
+=> 0
+
+# The band is below every value.
+[50,20,90]
+1
+19
+=> 0
+
+# Both ends are values, and both count.
+[5,3,8]
+3
+8
+=> 16
+
+# 3 and 8 are one step outside the band.
+[5,3,8]
+4
+7
+=> 5
+
+# The root is above the band, and the whole answer is on its left.
+[100,40,null,10,60]
+10
+60
+=> 110
+
+# Out-of-band nodes on the way down: 10 is too low, 50 too high.
+[10,null,50,30,null,20,40]
+20
+45
+=> 90
+
+# The smallest and largest values, in a band of everything.
+[100000,1]
+1
+100000
+=> 100001
+
+# A total and values past 16 bits.
+[40000,30000,50000]
+30000
+50000
+=> 120000
+
+# Random small trees and bands: single numbers, gaps, and everything.
+@gen 1 small
+[2,null,6,null,10,null,12,null,13,null,14,null,18]
+6
+21
+=> 73
+
+@gen 2 small
+[6,5,17,null,null,7,20]
+1
+100000
+=> 55
+
+@gen 3 small
+[14,3,17,2,9,15,19,1]
+15
+15
+=> 15
+
+@gen 4 small
+[17,11,null,9,null,5]
+15
+19
+=> 17
+
+@gen 5 small
+[6,1,12,null,null,9,14,null,null,null,15]
+3
+13
+=> 27
+
+@gen 6 small
+[2,null,12]
+22
+22
+=> 0
+
+# Full size, 2 * 10^4 nodes: left path, right path, zigzag, complete, random, left
+# and right caterpillars, holding 80001 to 10^5 with a band over all of them, the
+# largest answer (1 to 7); the same shapes with spread values and a band around
+# the deepest node (8 to 14); a zigzag with an empty band beside it (15).
+@full 1 ca882e6e
+=> 1800010000
+
+@full 2 cb8f8274
+=> 1800010000
+
+@full 3 188d0ba6
+=> 1800010000
+
+@full 4 a10b7ded
+=> 1800010000
+
+@full 5 0ed4414a
+=> 1800010000
+
+@full 6 e01b60cd
+=> 1800010000
+
+@full 7 1a23a69f
+=> 1800010000
+
+@full 8 c59f56f0
+=> 15637403
+
+@full 9 f58b8f51
+=> 234462421
+
+@full 10 3a6dbd28
+=> 250062547
+
+@full 11 a8237773
+=> 15637554
+
+@full 12 8ef8fac1
+=> 430898661
+
+@full 13 3c29e276
+=> 15637506
+
+@full 14 76106b21
+=> 234462550
+
+@full 15 1a08c5af
+=> 0
+

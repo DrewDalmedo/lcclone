@@ -1,0 +1,124 @@
+# Balanced Binary Tree. A case is the tree in level order, with null for an
+# empty child position; the result says whether every node's two branches
+# differ in height by at most 1.
+
+@example Node 2 has a child on one side only, a difference of 1. Every other node has branches of equal height.
+[6,2,8,null,4,7,9]
+=> true
+
+@example The root passes with heights 3 and 2, but node 3 has height 2 on its left and nothing on its right.
+[7,3,9,1,null,null,11,0]
+=> false
+
+@example The root's left branch has height 2 and its right branch is missing.
+[5,3,null,1,4]
+=> false
+
+# An empty tree.
+[]
+=> true
+
+# A lone node.
+[4]
+=> true
+
+# An only child that is a leaf: heights 1 and 0.
+[-6,9]
+=> true
+
+# An only child that has a child of its own: heights 0 and 2.
+[2,null,1,null,5]
+=> false
+
+# A difference of exactly 1, taller on the left.
+[5,3,7,1]
+=> true
+
+# A difference of exactly 2, taller on the left.
+[5,3,7,1,4,null,null,0]
+=> false
+
+# A difference of exactly 2, taller on the right.
+[5,7,3,null,null,4,1,null,null,null,0]
+=> false
+
+# Two equally long bare paths: the root passes, its children fail.
+[8,3,12,1,null,null,15,0,null,null,20]
+=> false
+
+# The sparsest balanced tree of height 5: leaves on levels 3 and 5.
+[9,4,12,2,6,10,14,1,3,5,null,11,null,null,null,0]
+=> true
+
+# Only node 12 fails; its height still matches its sibling's.
+[8,4,12,2,6,10,null,1,3,5,7,9]
+=> false
+
+# Values at the limits.
+[10000,-10000,0]
+=> true
+
+# Complete but not perfect.
+[5,3,8,2,4,7]
+=> true
+
+@gen 3 small
+[-1,3,1,-3,1,2,-3]
+=> true
+
+@gen 7 small
+[-2,null,-2,-3,null,3,null,null,-1]
+=> false
+
+@gen 9 small
+[1,0,2,null,0,-1,0]
+=> true
+
+@gen 13 small
+[2,2,-1,null,0]
+=> true
+
+@gen 15 small
+[-3,1,-2,-2,null,0,-1,null,null,null,null,null,-3]
+=> true
+
+@gen 22 small
+[-3,0,1,null,1,2,2]
+=> true
+
+# Full size, 5000 nodes: left path, right path, zigzag (false), complete
+# (true), sparsest balanced of height 17 (true), one deep node failing (false),
+# two bare paths under the root (false), random balanced (true), random
+# shape, and caterpillars with the spine down the left and the right (false).
+@full 1 93bacfc9
+=> false
+
+@full 2 46b270fe
+=> false
+
+@full 3 c6dfa4bc
+=> false
+
+@full 4 881c6e06
+=> true
+
+@full 5 556cc70d
+=> true
+
+@full 6 83610759
+=> false
+
+@full 7 b9f58766
+=> false
+
+@full 8 324e5f50
+=> true
+
+@full 9 ab7fa8bc
+=> false
+
+@full 10 628f0cfa
+=> false
+
+@full 11 e61516ff
+=> false

@@ -1,0 +1,113 @@
+# Evaluate Boolean Binary Tree. A case is the circuit in level order (null for
+# a missing child): 0 and 1 are wires, 2 is OR, 3 is AND; the result is its output.
+
+@example The inner AND is true, so the OR is too, and the root AND sees two trues.
+[3,2,1,3,0,null,null,1,1]
+=> true
+
+@example The AND has a false input and the lower OR has no true one: false.
+[2,3,2,0,1,0,0]
+=> false
+
+# A single wire carrying false.
+[0]
+=> false
+
+# A single wire carrying true.
+[1]
+=> true
+
+# OR of false and true: swapping the operators would say false.
+[2,0,1]
+=> true
+
+# AND of true and false: swapping the operators would say true.
+[3,1,0]
+=> false
+
+# Gate values are not truthy: the OR below the root outputs false.
+[3,2,3,0,0,1,1]
+=> false
+
+# Mixed levels, where swapping every operator flips the answer.
+[2,3,3,1,0,0,1]
+=> false
+
+# Two ORs under an AND, each with one true wire.
+[3,2,2,1,0,0,1]
+=> true
+
+# An OR caterpillar decided by its deepest wire.
+[2,0,2,null,null,0,2,null,null,0,1]
+=> true
+
+# An AND caterpillar decided by its deepest wire.
+[3,1,3,null,null,1,3,null,null,1,0]
+=> false
+
+# A left-leaning OR caterpillar.
+[2,2,0,2,0,null,null,0,1]
+=> true
+
+# An OR whose true input comes from a chain of AND gates.
+[2,0,3,null,null,1,3,null,null,1,1]
+=> true
+
+@gen 1 small
+[3,2,1,1,3,null,null,null,null,1,0]
+=> true
+
+@gen 5 small
+[3,0,3,null,null,3,0,1,2,null,null,null,null,1,1]
+=> false
+
+@gen 11 small
+[2,3,3,2,1,1,0,0,0]
+=> false
+
+@gen 12 small
+[2,2,1,2,3,null,null,1,0,0,1]
+=> true
+
+@gen 13 small
+[3,2,2,0,3,1,1,null,null,1,1]
+=> true
+
+@gen 21 small
+[2,1,3,null,null,1,2,null,null,0,3,null,null,0,0]
+=> true
+
+@gen 44 small
+[3,2,0,3,3,null,null,0,0,1,0]
+=> false
+
+@gen 47 small
+[2,3,1,2,0,null,null,0,3,null,null,null,null,1,0]
+=> true
+
+# Full size, 999 nodes: caterpillars of 500 levels down the left, the right and
+# in a zigzag, decided by the deepest wire or with all wires equal; a complete
+# tree; a random full tree.
+@full 1 ce670a64
+=> true
+
+@full 2 a1829805
+=> false
+
+@full 3 d46fe74d
+=> false
+
+@full 4 71dd0728
+=> true
+
+@full 5 de4c6d16
+=> true
+
+@full 6 6254cbe6
+=> false
+
+@full 7 a9ed4384
+=> true
+
+@full 8 edd0bc13
+=> false

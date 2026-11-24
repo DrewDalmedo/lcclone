@@ -30,22 +30,22 @@
 70	climbing-stairs	Climbing Stairs	easy	no	plain	verified
 83	remove-duplicates-from-sorted-list	Remove Duplicates from Sorted List	easy	no	list	draft
 88	merge-sorted-array	Merge Sorted Array	easy	no	inplace	draft
-94	binary-tree-inorder-traversal	Binary Tree Inorder Traversal	easy	no	tree	todo
-100	same-tree	Same Tree	easy	no	tree	todo
-101	symmetric-tree	Symmetric Tree	easy	no	tree	todo
+94	binary-tree-inorder-traversal	Binary Tree Inorder Traversal	easy	no	tree	draft
+100	same-tree	Same Tree	easy	no	tree	draft
+101	symmetric-tree	Symmetric Tree	easy	no	tree	draft
 104	maximum-depth-of-binary-tree	Maximum Depth of Binary Tree	easy	no	tree	draft
 108	convert-sorted-array-to-binary-search-tree	Convert Sorted Array to Binary Search Tree	easy	no	checker	todo
-110	balanced-binary-tree	Balanced Binary Tree	easy	no	tree	todo
-111	minimum-depth-of-binary-tree	Minimum Depth of Binary Tree	easy	no	tree	todo
-112	path-sum	Path Sum	easy	no	tree	todo
+110	balanced-binary-tree	Balanced Binary Tree	easy	no	tree	draft
+111	minimum-depth-of-binary-tree	Minimum Depth of Binary Tree	easy	no	tree	draft
+112	path-sum	Path Sum	easy	no	tree	draft
 118	pascals-triangle	Pascal's Triangle	easy	no	plain	draft
 119	pascals-triangle-ii	Pascal's Triangle II	easy	no	plain	draft
 121	best-time-to-buy-and-sell-stock	Best Time to Buy and Sell Stock	easy	no	plain	verified
 125	valid-palindrome	Valid Palindrome	easy	no	plain	draft
 136	single-number	Single Number	easy	no	plain	draft
 141	linked-list-cycle	Linked List Cycle	easy	no	list-builder	draft
-144	binary-tree-preorder-traversal	Binary Tree Preorder Traversal	easy	no	tree	todo
-145	binary-tree-postorder-traversal	Binary Tree Postorder Traversal	easy	no	tree	todo
+144	binary-tree-preorder-traversal	Binary Tree Preorder Traversal	easy	no	tree	draft
+145	binary-tree-postorder-traversal	Binary Tree Postorder Traversal	easy	no	tree	draft
 157	read-n-characters-given-read4	Read N Characters Given Read4	easy	yes	skip:premium	todo
 160	intersection-of-two-linked-lists	Intersection of Two Linked Lists	easy	no	list-builder	draft
 163	missing-ranges	Missing Ranges	easy	yes	skip:premium	todo
@@ -70,7 +70,7 @@
 217	contains-duplicate	Contains Duplicate	easy	no	plain	draft
 219	contains-duplicate-ii	Contains Duplicate II	easy	no	plain	draft
 225	implement-stack-using-queues	Implement Stack using Queues	easy	no	design	todo
-226	invert-binary-tree	Invert Binary Tree	easy	no	tree	todo
+226	invert-binary-tree	Invert Binary Tree	easy	no	tree	draft
 228	summary-ranges	Summary Ranges	easy	no	plain	draft
 231	power-of-two	Power of Two	easy	no	plain	draft
 232	implement-queue-using-stacks	Implement Queue using Stacks	easy	no	design	todo
@@ -79,7 +79,7 @@
 243	shortest-word-distance	Shortest Word Distance	easy	yes	skip:premium	todo
 246	strobogrammatic-number	Strobogrammatic Number	easy	yes	skip:premium	todo
 252	meeting-rooms	Meeting Rooms	easy	yes	skip:premium	todo
-257	binary-tree-paths	Binary Tree Paths	easy	no	tree	todo
+257	binary-tree-paths	Binary Tree Paths	easy	no	tree	draft
 258	add-digits	Add Digits	easy	no	plain	draft
 263	ugly-number	Ugly Number	easy	no	plain	draft
 266	palindrome-permutation	Palindrome Permutation	easy	yes	skip:premium	todo
@@ -107,7 +107,7 @@
 389	find-the-difference	Find the Difference	easy	no	plain	draft
 392	is-subsequence	Is Subsequence	easy	no	plain	draft
 401	binary-watch	Binary Watch	easy	no	unordered	draft
-404	sum-of-left-leaves	Sum of Left Leaves	easy	no	tree	todo
+404	sum-of-left-leaves	Sum of Left Leaves	easy	no	tree	draft
 405	convert-a-number-to-hexadecimal	Convert a Number to Hexadecimal	easy	no	plain	draft
 408	valid-word-abbreviation	Valid Word Abbreviation	easy	yes	skip:premium	todo
 409	longest-palindrome	Longest Palindrome	easy	no	plain	draft
@@ -129,7 +129,7 @@
 495	teemo-attacking	Teemo Attacking	easy	no	plain	draft
 496	next-greater-element-i	Next Greater Element I	easy	no	plain	draft
 500	keyboard-row	Keyboard Row	easy	no	plain	draft
-501	find-mode-in-binary-search-tree	Find Mode in Binary Search Tree	easy	no	tree	todo
+501	find-mode-in-binary-search-tree	Find Mode in Binary Search Tree	easy	no	tree	draft
 504	base-7	Base 7	easy	no	plain	draft
 506	relative-ranks	Relative Ranks	easy	no	plain	draft
 507	perfect-number	Perfect Number	easy	no	plain	draft
@@ -138,16 +138,16 @@
 512	game-play-analysis-ii	Game Play Analysis II	easy	yes	skip:sql	todo
 520	detect-capital	Detect Capital	easy	no	plain	draft
 521	longest-uncommon-subsequence-i	Longest Uncommon Subsequence I	easy	no	plain	draft
-530	minimum-absolute-difference-in-bst	Minimum Absolute Difference in BST	easy	no	tree	todo
+530	minimum-absolute-difference-in-bst	Minimum Absolute Difference in BST	easy	no	tree	draft
 541	reverse-string-ii	Reverse String II	easy	no	plain	draft
-543	diameter-of-binary-tree	Diameter of Binary Tree	easy	no	tree	todo
+543	diameter-of-binary-tree	Diameter of Binary Tree	easy	no	tree	draft
 551	student-attendance-record-i	Student Attendance Record I	easy	no	plain	draft
 557	reverse-words-in-a-string-iii	Reverse Words in a String III	easy	no	plain	draft
 559	maximum-depth-of-n-ary-tree	Maximum Depth of N-ary Tree	easy	no	nary	draft
 561	array-partition	Array Partition	easy	no	plain	draft
-563	binary-tree-tilt	Binary Tree Tilt	easy	no	tree	todo
+563	binary-tree-tilt	Binary Tree Tilt	easy	no	tree	draft
 566	reshape-the-matrix	Reshape the Matrix	easy	no	plain	draft
-572	subtree-of-another-tree	Subtree of Another Tree	easy	no	tree	todo
+572	subtree-of-another-tree	Subtree of Another Tree	easy	no	tree	draft
 575	distribute-candies	Distribute Candies	easy	no	plain	draft
 577	employee-bonus	Employee Bonus	easy	no	skip:sql	todo
 584	find-customer-referee	Find Customer Referee	easy	no	skip:sql	todo
@@ -166,25 +166,25 @@
 607	sales-person	Sales Person	easy	no	skip:sql	todo
 610	triangle-judgement	Triangle Judgement	easy	no	skip:sql	todo
 613	shortest-distance-in-a-line	Shortest Distance in a Line	easy	yes	skip:sql	todo
-617	merge-two-binary-trees	Merge Two Binary Trees	easy	no	tree	todo
+617	merge-two-binary-trees	Merge Two Binary Trees	easy	no	tree	draft
 619	biggest-single-number	Biggest Single Number	easy	no	skip:sql	todo
 620	not-boring-movies	Not Boring Movies	easy	no	skip:sql	todo
 627	swap-sex-of-employees	Swap Sex of Employees	easy	no	skip:sql	todo
 628	maximum-product-of-three-numbers	Maximum Product of Three Numbers	easy	no	plain	draft
-637	average-of-levels-in-binary-tree	Average of Levels in Binary Tree	easy	no	tree	todo
+637	average-of-levels-in-binary-tree	Average of Levels in Binary Tree	easy	no	tree	draft
 643	maximum-average-subarray-i	Maximum Average Subarray I	easy	no	float	verified
 645	set-mismatch	Set Mismatch	easy	no	plain	draft
-653	two-sum-iv-input-is-a-bst	Two Sum IV - Input is a BST	easy	no	tree	todo
+653	two-sum-iv-input-is-a-bst	Two Sum IV - Input is a BST	easy	no	tree	draft
 657	robot-return-to-origin	Robot Return to Origin	easy	no	plain	draft
 661	image-smoother	Image Smoother	easy	no	plain	draft
-671	second-minimum-node-in-a-binary-tree	Second Minimum Node In a Binary Tree	easy	no	tree	todo
+671	second-minimum-node-in-a-binary-tree	Second Minimum Node In a Binary Tree	easy	no	tree	draft
 674	longest-continuous-increasing-subsequence	Longest Continuous Increasing Subsequence	easy	no	plain	draft
 680	valid-palindrome-ii	Valid Palindrome II	easy	no	plain	draft
 682	baseball-game	Baseball Game	easy	no	plain	draft
 693	binary-number-with-alternating-bits	Binary Number with Alternating Bits	easy	no	plain	draft
 696	count-binary-substrings	Count Binary Substrings	easy	no	plain	draft
 697	degree-of-an-array	Degree of an Array	easy	no	plain	draft
-700	search-in-a-binary-search-tree	Search in a Binary Search Tree	easy	no	tree	todo
+700	search-in-a-binary-search-tree	Search in a Binary Search Tree	easy	no	tree	draft
 703	kth-largest-element-in-a-stream	Kth Largest Element in a Stream	easy	no	design	todo
 704	binary-search	Binary Search	easy	no	plain	draft
 705	design-hashset	Design HashSet	easy	no	design	todo
@@ -203,7 +203,7 @@
 762	prime-number-of-set-bits-in-binary-representation	Prime Number of Set Bits in Binary Representation	easy	no	plain	draft
 766	toeplitz-matrix	Toeplitz Matrix	easy	no	plain	draft
 771	jewels-and-stones	Jewels and Stones	easy	no	plain	draft
-783	minimum-distance-between-bst-nodes	Minimum Distance Between BST Nodes	easy	no	tree	todo
+783	minimum-distance-between-bst-nodes	Minimum Distance Between BST Nodes	easy	no	tree	draft
 796	rotate-string	Rotate String	easy	no	plain	draft
 800	similar-rgb-color	Similar RGB Color	easy	yes	skip:premium	todo
 804	unique-morse-code-words	Unique Morse Code Words	easy	no	plain	draft
@@ -220,14 +220,14 @@
 860	lemonade-change	Lemonade Change	easy	no	plain	draft
 867	transpose-matrix	Transpose Matrix	easy	no	plain	verified
 868	binary-gap	Binary Gap	easy	no	plain	draft
-872	leaf-similar-trees	Leaf-Similar Trees	easy	no	tree	todo
+872	leaf-similar-trees	Leaf-Similar Trees	easy	no	tree	draft
 876	middle-of-the-linked-list	Middle of the Linked List	easy	no	list	draft
 883	projection-area-of-3d-shapes	Projection Area of 3D Shapes	easy	no	plain	draft
 884	uncommon-words-from-two-sentences	Uncommon Words from Two Sentences	easy	no	unordered	draft
 888	fair-candy-swap	Fair Candy Swap	easy	no	checker	todo
 892	surface-area-of-3d-shapes	Surface Area of 3D Shapes	easy	no	plain	draft
 896	monotonic-array	Monotonic Array	easy	no	plain	draft
-897	increasing-order-search-tree	Increasing Order Search Tree	easy	no	tree	todo
+897	increasing-order-search-tree	Increasing Order Search Tree	easy	no	tree	draft
 905	sort-array-by-parity	Sort Array By Parity	easy	no	checker	todo
 908	smallest-range-i	Smallest Range I	easy	no	plain	draft
 914	x-of-a-kind-in-a-deck-of-cards	X of a Kind in a Deck of Cards	easy	no	plain	draft
@@ -236,17 +236,17 @@
 925	long-pressed-name	Long Pressed Name	easy	no	plain	draft
 929	unique-email-addresses	Unique Email Addresses	easy	no	plain	draft
 933	number-of-recent-calls	Number of Recent Calls	easy	no	design	todo
-938	range-sum-of-bst	Range Sum of BST	easy	no	tree	todo
+938	range-sum-of-bst	Range Sum of BST	easy	no	tree	draft
 941	valid-mountain-array	Valid Mountain Array	easy	no	plain	draft
 942	di-string-match	DI String Match	easy	no	checker	todo
 944	delete-columns-to-make-sorted	Delete Columns to Make Sorted	easy	no	plain	draft
 953	verifying-an-alien-dictionary	Verifying an Alien Dictionary	easy	no	plain	draft
 961	n-repeated-element-in-size-2n-array	N-Repeated Element in Size 2N Array	easy	no	plain	draft
-965	univalued-binary-tree	Univalued Binary Tree	easy	no	tree	todo
+965	univalued-binary-tree	Univalued Binary Tree	easy	no	tree	draft
 976	largest-perimeter-triangle	Largest Perimeter Triangle	easy	no	plain	draft
 977	squares-of-a-sorted-array	Squares of a Sorted Array	easy	no	plain	draft
 989	add-to-array-form-of-integer	Add to Array-Form of Integer	easy	no	plain	draft
-993	cousins-in-binary-tree	Cousins in Binary Tree	easy	no	tree	todo
+993	cousins-in-binary-tree	Cousins in Binary Tree	easy	no	tree	draft
 997	find-the-town-judge	Find the Town Judge	easy	no	plain	draft
 999	available-captures-for-rook	Available Captures for Rook	easy	no	plain	draft
 1002	find-common-characters	Find Common Characters	easy	no	unordered	draft
@@ -255,7 +255,7 @@
 1013	partition-array-into-three-parts-with-equal-sum	Partition Array Into Three Parts With Equal Sum	easy	no	plain	draft
 1018	binary-prefix-divisible-by-5	Binary Prefix Divisible By 5	easy	no	plain	draft
 1021	remove-outermost-parentheses	Remove Outermost Parentheses	easy	no	plain	draft
-1022	sum-of-root-to-leaf-binary-numbers	Sum of Root To Leaf Binary Numbers	easy	no	tree	todo
+1022	sum-of-root-to-leaf-binary-numbers	Sum of Root To Leaf Binary Numbers	easy	no	tree	draft
 1025	divisor-game	Divisor Game	easy	no	plain	draft
 1030	matrix-cells-in-distance-order	Matrix Cells in Distance Order	easy	no	checker	todo
 1037	valid-boomerang	Valid Boomerang	easy	no	plain	draft
@@ -568,7 +568,7 @@
 2230	the-users-that-are-eligible-for-discount	The Users That Are Eligible for Discount	easy	yes	skip:sql	todo
 2231	largest-number-after-digit-swaps-by-parity	Largest Number After Digit Swaps by Parity	easy	no	plain	draft
 2235	add-two-integers	Add Two Integers	easy	no	plain	draft
-2236	root-equals-sum-of-children	Root Equals Sum of Children	easy	no	tree	todo
+2236	root-equals-sum-of-children	Root Equals Sum of Children	easy	no	tree	draft
 2239	find-closest-number-to-zero	Find Closest Number to Zero	easy	no	plain	draft
 2243	calculate-digit-sum-of-a-string	Calculate Digit Sum of a String	easy	no	plain	draft
 2248	intersection-of-multiple-arrays	Intersection of Multiple Arrays	easy	no	plain	draft
@@ -588,7 +588,7 @@
 2319	check-if-matrix-is-x-matrix	Check if Matrix Is X-Matrix	easy	no	plain	draft
 2325	decode-the-message	Decode the Message	easy	no	plain	draft
 2329	product-sales-analysis-v	Product Sales Analysis V	easy	yes	skip:sql	todo
-2331	evaluate-boolean-binary-tree	Evaluate Boolean Binary Tree	easy	no	tree	todo
+2331	evaluate-boolean-binary-tree	Evaluate Boolean Binary Tree	easy	no	tree	draft
 2335	minimum-amount-of-time-to-fill-cups	Minimum Amount of Time to Fill Cups	easy	no	plain	draft
 2339	all-the-matches-of-the-league	All the Matches of the League	easy	yes	skip:sql	todo
 2341	maximum-number-of-pairs-in-array	Maximum Number of Pairs in Array	easy	no	plain	draft
