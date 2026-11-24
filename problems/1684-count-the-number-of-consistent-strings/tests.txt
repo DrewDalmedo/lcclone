@@ -99,3 +99,13 @@
 "acy"
 ["a","a","ca","a","aa","aa","bayy","y"]
 => 7
+
+# Full-size cases: 10^4 words, in a shape the seed picks (see gen.c).
+@full 1 57f66938
+=> 4986
+
+@full 2 48ea7927
+=> 4990
+
+@full 3 c5e7818e
+=> 10000

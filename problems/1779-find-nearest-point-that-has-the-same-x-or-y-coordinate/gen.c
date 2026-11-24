@@ -1,14 +1,14 @@
 /* A position and some points. Small cases keep every coordinate within
  * 1..5, so that points in line, ties, copies and the position itself come
  * up often. Full-size ones have 10^4 points and coordinates up to 10^4;
- * the seed picks all of them on the vertical line through (x, y) with the
- * nearest last, none in line, or only one in line at the far end of its
- * line (distance 9999) among nearer points that are not. */
+ * the seed (gen_seed() % 3) picks all of them on the vertical line through
+ * (x, y) with the nearest last, none in line, or only one in line at the
+ * far end of its line (distance 9999) among nearer points that are not. */
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 8) : 10000;
     int top = small ? 5 : 10000;
-    int shape = small ? -1 : (int)rnd(0, 2);
+    int shape = small ? -1 : (int)(gen_seed() % 3);
     int *p = malloc((size_t)n * 2 * sizeof *p);
     int x, y, i, a, b;
 

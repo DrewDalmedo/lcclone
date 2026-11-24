@@ -82,3 +82,12 @@
 @gen 7 small
 [-527859,381057,685272,128220,761641,-751071]
 => [-527859,-146802,538470,666690,1428331,677260]
+
+# Full-size cases: 1000 moves, in a shape the seed picks (see gen.c).
+@full 1 7b19a9eb
+
+@full 2 9a0dcc81
+
+@full 3 d76b5e7b
+
+@full 4 0d9b468a

@@ -1,6 +1,7 @@
 /* Slow and obviously right, straight from the definition: return the
  * first in-line point that no in-line point beats, where a point beats
- * another when it is nearer, or as near with a smaller index. */
+ * another when it is nearer, or as near with a smaller index. The search
+ * for a point that beats it stops at the first one found. */
 static int inLine(int x, int y, const int *p)
 {
     return p[0] == x || p[1] == y;
@@ -24,7 +25,7 @@ int nearestValidPoint(int x, int y, int **points, int pointsSize,
         if (!inLine(x, y, points[i]))
             continue;
         beaten = 0;
-        for (j = 0; j < pointsSize; j++)
+        for (j = 0; j < pointsSize && !beaten; j++)
             if (j != i && inLine(x, y, points[j]) &&
                 (dist(x, y, points[j]) < dist(x, y, points[i]) ||
                  (dist(x, y, points[j]) == dist(x, y, points[i]) && j < i)))

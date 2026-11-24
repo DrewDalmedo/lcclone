@@ -4,6 +4,7 @@ title: Can Make Arithmetic Progression From Sequence
 difficulty: easy
 tags: array, sorting
 signature: bool canMakeArithmeticProgression(int[] arr)
+time_limit_ms: 50
 ---
 You may reorder the integers of `arr` however you like, but you must keep
 every one of them: a value that occurs twice in `arr` occurs twice in the

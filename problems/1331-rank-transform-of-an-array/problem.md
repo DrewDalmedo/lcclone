@@ -4,6 +4,7 @@ title: Rank Transform of an Array
 difficulty: easy
 tags: array, hash-table, sorting
 signature: int[] arrayRankTransform(int[] arr)
+time_limit_ms: 200
 ---
 List the different values that occur in `arr` from smallest to largest,
 writing each value once however often it occurs. The **rank** of a value

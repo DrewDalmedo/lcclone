@@ -4,6 +4,7 @@ title: N-th Tribonacci Number
 difficulty: easy
 tags: memoization, math, dynamic-programming
 signature: int tribonacci(int n)
+time_limit_ms: 50
 ---
 The **tribonacci** sequence opens with three fixed terms: `0`, `1` and `1`.
 From then on, each new term is the sum of the three terms just before it, so

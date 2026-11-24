@@ -1,7 +1,7 @@
 /* Small cases have 1 to 6 points with coordinates from -3 to 3, so
  * repeats, straight and diagonal legs come up often; full-size ones have
- * 100 points from -1000 to 1000. The seed picks the shape (small cases
- * pick random points more often, 10 times in 14):
+ * 100 points from -1000 to 1000. The shape is gen_seed() % 7 at full
+ * size; small cases draw it, and pick random points 10 times in 14:
  *   0-2: random points;
  *   3:   points alternating between two opposite corners of the square
  *        (at full size the largest answer, 198000);
@@ -24,7 +24,8 @@ static void narrow(int at, int dir, int top, int *lo, int *hi)
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 6) : 100, top = small ? 3 : 1000;
-    int shape = (int)rnd(0, small ? 13 : 6), step = small ? 1 : 3;
+    int shape = small ? (int)rnd(0, 13) : (int)(gen_seed() % 7);
+    int step = small ? 1 : 3;
     int i, x, y, t, sx, sy, d, lo, hi;
     int *p = malloc((size_t)2 * n * sizeof *p);
 

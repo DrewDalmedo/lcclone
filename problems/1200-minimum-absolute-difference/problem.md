@@ -4,6 +4,7 @@ title: Minimum Absolute Difference
 difficulty: easy
 tags: array, sorting
 signature: int[][] minimumAbsDifference(int[] arr)
+time_limit_ms: 6000
 ---
 Mark every number of `arr` as a point on a number line. No two of the
 numbers are equal, so no two points coincide. Let `d` be the distance

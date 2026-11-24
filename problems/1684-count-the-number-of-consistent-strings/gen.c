@@ -1,9 +1,9 @@
 /* allowed is a few distinct letters taken from a shuffled alphabet. Small
  * cases draw from the five letters a, b, c, y, z, with short words that
  * mostly use allowed's letters, so words repeat and both answers come up.
- * Full-size cases have 10^4 words; the seed picks allowed of all 26
- * letters, of 20 to 25, or of any length, and each word of 10 letters
- * either fits allowed or breaks it only with its last letter, so a
+ * Full-size cases have 10^4 words; the seed (gen_seed() % 3) picks allowed
+ * of all 26 letters, of 20 to 25, or of any length, and each word of 10
+ * letters either fits allowed or breaks it only with its last letter, so a
  * letter-by-letter check has to read every word to the end. */
 void gen(int small)
 {
@@ -19,7 +19,7 @@ void gen(int small)
     if (small) {
         m = (int)rnd(1, np - 1);
     } else {
-        shape = (int)rnd(0, 2);
+        shape = (int)(gen_seed() % 3);
         m = shape == 0 ? 26 : shape == 1 ? (int)rnd(20, 25) : (int)rnd(1, 26);
     }
     for (i = 0; i < np; i++) {

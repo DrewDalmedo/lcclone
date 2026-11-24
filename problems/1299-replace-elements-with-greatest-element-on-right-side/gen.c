@@ -1,10 +1,10 @@
-/* The seed picks a shape: random values, strictly decreasing (each answer
- * is the next value, and the slowest case for a rescan that starts over
- * when its maximum falls behind), strictly increasing, three neighbouring
- * values only (many ties with the maximum), or random with the largest
- * value placed first, last or anywhere. Small cases have up to 8 values
- * among 1..10 or 99991..10^5; full-size ones have 10^4 values in
- * 1..10^5. */
+/* A shape, which the seed picks at full size (gen_seed() % 6): random
+ * values (shapes 0 and 1), strictly decreasing (each answer is the next
+ * value, and the slowest case for a rescan that starts over when its
+ * maximum falls behind), strictly increasing, three neighbouring values
+ * only (many ties with the maximum), or random with the largest value
+ * placed first, last or anywhere. Small cases have up to 8 values among
+ * 1..10 or 99991..10^5; full-size ones have 10^4 values in 1..10^5. */
 
 /* Fills a[0..n) with increasing values from lo to hi, hi - lo + 1 >= n,
  * half the time moved up to end at hi. */
@@ -27,7 +27,7 @@ void gen(int small)
     int n = small ? (int)rnd(1, 8) : 10000;
     int lo = small && rnd_chance(30) ? 99991 : 1;
     int hi = small ? lo + 9 : 100000;
-    int shape = (int)rnd(0, 5), i, t, pos;
+    int shape = small ? (int)rnd(0, 5) : (int)(gen_seed() % 6), i, t, pos;
     int base = rnd_chance(50) ? lo : hi - 2;
     int *arr = malloc((size_t)n * sizeof *arr);
 

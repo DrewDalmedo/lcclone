@@ -1,13 +1,15 @@
 /* A star: the center joined to every other node, the edges in random
  * order. Within the pairs the center is always first, always second, or
- * either one at random, as the seed picks. Small cases have 3 to 8 nodes
- * and any center. Full-size cases have n = 10^5; the seed makes the
- * center n (last to be tried by a search over the nodes), 1, a node near
- * n, or any node. */
+ * either one at random. Small cases have 3 to 8 nodes and any center.
+ * Full-size cases have n = 10^5; gen_seed() % 4 makes the center n (last
+ * to be tried by a search over the nodes), 1, a node near n, or any node,
+ * and gen_seed() % 3 picks where it goes in the pairs, so seeds 1 to 4
+ * make every center and every order. */
 void gen(int small)
 {
     int n = small ? (int)rnd(3, 8) : 100000;
-    int shape = (int)rnd(0, 3), orient = (int)rnd(0, 2), m = n - 1;
+    int shape = small ? (int)rnd(0, 3) : (int)(gen_seed() % 4);
+    int orient = small ? (int)rnd(0, 2) : (int)(gen_seed() % 3), m = n - 1;
     int *leaf = malloc((size_t)m * sizeof *leaf);
     int *out = malloc((size_t)m * 2 * sizeof *out);
     int c, i, k, first;

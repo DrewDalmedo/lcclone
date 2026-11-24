@@ -127,3 +127,13 @@
 "name"
 "b"
 => 5
+
+# Full-size cases: 10^4 rows, in a shape the seed picks (see gen.c).
+@full 1 d1b0d82e
+=> 5026
+
+@full 2 7d949f86
+=> 1012
+
+@full 3 92036e2c
+=> 10000

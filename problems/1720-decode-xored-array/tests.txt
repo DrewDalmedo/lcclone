@@ -100,3 +100,11 @@
 [12]
 7
 => [7,11]
+
+# Full-size cases: n = 10^4, and the seed picks whether encoded is all zeros
+# (see gen.c).
+@full 1 b171bfe7
+
+@full 2 fde044d7
+
+@full 3 79647c29

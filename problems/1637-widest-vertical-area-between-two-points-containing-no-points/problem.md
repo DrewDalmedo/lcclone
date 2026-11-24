@@ -4,6 +4,7 @@ title: Widest Vertical Area Between Two Points Containing No Points
 difficulty: easy
 tags: array, sorting
 signature: int maxWidthOfVerticalArea(int[][] points)
+time_limit_ms: 200
 ---
 Each entry `points[i] = [x, y]` is a point in the plane. Two points may
 coincide or share an x-coordinate.

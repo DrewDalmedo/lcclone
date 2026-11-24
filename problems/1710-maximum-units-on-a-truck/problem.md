@@ -4,6 +4,7 @@ title: Maximum Units on a Truck
 difficulty: easy
 tags: greedy, array, sorting
 signature: int maximumUnits(int[][] boxTypes, int truckSize)
+time_limit_ms: 50
 ---
 A warehouse has boxes of several kinds waiting to be shipped. Each entry
 `boxTypes[i] = [count_i, units_i]` describes one kind: there are `count_i`

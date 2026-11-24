@@ -1,36 +1,34 @@
-/* Slow and obviously right: try every two numbers to find the smallest
- * distance d, then collect every pair d apart as [smaller, larger] and
- * put the pairs in order of their first number by insertion sort. */
+/* Slow and obviously right: mark every number in a table over
+ * -10^6..10^6. Then try each distance d = 1, 2, ... in turn, and stop at
+ * the first one that some number v has to another (v + d marked too):
+ * that is the smallest distance. Walking the table upward then lists every
+ * pair [v, v + d] in order of its first number. Trying a distance looks
+ * at every number, and the smallest distance is at most the range over
+ * n - 1, so this takes about as many steps as the range has values. */
 int **minimumAbsDifference(int *arr, int arrSize, int *returnSize,
                            int **returnColumnSizes)
 {
+    char *mark = calloc(2000001, 1);
     int **out = malloc((size_t)arrSize * sizeof *out);
-    int d = -1, diff, n = 0, i, j;
-    int *t;
+    int d, found = 0, n = 0, i, v;
 
     for (i = 0; i < arrSize; i++)
-        for (j = i + 1; j < arrSize; j++) {
-            diff = abs(arr[i] - arr[j]);
-            if (d < 0 || diff < d)
-                d = diff;
-        }
-    for (i = 0; i < arrSize; i++)
-        for (j = 0; j < arrSize; j++)
-            if (arr[j] - arr[i] == d) {
-                out[n] = malloc(2 * sizeof **out);
-                out[n][0] = arr[i];
-                out[n][1] = arr[j];
-                n++;
-            }
-    for (i = 1; i < n; i++)
-        for (j = i; j > 0 && out[j - 1][0] > out[j][0]; j--) {
-            t = out[j];
-            out[j] = out[j - 1];
-            out[j - 1] = t;
-        }
+        mark[arr[i] + 1000000] = 1;
+    for (d = 1; !found; d++)
+        for (i = 0; i < arrSize && !found; i++)
+            if (arr[i] + d <= 1000000 && mark[arr[i] + d + 1000000])
+                found = 1;
+    d--;
     *returnColumnSizes = malloc((size_t)arrSize * sizeof **returnColumnSizes);
-    for (i = 0; i < n; i++)
-        (*returnColumnSizes)[i] = 2;
+    for (v = -1000000; v + d <= 1000000; v++)
+        if (mark[v + 1000000] && mark[v + d + 1000000]) {
+            out[n] = malloc(2 * sizeof **out);
+            out[n][0] = v;
+            out[n][1] = v + d;
+            (*returnColumnSizes)[n] = 2;
+            n++;
+        }
+    free(mark);
     *returnSize = n;
     return out;
 }

@@ -122,3 +122,22 @@
 [7,8]
 [8,7]
 => true
+
+# Full-size cases: 1000 elements, in a shape the seed picks (see gen.c).
+@full 1 f331655d
+=> false
+
+@full 2 bab657ca
+=> false
+
+@full 3 f649cc4f
+=> true
+
+@full 4 339ad75e
+=> false
+
+@full 5 e7c8b1da
+=> false
+
+@full 6 e3a59080
+=> true

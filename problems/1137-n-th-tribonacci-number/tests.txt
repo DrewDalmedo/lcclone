@@ -151,11 +151,13 @@
 0
 => 0
 
-# Full size: the top of the range.
-@gen 1
-31
-=> 53798080
+# Full-size cases: n = 37, 36 and 35 (see gen.c), where plain recursion makes
+# billions of calls.
+@full 1 75618e5a
+=> 1132436852
 
-@gen 2
-37
+@full 2 756e14f5
+=> 615693474
+
+@full 3 75630c87
 => 2082876103

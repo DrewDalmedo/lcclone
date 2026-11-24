@@ -1,7 +1,7 @@
 /* A list of tiles, each written either way round. Small cases have up to
  * 10 tiles whose numbers come from 1..3 (now and then 1..9), so equivalent
  * tiles, equal halves and turned copies come up often. Full-size cases
- * have 4 * 10^4 tiles, in a shape the seed picks:
+ * have 4 * 10^4 tiles, in a shape the seed picks (gen_seed() % 4):
  *   0: numbers from all of 1..9;
  *   1: every tile equivalent to one tile, written both ways round (the
  *      largest answer, 799980000);
@@ -11,7 +11,7 @@
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 10) : 40000;
-    int shape = small ? -1 : (int)rnd(0, 3);
+    int shape = small ? -1 : (int)(gen_seed() % 4);
     int top = small ? (rnd_chance(20) ? 9 : 3) : 9;
     int *a = malloc((size_t)n * 2 * sizeof *a);
     int kinds[3][2], k, nk, i, x, y, t;

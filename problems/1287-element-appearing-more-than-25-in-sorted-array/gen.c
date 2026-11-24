@@ -5,12 +5,19 @@
  * single, random, or a mix. The frequent block often comes first or last.
  * Values increase from block to block, starting at 0, ending at 10^5 or
  * neither; small cases keep the gaps between them tiny. Full-size cases
- * have n = 10^4. */
+ * have n = 10^4, in a shape the seed picks (gen_seed() % 4): the frequent
+ * block last, with q + 1 copies, after blocks of exactly q (the slowest
+ * case for counting each value over the whole array); first, with q + 1
+ * copies, before single copies; anywhere and of any size, among blocks of
+ * mixed sizes; or one value throughout. */
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 16) : 10000;
     int q = n / 4, blocks = 0, at = 0, w, rest, len, pos, gap, v, i, k;
-    int pick = (int)rnd(0, 4), mode = (int)rnd(0, 3), ends = (int)rnd(0, 2);
+    int shape = small ? -1 : (int)(gen_seed() % 4);
+    int pick = small ? (int)rnd(0, 4) : shape == 3 ? 0 : shape == 2 ? 3 : 1;
+    int mode = small ? (int)rnd(0, 3) : shape == 1 ? 1 : shape == 2 ? 3 : 0;
+    int ends = (int)rnd(0, 2);
     int *size = malloc(((size_t)n + 1) * sizeof *size);
     int *vals = malloc(((size_t)n + 1) * sizeof *vals);
     int *arr = malloc((size_t)n * sizeof *arr);
@@ -29,7 +36,10 @@ void gen(int small)
         size[blocks++] = len;
     }
 
-    pick = (int)rnd(0, 2);
+    if (small)
+        pick = (int)rnd(0, 2);
+    else
+        pick = shape == 0 ? 1 : shape == 1 ? 0 : 2;
     pos = pick == 0 ? 0 : pick == 1 ? blocks : (int)rnd(0, blocks);
     for (i = blocks; i > pos; i--)
         size[i] = size[i - 1];

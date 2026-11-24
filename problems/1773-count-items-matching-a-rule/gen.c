@@ -1,10 +1,10 @@
 /* Rows of three words and a query. Small cases draw every word from a
  * few short ones that are prefixes of each other, plus the three column
  * titles, and often put ruleValue in the queried column or in another
- * one. Full-size ones have 10^4 rows; the seed picks a ten-letter
- * ruleValue that every row passes, a ten-letter one that rows match or
- * miss only by its last letter, or a short word of a and b among random
- * words of a and b, many of them its prefixes or extensions. */
+ * one. Full-size ones have 10^4 rows; the seed (gen_seed() % 3) picks a
+ * ten-letter ruleValue that every row passes, a ten-letter one that rows
+ * match or miss only by its last letter, or a short word of a and b among
+ * random words of a and b, many of them its prefixes or extensions. */
 static const char *tiny[] = {"a", "ab", "abc", "b", "ba", "type", "color",
                              "name"};
 static const char *titles[] = {"type", "color", "name"};
@@ -22,7 +22,7 @@ void gen(int small)
 {
     int n = small ? (int)rnd(1, 8) : 10000;
     int key = (int)rnd(0, 2);
-    int shape = small ? 0 : (int)rnd(0, 2);
+    int shape = small ? 0 : (int)(gen_seed() % 3);
     int i, c, len;
     char value[11], word[11];
 

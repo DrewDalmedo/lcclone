@@ -4,6 +4,7 @@ title: Check If All 1's Are at Least Length K Places Away
 difficulty: easy
 tags: array
 signature: bool kLengthApart(int[] nums, int k)
+time_limit_ms: 100
 ---
 `nums` is a recording of a signal, one entry per tick: `nums[i]` is `1` if
 a pulse came at tick `i` and `0` if the line was quiet. Two pulses are

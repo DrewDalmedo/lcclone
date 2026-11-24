@@ -2,7 +2,7 @@
  * and cancel), numbers around 2^16 and numbers just below 10^5 (whose XORs
  * reach 131071), and anything from 0 to 10^5. Small cases have 2 to 8
  * values of arr; full-size ones have 10^4. Sometimes encoded is all zeros,
- * so every value equals first. */
+ * so every value equals first: at full size, when gen_seed() % 3 is 0. */
 static int value(void)
 {
     int kind = (int)rnd(0, 3);
@@ -18,7 +18,8 @@ static int value(void)
 
 void gen(int small)
 {
-    int n = small ? (int)rnd(2, 8) : 10000, zeros = rnd_chance(15), i;
+    int n = small ? (int)rnd(2, 8) : 10000, i;
+    int zeros = small ? rnd_chance(15) : gen_seed() % 3 == 0;
     int *encoded = malloc((size_t)(n - 1) * sizeof *encoded);
     int first;
 

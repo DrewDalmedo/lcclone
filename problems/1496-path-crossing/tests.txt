@@ -90,3 +90,25 @@
 @gen 6 small
 "ES"
 => false
+
+# Full-size cases: 10^4 letters, in a shape the seed picks (see gen.c).
+@full 1 26369700
+=> false
+
+@full 2 9356efbd
+=> true
+
+@full 3 4fa1fe05
+=> false
+
+@full 4 83eed06f
+=> true
+
+@full 5 f2040e0d
+=> false
+
+@full 6 4ff5b2fa
+=> true
+
+@full 7 96e32197
+=> true
