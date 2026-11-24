@@ -4,6 +4,7 @@ title: Prime In Diagonal
 difficulty: easy
 tags: array, math, matrix, number-theory
 signature: int diagonalPrime(int[][] nums)
+time_limit_ms: 100
 ---
 `nums` is a square grid with `n` rows and `n` columns, both numbered from
 `0`. The cell in row `r` and column `c` is a **diagonal cell** when

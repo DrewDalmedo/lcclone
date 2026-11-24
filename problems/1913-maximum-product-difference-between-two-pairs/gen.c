@@ -4,7 +4,7 @@
  * values, the seed picking the shape: random from 1..10^4; sorted up;
  * sorted down; random with 1 and 10^4 twice each at random places; or one
  * value everywhere except a single smallest value first and a single
- * largest value last. */
+ * largest value last. Seeds 1 to 5 make one full-size case of each. */
 static int cmp_int(const void *a, const void *b)
 {
     int x = *(const int *)a, y = *(const int *)b;
@@ -24,7 +24,7 @@ void gen(int small)
         lo = lows[r];
         hi = highs[r];
     } else {
-        shape = (int)rnd(0, 4);
+        shape = (int)(gen_seed() % 5);
     }
     for (i = 0; i < n; i++)
         nums[i] = (int)rnd(lo, hi);

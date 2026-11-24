@@ -102,3 +102,14 @@
 @gen 13 small
 ["kk","hkh","hkk","kkk","hhkk"]
 => true
+
+# Full-size cases: 100 strings of up to 100 letters, in a shape the seed
+# picks (see gen.c).
+@full 1 ac34c47d
+=> true
+
+@full 2 124a4b9b
+=> false
+
+@full 3 a50f3dc4
+=> false

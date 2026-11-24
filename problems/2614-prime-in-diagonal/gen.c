@@ -4,7 +4,8 @@
  * primes; about one in seven puts no prime on the diagonals. Full-size cases
  * have side 299 or 300 and, by seed, fill the diagonals with large primes,
  * with large composites only (answer 0), with large composites but one prime
- * in the bottom-left corner, or with random values. */
+ * in the bottom-left corner, or with random values; seeds 1 to 4 make one of
+ * each. */
 static const int big_primes[] = {
     3999971, 3999949, 3999929, 3999917, 3999901, 3999893, 3999001,
     2000003, 1999993, 1000003
@@ -60,7 +61,7 @@ static int small_value(void)
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 6) : (int)rnd(299, 300);
-    int shape = small ? (rnd_chance(15) ? 1 : 3) : (int)rnd(0, 3);
+    int shape = small ? (rnd_chance(15) ? 1 : 3) : (int)(gen_seed() % 4);
     int *a = malloc((size_t)n * n * sizeof *a);
     int r, c, diag;
 

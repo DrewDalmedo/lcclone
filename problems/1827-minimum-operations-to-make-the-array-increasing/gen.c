@@ -1,11 +1,12 @@
 /* Random stack heights. Small cases: a few heights from 1 to 6, so equal
  * neighbours are common. Full-size ones: 5000 stacks, in a shape the seed
- * picks: random heights; 10^4 first and every other stack 1 (the largest
- * answer, 62482501); all 10^4; or a row that climbs already except for
- * a random drop near the end. */
+ * picks (seeds 1 to 4 make one of each): random heights; 10^4 first and
+ * every other stack 1 (the largest answer, 62482501); all 10^4; or a row
+ * that climbs already except for a random drop near the end. */
 void gen(int small)
 {
-    int n = small ? (int)rnd(1, 8) : 5000, i, shape = (int)rnd(0, 3), at, h;
+    int n = small ? (int)rnd(1, 8) : 5000, i, at, h;
+    int shape = small ? (int)rnd(0, 3) : (int)(gen_seed() % 4);
     int *nums = malloc((size_t)n * sizeof *nums);
 
     for (i = 0; i < n; i++) {

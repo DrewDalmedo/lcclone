@@ -2,11 +2,15 @@
  * vertices; full-size ones have 100. The seed picks the graph: no edges,
  * every edge, a star around a random center, a path through the vertices
  * in a random order, or each edge present with a chance the seed also
- * picks (10, 50 or 90 in 100). */
+ * picks (10, 50 or 90 in 100). At full size, seeds 1 to 5 make the star,
+ * the path and the three chances; tests.txt stores the 100-vertex graph
+ * with every edge. */
 void gen(int small)
 {
+    static const int large_shapes[] = {2, 3, 4, 5, 6};
     int n = small ? (int)rnd(1, 6) : 100;
-    int shape = (int)rnd(0, 6), i, j, c, e;
+    int shape = small ? (int)rnd(0, 6) : large_shapes[gen_seed() % 5];
+    int i, j, c, e;
     int *g = calloc((size_t)n * n, sizeof *g);
     int *order = malloc((size_t)n * sizeof *order);
 

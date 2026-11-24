@@ -123,3 +123,20 @@
 [2,3,6,6,8,8]
 [2,3,4,5,6,9,9]
 => 2
+
+# Full-size cases: 10^5 timestamps per log (one in one shape), in a shape
+# the seed picks (see gen.c).
+@full 1 1bbd1a85
+=> 1000000000
+
+@full 2 7decafba
+=> -1
+
+@full 3 6799fa38
+=> 400567510
+
+@full 4 748ec6ca
+=> 2
+
+@full 5 e9745884
+=> -1

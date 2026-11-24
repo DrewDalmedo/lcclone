@@ -136,3 +136,14 @@
 "ba"
 2
 => 0
+
+# Full-size cases: 100 cards of up to 100 letters, in a shape the seed
+# picks (see gen.c).
+@full 1 7dcc2d30
+=> 49
+
+@full 2 9967aa32
+=> 7
+
+@full 3 b5d78190
+=> -1

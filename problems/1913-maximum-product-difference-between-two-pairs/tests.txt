@@ -88,3 +88,19 @@
 @gen 8 small
 [608,1135,2690,1253,4646]
 => 11807660
+
+# Full-size cases: 10^4 values, in a shape the seed picks (see gen.c).
+@full 1 02386272
+=> 99989997
+
+@full 2 7c16b142
+=> 99959998
+
+@full 3 bd7fcf94
+=> 99999999
+
+@full 4 d22832c7
+=> 24512248
+
+@full 5 ff92aed2
+=> 99989988

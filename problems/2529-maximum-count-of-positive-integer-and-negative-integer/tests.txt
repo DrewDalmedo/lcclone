@@ -88,3 +88,19 @@
 @gen 27 small
 [-3,0,0,0,2,2,3,3]
 => 4
+
+# Full-size cases: 2000 values, in a shape the seed picks (see gen.c).
+@full 1 51ebee25
+=> 858
+
+@full 2 cfc0ad02
+=> 2000
+
+@full 3 2771d3b1
+=> 0
+
+@full 4 df0f243d
+=> 2000
+
+@full 5 c11ab7c6
+=> 875

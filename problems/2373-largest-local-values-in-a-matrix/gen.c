@@ -3,14 +3,14 @@
  * shows), drawn from a few small values (ties), or mostly 1 with a few
  * spikes up to 100. Full-size cases: n = 100, with random heights, low
  * heights and a single 100 in one corner of the grid, or one height
- * everywhere. */
+ * everywhere; seeds 1 to 3 make one of each. */
 void gen(int small)
 {
     static int grid[100 * 100];
     int n, shape, top, corner, i;
 
     n = small ? (int)rnd(3, 6) : 100;
-    shape = (int)rnd(0, 2);
+    shape = small ? (int)rnd(0, 2) : (int)(gen_seed() % 3);
     top = small ? (int)rnd(2, 9) : (int)rnd(1, 100);
     for (i = 0; i < n * n; i++) {
         if (shape == 0)

@@ -4,6 +4,7 @@ title: Delete Characters to Make Fancy String
 difficulty: easy
 tags: string
 signature: string makeFancyString(string s)
+time_limit_ms: 500
 ---
 A string is **fancy** if no letter appears in it three times in a row: any
 three neighbouring characters include at least two different letters. So

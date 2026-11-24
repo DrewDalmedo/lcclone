@@ -83,3 +83,17 @@
 @gen 6 small
 "48"
 => ""
+
+# Full-size cases: 10^5 digits, the seed picking where the last odd digit
+# goes (see gen.c).
+@full 1 6f1d24d8
+=> ""
+
+@full 2 0b28c428
+=> "3"
+
+@full 3 232753ba
+
+@full 4 7666e3d8
+
+@full 5 b83941c9

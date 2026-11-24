@@ -1,27 +1,20 @@
 /* A board holding 1 to n * n with one number left off and another on two
- * squares. Small cases have n from 2 to 4; full-size ones n = 50 half the
- * time, else n from 32 to 50 (where sums of squares, or the product
- * N * (N + 1) * (2N + 1), no longer fit an int) or, one time in five,
- * from 2 to 50.
+ * squares. Small cases have n from 2 to 4; full-size ones n = 50 (from
+ * n = 32, sums of squares, or the product N * (N + 1) * (2N + 1), no
+ * longer fit an int).
  * The missing number is 1 or n * n two times in five, else any; the
  * number on two squares is just below or just above it, 1 or n * n, or
  * any other number. The seed picks where its two copies go: on random
  * squares (half the time), on the first and the last square, in one
  * column, side by side in one row, or with the whole board in increasing
- * order, row by row. */
+ * order, row by row. At full size, seeds 1 to 5 make one of each. */
 void gen(int small)
 {
+    static const int large_places[] = {0, 4, 5, 6, 7};
     int n, total, missing, twice, place, i, k, v, p1, p2, t;
     int *rest, *cells;
 
-    if (small)
-        n = (int)rnd(2, 4);
-    else if (rnd_chance(50))
-        n = 50;
-    else if (rnd_chance(80))
-        n = (int)rnd(32, 50);
-    else
-        n = (int)rnd(2, 50);
+    n = small ? (int)rnd(2, 4) : 50;
     total = n * n;
     switch (rnd(0, 4)) {
     case 0:
@@ -54,7 +47,7 @@ void gen(int small)
     for (v = 1; v <= total; v++)
         if (v != missing && v != twice)
             rest[k++] = v;
-    place = (int)rnd(0, 7);
+    place = small ? (int)rnd(0, 7) : large_places[gen_seed() % 5];
     if (place == 7) {
         k = 0;
         for (v = 1; v <= total; v++) {

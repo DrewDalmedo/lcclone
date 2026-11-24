@@ -1,9 +1,10 @@
 /* Names drawn from a small pool, so that the same name (and the same
  * letters in another case) comes up for several singers, and distinct
  * heights. The seed picks the order of the heights: random, shortest
- * first or tallest first. Small cases have 1 to 8 singers with heights up
- * to 12; full-size ones have 1000 singers, names of 1 to 20 letters and
- * heights up to 10^5. Either way the tallest is sometimes raised to 10^5. */
+ * first or tallest first (at full size, seeds 1 to 3 make one of each).
+ * Small cases have 1 to 8 singers with heights up to 12; full-size ones
+ * have 1000 singers, names of 1 to 20 letters and heights up to 10^5.
+ * Either way the tallest is sometimes raised to 10^5. */
 static int asc(const void *x, const void *y)
 {
     int a = *(const int *)x, b = *(const int *)y;
@@ -19,7 +20,8 @@ void gen(int small)
     static char seen[100001];
     int n = small ? (int)rnd(1, 8) : 1000;
     int top = small ? 12 : 100000;
-    int order = (int)rnd(0, 2), pool, i, k, len, h, hi = 0;
+    int order = small ? (int)rnd(0, 2) : (int)(gen_seed() % 3);
+    int pool, i, k, len, h, hi = 0;
     int *heights = malloc((size_t)n * sizeof *heights);
     char **names = malloc((size_t)n * sizeof *names);
 

@@ -4,6 +4,7 @@ title: Minimum Common Value
 difficulty: easy
 tags: array, hash-table, two-pointers, binary-search
 signature: int getCommon(int[] nums1, int[] nums2)
+time_limit_ms: 200
 ---
 Two sensors log the times at which they fire. `nums1` holds the timestamps
 logged by the first sensor and `nums2` those logged by the second, each in

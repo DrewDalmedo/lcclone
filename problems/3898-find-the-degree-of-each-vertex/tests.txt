@@ -76,3 +76,14 @@
 @gen 24 small
 [[0,0,0,0,1,1],[0,0,0,1,0,0],[0,0,0,1,0,1],[0,1,1,0,0,0],[1,0,0,0,0,0],[1,0,1,0,0,0]]
 => [2,1,2,2,1,2]
+
+# Full-size cases: 100 vertices, in a shape the seed picks (see gen.c).
+@full 1 1f3e2490
+
+@full 2 87746c70
+
+@full 3 d41f258e
+
+@full 4 4bfd1460
+
+@full 5 749bddcb

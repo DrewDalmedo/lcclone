@@ -2,11 +2,13 @@
  * ab, ba, abc, c and abcd (some prefixes of others). Each list goes
  * through the words in a random order, with a random word instead now and
  * then, so words repeat within and across the lists.
- * Full-size cases have 1000 words per list; the seed picks words drawn
- * from a random vocabulary, or 1000 different words that both lists hold
- * once each in different orders (the answer is 1000). Full-size words
- * share a random prefix and end in three letters that set them apart, so
- * some are 30 letters long and differ only near the end. */
+ * Full-size cases have 1000 words per list, and the seed picks the shape:
+ * 1000 different words that both lists hold once each in different orders
+ * (the answer is 1000), 2000 different words with none in both lists (0),
+ * or words drawn from a random vocabulary. Full-size words share a prefix
+ * and end in three letters that set them apart; in the first two shapes
+ * the prefix has 27 letters, so every word is 30 letters long and differs
+ * from the others only at the end. */
 static void make_word(char *w, const char *prefix, int code)
 {
     int len = (int)strlen(prefix);
@@ -39,7 +41,7 @@ void gen(int small)
 {
     static char w1[1000][31], w2[1000][31];
     char *p1[1000], *p2[1000], prefix[28];
-    int order[1000], n = 1000, plen, vocab, i, code;
+    int order[2000], n = 1000, plen, vocab, shape, i, code;
 
     if (small) {
         vocab = (int)rnd(2, 8);
@@ -47,17 +49,26 @@ void gen(int small)
         small_list(vocab);
         return;
     }
-    plen = (int)rnd(0, 27);
+    shape = (int)(gen_seed() % 3);
+    plen = shape <= 1 ? 27 : (int)rnd(0, 27);
     for (i = 0; i < plen; i++)
         prefix[i] = rnd_char("abcdefghijklmnopqrstuvwxyz");
     prefix[plen] = '\0';
-    if (rnd_chance(50)) {
+    if (shape == 0) {
         for (i = 0; i < n; i++)
             order[i] = i;
         rnd_shuffle(order, n);
         for (i = 0; i < n; i++) {
             make_word(w1[i], prefix, order[i]);
             make_word(w2[i], prefix, order[n - 1 - i]);
+        }
+    } else if (shape == 1) {
+        for (i = 0; i < 2 * n; i++)
+            order[i] = i;
+        rnd_shuffle(order, 2 * n);
+        for (i = 0; i < n; i++) {
+            make_word(w1[i], prefix, order[i]);
+            make_word(w2[i], prefix, order[n + i]);
         }
     } else {
         vocab = (int)rnd(500, 2000);

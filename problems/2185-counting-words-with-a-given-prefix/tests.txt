@@ -67,8 +67,7 @@
 "o"
 => 100
 
-# Random small cases from gen.c (lc check --regen makes them). Full-size
-# cases (100 words of up to 100 letters) come with milestone M7.
+# Random small cases from gen.c (lc check --regen makes them).
 @gen 1 small
 ["abb","baa","abb","aaabb","ab","b","abb"]
 "a"
@@ -98,3 +97,14 @@
 ["ba","bab"]
 "a"
 => 0
+
+# Full-size cases: 100 words of up to 100 letters, in a shape the seed
+# picks (see gen.c).
+@full 1 ce201b94
+=> 29
+
+@full 2 ec6a5930
+=> 29
+
+@full 3 a05cb294
+=> 49

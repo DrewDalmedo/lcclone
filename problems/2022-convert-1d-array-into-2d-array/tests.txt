@@ -101,8 +101,7 @@
 2
 => [[3,3],[1,1],[3,3]]
 
-# Random small cases from gen.c (lc check --regen makes them). Full-size
-# cases (5 * 10^4 numbers) are too large to store; they come with M7.
+# Random small cases from gen.c (lc check --regen makes them).
 @gen 3 small
 [5,3,5,2,73908,4,1,7,6,4,7,9]
 4
@@ -150,3 +149,17 @@
 3
 3
 => [[2,8,93560],[3,5,77999],[9,87541,1]]
+
+# Full-size cases: up to 5 * 10^4 numbers and up to 4 * 10^4 rows or
+# columns, in a shape the seed picks (see gen.c).
+@full 1 1c2661ba
+
+@full 2 2c01d656
+
+@full 3 a8d5bc99
+=> []
+
+@full 4 ab96c891
+=> []
+
+@full 5 00cdf19d

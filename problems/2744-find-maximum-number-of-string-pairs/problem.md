@@ -4,6 +4,7 @@ title: Find Maximum Number of String Pairs
 difficulty: easy
 tags: array, hash-table, string, simulation
 signature: int maximumNumberOfStringPairs(string[] words)
+time_limit_ms: 500
 ---
 Every entry of `words` is a code of exactly two lowercase letters, and no
 code occurs twice in the list. Two entries at different positions are

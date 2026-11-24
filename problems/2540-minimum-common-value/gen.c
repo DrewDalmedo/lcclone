@@ -5,7 +5,7 @@
  * interleaved with nothing in common, interleaved with a single common
  * value 10^9 at the very end of both, ranges that don't overlap, one
  * timestamp against 10^5 that matches only the last of them, or many
- * common values. */
+ * common values. Seeds 1 to 5 make one of each. */
 static int cmp_int(const void *a, const void *b)
 {
     int x = *(const int *)a, y = *(const int *)b;
@@ -51,7 +51,7 @@ void gen(int small)
         else
             narrow(b, m, lo, width);
     } else {
-        shape = (int)rnd(0, 4);
+        shape = (int)(gen_seed() % 5);
         n = shape == 3 ? 1 : 100000;
         m = 100000;
         a = malloc((size_t)n * sizeof *a);

@@ -119,3 +119,14 @@
 ["abc","ab","a","ba","aa","abc"]
 ["ba","abc"]
 => 1
+
+# Full-size cases: 1000 words per list, in a shape the seed picks (see
+# gen.c).
+@full 1 d13a08a6
+=> 0
+
+@full 2 a93d33c2
+=> 180
+
+@full 3 5d49a192
+=> 1000

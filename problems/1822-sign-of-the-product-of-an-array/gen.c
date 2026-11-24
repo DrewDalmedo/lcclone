@@ -8,7 +8,7 @@ void gen(int small)
 {
     static const int pow2[] = {1, 2, 4, 8, 16, 32, 64};
     int n = small ? (int)rnd(1, 8) : 1000, i, v;
-    int shape = small ? (int)rnd(0, 1) : (int)rnd(0, 3);
+    int shape = small ? (int)rnd(0, 1) : (int)(gen_seed() % 4);
     int *nums = malloc((size_t)n * sizeof *nums);
 
     for (i = 0; i < n; i++) {

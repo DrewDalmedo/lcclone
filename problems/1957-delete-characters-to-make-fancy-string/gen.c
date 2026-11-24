@@ -4,7 +4,8 @@
  * shapes, picked by the seed: one letter throughout; half the length with
  * no three in a row, then a single long run (slow for "find three in a
  * row, strike one, start over"); random runs, some of them hundreds of
- * letters long; or no three in a row anywhere, so that nothing is struck. */
+ * letters long; or no three in a row anywhere, so that nothing is struck.
+ * Seeds 1 to 4 make one of each. */
 
 /* A letter of `letters` other than `avoid`. */
 static char pick(const char *letters, char avoid)
@@ -20,7 +21,7 @@ static char pick(const char *letters, char avoid)
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 14) : 100000;
-    int shape = small ? 4 : (int)rnd(0, 3);
+    int shape = small ? 4 : (int)(gen_seed() % 4);
     const char *letters = "abcdefghijklmnopqrstuvwxyz";
     char *s = malloc((size_t)n + 1), c = 0;
     int len = 0, run;

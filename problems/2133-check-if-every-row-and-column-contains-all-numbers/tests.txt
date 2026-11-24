@@ -102,3 +102,19 @@
 @gen 19 small
 [[1,2,3],[3,2,2],[2,3,1]]
 => false
+
+# Full-size cases: n = 100, in a shape the seed picks (see gen.c).
+@full 1 868e2ba5
+=> false
+
+@full 2 fcced0d0
+=> false
+
+@full 3 97626d0b
+=> false
+
+@full 4 77433217
+=> false
+
+@full 5 9f078f12
+=> true

@@ -107,3 +107,17 @@
 "db ccb caed cdca"
 "c"
 => 1
+
+# Full-size cases: up to 10^4 characters, in a shape the seed picks (see
+# gen.c).
+@full 1 8cac5258
+=> 190
+
+@full 2 fa675c8f
+=> 0
+
+@full 3 46aa1255
+=> 1
+
+@full 4 4ff858ae
+=> 35
