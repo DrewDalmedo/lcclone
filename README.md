@@ -56,7 +56,7 @@ Milestones **M0** to **M6** are in.
   are marked `draft` in `problems/MANIFEST.tsv` until they have been read
   over.
 
-690 problems are included, and all of them can be judged. `lc` judges
+720 problems are included, and all of them can be judged. `lc` judges
 linked lists, binary trees and N-ary trees too, including lists built
 with a cycle or joined to another and arguments that are a node of
 another (see [docs/problem-format.md](docs/problem-format.md#build-and-ref)).

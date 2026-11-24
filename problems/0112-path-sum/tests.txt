@@ -1,0 +1,149 @@
+# Path Sum. A case is the tree in level order (null for a missing child), then
+# targetSum; the result says whether some fall from root to leaf scores it.
+
+@example The fall 6, -2, 4 scores 8.
+[6,-2,9,null,4,1]
+8
+=> true
+
+@example 7 + 3 is 10, but 3 isn't a leaf; the two falls score 5 and 12.
+[7,3,null,-5,2]
+10
+=> false
+
+# An empty tree has no falls, even for target 0.
+[]
+0
+=> false
+
+# A lone root equal to the target, at the lower limit.
+[-1000]
+-1000
+=> true
+
+# A lone root that misses the target by one.
+[999]
+1000
+=> false
+
+# The root's value is the target, but the root has a child.
+[5,3]
+5
+=> false
+
+# The first two values reach the target at a one-child node; the path goes on.
+[2,null,5,-3]
+7
+=> false
+
+# The score passes the target and comes back to it.
+[10,20,null,-25]
+5
+=> true
+
+# Zeros below a matching prefix keep the score equal down to the leaf.
+[3,4,null,0,null,0]
+7
+=> true
+
+# Only the last of four leaves matches.
+[8,1,2,-3,7,5,4]
+14
+=> true
+
+# A negative target.
+[-6,-1,4,-2]
+-9
+=> true
+
+# Target 0, reached at a leaf.
+[5,-5]
+0
+=> true
+
+# Target 0 holds only at the root, which isn't a leaf.
+[0,1,2,null,3]
+0
+=> false
+
+# 66 nodes summing to 65536: a 16-bit total would wrap onto the target 0.
+[1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,1000,null,536]
+0
+=> false
+
+@gen 2 small
+[-3,-2,null,-3,null,-1]
+-9
+=> true
+
+@gen 9 small
+[1,-2,1,2,1,1]
+3
+=> true
+
+@gen 11 small
+[0,-1,2,2,-1,0]
+-1
+=> false
+
+@gen 31 small
+[3,-3,3,-3,null,null,null,null,0,0]
+-3
+=> true
+
+@gen 38 small
+[3,1,-1,null,-1]
+2
+=> true
+
+@gen 43 small
+[-2,-1,1,2,-1,3]
+0
+=> false
+
+@gen 48 small
+[-1,0,-2,-1,-3,null,null,0]
+-4
+=> true
+
+@gen 55 small
+[3,1,1,null,null,null,-2,0,3,null,null,null,1]
+2
+=> true
+
+# Full size, 5000 nodes: left path climbing to 2.5 * 10^6 and back onto the
+# target; right path 76 * 65536 above the target (false); zigzag; complete tree
+# with only the last leaf matching; a path into a caterpillar with only the
+# deepest leaf matching; the same with every leaf one off; a random tree.
+@full 1 80159535
+=> true
+
+@full 2 72776d59
+=> false
+
+@full 3 fdea4506
+=> true
+
+@full 4 a34ce53a
+=> true
+
+@full 5 991986ea
+=> true
+
+@full 6 4bf18e6f
+=> false
+
+@full 7 f90a5fb0
+=> true
+
+# A complete tree where only one bottom leaf matches (a circular queue of 2048
+# entries loses it); caterpillars of 2500 levels down the left and the right,
+# which a depth-first stack has to hold at full width.
+@full 8 c6d743bd
+=> true
+
+@full 9 c4273f3f
+=> true
+
+@full 10 71ce475d
+=> false

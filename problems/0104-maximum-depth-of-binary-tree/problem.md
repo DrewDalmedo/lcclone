@@ -5,10 +5,10 @@ difficulty: easy
 tags: tree, depth-first-search, breadth-first-search, binary-tree
 signature: int maxDepth(TreeNode root)
 ---
-You are given `root`, the root of a binary tree. Number the levels of the
-tree: the root is on level 1, its children are on level 2, their children on
-level 3, and so on. Return the number of the **deepest level that holds a
-node**. An empty tree has no levels, so its answer is 0.
+Number the levels of the binary tree `root`: the root itself is on level 1,
+its children are on level 2, their children on level 3, and so on. Return
+the number of the **deepest level that holds a node**. An empty tree has no
+levels, so its answer is 0.
 
 Trees in the examples are written in level order: the values are listed row
 by row from left to right, and `null` stands for a missing child. Only nodes

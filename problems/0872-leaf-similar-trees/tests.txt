@@ -1,0 +1,149 @@
+# Leaf-Similar Trees. A case is root1, then root2, each a tree in level order
+# with null for a missing child.
+
+@example Both fringes are 7, 12, though the trees differ.
+[20,4,9,7,null,null,12]
+[1,7,3,null,null,12]
+=> true
+
+@example The fringes 4, 3 and 3, 4 hold the same values in another order.
+[5,1,null,4,3]
+[9,3,2,null,null,4]
+=> false
+
+@example The fringe 0, 11 stops where 0, 11, 6 goes on.
+[2,0,4,null,null,null,11]
+[7,0,3,null,null,11,6]
+=> false
+
+# A single node each, equal, at the upper bound.
+[200]
+[200]
+=> true
+
+# A single node each, unequal, one of them 0.
+[0]
+[1]
+=> false
+
+# A lone root against a path ending in the same value.
+[8]
+[1,2,null,3,null,8]
+=> true
+
+# The second fringe is a strict prefix of the first.
+[1,6,2,null,null,8,5]
+[4,6,8]
+=> false
+
+# One-child nodes on each side aren't leaves: both fringes are just 30.
+[10,20,null,30]
+[40,null,30]
+=> true
+
+# Two paths whose only leaves differ, 30 and 40.
+[10,20,null,30]
+[20,null,30,40]
+=> false
+
+# Fringe 5, 6 in both, though level order meets 6 first in one, 5 in the other.
+[1,2,6,5]
+[1,5,2,null,null,null,6]
+=> true
+
+# Level order meets 6, then 5 in both, but the fringes are 5, 6 and 6, 5.
+[1,2,6,5]
+[1,6,2,null,null,5]
+=> false
+
+# Leaf value 0 is real: two zeros against one.
+[3,0,0]
+[3,0]
+=> false
+
+# Values past a signed char, differing in the last leaf.
+[0,128,200]
+[5,128,7,null,null,null,199]
+=> false
+
+# Joined without separators, both fringes read 115.
+[9,11,5]
+[3,1,8,null,null,15]
+=> false
+
+# Different inner values, the same four leaves.
+[7,7,7,1,2,3,4]
+[200,100,50,1,2,3,4]
+=> true
+
+# Random small cases.
+@gen 2 small
+[0,0,2,null,1,null,0]
+[1,1,0]
+=> true
+
+@gen 3 small
+[1,0,1,null,1,0,null,null,0,null,1]
+[0,0,1]
+=> true
+
+@gen 9 small
+[1,0,1,null,null,2,0,2]
+[2,0,0,null,null,0,2]
+=> false
+
+@gen 13 small
+[2,1,2,1,2,2,null,0]
+[0,null,1,1,0,null,null,2,2]
+=> false
+
+@gen 15 small
+[1,1,1,null,null,null,2,1,null,null,0]
+[0,null,0,null,1,2,0]
+=> false
+
+@gen 17 small
+[0,2,0,1,2,null,null,null,null,null,0]
+[0,1,2,null,2,1,null,null,null,0,null,null,0]
+=> false
+
+@gen 18 small
+[2,2,0,null,null,2,null,1]
+[2,1,1]
+=> false
+
+# Full size, 200 nodes each: paths, complete, random and comb shapes with equal
+# fringes, and fringes with a changed leaf, a swap, or one leaf fewer; then a
+# comb going left against one going right, equal and with the last leaf changed.
+@full 1 1493df0f
+=> true
+
+@full 2 88361a8e
+=> false
+
+@full 3 e13a9898
+=> true
+
+@full 4 bff8fcb7
+=> false
+
+@full 5 e836c209
+=> false
+
+@full 6 203b5244
+=> false
+
+@full 7 c1483564
+=> true
+
+@full 8 fbd8c9bb
+=> true
+
+@full 9 a5d63241
+=> false
+
+@full 10 39ff3b11
+=> true
+
+@full 11 017abe5d
+=> false

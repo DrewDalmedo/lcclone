@@ -1,0 +1,159 @@
+# Search in a Binary Search Tree. A case is the tree in level order, then val;
+# the result is the branch from the node holding val, or [] if there is none.
+
+@example 55 is below the root on the right, and its one child, 61, comes with it.
+[40,18,73,9,null,55,88,null,null,null,61]
+55
+=> [55,null,61]
+
+@example 6 would go between 5 and 8, but no node holds it.
+[12,5,null,2,8]
+6
+=> []
+
+@example The match is on the right, and keeps its left child.
+[30,null,45,41]
+45
+=> [45,41]
+
+# One node, and it matches.
+[9]
+9
+=> [9]
+
+# One node, and it doesn't.
+[9]
+3
+=> []
+
+# A match at the root returns the whole tree.
+[50,20,80,10,30,70,90]
+50
+=> [50,20,80,10,30,70,90]
+
+# val below every value.
+[50,20,80]
+1
+=> []
+
+# val above every value, at the top of its range.
+[50,20,80]
+10000000
+=> []
+
+# val in a gap: the walk ends at a missing child under 30, not at 30.
+[50,20,80,null,30]
+25
+=> []
+
+# The deepest node of a left path.
+[5,4,null,3,null,2,null,1]
+1
+=> [1]
+
+# Partway down a right path: the rest of the path comes back.
+[2,null,5,null,6,null,9]
+5
+=> [5,null,6,null,9]
+
+# A leaf at the end of a zigzag.
+[10,2,null,null,8,5]
+5
+=> [5]
+
+# Both value limits in one tree; the match is the largest.
+[5000000,1,10000000]
+10000000
+=> [10000000]
+
+# Values past 16 bits: 65536 would read as 0 in a short.
+[131072,65536,196608]
+65536
+=> [65536]
+
+# An inner node two levels down, with both of its children.
+[6,2,9,1,4,8,12,null,null,3,5]
+4
+=> [4,3,5]
+
+# Random small trees: one-sided shapes, gaps, and val at its limits.
+@gen 1 small
+[3,null,4,null,6,null,9,null,10,null,12,null,13]
+14
+=> []
+
+@gen 2 small
+[3,1,7,null,null,5,15]
+1
+=> [1]
+
+@gen 3 small
+[9,4,12,3,7,10,14,1]
+1
+=> [1]
+
+@gen 4 small
+[12,10,null,7,null,3]
+10000000
+=> []
+
+@gen 5 small
+[4,1,7,null,null,6,10,null,null,null,14]
+1
+=> [1]
+
+@gen 6 small
+[2,null,3]
+4
+=> []
+
+# Full size, 5000 nodes from 1 to 10^7: left path, right path, zigzag, complete,
+# random, left and right caterpillars with val at the deepest node (1 to 7) and
+# just beside it and absent (8 to 14); then val halfway down a left path and a
+# right caterpillar (15, 16).
+@full 1 ce33aa0c
+=> [1]
+
+@full 2 6c5e9b3b
+=> [10000000]
+
+@full 3 0a67e7b6
+=> [5000130]
+
+@full 4 bdf90642
+=> [1]
+
+@full 5 8cc350ab
+=> [9412197]
+
+@full 6 54fbb3cf
+=> [1]
+
+@full 7 79af57fa
+=> [10000000]
+
+@full 8 dafc7682
+=> []
+
+@full 9 567f26be
+=> []
+
+@full 10 aa6b2a27
+=> []
+
+@full 11 a90541e3
+=> []
+
+@full 12 2d8c0bb0
+=> []
+
+@full 13 e2baee1a
+=> []
+
+@full 14 f1775d85
+=> []
+
+@full 15 a7a95042
+
+@full 16 3bd2a733
+

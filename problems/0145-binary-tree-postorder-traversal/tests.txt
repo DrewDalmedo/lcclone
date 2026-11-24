@@ -1,0 +1,117 @@
+# Binary Tree Postorder Traversal. A case is the tree in level order; the
+# result is its values in the order the nodes are lifted out.
+
+@example The leaf 4 goes first, then 1 and 8 free -6, and the root is lifted last.
+[10,4,-6,null,null,1,8]
+=> [4,1,8,-6,10]
+
+@example 5 hangs from 3, which hangs from 9, so they come off from the bottom up.
+[9,3,null,5]
+=> [5,3,9]
+
+@example The left branch, -5 under -5, is cleared before the right child 7.
+[0,-5,7,null,-5]
+=> [-5,-5,7,0]
+
+# An empty tree.
+[]
+=> []
+
+# One node, at the lowest value.
+[-100]
+=> [-100]
+
+# A path of left children comes out bottom-up.
+[1,2,null,3,null,4]
+=> [4,3,2,1]
+
+# A path of right children comes out bottom-up too.
+[1,null,2,null,3,null,4]
+=> [4,3,2,1]
+
+# A zigzag path.
+[5,9,null,null,2,7]
+=> [7,2,9,5]
+
+# Left, right, node: reversing plain preorder gives 3,2,1.
+[1,2,3]
+=> [2,3,1]
+
+# A left leaf beside a deeper right subtree: reversed level order is wrong.
+[1,2,3,null,null,4,5]
+=> [2,4,5,3,1]
+
+# A parent equal to its right child, all the way down.
+[5,null,5,null,5]
+=> [5,5,5]
+
+# Equal parent and right child under a root of the same value.
+[2,1,2,null,null,3,2]
+=> [1,3,2,2,2]
+
+# Right-only children on both sides of the root.
+[10,20,30,null,40,null,50]
+=> [40,20,50,30,10]
+
+# The bounds and the usual sentinels are real values.
+[0,-1,100,null,null,-100,0]
+=> [-1,-100,0,100,0]
+
+# A complete tree of four levels.
+[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+=> [8,9,4,10,11,5,2,12,13,6,14,15,7,3,1]
+
+# Small random trees: a left path, a right path, a zigzag, a random shape,
+# a complete tree, a caterpillar, and two shapes with all values equal.
+@gen 1 small
+[2,0,null,3,null,3,null,0,null,-1]
+=> [-1,0,3,3,0,2]
+
+@gen 14 small
+[2,null,-1,null,2,null,0,null,3,null,-3,null,2,null,2]
+=> [2,2,-3,3,0,2,-1,2]
+
+@gen 20 small
+[-1,null,1,-2,null,null,2,-3,null,null,1,1,null,null,3]
+=> [3,1,1,-3,2,-2,1,-1]
+
+@gen 21 small
+[-1,0,1,0,null,null,-1,null,null,0,-3]
+=> [0,0,0,-3,-1,1,-1]
+
+@gen 18 small
+[3,1,2,3,1,-3,-1]
+=> [3,1,1,-3,-1,2,3]
+
+@gen 15 small
+[3,0,1,2,-3]
+=> [2,-3,0,1,3]
+
+@gen 8 small
+[1,1,1,null,1]
+=> [1,1,1,1]
+
+@gen 33 small
+[-3,null,-3,null,-3,-3,-3,-3]
+=> [-3,-3,-3,-3,-3,-3]
+
+# Full size, 100 nodes: a left path, a right path, a zigzag, a random shape,
+# a complete tree, a caterpillar, a random shape with all values equal, and
+# a comb leaning each way, which fills an explicit stack.
+@full 1 2c7b21d3
+
+@full 2 81594a36
+
+@full 3 d0f30b3b
+
+@full 4 eea94574
+
+@full 5 16a8abc5
+
+@full 6 a11b2d61
+
+@full 7 54c8604e
+
+@full 8 fa79a37e
+
+@full 9 e72bb066

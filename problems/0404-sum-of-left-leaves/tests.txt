@@ -1,0 +1,126 @@
+# Sum of Left Leaves. A case is the tree in level order (null for a missing
+# child); the result is the sum of the childless left children.
+
+@example The left leaves are 6 and 3; 40 is a right child and -5 has a child.
+[12,-5,8,6,null,3,40]
+=> 9
+
+@example The only left leaf hangs below a right child.
+[2,null,-4,9]
+=> 9
+
+# A lone root has no parent, so it doesn't count.
+[-1000]
+=> 0
+
+# The root's only child is a right leaf.
+[3,null,4]
+=> 0
+
+# A right leaf below a left child: neither node counts.
+[1,2,null,null,3]
+=> 0
+
+# A left child with only a right child isn't a leaf; the left leaf below is.
+[5,6,null,null,7,8]
+=> 8
+
+# A left leaf deep under right children; the left child above it has a child.
+[1,null,2,3,4,5,null,null,6]
+=> 5
+
+# A negative answer.
+[0,-7,2,-3,null,-8]
+=> -11
+
+# Left leaves that cancel to 0.
+[1,500,2,null,null,-500]
+=> 0
+
+# A left leaf of value 0 beside a right leaf that must not be added.
+[4,0,9]
+=> 0
+
+# Values at the limits.
+[-1000,1000,-1000]
+=> 1000
+
+# A left path: only the bottom node counts.
+[9,8,null,7,null,6]
+=> 6
+
+# A zigzag ending on a right leaf.
+[1,2,null,null,3,4,null,null,5]
+=> 0
+
+# 33 left leaves of 1000 on a right spine: past a 16-bit total.
+[1,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000,1,null,null,1000]
+=> 33000
+
+@gen 1 small
+[-3,2,null,0,null,3,null,3,null,0,null,-1]
+=> -1
+
+@gen 3 small
+[3,2,-3,-3,1,null,null,-1,-2,null,null,null,3]
+=> 0
+
+@gen 9 small
+[1,-2,1,2,1,1,2]
+=> 3
+
+@gen 15 small
+[2,1,-3,0,null,null,-3,null,null,-2,null,null,-2,-1]
+=> -1
+
+@gen 24 small
+[-1,-2,1,2,-1,null,null,2,-2,null,null,null,3]
+=> 0
+
+@gen 31 small
+[-2,-2,1,-2,0,3,-3]
+=> 1
+
+@gen 48 small
+[-1,2,-2,2,1,-1,0]
+=> 1
+
+@gen 57 small
+[2,-3,3,3,-3,null,null,null,-1]
+=> 0
+
+# Full size, 1000 nodes: left path, right path, zigzag, a right spine with 500
+# left leaves of 1000 and of -1000, a left spine with right leaves only, a
+# complete tree, a random tree.
+@full 1 c4863cfe
+=> 658
+
+@full 2 51484287
+=> 0
+
+@full 3 d96b1f6a
+=> 0
+
+@full 4 8f629a5b
+=> 500000
+
+@full 5 6c1fd8c8
+=> -500000
+
+@full 6 a61e91bf
+=> 0
+
+@full 7 584a6abd
+=> -1338
+
+@full 8 e1dbf1ac
+=> -11932
+
+# A right spine whose left children each hold a left leaf one level down (a
+# stack that skips left leaves still reaches 333 entries), and a perfect tree of
+# 9 levels with such hooks under its bottom row (a queue reaches 419 entries).
+@full 9 f39e791d
+=> 446
+
+@full 10 c8238547
+=> -12213

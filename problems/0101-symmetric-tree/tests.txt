@@ -1,0 +1,152 @@
+# Symmetric Tree. A case is the tree in level order, with null for a missing
+# child.
+
+@example Each node's counterpart holds its value: 1 with 1, and 8 with 8.
+[4,6,6,1,null,null,1,null,8,8]
+=> true
+
+@example The shape is right, but the counterparts 3 and 5 differ.
+[2,7,7,3,null,null,5]
+=> false
+
+@example The node 8 has no counterpart: the other side stops a level higher.
+[4,6,6,1,null,null,1,8]
+=> false
+
+# One node, at the lower bound.
+[-100]
+=> true
+
+# Two equal leaves, with 0 and -1 as real values.
+[0,-1,-1]
+=> true
+
+# Two unequal leaves, at the bounds.
+[0,100,-100]
+=> false
+
+# A single child.
+[5,5]
+=> false
+
+# A one-sided tree whose inorder reads 2, 1, 2 both ways.
+[2,1,null,2]
+=> false
+
+# The right subtree is a copy of the left, not its reflection.
+[9,3,3,1,2,1,2,null,6,null,null,null,6]
+=> false
+
+# The two subtrees differ as trees, but one is the reflection of the other.
+[9,3,3,null,2,2]
+=> true
+
+# The outer pair matches, the inner pair doesn't.
+[50,-7,-7,20,30,40,20,11,null,null,null,null,null,null,11]
+=> false
+
+# The inner pair matches, the outer pair doesn't.
+[50,-7,-7,20,30,30,60,null,null,null,12,12]
+=> false
+
+# Rows read the same both ways, but the 7s and the 2s are all left children.
+[8,5,5,7,null,7,null,2,null,2]
+=> false
+
+# Every value equal, in a lopsided shape.
+[3,3,3,null,3,null,null,3]
+=> false
+
+# Reflected shape, with the two deepest values different.
+[0,1,1,2,null,null,2,3,null,null,4]
+=> false
+
+# With 0 as the marker for a missing child, both sides would read alike.
+[6,2,2,9,null,null,9,0,null,0]
+=> false
+
+# The same with -1 as the marker.
+[5,3,3,null,8,8,null,null,-1,null,-1]
+=> false
+
+# The same with the upper bound as the marker.
+[7,4,4,1,null,null,1,100,null,100]
+=> false
+
+# And with the lower bound.
+[7,4,4,null,1,1,null,null,-100,null,-100]
+=> false
+
+# Random small cases.
+@gen 8 small
+[-1,-1,-1,1,null,null,1,null,0,-1]
+=> false
+
+@gen 13 small
+[1,0,0,null,1]
+=> false
+
+@gen 14 small
+[-1,1,1,null,-1,-1,null,null,0,0]
+=> true
+
+@gen 16 small
+[-1,-1,-1,0,null,null,-1,null,-1,-1]
+=> false
+
+@gen 36 small
+[1,1,1,null,1,1]
+=> true
+
+@gen 20 small
+[1,1,1,-1,0,0]
+=> false
+
+@gen 23 small
+[0,-1,-1,1,null,null,1]
+=> true
+
+# Full size: 1000 nodes in five shapes (false, since the count is even), four
+# symmetric trees of 999 nodes, three near misses of 999, 998 and 1000, and
+# two symmetric trees of 999 nodes over caterpillar arms.
+@full 1 0345f561
+=> false
+
+@full 2 dcde2af7
+=> false
+
+@full 3 4b7a79a0
+=> false
+
+@full 4 9c3bc8b5
+=> false
+
+@full 5 5ef6a4f0
+=> false
+
+@full 6 9bc2d17c
+=> true
+
+@full 7 10d35b0b
+=> true
+
+@full 8 6c461b64
+=> true
+
+@full 9 1ef28c95
+=> true
+
+@full 10 5b414441
+=> false
+
+@full 11 3d1329f4
+=> false
+
+@full 12 99e6cfd5
+=> false
+
+@full 13 b4123d72
+=> true
+
+@full 14 b91eb9e1
+=> true

@@ -1,0 +1,163 @@
+# Two Sum IV - Input is a BST. A case is the tree in level order, then k; the
+# result says whether two different nodes add up to k.
+
+@example 7 and 18 add up to 25, and they lie on different sides of the root.
+[12,-3,30,null,7,18]
+25
+=> true
+
+@example 8 + 8 would make 16, but the tree has only one 8 and no other pair works.
+[8,2,null,-5]
+16
+=> false
+
+@example -20 and -11 make -31.
+[-20,null,-4,-11]
+-31
+=> true
+
+# One node can't pair with itself.
+[6]
+12
+=> false
+
+# k = 0 with a 0 in the tree and no opposite value.
+[0,-3,8]
+0
+=> false
+
+# k = 20000: only 10^4 used twice would reach it.
+[10000,9998]
+20000
+=> false
+
+# k = -20000: only -10^4 used twice would reach it.
+[-10000,null,-9997]
+-20000
+=> false
+
+# The largest pair of all.
+[9999,100,10000]
+19999
+=> true
+
+# The smallest pair of all.
+[-9999,-10000,0]
+-19999
+=> true
+
+# The smallest and largest values cancel out.
+[0,-10000,10000]
+0
+=> true
+
+# Both nodes deep, in different subtrees of the root.
+[50,20,80,10,30,70,90,null,null,25]
+95
+=> true
+
+# All values even and k odd: every pair is tried and none works.
+[40,20,60,10,30,50,70]
+75
+=> false
+
+# k = 10^5, with a complement far outside the range of values.
+[10000,-10000]
+100000
+=> false
+
+# k = -10^5, the same on the other side.
+[-10000,null,10000]
+-100000
+=> false
+
+# A negative total from values of mixed signs.
+[3,-7,12,null,-2]
+-9
+=> true
+
+# 10^4 is met before its partner in a walk from the root, and is still a
+# complement that must be found.
+[10000,-1]
+9999
+=> true
+
+# k = 65547 reads as 11 in 16 bits, and 2 + 9 = 11, but nothing reaches 65547.
+[6,2,9]
+65547
+=> false
+
+# k = -65547 reads as -11 in 16 bits, and -9 + -2 = -11, but nothing reaches it.
+[-6,-9,-2]
+-65547
+=> false
+
+# One of the pair holds 0, which a table using 0 for "empty" can't see.
+[4,0,11]
+11
+=> true
+
+# Small random trees, with k often twice a value or the sum of two values.
+@gen 1 small
+[7,6,null,1,null,0,null,-2,null,-3,null,-5]
+2
+=> true
+
+@gen 2 small
+[5,3,null,-3,null,-5,null,-7]
+-10
+=> true
+
+@gen 3 small
+[-3,-7,5,null,-6,1,null,null,-4,null,2,-5]
+-7
+=> true
+
+@gen 4 small
+[-5,null,0,-3,null,-4]
+-3
+=> true
+
+@gen 5 small
+[-4,null,-3,null,-1,null,0,null,2,null,7]
+2
+=> true
+
+@gen 6 small
+[4,-5]
+8
+=> false
+
+@gen 7 small
+[-2996,null,9406,6466,null,4765,null,1726,null,574]
+-13
+=> false
+
+# Full size, 10^4 nodes: a left path of even values with k odd, a right path
+# whose two deepest nodes make k, a zigzag where only a doubled 10^4 would, a
+# random shape with a reachable k, a complete tree with k = 10^5, a randomly
+# turning path whose two smallest values make k, a left path where only a
+# doubled 0 would, and a random shape with k = -10^5.
+@full 1 11d97127
+=> false
+
+@full 2 a6a8f0db
+=> true
+
+@full 3 9c5cfbc6
+=> false
+
+@full 4 e855f6f6
+=> true
+
+@full 5 59482c0b
+=> false
+
+@full 6 57e62bbb
+=> true
+
+@full 7 cb2c751f
+=> false
+
+@full 8 c1805c4e
+=> false

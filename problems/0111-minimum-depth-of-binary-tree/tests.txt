@@ -1,0 +1,116 @@
+# Minimum Depth of Binary Tree. A case is the tree in level order, with null
+# for a missing child; the result is the fewest nodes on a walk from the
+# root down to a leaf.
+
+@example The leaves 8 and 5 are three nodes down; the leaf 3 is one further.
+[4,6,2,1,null,8,5,null,3]
+=> 3
+
+@example Nodes 8 and 6 each have a child, so the walk can't stop before 2.
+[8,null,6,2]
+=> 3
+
+# An empty tree.
+[]
+=> 0
+
+# A lone root is a leaf.
+[12]
+=> 1
+
+# A root with only a left child is not a leaf.
+[5,3]
+=> 2
+
+# A root with only a right child is not a leaf.
+[5,null,3]
+=> 2
+
+# A bare path of left children.
+[9,7,null,5,null,3]
+=> 4
+
+# A zigzag path.
+[6,4,null,null,2,7]
+=> 4
+
+# A right path of six.
+[3,null,8,null,2,null,9,null,4,null,6]
+=> 6
+
+# Both leaves are below a root with one child.
+[2,1,null,3,4]
+=> 3
+
+# Single-child nodes on both sides, with leaves on levels 3 and 4.
+[10,8,14,6,null,null,16,null,null,18]
+=> 3
+
+# The nearest leaf sits under a single-child node.
+[9,3,8,null,2,6,7,null,null,5,null,null,1]
+=> 3
+
+# The right child is a leaf, beside a longer left branch.
+[11,2,3,4,null,null,null,5]
+=> 2
+
+# Values at the limits.
+[-1000,1000,null,-1000]
+=> 3
+
+@gen 9 small
+[1,-2,1,2,1,1,2]
+=> 3
+
+@gen 13 small
+[2,0,null,null,1,null,-2,1]
+=> 5
+
+@gen 14 small
+[2,2,null,-1,0,-3,2,null,null,null,-3,null,null,2]
+=> 3
+
+@gen 19 small
+[1,2,null,-2,null,null,0,null,-3,null,-1,3]
+=> 7
+
+@gen 20 small
+[-3,3,1,null,null,-1,1,null,null,3]
+=> 2
+
+@gen 22 small
+[-3,1,0,2,-3,null,1,null,null,null,null,2,2]
+=> 3
+
+# Full size, 10^5 nodes: left path, right path, zigzag, complete, caterpillar,
+# long left arm beside a right arm of 10, a path above a complete tree, the
+# widest level (49996), a random shape, and a caterpillar down the right.
+@full 1 a78d7a6a
+=> 100000
+
+@full 2 0076fe6c
+=> 100000
+
+@full 3 583fc751
+=> 100000
+
+@full 4 8ead354c
+=> 16
+
+@full 5 83db9133
+=> 2
+
+@full 6 572fec74
+=> 11
+
+@full 7 f4715e8f
+=> 50015
+
+@full 8 f7394e9b
+=> 17
+
+@full 9 d87dea4e
+=> 7
+
+@full 10 5c684b93
+=> 2

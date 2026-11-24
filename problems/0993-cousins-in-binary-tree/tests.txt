@@ -1,0 +1,174 @@
+# Cousins in Binary Tree. A case is the tree in level order with null for a
+# missing child, then x, then y.
+
+@example 7 and 18 are both at rank 2, under the managers 3 and 40.
+[12,3,40,null,7,18]
+7
+18
+=> true
+
+@example 5 and 8 have the same manager, 9.
+[6,9,2,5,8]
+5
+8
+=> false
+
+@example 19 is at rank 3 and 8 at rank 2.
+[30,11,25,null,14,8,null,19]
+19
+8
+=> false
+
+# The smallest tree: the root and its child.
+[1,2]
+1
+2
+=> false
+
+# x is the root.
+[3,1,2]
+3
+1
+=> false
+
+# y is the root.
+[3,1,2]
+2
+3
+=> false
+
+# Siblings, x on the left.
+[4,2,7]
+2
+7
+=> false
+
+# Siblings, x on the right.
+[4,2,7]
+7
+2
+=> false
+
+# Neighbours in their row, under different parents.
+[21,34,8,2,55,13,6]
+55
+13
+=> true
+
+# The same pair in the other order.
+[21,34,8,2,55,13,6]
+13
+55
+=> true
+
+# Same depth, different parents and different grandparents.
+[1,2,3,4,null,null,5,6,null,null,7]
+6
+7
+=> true
+
+# One is an ancestor of the other, on a path.
+[1,2,null,3,null,4]
+2
+4
+=> false
+
+# Different depths in different branches, with different parents.
+[1,2,3,4,null,null,5,6]
+6
+5
+=> false
+
+# Value 100 is in the tree, so a table of 100 slots overruns.
+[99,100,1,2,null,null,3]
+2
+3
+=> true
+
+# The smallest shape with cousins: five nodes.
+[5,1,2,3,null,null,4]
+3
+4
+=> true
+
+# Random small cases.
+@gen 2 small
+[2,9,null,8,null,7,null,4,null,1]
+4
+7
+=> false
+
+@gen 3 small
+[8,4,null,1,null,3,null,2,null,7,null,9,null,5]
+8
+4
+=> false
+
+@gen 6 small
+[6,7,1,4,2,9,5]
+7
+1
+=> false
+
+@gen 17 small
+[6,4,7,5,1,2,9]
+2
+5
+=> true
+
+@gen 26 small
+[1,5,2,8,6,7,null,null,3]
+8
+7
+=> true
+
+@gen 47 small
+[1,null,9,6,2,null,7,8]
+8
+7
+=> true
+
+@gen 93 small
+[1,8,4,2,null,9,5,7,null,null,null,null,6]
+2
+9
+=> true
+
+# Full size, 100 nodes holding 1 to 100: paths, zigzag, random and complete
+# trees and two long arms, with cousins, siblings, uneven depths and the root;
+# then caterpillars down each side with a cousin pair at the far end.
+@full 1 e50b3238
+=> false
+
+@full 2 5ee067f5
+=> false
+
+@full 3 6c21e7b5
+=> false
+
+@full 4 cf58b953
+=> true
+
+@full 5 1dddec87
+=> true
+
+@full 6 f49a05d3
+=> false
+
+@full 7 2f465b5b
+=> true
+
+@full 8 8b0fee5c
+=> false
+
+@full 9 ae022dd1
+=> false
+
+@full 10 4fe95a00
+=> false
+
+@full 11 8ebc26b3
+=> true
+
+@full 12 8dde10c2
+=> true
