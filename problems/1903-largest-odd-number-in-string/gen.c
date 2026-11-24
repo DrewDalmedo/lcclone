@@ -5,7 +5,7 @@
  * picking where the last odd digit goes: a little before the end, nowhere,
  * at the start, somewhere in the middle, or at the very end. Before it the
  * digits are random; after it they are all even. The first digit is never
- * 0. */
+ * 0. Seeds 1 to 5 make one full-size case of each shape. */
 static char digit(int odd, int first)
 {
     if (odd)
@@ -23,7 +23,7 @@ void gen(int small)
     if (small) {
         chance = chances[rnd(0, 3)];
     } else {
-        shape = (int)rnd(0, 4);
+        shape = (int)(gen_seed() % 5);
         if (shape == 0)
             last = n - 1 - (int)rnd(1, 40);
         else if (shape == 1)

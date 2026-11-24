@@ -3,8 +3,11 @@
  * array into the three blocks; the zero block is often dropped, and now
  * and then the whole array is negative, zero or positive, or every
  * nonzero value is -top or top. Small cases have 1 to 8 values from -3 to
- * 3, so equal values and ties between the counts come up often; full-size
- * ones have 2000 values from -2000 to 2000. */
+ * 3, so equal values and ties between the counts come up often. Full-size
+ * ones have 2000 values from -2000 to 2000, and the seed picks the shape
+ * (seeds 1 to 5 make one of each): three blocks at random cuts, the same
+ * with every nonzero value -2000 or 2000, or the whole array negative,
+ * zero or positive. */
 static int cmp(const void *a, const void *b)
 {
     int x = *(const int *)a, y = *(const int *)b;
@@ -20,14 +23,24 @@ void gen(int small)
     int neg = cut1 < cut2 ? cut1 : cut2;
     int zeros = cut1 < cut2 ? cut2 - cut1 : cut1 - cut2;
     int extreme = rnd_chance(20), i, k;
+    int shape = small ? 0 : (int)(gen_seed() % 5);
 
-    if (rnd_chance(30))
-        zeros = 0;
-    if (rnd_chance(15)) {
-        /* every value negative, every value zero, or every value positive */
-        k = (int)rnd(0, 2);
-        neg = k == 0 ? n : 0;
-        zeros = k == 1 ? n : 0;
+    if (small) {
+        if (rnd_chance(30))
+            zeros = 0;
+        if (rnd_chance(15)) {
+            /* every value negative, every value zero, or every value
+             * positive */
+            k = (int)rnd(0, 2);
+            neg = k == 0 ? n : 0;
+            zeros = k == 1 ? n : 0;
+        }
+    } else {
+        extreme = shape == 1;
+        if (shape >= 2) {
+            neg = shape == 2 ? n : 0;
+            zeros = shape == 3 ? n : 0;
+        }
     }
     for (i = 0; i < n; i++) {
         k = extreme ? top : (int)rnd(1, top);

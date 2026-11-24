@@ -4,6 +4,7 @@ title: Largest Odd Number in String
 difficulty: easy
 tags: greedy, math, string
 signature: string largestOddNumber(string num)
+time_limit_ms: 50
 ---
 `num` holds the decimal digits of a non-negative integer, most significant
 digit first. It may run to `10^5` digits, so in general it can't be

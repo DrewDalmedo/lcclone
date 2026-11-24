@@ -4,6 +4,7 @@ title: Find Minimum Log Transportation Cost
 difficulty: easy
 tags: math
 signature: long minCuttingCost(int n, int m, int k)
+time_limit_ms: 200
 ---
 Two logs, of lengths `n` and `m`, are to be moved by **three** trucks. Each
 truck carries at most one piece of wood (a log left whole counts as one

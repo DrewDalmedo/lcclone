@@ -2,12 +2,15 @@
  * shared factors, so that scores tie often; nums built as multiples of a
  * few chosen divisors, with values up to 10^9; or divisors all larger than
  * every num, so that every score is 0. Small cases have at most 8 nums and
- * 6 divisors; full-size ones have 1000 of each. */
+ * 6 divisors; full-size ones have 1000 of each, and seeds 1 to 3 make one
+ * of each shape. */
 void gen(int small)
 {
+    static const int large_shapes[] = {0, 2, 3};
     int n = small ? (int)rnd(1, 8) : 1000;
     int k = small ? (int)rnd(1, 6) : 1000;
-    int shape = (int)rnd(0, 3), i, top, d, mult;
+    int shape = small ? (int)rnd(0, 3) : large_shapes[gen_seed() % 3];
+    int i, top, d, mult;
     int *nums = malloc((size_t)n * sizeof *nums);
     int *divs = malloc((size_t)k * sizeof *divs);
 

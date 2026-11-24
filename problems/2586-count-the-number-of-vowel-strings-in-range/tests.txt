@@ -85,8 +85,7 @@
 999
 => 1000
 
-# Random small cases from gen.c (lc check --regen makes them). Full-size
-# cases (1000 words of up to 10 letters) come with milestone M7.
+# Random small cases from gen.c (lc check --regen makes them).
 @gen 1 small
 ["aoo","kkka","y","aoo","yyaa","kkka","k"]
 4
@@ -122,3 +121,14 @@
 1
 1
 => 1
+
+# Full-size cases: up to 1000 words of up to 10 letters, in a shape the
+# seed picks (see gen.c).
+@full 1 646a74c3
+=> 273
+
+@full 2 7fe08531
+=> 0
+
+@full 3 e78fed4a
+=> 230

@@ -86,16 +86,12 @@
 ["zy","yy","yz"]
 => 1
 
-# Full size: 50 codes.
-@gen 1
-["ki","om","xn","wr","co","wp","ml","uu","yx","fk","xp","fo","fu","fi","jw","nz","um","pi","bq","kc","ot","ys","hh","zs","ne","li","tr","zz","fz","cw","vg","lt","zq","zu","cv","az","er","uw","te","vj","gx","aa","ig","ij","sm","vy","pu","xj","qc","xx"]
+# Full-size cases: 50 codes, in a shape the seed picks (see gen.c).
+@full 1 ce611f50
 => 0
 
-@gen 2
-["iw","jz","gq","fy","ea","zm","ew","zl","te","qg","sm","mz","ci","qh","gw","zn","mq","hw","yf","zq","da","yu","wv","wg","lz","xc","dq","ic","zj","qm","ek","jw","uy","bh","hq","cx","ae","qd","wi","hb","qz","ke","ms","wh","ad","we","vw","wj","nz","et"]
+@full 2 573d8a44
 => 25
 
-@gen 3
-["om","mq","mo","np","pl","or","rm","rp","qp","mm","lm","ml","sm","lo","nq","ss","pq","pn","mp","rr","lq","rl","sl","rs","ls","nl","qq","ro","ol","nn","qm","qs","qr","po","pp","so","pm","mr","oq","pr","lr","nr","op","qn","sn","mn","nm","ll","ql","ms"]
+@full 3 9ce4db7c
 => 17
-

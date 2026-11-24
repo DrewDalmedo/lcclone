@@ -71,3 +71,20 @@
 @gen 14 small
 [[1,2,2,3],[4,5,6,7],[8,9,10,12],[13,14,15,16]]
 => [2,11]
+
+# Full-size cases: n = 50, the seed picking where the two copies go (see
+# gen.c).
+@full 1 0324b055
+=> [2500,2347]
+
+@full 2 82ebb8a3
+=> [2499,2500]
+
+@full 3 30dadfe2
+=> [2027,1]
+
+@full 4 4ba24f31
+=> [1521,1863]
+
+@full 5 8f176184
+=> [383,382]

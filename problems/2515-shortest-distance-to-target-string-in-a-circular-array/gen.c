@@ -5,7 +5,8 @@
  * Full-size ones have 100 cards, each a near miss of target: target with
  * its last letter changed or cut off, or with one letter added at the
  * end. The seed then puts target on no seat, on one seat 49 or 50 moves
- * from the start, or on a few random seats. */
+ * from the start, or on a few random seats (seeds 1 to 3 make one of
+ * each). */
 static char cards[100][102];
 
 static void near_miss(char *out, const char *target)
@@ -51,7 +52,7 @@ void gen(int small)
         target[len] = '\0';
         for (i = 0; i < n; i++)
             near_miss(cards[i], target);
-        shape = (int)rnd(0, 2);
+        shape = (int)(gen_seed() % 3);
         if (shape == 1) {
             dist = (int)rnd(49, 50);
             side = rnd_chance(50) ? 1 : -1;

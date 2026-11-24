@@ -1,7 +1,9 @@
 /* Slow and obviously right: try every way of keeping some of the
- * characters of s (2^n of them, so small inputs only), and among the ones
- * that leave a fancy string, take one that keeps the most. Along the way,
- * check the claim that all of those leave the same string. */
+ * characters of s, and among the ones that leave a fancy string, take one
+ * that keeps the most. Along the way, check the claim that all of those
+ * leave the same string. There are 2^n ways, so only for small n: past 20
+ * letters it stops at once, as the full-size cases would take far too long
+ * and 1UL << n shifts past the width from n = 64. */
 static int fancy(const char *t, int len)
 {
     int i;
@@ -18,6 +20,8 @@ char *makeFancyString(char *s)
     char *t = malloc((size_t)n + 1), *out = malloc((size_t)n + 1);
     unsigned long mask;
 
+    if (n > 20)
+        abort();
     for (mask = 0; mask < (1UL << n); mask++) {
         len = 0;
         for (i = 0; i < n; i++)

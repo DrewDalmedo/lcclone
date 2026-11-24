@@ -2,24 +2,27 @@
  * seed picks the shape: rows of random tallies (from a narrow range when
  * small, so that ties are common), tallies rising down the rows so that
  * the last row wins, all rows equal, or (full size only, since small ones
- * often come out so anyway) all 0s. Small matrices are at most 6 x 6;
- * full-size ones are 100 x 100, 100 x 1 or 1 x 100. */
+ * often come out so anyway) all 0s. Small matrices are at most 6 x 6.
+ * Full-size ones are 100 x 100 with each of those shapes, or 100 x 1
+ * (rising) or 1 x 100 (any tally); seeds 1 to 6 make one of each. */
 void gen(int small)
 {
-    int m, n, shape, lo, hi, i, j, t;
+    /* At full size, seed % 6 picks the size and the tallies. */
+    static const int large_tally[] = {0, 2, 3, 5, 2, 4};
+    int m, n, shape, pick = 0, lo, hi, i, j, t;
     int *tally, *a, *row;
 
     if (small) {
         m = (int)rnd(1, 6);
         n = (int)rnd(1, 6);
     } else {
-        shape = (int)rnd(0, 2);
-        m = shape == 2 ? 1 : 100;
-        n = shape == 1 ? 1 : 100;
+        pick = (int)(gen_seed() % 6);
+        m = pick == 5 ? 1 : 100;
+        n = pick == 4 ? 1 : 100;
     }
     tally = malloc((size_t)m * sizeof *tally);
     a = malloc((size_t)m * n * sizeof *a);
-    shape = (int)rnd(0, small ? 4 : 5);
+    shape = small ? (int)rnd(0, 4) : large_tally[pick];
     if (shape <= 1) { /* random, in a narrow range when small */
         lo = small ? (int)rnd(0, n) : 0;
         hi = small ? (int)rnd(lo, lo + 1 > n ? n : lo + 1) : n;

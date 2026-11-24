@@ -87,3 +87,16 @@
 @gen 6 small
 [2,-3]
 => -1
+
+# Full-size cases: 1000 values, in a shape the seed picks (see gen.c).
+@full 1 44d6d503
+=> 1
+
+@full 2 41c9983a
+=> 0
+
+@full 3 9be429e8
+=> 1
+
+@full 4 cd8c1830
+=> 0

@@ -90,3 +90,13 @@
 @gen 7 small
 "bbbbbbcc"
 => "bbcc"
+
+# Full-size cases: 10^5 letters, in a shape the seed picks (see gen.c).
+@full 1 bddfbba5
+
+@full 2 5504fcf4
+
+@full 3 9f63b06b
+
+@full 4 b90c95cb
+=> "bb"

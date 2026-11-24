@@ -2,9 +2,10 @@
  * Small cases: up to 6 rows each, labels from a pool barely larger than
  * the longer list (at the low end, at the high end up to 1000, or
  * scattered), so that labels are often shared; weights mostly 1..9,
- * sometimes near 1000. Full-size cases, by the seed: both lists carry
- * every label 1..1000, the labels split 500/500 with none shared, 1000
- * labels against a random subset, or random lengths. Rows come shuffled. */
+ * sometimes near 1000. Full-size cases, by the seed (seeds 1 to 4 make one
+ * of each): both lists carry every label 1..1000, the labels split 500/500
+ * with none shared, 1000 labels against a random subset, or random
+ * lengths. Rows come shuffled. */
 static int pool[1000];
 
 /* Prints n rows labelled labels[0..n), each with a random weight. */
@@ -55,7 +56,7 @@ void gen(int small)
         size = 1000;
         for (i = 0; i < size; i++)
             pool[i] = i + 1;
-        shape = (int)rnd(0, 3);
+        shape = (int)(gen_seed() % 4);
         if (shape == 0) {
             n1 = n2 = 1000;
         } else if (shape == 1) {

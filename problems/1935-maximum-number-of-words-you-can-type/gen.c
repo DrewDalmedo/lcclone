@@ -2,8 +2,9 @@
  * from a-f (now and then all 26), so words often share letters and broken
  * letters sit at the start or end of words. Full-size cases pick a shape:
  * text filled to 10^4 characters with words of random length, 5000
- * one-letter words, a single word of 10^4 letters, or a random length; the
- * broken letters are any number of distinct letters. */
+ * one-letter words, a single word of 10^4 letters, or a random length (seeds
+ * 1 to 4 make one of each); the broken letters are any number of distinct
+ * letters. */
 static char text[10001];
 
 static void put_broken(int k, int from)
@@ -41,7 +42,7 @@ void gen(int small)
             put_broken((int)rnd(0, 3), 6);
         return;
     }
-    shape = (int)rnd(0, 3);
+    shape = (int)(gen_seed() % 4);
     if (shape == 1) {
         for (i = 0; i < 5000; i++) {
             if (i > 0)

@@ -117,21 +117,15 @@
 3
 => 0
 
-# Random full-size cases.
-@gen 1
-30042
-3446
-79222
+# Full-size cases: k = 10^5, the seed picking the lengths (see gen.c).
+@full 1 be0aed8e
+=> 10000000000
+
+@full 2 0419430f
+=> 100000
+
+@full 3 1f6f33b4
 => 0
 
-@gen 2
-44077
-108017
-100000
-=> 801700000
-
-@gen 3
-125933
-77850
-100000
-=> 2593300000
+@full 4 6b6526fd
+=> 10000000000

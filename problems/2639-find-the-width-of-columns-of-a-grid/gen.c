@@ -3,7 +3,8 @@
  * many digits (9, 10, 99, 100, ...), and is negative half the time; zero,
  * 10^9 and -10^9 come up too. Small grids are at most 5 x 5, and their
  * digit counts are drawn from a narrow range so that columns tie often;
- * full-size ones are 100 x 100, 100 x 1 or 1 x 100. */
+ * full-size ones are 100 x 100, 100 x 1 or 1 x 100, as the seed picks
+ * (seeds 1 to 3 make one of each). */
 static int number(int lo_digits, int hi_digits)
 {
     static const int p10[] = {1, 10, 100, 1000, 10000, 100000, 1000000,
@@ -38,7 +39,7 @@ void gen(int small)
         lo = (int)rnd(1, 10);
         hi = (int)rnd(lo, lo + 2 > 10 ? 10 : lo + 2);
     } else {
-        shape = (int)rnd(0, 2);
+        shape = (int)(gen_seed() % 3);
         m = shape == 2 ? 1 : 100;
         n = shape == 1 ? 1 : 100;
         lo = 1;

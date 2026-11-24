@@ -106,3 +106,11 @@
 ["A","ab"]
 [12,9]
 => ["A","ab"]
+
+# Full-size cases: 1000 singers, the seed picking the order of the
+# heights (see gen.c).
+@full 1 b48b5eaf
+
+@full 2 16f8d804
+
+@full 3 8310a85b

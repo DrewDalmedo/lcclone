@@ -84,3 +84,23 @@
 @gen 6 small
 [[0,1,0,0],[0,0,1,0],[0,0,1,0],[1,0,0,0]]
 => [0,1]
+
+# Full-size cases: 100 x 100, 100 x 1 and 1 x 100, in a shape the seed
+# picks (see gen.c).
+@full 1 c5130133
+=> [99,100]
+
+@full 2 c001e99a
+=> [0,8]
+
+@full 3 eec34870
+=> [0,0]
+
+@full 4 22ff6f77
+=> [99,1]
+
+@full 5 326447cd
+=> [0,89]
+
+@full 6 7b5a6eb8
+=> [44,99]

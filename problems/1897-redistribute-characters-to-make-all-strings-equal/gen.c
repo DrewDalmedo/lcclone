@@ -1,7 +1,7 @@
-/* n strings, 1 to 5 of them for small cases and 100 (or, now and then,
- * fewer) for full-size ones, using a few letters picked at random from
- * the whole alphabet: 1 to 3 for small cases, 1 to 26 otherwise. The seed
- * picks the shape:
+/* n strings, 1 to 5 of them for small cases and 100 for full-size ones,
+ * using a few letters picked at random from the whole alphabet: 1 to 3 for
+ * small cases, 1 to 26 otherwise. The seed picks the shape (at full size,
+ * seeds 1 to 3 make one of each):
  *   - random strings of 1 to 4 letters (small) or 1 to 100;
  *   - n copies of one random word of k letters (k up to 3 for small
  *     cases, up to 100 and often exactly 100 otherwise), with all their
@@ -17,12 +17,12 @@ void gen(int small)
     int perm[26], base[100], len[100];
     int n, letters, shape, k, total, moves, a, b, pos, shift, idx, i, j;
 
-    n = small ? (int)rnd(1, 5) : (rnd_chance(80) ? 100 : (int)rnd(1, 99));
+    n = small ? (int)rnd(1, 5) : 100;
     letters = small ? (int)rnd(1, 3) : (int)rnd(1, 26);
     for (i = 0; i < 26; i++)
         perm[i] = i;
     rnd_shuffle(perm, 26);
-    shape = (int)rnd(0, 2);
+    shape = small ? (int)rnd(0, 2) : (int)(gen_seed() % 3);
     if (shape == 0) {
         total = 0;
         for (i = 0; i < n; i++) {

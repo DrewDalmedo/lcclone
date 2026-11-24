@@ -85,3 +85,16 @@
 @gen 6 small
 [5,2]
 => 4
+
+# Full-size cases: 5000 stacks, in a shape the seed picks (see gen.c).
+@full 1 5e7eace6
+=> 62482501
+
+@full 2 3dcd7c39
+=> 12497500
+
+@full 3 1064a2c1
+=> 145
+
+@full 4 4bf2c46b
+=> 37400581

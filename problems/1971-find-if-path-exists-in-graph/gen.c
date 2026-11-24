@@ -1,7 +1,8 @@
 /* Small cases: up to 8 islands and a random set of distinct footbridges
  * (often too few to link everything), each written either way round, in
  * a random order; destination is sometimes source itself. Full-size cases
- * have 2 * 10^5 islands, in one of four shapes picked by the seed:
+ * have 2 * 10^5 islands, in one of four shapes picked by the seed (seeds 1
+ * to 4 make one of each):
  *   0  one long path through every island in a random order, plus one
  *      chord (2 * 10^5 bridges), listed from the far end back, with
  *      source and destination at the two ends;
@@ -70,7 +71,7 @@ void gen(int small)
         small_case();
         return;
     }
-    shape = (int)rnd(0, 3);
+    shape = (int)(gen_seed() % 4);
     order = malloc((size_t)n * sizeof *order);
     e = malloc((size_t)2 * n * sizeof *e);
     for (i = 0; i < n; i++)

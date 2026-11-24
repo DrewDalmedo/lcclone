@@ -5,13 +5,16 @@
  * stay complete, two columns break), swaps two cells of a column, or
  * fills every cell at random. Small cases have n from 1 to 5. Full-size
  * ones have n = 100, put a changed cell in one of the last rows, and
- * make the repeated and the missing value both larger than 64 there. */
+ * make the repeated and the missing value both larger than 64 there;
+ * seeds 1 to 5 make one of each shape, the untouched square included. */
 void gen(int small)
 {
+    static const int large_shapes[] = {0, 2, 3, 4, 5};
     int n = small ? (int)rnd(1, 5) : 100;
     int *g = malloc((size_t)n * (size_t)n * sizeof *g);
     int rp[100], cp[100], sym[100];
-    int shape = (int)rnd(0, 5), i, j, r, c, a, b, t, old, v;
+    int shape = small ? (int)rnd(0, 5) : large_shapes[gen_seed() % 5];
+    int i, j, r, c, a, b, t, old, v;
 
     for (i = 0; i < n; i++) {
         rp[i] = i;
