@@ -1,14 +1,15 @@
 /* Kinds of boxes and a truck size. Small cases have a few kinds with small
  * counts and few distinct units values, so ties and identical entries come
  * up, and a truck from 1 box to a little more than the whole stock.
- * Full-size cases have 1000 kinds; the seed picks the shape: every entry
- * [1000,1000] with a 10^6-box truck (the largest answer, 10^9, and the
- * slowest case for loading one box at a time), entries in increasing order
- * of units with a truck that takes nearly everything, or random entries
- * with a random truck. */
+ * Full-size cases have 1000 kinds; the seed picks the shape
+ * (gen_seed() % 3): every entry [1000,1000] with a 10^6-box truck (the
+ * largest answer, 10^9, and the slowest case for loading one box at a
+ * time), entries in increasing order of units with a truck that takes
+ * nearly everything, or random entries with a random truck. */
 void gen(int small)
 {
-    int m = small ? (int)rnd(1, 6) : 1000, shape = (int)rnd(0, 2), i;
+    int m = small ? (int)rnd(1, 6) : 1000, i;
+    int shape = small ? (int)rnd(0, 2) : (int)(gen_seed() % 3);
     int *grid = malloc((size_t)m * 2 * sizeof *grid);
     long long stock = 0, truck;
 

@@ -1,12 +1,13 @@
 /* Small cases have up to 12 digits; full-size ones have 10^4. The seed
- * picks the shape: random digits; an alternating string (starting with
- * either digit) with some digits changed, few or many; runs of equal
- * digits of random lengths (up to 4 when small, up to 50 otherwise); or
- * one digit repeated. */
+ * picks the shape at full size (gen_seed() % 4), and small cases draw it:
+ * random digits; an alternating string (starting with either digit) with
+ * some digits changed, few or many; runs of equal digits of random lengths
+ * (up to 4 when small, up to 50 otherwise); or one digit repeated. */
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 12) : 10000;
-    int shape = (int)rnd(0, 3), i, start, percent, len, d = (int)rnd(0, 1);
+    int shape = small ? (int)rnd(0, 3) : (int)(gen_seed() % 4);
+    int i, start, percent, len, d = (int)rnd(0, 1);
     char *s = malloc((size_t)n + 1);
 
     if (shape == 0) {

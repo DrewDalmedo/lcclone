@@ -113,3 +113,13 @@
 [[3,2],[1,5],[2,5],[5,6]]
 3
 => 18
+
+# Full-size cases: 1000 kinds of boxes, in a shape the seed picks (see gen.c).
+@full 1 898de2df
+=> 474981906
+
+@full 2 c74ed39a
+=> 244672241
+
+@full 3 af6e5907
+=> 1000000000

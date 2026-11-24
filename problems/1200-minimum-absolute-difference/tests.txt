@@ -87,3 +87,13 @@
 @gen 7 small
 [-6,3,12,8]
 => [[8,12]]
+
+# Full-size cases: 10^5 numbers, in a shape the seed picks (see gen.c).
+@full 1 12e80417
+
+@full 2 74bf8b76
+=> [[375340,375341]]
+
+@full 3 52fe1cd0
+
+@full 4 5d828947

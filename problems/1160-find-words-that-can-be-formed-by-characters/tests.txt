@@ -71,8 +71,7 @@
 "melon"
 => 500
 
-# Random small cases from gen.c (lc check --regen makes them). Full-size
-# ones, up to 1000 words of 100 letters, come with milestone M7.
+# Random small cases from gen.c (lc check --regen makes them).
 @gen 1 small
 ["ab"]
 "b"
@@ -107,3 +106,14 @@
 ["dddccb","cadcc"]
 "cbabadbd"
 => 0
+
+# Full-size cases: 1000 words and chars of 100 letters, in a shape the seed
+# picks (see gen.c).
+@full 1 ea371ce8
+=> 0
+
+@full 2 ac1a6095
+=> 18528
+
+@full 3 c59a058c
+=> 100000

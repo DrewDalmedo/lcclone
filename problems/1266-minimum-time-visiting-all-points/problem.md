@@ -4,6 +4,7 @@ title: Minimum Time Visiting All Points
 difficulty: easy
 tags: geometry, array, math
 signature: int minTimeToVisitAllPoints(int[][] points)
+time_limit_ms: 100
 ---
 Each entry of `points` is a pair `[x, y]`: a point of the plane whose
 coordinates are integers. A token travels between such points. Each

@@ -1,10 +1,13 @@
 /* Slow and obviously right, for the short strings of the cross-check: try
  * every string of 0s and 1s of the same length, keep the alternating ones,
- * and count the positions where each differs from s. */
+ * and count the positions where each differs from s. Only for small n:
+ * past 20, it stops at once, since 1 << n would shift past the width. */
 int minOperations(char *s)
 {
     int n = (int)strlen(s), best = n, mask, i, ok, diff;
 
+    if (n > 20)
+        abort();
     for (mask = 0; mask < (1 << n); mask++) {
         ok = 1;
         for (i = 1; i < n; i++)

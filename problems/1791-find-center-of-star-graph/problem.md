@@ -4,6 +4,7 @@ title: Find Center of Star Graph
 difficulty: easy
 tags: graph
 signature: int findCenter(int[][] edges)
+time_limit_ms: 500
 ---
 `edges` describes an undirected graph whose nodes are numbered `1` to `n`,
 where `n = edges.length + 1`. Each `edges[i] = [u, v]` is one edge, joining

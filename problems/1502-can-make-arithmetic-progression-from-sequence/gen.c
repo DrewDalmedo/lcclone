@@ -5,12 +5,15 @@
  * values, or all equal. The values come shuffled, ascending or
  * descending. Small cases have at most 8 values in [-10, 10]; full-size
  * ones have 1000 values, spread over as much of [-10^6, 10^6] as the step
- * allows. */
+ * allows, and the seed picks their shape (gen_seed() % 6, in the order
+ * above: as is, nudged, copied, moved towards each other, largest moved,
+ * random or equal). */
 void gen(int small)
 {
     int n = small ? (int)rnd(2, 8) : 1000;
     int top = small ? 10 : 1000000;
-    int dmax = 2 * top / (n - 1), shape = (int)rnd(0, 5), order;
+    int dmax = 2 * top / (n - 1), order;
+    int shape = small ? (int)rnd(0, 5) : (int)(gen_seed() % 6);
     int *a = malloc((size_t)n * sizeof *a);
     int step, first, i, j, delta, p, q, t;
 

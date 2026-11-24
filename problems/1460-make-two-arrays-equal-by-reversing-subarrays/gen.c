@@ -4,7 +4,10 @@
  * then target shuffled (true), target shuffled with one element replaced
  * by another value (false, often with the same distinct values; at full
  * size the last element, so a match is missed only at the far end), or
- * drawn on its own from the same pool. */
+ * drawn on its own from the same pool. At full size the seed picks the
+ * shape: gen_seed() % 3 is which of those three arr is (all different
+ * values make the third one the second), and the odd seeds have all
+ * different values. */
 static int pick(const int *pool, int np, int top)
 {
     int j = (int)rnd(0, np);
@@ -27,7 +30,7 @@ void gen(int small)
         pool[1] = 1000;
         np = 2;
     }
-    distinct = !small && rnd_chance(50);
+    distinct = !small && gen_seed() % 2 == 1;
     for (i = 0; i < n; i++) {
         if (distinct) {
             target[i] = i + 1;
@@ -38,7 +41,7 @@ void gen(int small)
     }
     rnd_shuffle(target, n);
 
-    shape = (int)rnd(0, 2);
+    shape = small ? (int)rnd(0, 2) : (int)(gen_seed() % 3);
     if (shape < 2 || distinct) {
         memcpy(arr, target, (size_t)n * sizeof *arr);
         rnd_shuffle(arr, n);

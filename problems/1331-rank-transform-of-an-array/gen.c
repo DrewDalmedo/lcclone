@@ -1,8 +1,8 @@
 /* Small cases: 0 to 8 values, mostly from -3 to 3 so that ties and zeros
  * are common, now and then -10^9 or 10^9. Full-size ones have 10^5 values
- * in a shape the seed picks: different values ascending, descending or in
- * random order (from -10^9 to 10^9, both included), all equal, or random
- * values with many repeats. */
+ * in a shape the seed picks (gen_seed() % 5): different values ascending,
+ * descending or in random order (from -10^9 to 10^9, both included), all
+ * equal, or random values with many repeats. */
 void gen(int small)
 {
     int n = small ? (int)rnd(0, 8) : 100000, shape, i, v;
@@ -17,7 +17,7 @@ void gen(int small)
             a[i] = v;
         }
     } else {
-        shape = (int)rnd(0, 4);
+        shape = (int)(gen_seed() % 5);
         if (shape == 3) {
             v = (int)rnd(-1000000000, 1000000000);
             for (i = 0; i < n; i++)

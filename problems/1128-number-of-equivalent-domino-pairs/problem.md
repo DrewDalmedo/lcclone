@@ -4,6 +4,7 @@ title: Number of Equivalent Domino Pairs
 difficulty: easy
 tags: array, hash-table, counting
 signature: int numEquivDominoPairs(int[][] dominoes)
+time_limit_ms: 2000
 ---
 Each entry of `dominoes` describes one domino tile by the two numbers
 printed on its halves. A tile can be turned end for end, so `[2,7]` and

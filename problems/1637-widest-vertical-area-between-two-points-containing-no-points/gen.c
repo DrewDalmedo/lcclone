@@ -3,9 +3,10 @@
  * equal; some over the whole range, x = 0 and x = 10^9 often included;
  * some with x close together far from 0 and y spread over the whole range.
  * Full-size ones have 10^5 points, with the seed picking the shape of the
- * x-coordinates: random over the whole range, 0 and 10^9 included; the
- * same sorted increasing or decreasing; all equal; or a few distinct
- * values. The y-coordinates are always random over the whole range. */
+ * x-coordinates (gen_seed() % 5): random over the whole range, 0 and 10^9
+ * included; the same sorted increasing or decreasing; all equal; or a few
+ * distinct values. The y-coordinates are always random over the whole
+ * range. */
 #define TOP 1000000000
 
 static int cmp_up(const void *a, const void *b)
@@ -30,7 +31,7 @@ void gen(int small)
         shape = (int)rnd(0, 9);
     } else {
         n = 100000;
-        shape = (int)rnd(0, 4);
+        shape = (int)(gen_seed() % 5);
     }
     xs = malloc((size_t)n * sizeof *xs);
     pts = malloc((size_t)n * 2 * sizeof *pts);

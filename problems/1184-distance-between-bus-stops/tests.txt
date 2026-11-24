@@ -132,3 +132,16 @@
 0
 3
 => 16
+
+# Full-size cases: 10^4 stretches, in a shape the seed picks (see gen.c).
+@full 1 c551f1b3
+=> 4127
+
+@full 2 dc4f59ea
+=> 50000000
+
+@full 3 998c6825
+=> 14005233
+
+@full 4 74e09808
+=> 10000

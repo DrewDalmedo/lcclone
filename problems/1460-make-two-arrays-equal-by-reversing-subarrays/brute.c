@@ -2,8 +2,10 @@
  * arr that flips can reach, and see whether target is one of them. An
  * arrangement is kept as a number with 3 bits per position, holding the
  * rank of the value there among arr's distinct values, so this works for
- * at most 7 elements (gen.c's small cases keep to that). A value of target
- * that arr lacks can never turn up, since flips only move values. */
+ * at most 7 elements (gen.c's small cases keep to that): past 7, it stops
+ * at once, since the arrays below would overflow and 3 * n bits would
+ * shift past the width. A value of target that arr lacks can never turn
+ * up, since flips only move values. */
 bool canBeEqual(int *target, int targetSize, int *arr, int arrSize)
 {
     int n = arrSize, vals[7], d = 0, cur[7], i, j, l, r, k;
@@ -13,6 +15,8 @@ bool canBeEqual(int *target, int targetSize, int *arr, int arrSize)
     bool found = false;
 
     (void)targetSize;
+    if (n > 7)
+        abort();
     for (i = 0; i < n; i++) {
         for (j = 0; j < d && vals[j] != arr[i]; j++)
             ;

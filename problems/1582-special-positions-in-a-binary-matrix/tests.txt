@@ -88,3 +88,28 @@
 @gen 18 small
 [[0,1],[0,0],[1,0]]
 => 2
+
+# Full-size cases: up to 100 by 100, in a shape the seed picks (see gen.c).
+@full 1 58fe9d4f
+=> 0
+
+@full 2 34487a22
+=> 0
+
+@full 3 cb6ff82a
+=> 2
+
+@full 4 26242a97
+=> 24
+
+@full 5 b5c977da
+=> 0
+
+@full 6 60b43d26
+=> 0
+
+@full 7 a8844c5e
+=> 9
+
+@full 8 bf0778f3
+=> 0

@@ -1,13 +1,14 @@
 /* Small cases: a few moves, usually of -9 to 9 so that the sum crosses
  * zero and repeats, sometimes of up to 10^6 either way. Full size: 1000
- * moves, in a shape the seed picks: any lengths; long moves to the right
- * only (the sum climbs to nearly 10^9); long moves to the left only (it
- * sinks to nearly -10^9); or moves of exactly 10^6 or -10^6. */
+ * moves, in a shape the seed picks (gen_seed() % 4): any lengths; long
+ * moves to the right only (the sum climbs to nearly 10^9); long moves to
+ * the left only (it sinks to nearly -10^9); or moves of exactly 10^6 or
+ * -10^6. */
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 8) : 1000;
     int *nums = malloc((size_t)n * sizeof *nums);
-    int shape = small ? 0 : (int)rnd(0, 3);
+    int shape = small ? 0 : (int)(gen_seed() % 4);
     int top = 1000000, i;
 
     if (small)

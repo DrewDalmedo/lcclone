@@ -2,9 +2,9 @@
  * from -12..12 so that gaps tie often; some are arithmetic progressions
  * (every gap is the smallest), and some spread over the whole range, the
  * bounds included. Full-size ones are 10^5 numbers, with the seed picking the
- * shape: random over the whole range, bounds included; a progression
- * (99999 pairs); a progression of step 20 with one gap of 1 (one pair);
- * or random numbers sorted in decreasing order. */
+ * shape (gen_seed() % 4): random over the whole range, bounds included; a
+ * progression (99999 pairs); a progression of step 20 with one gap of 1
+ * (one pair); or random numbers sorted in decreasing order. */
 #define LO (-1000000)
 #define HI 1000000
 
@@ -37,7 +37,7 @@ static int cmp_desc(const void *a, const void *b)
 void gen(int small)
 {
     int n = 100000, *a;
-    int shape = small ? (int)rnd(0, 9) : (int)rnd(0, 3);
+    int shape = small ? (int)rnd(0, 9) : (int)(gen_seed() % 4);
     int i, step, start, have = 0;
 
     if (small)

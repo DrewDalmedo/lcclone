@@ -2,7 +2,9 @@
  * chance; otherwise some 1s go in distinct rows and distinct columns (so
  * each starts out special) and a few extra 1s may spoil some of them.
  * Small grids are 1 to 5 on a side; full-size ones are 100 x 100, 1 x 100,
- * 100 x 1 or of random sides. */
+ * 100 x 1 or of random sides, as gen_seed() % 4 picks, and have their 1s
+ * at random when gen_seed() % 8 is below 4, else in distinct rows and
+ * columns. */
 void gen(int small)
 {
     int m, n, shape, k, extra, i, j, t, p;
@@ -12,7 +14,7 @@ void gen(int small)
         m = (int)rnd(1, 5);
         n = (int)rnd(1, 5);
     } else {
-        shape = (int)rnd(0, 3);
+        shape = (int)(gen_seed() % 4);
         m = shape == 1 ? 1 : 100;
         n = shape == 2 ? 1 : 100;
         if (shape == 3) {
@@ -23,7 +25,7 @@ void gen(int small)
     a = calloc((size_t)m * n, sizeof *a);
     rows = malloc((size_t)m * sizeof *rows);
     cols = malloc((size_t)n * sizeof *cols);
-    if (rnd_chance(50)) {
+    if (small ? rnd_chance(50) : gen_seed() % 8 < 4) {
         p = small ? (int)rnd(10, 70) : (int)rnd(1, 20);
         for (i = 0; i < m * n; i++)
             a[i] = rnd_chance(p);

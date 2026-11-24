@@ -88,3 +88,16 @@
 @gen 7 small
 [[3,3],[3,3]]
 => 1
+
+# Full-size cases: 4 * 10^4 tiles, in a shape the seed picks (see gen.c).
+@full 1 d3e9b085
+=> 799980000
+
+@full 2 c037d65b
+=> 399981225
+
+@full 3 f3ea42db
+=> 798220990
+
+@full 4 b70e61dd
+=> 18705714

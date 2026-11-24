@@ -4,9 +4,10 @@
  * copy of an earlier word, or random letters. Small cases use the letters
  * a to d, up to 6 words of up to 6 letters and chars of up to 8, so that
  * letters repeat and both fits and near misses are common. Full-size cases
- * have 1000 words and chars of 100 letters, and the seed picks the shape:
- * every word a rearrangement of the whole of chars (the largest total,
- * 100000), every word a near miss of length 100, or a mix of all four. */
+ * have 1000 words and chars of 100 letters, and the seed picks the shape
+ * (gen_seed() % 3): every word a rearrangement of the whole of chars (the
+ * largest total, 100000), every word a near miss of length 100, or a mix
+ * of all four. */
 #define MAXL 100
 
 static char words_buf[1000][MAXL + 1];
@@ -93,7 +94,7 @@ void gen(int small)
         n = 1000;
         clen = MAXL;
         maxlen = MAXL;
-        shape = (int)rnd(0, 2);
+        shape = (int)(gen_seed() % 3);
     }
     random_word(alpha, chars, clen);
     for (i = 0; i < n; i++) {

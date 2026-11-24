@@ -1,9 +1,11 @@
-/* Recordings of four shapes, picked by the seed: random bits; pulses spaced
- * k quiet ticks apart or a little more, sometimes with one pair moved in to
- * k - 1 (the last pair, in a full-size case); all ones or all zeros; and
- * the edges k = n, n - 1 and n - 2 with at most two pulses. Small cases
- * have a few ticks and a small k; full-size ones 10^5 ticks, and k from 0
- * up to half of that. */
+/* Recordings of four shapes, which the seed picks at full size
+ * (gen_seed() % 4): random bits; pulses spaced k quiet ticks apart or a
+ * little more, sometimes with one pair moved in to k - 1 (the last pair,
+ * in a full-size case); all ones (or, in small cases, all zeros); and the
+ * edges k = n, n - 1 and n - 2 with at most two pulses (at full size,
+ * pulses at both ends and k = n - 2, which passes with 99998 quiet ticks,
+ * more than a 16-bit count holds). Small cases have a few ticks and a
+ * small k; full-size ones 10^5 ticks, and k from 0 up to half of that. */
 static int pick_k(int small, int n)
 {
     int t;
@@ -25,13 +27,16 @@ static int pick_k(int small, int n)
 void gen(int small)
 {
     int n = small ? (int)rnd(1, 12) : 100000;
-    int shape = (int)rnd(0, 3);
+    int shape = small ? (int)rnd(0, 3) : (int)(gen_seed() % 4);
     int *nums = calloc((size_t)n, sizeof *nums);
     int *at;
     int k, i, pct, pos, count, t, extra;
 
     if (shape == 0) {
-        pct = (int)rnd(5, 70);
+        /* At full size at least 30% ones, so that with k >= 1 a pair too
+         * close together comes early and a search over every pair stops
+         * at once; with k = 0 it never stops. */
+        pct = small ? (int)rnd(5, 70) : (int)rnd(30, 70);
         k = small ? (int)rnd(0, n < 4 ? n : 4) : (int)rnd(0, 2);
         for (i = 0; i < n; i++)
             nums[i] = rnd_chance(pct);
@@ -56,15 +61,15 @@ void gen(int small)
         }
         free(at);
     } else if (shape == 2) {
-        t = rnd_chance(75);
+        t = small ? rnd_chance(75) : 1;
         for (i = 0; i < n; i++)
             nums[i] = t;
         k = small ? (int)rnd(0, n < 2 ? n : 2) : 0;
     } else {
-        k = n - (int)rnd(0, 2);
+        k = small ? n - (int)rnd(0, 2) : n - 2;
         if (k < 0)
             k = 0;
-        t = (int)rnd(0, 2);
+        t = small ? (int)rnd(0, 2) : 0;
         if (t == 0) {
             nums[0] = 1;
             nums[n - 1] = 1;

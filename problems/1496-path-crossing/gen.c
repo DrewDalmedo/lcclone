@@ -6,7 +6,7 @@
  * after one sideways step), so that nothing ends the search early;
  * some of them repeat a corner only with their very last step, and a
  * rectangle with a perimeter of 10^4 blocks meets its start only at the
- * end. */
+ * end. The seed picks the full-size shape (gen_seed() % 7). */
 static char opposite(char c)
 {
     return c == 'N' ? 'S' : c == 'S' ? 'N' : c == 'E' ? 'W' : 'E';
@@ -54,7 +54,7 @@ static void gen_small(char *path)
 
 static void gen_large(char *path)
 {
-    int n = 10000, shape = (int)rnd(0, 6), i, k, len, leg, turn;
+    int n = 10000, shape = (int)(gen_seed() % 7), i, k, len, leg, turn;
     char v, h, c, side;
     const char *ring;
 

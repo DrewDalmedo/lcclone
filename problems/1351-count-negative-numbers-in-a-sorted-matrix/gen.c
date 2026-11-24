@@ -4,8 +4,9 @@
  * Small cases have up to 5 x 5 cells with values from -4 to 5, so zeros,
  * grids without negatives and grids of negatives alone come up often.
  * Full-size ones are 100 x 100, a single row or column of 100, or a
- * random shape; they start positive, with drops sized so that the sign
- * changes around the middle of the grid. */
+ * random shape, as the seed picks (gen_seed() % 4); they start positive,
+ * with drops sized so that the sign changes around the middle of the
+ * grid. */
 void gen(int small)
 {
     int m, n, top, bottom, half = 1, i, j, v, d, shape;
@@ -19,7 +20,7 @@ void gen(int small)
     } else {
         top = (int)rnd(1, 100);
         bottom = -100;
-        shape = (int)rnd(0, 3);
+        shape = (int)(gen_seed() % 4);
         m = shape == 1 ? 1 : 100;
         n = shape == 2 ? 1 : 100;
         if (shape == 3) {

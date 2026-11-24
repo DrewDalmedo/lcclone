@@ -1,9 +1,9 @@
 /* Small cases: a few copies of the word with some letters taken out and
  * a few others put in, shuffled, so each of b, a, l, o and n gets to be
  * the one that runs out. Full-size ones are 10^4 letters, with the seed
- * picking the shape: as many copies as fit (1428), one of the five
- * letters missing (answer 0), only the five letters at random, or any
- * letters at random. */
+ * picking the shape (gen_seed() % 4): as many copies as fit (1428), one of
+ * the five letters missing (answer 0), only the five letters at random,
+ * or any letters at random. */
 static void shuffle(char *s, int n)
 {
     int i, j;
@@ -41,7 +41,7 @@ void gen(int small)
             s[n++] = rnd_char("balonbalonxe");
     } else {
         n = 10000;
-        shape = (int)rnd(0, 3);
+        shape = (int)(gen_seed() % 4);
         if (shape == 0) {
             for (i = 0; i < 1428; i++)
                 for (j = 0; j < 7; j++)
