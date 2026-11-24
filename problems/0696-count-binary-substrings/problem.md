@@ -4,6 +4,7 @@ title: Count Binary Substrings
 difficulty: easy
 tags: two-pointers, string
 signature: int countBinarySubstrings(string s)
+time_limit_ms: 200
 ---
 `s` is a string of the digits `0` and `1`. Call a substring of `s` (one or
 more consecutive characters of `s`) **half-and-half** when it can be cut in

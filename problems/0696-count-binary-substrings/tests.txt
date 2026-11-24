@@ -99,3 +99,20 @@
 @gen 7 small
 "10010111"
 => 4
+
+# Full-size cases: 10^5 digits, in a shape the seed picks (see gen.c): one run, two
+# runs of 50000, alternating, long random runs, or random digits.
+@full 1 eed20248
+=> 50000
+
+@full 2 56f02c37
+=> 99999
+
+@full 3 ee3f7ef8
+=> 68486
+
+@full 4 ffb58c47
+=> 66496
+
+@full 5 55bf67f9
+=> 0

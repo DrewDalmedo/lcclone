@@ -4,6 +4,7 @@ title: Remove All Adjacent Duplicates In String
 difficulty: easy
 tags: stack, string
 signature: string removeDuplicates(string s)
+time_limit_ms: 100
 ---
 `s` is a word of lowercase letters. Call two letters standing right next to
 each other in it a **twin pair** when they are the same letter.

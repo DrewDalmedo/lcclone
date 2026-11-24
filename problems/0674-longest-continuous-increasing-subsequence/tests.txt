@@ -93,3 +93,19 @@
 [8,11,14,15,16,19,21]
 => 7
 
+# Full-size cases: 10^4 elements, in a shape the seed picks (see gen.c): all climbing,
+# a long climb at the end, random, flat or falling, or short climbs.
+@full 1 df573463
+=> 4290
+
+@full 2 218a3c74
+=> 7
+
+@full 3 f9e5f717
+=> 1
+
+@full 4 d9fa58f6
+=> 9
+
+@full 5 f03d059a
+=> 10000

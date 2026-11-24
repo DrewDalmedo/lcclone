@@ -4,9 +4,9 @@
  * middle. Full-size cases have 10^5 letters, in a shape the seed picks:
  * "ab" repeated, then the same reversed, whose only twin pair at any time
  * is in the middle (nothing remains); a word with no twin pair at all
- * (nothing is cut); random letters from a and b (many cuts in a row); or
- * half a word with no twin pair, followed by a block that cuts down to
- * nothing one pair at a time from its middle. */
+ * (nothing is cut); random letters with a twin pair about every 500 (a
+ * few cuts, far apart); or half a word with no twin pair, followed by a
+ * block that cuts down to nothing one pair at a time from its middle. */
 
 /* A letter other than prev (any letter when prev is 0). */
 static char other_than(char prev)
@@ -70,7 +70,8 @@ void gen(int small)
             break;
         case 2:
             for (i = 0; i < n; i++)
-                w[i] = rnd_char("ab");
+                w[i] = i && rnd(1, 500) == 1 ? w[i - 1]
+                                             : other_than(i ? w[i - 1] : 0);
             break;
         default:
             for (i = 0; i < n / 2; i++)

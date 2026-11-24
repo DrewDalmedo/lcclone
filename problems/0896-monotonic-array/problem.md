@@ -4,6 +4,7 @@ title: Monotonic Array
 difficulty: easy
 tags: array
 signature: bool isMonotonic(int[] nums)
+time_limit_ms: 50
 ---
 Walk along `nums` from left to right, one step at a time: from `nums[0]` to
 `nums[1]`, from `nums[1]` to `nums[2]`, and so on. A step **climbs** when

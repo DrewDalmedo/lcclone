@@ -127,3 +127,21 @@
 "baabbbaa"
 => false
 
+# Full-size cases: words of 2 * 10^4 letters, in a shape the seed picks (see gen.c).
+@full 1 6cbc7aa7
+=> false
+
+@full 2 3115cf3d
+=> false
+
+@full 3 b73ee85e
+=> true
+
+@full 4 be0a15e4
+=> false
+
+@full 5 c0667c95
+=> false
+
+@full 6 55a13be2
+=> true

@@ -82,3 +82,13 @@
 [0,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0]
 => [true,false,false,false,false,false,false,false,false,true,false,false,false,true,false,false,false,true,false,false,false,true,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,true,false,false,false,true,true,true,false,false,false,true,false,false,false,true,false,false,false,true,false,false,false,true,false,false,false,true,false,false,false]
 
+# Full-size cases: 10^5 bits, in a shape the seed picks (see gen.c).
+@full 1 f8763bbe
+
+@full 2 a766360e
+
+@full 3 4cb85e5a
+
+@full 4 5898ab07
+
+@full 5 e1cbe754

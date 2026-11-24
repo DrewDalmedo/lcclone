@@ -126,7 +126,7 @@ void gen(int small)
     plate[p] = '\0';
 
     n = small ? (int)rnd(1, 8) : 1000;
-    shape = (int)rnd(0, 2);
+    shape = small ? (int)rnd(0, 2) : (int)(gen_seed() % 3);
     for (k = 0; k < n; k++) {
         ptrs[k] = words[k];
         words[k][0] = '\0';

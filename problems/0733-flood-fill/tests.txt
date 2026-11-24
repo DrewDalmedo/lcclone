@@ -211,3 +211,15 @@
 1
 2
 => [[2,2,2],[1,2,2],[1,2,2],[65535,0,65535]]
+
+# Full-size cases: 50 by 50 floors: noise, one code, a snake along the rows or the
+# columns, or a spiral (see gen.c).
+@full 1 9fad3e85
+
+@full 2 8726bd72
+
+@full 3 8ad6e67b
+
+@full 4 a8822017
+
+@full 5 0e125e8d

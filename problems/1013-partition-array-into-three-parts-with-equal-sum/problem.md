@@ -4,6 +4,7 @@ title: Partition Array Into Three Parts With Equal Sum
 difficulty: easy
 tags: greedy, array
 signature: bool canThreePartsEqualSum(int[] arr)
+time_limit_ms: 50
 ---
 Make two cuts in the array `arr`, so that it falls into three pieces: a
 front, a middle and a back. The elements keep their order, every element

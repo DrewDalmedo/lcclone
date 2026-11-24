@@ -103,3 +103,17 @@
 @gen 8 small
 [-1,1,1,-1,1,-1,1]
 => 2
+
+# Full-size cases: 10^4 values, in a shape the seed picks (see gen.c), up to arms of
+# almost 5 * 10^6.
+@full 1 fe3e037a
+=> 9999
+
+@full 2 b8fac16c
+=> 6498
+
+@full 3 37aab099
+=> 4999
+
+@full 4 cb11a3ed
+=> -1

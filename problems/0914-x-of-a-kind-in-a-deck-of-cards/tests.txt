@@ -96,3 +96,22 @@
 @gen 13 small
 [2,1,0,0,0,2,1,1,2,1,0,0,2,1,1,1,1,0,2,1,0,0,2]
 => false
+
+# Full-size cases: up to 10^4 cards, in a shape the seed picks (see gen.c).
+@full 1 b9eb5bcf
+=> false
+
+@full 2 3f4063d8
+=> true
+
+@full 3 905e9491
+=> false
+
+@full 4 e5438192
+=> false
+
+@full 5 d51daa76
+=> false
+
+@full 6 33092dfe
+=> true

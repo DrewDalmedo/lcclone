@@ -100,3 +100,22 @@
 @gen 8 small
 [-100000,-100000,-3,-1]
 => true
+
+# Full-size cases: 10^5 values, in a shape the seed picks (see gen.c).
+@full 1 a85b54d2
+=> true
+
+@full 2 7413f375
+=> true
+
+@full 3 628d46db
+=> false
+
+@full 4 ff663702
+=> false
+
+@full 5 f32d251b
+=> true
+
+@full 6 ae386287
+=> false

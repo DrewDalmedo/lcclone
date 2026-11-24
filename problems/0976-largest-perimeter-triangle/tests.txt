@@ -84,3 +84,15 @@
 [31,8,3,19,11,2]
 => 0
 
+# Full-size cases: 10^4 lengths, in a shape the seed picks (see gen.c).
+@full 1 ac24b149
+=> 108
+
+@full 2 7ed384d6
+=> 3000000
+
+@full 3 b9ea9e71
+=> 2000001
+
+@full 4 dfd37453
+=> 2999381
